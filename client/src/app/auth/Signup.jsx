@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +8,7 @@ import {
 } from "react-native";
 
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
+import { useAppStore } from "../../store/appStore.js";
 
 const Signup = () => {
 
@@ -43,12 +43,12 @@ const Signup = () => {
         <TextInput
           style={styles.input}
           placeholder="Password"
-          secureTextEntry
           onChangeText={(text) => setFormData({ ...formData, password: text })}
           value={formData.password}
+          secureTextEntry
         />
 
-        <StudentExtra />
+        <StudentExtra getData={getData} />
       </View>
 
       <View style={styles.footer}>

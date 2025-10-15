@@ -70,7 +70,7 @@ const Courses = () => {
   );
 };
 
-const StudentExtra = () => {
+const StudentExtra = ({ getData }) => {
   return (
     <View>
       <Years />

@@ -1,6 +1,8 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import StudentExtra from "../../components/auth/StudentExtra.jsx"
+
 const Signup = () => {
   return (
     <View style={styles.container} className="bg-slate-100 rounded-xl">
@@ -26,6 +28,8 @@ const Signup = () => {
           placeholder="Password"
           secureTextEntry
         />
+        
+        <StudentExtra />
 
       </View>
 
@@ -48,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000ff',
     paddingTop: 70,
-    paddingHorizontal: 10
+    paddingHorizontal: 16
   },
   title: {
     fontSize: 65,
@@ -58,6 +62,7 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     marginTop: 80,
+    flex: 1
   },
   input: {
     height: 70,
@@ -74,7 +79,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 24,
-    marginTop: 50
   },
   btnText: {
     textAlign: "center",

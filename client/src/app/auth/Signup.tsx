@@ -7,21 +7,30 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
-import { useAppStore } from "../../store/app.store.ts";
+import { useAppStore } from "../../store/app.store";
+import handleSignup from "../../controller/auth/signup.controller.js";
 
-console.log(process.env.EXPO_PUBLIC_API_URL);
-
+type FormData = {
+    username: string;
+    fullName: string;
+    password: string;
+    year?: string;
+    course?: string;
+};
 
 const Signup = () => {
     const { user } = useAppStore();
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState<FormData>({
+        username: "",
+        fullName: "",
+        password: "",
+        year: "",
+        course: ""
+    });
 
-    const handleSubmit = () => {
-        console.log(formData);
-    };
-
-    const getData = extra => {
+    const getData = (extra: any) => {
         setFormData(prev => ({ ...prev, ...extra }));
     };
 
@@ -73,11 +82,11 @@ const Signup = () => {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
+                <TouchableOpacity style={styles.btn} onPress={() => handleSignup(formData as FormData)}>
                     <Text style={styles.btnText}>Sign Up</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push("auth/Signin")}>
+                <TouchableOpacity onPress={() => router.push("/auth/Signin")}>
                     <Text style={styles.redirectText}>
                         Already have an account? SignIn
                     </Text>

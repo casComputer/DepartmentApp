@@ -10,6 +10,9 @@ import {
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
 import { useAppStore } from "../../store/app.store.ts";
 
+console.log(process.env.EXPO_PUBLIC_API_URL);
+
+
 const Signup = () => {
     const { user } = useAppStore();
     const [formData, setFormData] = useState({});
@@ -23,7 +26,7 @@ const Signup = () => {
     };
 
     return (
-        <View style={styles.container} className="bg-slate-100 rounded-xl">
+        <View style={styles.container} className="bg-red-500">
             <Text style={styles.title}>Signup</Text>
 
             <View style={styles.inputsContainer}>
@@ -31,6 +34,9 @@ const Signup = () => {
                     style={styles.input}
                     placeholder="username"
                     autoCapitalize="none"
+                    placeholderTextColor={
+                        "rgba(255, 255, 255, 0.7)"
+                    }
                     onChangeText={text =>
                         setFormData({ ...formData, username: text })
                     }
@@ -40,6 +46,9 @@ const Signup = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="full name"
+                    placeholderTextColor={
+                        "rgba(255, 255, 255, 0.7)"
+                    }
                     onChangeText={text =>
                         setFormData({ ...formData, fullName: text })
                     }
@@ -49,6 +58,10 @@ const Signup = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
+                    placeholderTextColor={
+                        "rgba(255, 255, 255, 0.7)"
+                    }
+                    autoCapitalize="none"
                     onChangeText={text =>
                         setFormData({ ...formData, password: text })
                     }
@@ -64,7 +77,7 @@ const Signup = () => {
                     <Text style={styles.btnText}>Sign Up</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push("auth/SignIn")}>
+                <TouchableOpacity onPress={() => router.push("auth/Signin")}>
                     <Text style={styles.redirectText}>
                         Already have an account? SignIn
                     </Text>

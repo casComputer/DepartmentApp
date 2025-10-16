@@ -1,9 +1,20 @@
 
 import { create } from "zustand";
 
-export const useAppStore = create(set => ({
+type User = {
+    role: "student" | "teacher" | "parent" | null;
+};
+
+type AppState = {
+  user: User;
+  setUserRole: (role: User['role']) => void;
+};
+
+export const useAppStore = create<AppState>(set => ({
     user: {
         role: "student"
-    }, 
-    setUser: user => set({ user })
+    },
+    setUserRole: (role: User['role']) => set(state => ({
+        user: { ...state.user, role }
+    }))
 }));

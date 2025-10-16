@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { router } from "expo-router";
+import { useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -7,8 +7,8 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import { useAppStore } from "../../store/app.store.ts";
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
+import { useAppStore } from "../../store/app.store.ts";
 
 const Signup = () => {
     const { user } = useAppStore();
@@ -116,13 +116,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "white",
         fontWeight: "bold",
-        fontSize: 30
+        fontSize: 22
     },
     redirectText: {
         color: "white",
         fontSize: 20,
         textAlign: "center",
-        marginTop: 20
+        marginTop: 10   
     }
 });
 

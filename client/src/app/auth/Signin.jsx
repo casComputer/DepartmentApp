@@ -1,17 +1,19 @@
+import { router } from 'expo-router';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
-import StudentExtra from '../../components/auth/StudentExtra';
 
 
 const Signin = () => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="bg-red-500">
       <Text style={styles.title}>SignIn</Text>
 
       <View style={styles.inputsContainer}>
         <TextInput
           style={styles.input}
           placeholder="username"
+          placeholderTextColor={
+              "rgba(255, 255, 255, 0.7)"
+          }
           keyboardType="username"
           autoCapitalize="none"
         />
@@ -19,6 +21,10 @@ const Signin = () => {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor={
+              "rgba(255, 255, 255, 0.7)"
+          }
+          autoCapitalize="none"
           secureTextEntry
         />
       </View>
@@ -27,11 +33,9 @@ const Signin = () => {
         <Text style={styles.btnText}>Sign In</Text>
       </TouchableOpacity>
 
-      <StudentExtra />
 
-
-      <TouchableOpacity >
-        <Text style={styles.redirectText}>Don't have an account? SignUp</Text>
+      <TouchableOpacity onPress={() => router.push("auth/Signup")}>
+        <Text style={styles.redirectText}>Don have an account? SignUp</Text>
       </TouchableOpacity>
 
     </View>

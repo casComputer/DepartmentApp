@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const YearChip = ({ isSelected, year, setSelected }) => (
@@ -65,12 +65,12 @@ const styles= StyleSheet.create({
     yearContainerText: {
         color: "white",
         fontWeight: "bold",
-        fontSize: 22,
-        minWidth: 80
+        fontSize: 16,
+        minWidth: 70
     },
     yearItem: {
         borderRadius: 14,
-        paddingHorizontal: 10,
+        paddingHorizontal: 8,
         paddingVertical: 10,
         minWidth: 60,
         justifyContent: "center",
@@ -81,7 +81,7 @@ const styles= StyleSheet.create({
     yearItemText: {
         color: "white",
         fontWeight: "bold",
-        fontSize: 14
+        fontSize: 12
     }
 });
 

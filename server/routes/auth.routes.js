@@ -5,6 +5,7 @@ router.post('/signin', async (req, res) => {
   const data = req.body;
 
   console.log(data);
+
   res.send('Login endpoint');
 });
 

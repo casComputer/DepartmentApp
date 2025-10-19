@@ -7,8 +7,6 @@ const config = getDefaultConfig(__dirname);
 
 const isTermux = process.env.TERMINUX;
 
-console.log(isTermux);
-
 if (isTermux) {
     console.log(
         "Termux mode: excluding heavy node_modules, keeping Expo Router + metro-runtime"

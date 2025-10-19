@@ -1,11 +1,12 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    ScrollView
 } from "react-native";
 
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
@@ -21,21 +22,28 @@ type FormData = {
 };
 
 const Signup = () => {
-    const { user } = useAppStore();
-    const [formData, setFormData] = useState<FormData>({
-        username: "",
-        fullName: "",
-        password: "",
-        year: "",
-        course: ""
-    });
+    const userRole = useAppStore.getState().user?.role;
 
-    const getData = (extra: any) => {
-        setFormData(prev => ({ ...prev, ...extra }));
+    const [username, setUsername] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [password, setPassword] = useState("");
+    const [year, setYear] = useState("");
+    const [course, setCourse] = useState("");
+
+    const handleSubmit = async formData => {
+        try {
+            await handleSignup(formData);
+            router.replace("/auth/Signin");
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (
-        <View style={styles.container} className="bg-red-500">
+        <ScrollView
+            contentContainerStyle={styles.container}
+            className="bg-red-500"
+        >
             <Text style={styles.title}>Signup</Text>
 
             <View style={styles.inputsContainer}>
@@ -43,56 +51,64 @@ const Signup = () => {
                     style={styles.input}
                     placeholder="username"
                     autoCapitalize="none"
-                    placeholderTextColor={
-                        "rgba(255, 255, 255, 0.7)"
-                    }
-                    onChangeText={text =>
-                        setFormData({ ...formData, username: text })
-                    }
-                    value={formData.username}
+                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
+                    onChangeText={txt => setUsername(txt)}
+                    value={username}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="full name"
-                    placeholderTextColor={
-                        "rgba(255, 255, 255, 0.7)"
-                    }
-                    onChangeText={text =>
-                        setFormData({ ...formData, fullName: text })
-                    }
-                    value={formData.fullName}
+                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
+                    onChangeText={txt => setFullName(txt)}
+                    value={fullName}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
-                    placeholderTextColor={
-                        "rgba(255, 255, 255, 0.7)"
-                    }
+                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
                     autoCapitalize="none"
-                    onChangeText={text =>
-                        setFormData({ ...formData, password: text })
-                    }
-                    value={formData.password}
+                    onChangeText={txt => setPassword(txt)}
+                    value={password}
                     secureTextEntry
                 />
 
-                {user?.role === "student" && <StudentExtra getData={getData} />}
+                {userRole === "student" && (
+                    <StudentExtra
+                        year={year}
+                        setYear={setYear}
+                        course={course}
+                        setCourse={setCourse}
+                    />
+                )}
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.btn} onPress={() => handleSignup(formData as FormData)}>
+                <TouchableOpacity
+                    style={styles.btn}
+                    onPress={async () =>
+                        await handleSignup({
+                            username,
+                            password,
+                            fullName,
+                            course,
+                            year
+                        })
+                    }
+                >
                     <Text style={styles.btnText}>Sign Up</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push("/auth/Signin")}>
+                <TouchableOpacity
+                    onPress={() => router.replace("/auth/Signin")}
+                >
                     <Text style={styles.redirectText}>
                         Already have an account? SignIn
                     </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -144,9 +160,8 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 20,
         textAlign: "center",
-        marginTop: 10   
+        marginTop: 10
     }
 });
 
 export default Signup;
-

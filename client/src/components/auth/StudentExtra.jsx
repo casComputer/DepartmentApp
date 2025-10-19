@@ -2,59 +2,51 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const YearChip = ({ isSelected, year, setSelected }) => (
-  <TouchableOpacity
-    onPress={() => setSelected(year)}
-    style={[
-      styles.yearItem,
-      {
-        borderColor: !isSelected ? "white" : "transparent",
-        backgroundColor: isSelected ? "#f8459e" : "transparent",
-      },
-    ]}
-  >
-    <Text style={styles.yearItemText}>{year}</Text>
-  </TouchableOpacity>
+    <TouchableOpacity
+        onPress={() => setSelected(year)}
+        style={[
+            styles.yearItem,
+            {
+                borderColor: !isSelected ? "white" : "transparent",
+                backgroundColor: isSelected ? "#f8459e" : "transparent"
+            }
+        ]}
+    >
+        <Text style={styles.yearItemText}>{year}</Text>
+    </TouchableOpacity>
 );
 
-const StudentExtra = ({ getData }) => {
-  const [year, setYear] = useState("");
-  const [course, setCourse] = useState("");
+const StudentExtra = ({ course, setCourse, year, setYear }) => {
+    return (
+        <View>
+            <View style={styles.yearContainer}>
+                <Text style={styles.yearContainerText}>Year:</Text>
+                {["First", "Second", "Third", "Fourth"].map(y => (
+                    <YearChip
+                        key={y}
+                        year={y}
+                        setSelected={setYear}
+                        isSelected={year === y}
+                    />
+                ))}
+            </View>
 
-  useEffect(() => {
-    getData({ year, course });
-  }, [year, course]);
-
-  return (
-    <View>
-      <View style={styles.yearContainer}>
-        <Text style={styles.yearContainerText}>Year:</Text>
-        {["First", "Second", "Third", "Fourth"].map((y) => (
-          <YearChip
-            key={y}
-            year={y}
-            setSelected={setYear}
-            isSelected={year === y}
-          />
-        ))}
-      </View>
-
-      <View style={styles.yearContainer}>
-        <Text style={styles.yearContainerText}>Course:</Text>
-        {["Bca", "Bsc"].map((c) => (
-          <YearChip
-            key={c}
-            year={c}
-            setSelected={setCourse}
-            isSelected={course === c}
-          />
-        ))}
-      </View>
-    </View>
-  );
+            <View style={styles.yearContainer}>
+                <Text style={styles.yearContainerText}>Course:</Text>
+                {["Bca", "Bsc"].map(c => (
+                    <YearChip
+                        key={c}
+                        year={c}
+                        setSelected={setCourse}
+                        isSelected={course === c}
+                    />
+                ))}
+            </View>
+        </View>
+    );
 };
 
-
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
     yearContainer: {
         flexDirection: "row",
         marginVertical: 10,
@@ -85,5 +77,4 @@ const styles= StyleSheet.create({
     }
 });
 
-
-export default StudentExtra
+export default StudentExtra;

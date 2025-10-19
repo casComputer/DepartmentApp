@@ -1,8 +1,12 @@
+import { useState } from "react"
 import { router } from 'expo-router';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 const Signin = () => {
+    const [password, setPassword] = useState("")
+    
+    
   return (
     <View style={styles.container} className="bg-red-500">
       <Text style={styles.title}>SignIn</Text>
@@ -26,16 +30,13 @@ const Signin = () => {
           }
           autoCapitalize="none"
           secureTextEntry
+          onChangeText={setPassword}
+          value={password}
         />
       </View>
 
       <TouchableOpacity style={styles.btn}>
         <Text style={styles.btnText}>Sign In</Text>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity onPress={() => router.push("auth/Signup")}>
-        <Text style={styles.redirectText}>Don have an account? SignUp</Text>
       </TouchableOpacity>
 
     </View>
@@ -65,7 +66,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     fontSize: 18,
-    borderColor: "white"
+    borderColor: "white",
+    color: "white"
   },
   btn: {
     backgroundColor: "#45db3aff",

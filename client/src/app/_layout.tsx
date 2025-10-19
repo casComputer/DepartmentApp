@@ -1,18 +1,29 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import "../../global.css";
 
 export default function RootLayout() {
-  return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
-      <StatusBar style="auto" animated />
+    const theme = useColorScheme();
 
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="auth/Signin" />
-        <Stack.Screen name="auth/Signup" />
-      </Stack>
-    </View>
-  );
+    return (
+        <View className="${theme === 'dark' ? 'dark': ''}  flex-1">
+            <StatusBar style="auto" animated />
+
+            <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen
+                    name="index"
+                    options={{ animation: "slide_from_right" }}
+                />
+                <Stack.Screen
+                    name="auth/Signin"
+                    options={{ animation: "slide_from_right" }}
+                />
+                <Stack.Screen
+                    name="auth/Signup"
+                    options={{ animation: "slide_from_right" }}
+                />
+            </Stack>
+        </View>
+    );
 }

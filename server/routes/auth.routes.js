@@ -10,7 +10,12 @@ router.post('/signin', async (req, res) => {
 });
 
 router.post('/signup', (req, res) => {
+  const data = req.body;
   // Handle signup logic here
+  
+  console.log(data);
+  
+  
   res.send('Signup endpoint');
 });
 

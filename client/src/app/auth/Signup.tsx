@@ -1,75 +1,79 @@
-import { router } from "expo-router";
-import { useState, useCallback } from "react";
 import {
-    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View,
-    ScrollView
+    useColorScheme
 } from "react-native";
+import { router } from "expo-router";
+import { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 
-import StudentExtra from "../../components/auth/StudentExtra.jsx";
 import { useAppStore } from "../../store/app.store";
 import handleSignup from "../../controller/auth/signup.controller.js";
 
-type FormData = {
-    username: string;
-    fullName: string;
-    password: string;
-    year?: string;
-    course?: string;
-};
+import StudentExtra from "../../components/auth/StudentExtra.jsx";
 
 const Signup = () => {
     const userRole = useAppStore.getState().user?.role;
-
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
     const [password, setPassword] = useState("");
     const [year, setYear] = useState("");
     const [course, setCourse] = useState("");
 
-    const handleSubmit = async formData => {
-        try {
-            await handleSignup(formData);
-            router.replace("/auth/Signin");
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    const theme = useColorScheme();
 
     return (
         <ScrollView
-            contentContainerStyle={styles.container}
-            className="bg-red-500"
+            contentContainerStyle={{ flexGrow: 1 }}
+            className="bg-white flex-grow h-[150vh] dark:bg-black"
         >
-            <Text style={styles.title}>Signup</Text>
+            {/* BACKGROUND */}
 
-            <View style={styles.inputsContainer}>
+            {theme === "light" && (
+                <LinearGradient
+                    colors={[
+                        "rgba(46,217,177,0.6)",
+                        "rgba(46,217,177,0.3)",
+                        "rgba(46,217,177,0.1)"
+                    ]}
+                    className="w-full h-full absolute top-0 left-0"
+                />
+            )}
+
+            <Text className="text-black font-bold text-[20vw] px-5 mt-28 dark:text-white">
+                Signup
+            </Text>
+
+            {/* Form */}
+            <View className="flex-1 gap-5 mt-24 px-4">
                 <TextInput
-                    style={styles.input}
+                    className="text-black border font-semibold border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
                     placeholder="username"
                     autoCapitalize="none"
-                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
-                    onChangeText={txt => setUsername(txt)}
+                    placeholderTextColor="rgb(119,119,119)"
+                    onChangeText={setUsername}
                     value={username}
                 />
 
                 <TextInput
-                    style={styles.input}
-                    placeholder="full name"
-                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
-                    onChangeText={txt => setFullName(txt)}
+                    className="text-black border font-semibold border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
+                    placeholder="fullname"
+                    placeholderTextColor="rgb(119,119,119)"
+                    onChangeText={setFullName}
                     value={fullName}
                 />
 
                 <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
+                    className="text-black font-semibold border border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
+                    placeholder="password"
+                    placeholderTextColor="rgb(119,119,119)"
                     autoCapitalize="none"
-                    onChangeText={txt => setPassword(txt)}
+                    onChangeText={setPassword}
                     value={password}
                     secureTextEntry
                 />
@@ -84,26 +88,30 @@ const Signup = () => {
                 )}
             </View>
 
-            <View style={styles.footer}>
+            {/* Buttons */}
+            <View className="px-5 mt-10 mb-20">
                 <TouchableOpacity
-                    style={styles.btn}
-                    onPress={async () =>
-                        await handleSignup({
+                    className="bg-green-400 py-5 w-full rounded-3xl"
+                    onPress={() =>
+                        handleSignup({
                             username,
                             password,
                             fullName,
+                            userRole,
                             course,
                             year
                         })
                     }
                 >
-                    <Text style={styles.btnText}>Sign Up</Text>
+                    <Text className="text-white font-black text-3xl text-center">
+                        Sign Up
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={() => router.replace("/auth/Signin")}
                 >
-                    <Text style={styles.redirectText}>
+                    <Text className="text-black text-2xl text-center font-bold mt-3 dark:text-white">
                         Already have an account? SignIn
                     </Text>
                 </TouchableOpacity>
@@ -111,57 +119,5 @@ const Signup = () => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#000000ff",
-        paddingTop: 70,
-        paddingHorizontal: 16
-    },
-    title: {
-        fontSize: 65,
-        fontWeight: "bold",
-        marginBottom: 20,
-        color: "white"
-    },
-    inputsContainer: {
-        marginTop: 80,
-        flex: 1
-    },
-    input: {
-        height: 70,
-        borderRadius: 26,
-        paddingHorizontal: 18,
-        marginBottom: 20,
-        borderWidth: 1,
-        fontSize: 18,
-        borderColor: "white",
-        color: "white"
-    },
-    footer: {
-        paddingBottom: 100
-    },
-
-    btn: {
-        backgroundColor: "#45db3aff",
-        paddingVertical: 18,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 24
-    },
-    btnText: {
-        textAlign: "center",
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 22
-    },
-    redirectText: {
-        color: "white",
-        fontSize: 20,
-        textAlign: "center",
-        marginTop: 10
-    }
-});
 
 export default Signup;

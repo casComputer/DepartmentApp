@@ -7,7 +7,7 @@ export default function RootLayout() {
     const theme = useColorScheme();
 
     return (
-        <View className="${theme === 'dark' ? 'dark': ''}  flex-1">
+        <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
             <StatusBar style="auto" animated />
 
             <Stack screenOptions={{ headerShown: false }}>

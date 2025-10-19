@@ -3,24 +3,18 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const YearChip = ({ isSelected, year, setSelected }) => (
     <TouchableOpacity
+        className={`rounded-2xl py-3 flex-1 justify-center items-center border-black dark:border-white ${isSelected ? "bg-[#f8459e] border-0" : "border"} `}
         onPress={() => setSelected(year)}
-        style={[
-            styles.yearItem,
-            {
-                borderColor: !isSelected ? "white" : "transparent",
-                backgroundColor: isSelected ? "#f8459e" : "transparent"
-            }
-        ]}
     >
-        <Text style={styles.yearItemText}>{year}</Text>
+        <Text className="text-black font-bold dark:text-white">{year}</Text>
     </TouchableOpacity>
 );
 
 const StudentExtra = ({ course, setCourse, year, setYear }) => {
     return (
-        <View>
-            <View style={styles.yearContainer}>
-                <Text style={styles.yearContainerText}>Year:</Text>
+        <View className="flex-1">
+            <View className="flex-row justify-center items-center py-5 px-3 gap-5">
+                <Text className="text-black font-bold text-xl dark:text-white">Year:</Text>
                 {["First", "Second", "Third", "Fourth"].map(y => (
                     <YearChip
                         key={y}
@@ -31,8 +25,8 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
                 ))}
             </View>
 
-            <View style={styles.yearContainer}>
-                <Text style={styles.yearContainerText}>Course:</Text>
+            <View className="flex-row justify-center items-center py-5 px-3 gap-5">
+                <Text className="text-black font-bold text-xl dark:text-white" >Course:</Text>
                 {["Bca", "Bsc"].map(c => (
                     <YearChip
                         key={c}
@@ -45,36 +39,5 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    yearContainer: {
-        flexDirection: "row",
-        marginVertical: 10,
-        paddingHorizontal: 8,
-        alignItems: "center",
-        gap: 10
-    },
-    yearContainerText: {
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 16,
-        minWidth: 70
-    },
-    yearItem: {
-        borderRadius: 14,
-        paddingHorizontal: 8,
-        paddingVertical: 10,
-        minWidth: 60,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#d2f2e4",
-        borderWidth: 1
-    },
-    yearItemText: {
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 12
-    }
-});
 
 export default StudentExtra;

@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
@@ -9,7 +10,6 @@ import {
     useColorScheme
 } from "react-native";
 import { router } from "expo-router";
-import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useAppStore } from "../../store/app.store";
@@ -24,8 +24,94 @@ const Signup = () => {
     const [password, setPassword] = useState("");
     const [year, setYear] = useState("");
     const [course, setCourse] = useState("");
+    const [message, setMessage] = useState({
+        type: "info",
+        message: "please wait"
+    });
 
     const theme = useColorScheme();
+
+    const usernameRef = useRef();
+    const fullnameRef = useRef();
+    const passwordRef = useRef();
+
+    const handleSubmit = async () => {
+        if (username.trim()?.length <= 5) {
+            setMessage({
+                type: "error",
+                message: "username is too short"
+            });
+            usernameRef.current?.setNativeProps({
+                style: {
+                    borderColor: "red"
+                }
+            });
+            return;
+        }
+
+        if (fullName.trim()?.length <= 5) {
+            setMessage({
+                type: "error",
+                message: "fullname is too short"
+            });
+
+            fullnameRef.current?.setNativeProps({
+                style: {
+                    borderColor: "red"
+                }
+            });
+            return;
+        }
+
+        if (password.trim()?.length <= 5) {
+            setMessage({
+                type: "error",
+                message: "password is too short"
+            });
+
+            passwordRef.current?.setNativeProps({
+                style: {
+                    borderColor: "red"
+                }
+            });
+            return;
+        }
+
+        if (userRole === "student") {
+            if (year === "") {
+                return setMessage({
+                    type: "error",
+                    message: "select your year to continue"
+                });
+            }
+
+            if (course === "") {
+                return setMessage({
+                    type: "error",
+                    message: "select your course to continue"
+                });
+            }
+        }
+
+        setMessage({
+            type: "info",
+            message: "please wait..."
+        });
+
+        const { success, message: resMessage } = await handleSignup({
+            username,
+            password,
+            fullName,
+            userRole,
+            course,
+            year
+        });
+
+        setMessage({
+            type: success ? "success" : "error",
+            message: resMessage
+        });
+    };
 
     return (
         <ScrollView
@@ -50,26 +136,55 @@ const Signup = () => {
             </Text>
 
             {/* Form */}
-            <View className="flex-1 gap-5 mt-24 px-4">
+
+            <View className="flex-1 gap-5 mt-16 px-4">
+                <Text
+                    className={`font-bold text-lg text-center mt-5 ${
+                        message.type === "error"
+                            ? "text-red-500"
+                            : message.type === "info"
+                            ? "text-orange-500"
+                            : "text-green-500"
+                    }`}
+                >
+                    {message?.message}
+                </Text>
                 <TextInput
-                    className="text-black border font-semibold border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
+                    ref={usernameRef}
+                    className={`text-black border font-semibold rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
+                        username.trim().length > 5
+                            ? "border-green-500"
+                            : "border-black dark:border-white"
+                    }`}
                     placeholder="username"
                     autoCapitalize="none"
                     placeholderTextColor="rgb(119,119,119)"
-                    onChangeText={setUsername}
+                    onChangeText={txt =>
+                        setUsername(txt.replace(/[^a-zA-Z0-9._-]/g, ""))
+                    }
                     value={username}
                 />
 
                 <TextInput
-                    className="text-black border font-semibold border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
+                    ref={fullnameRef}
                     placeholder="fullname"
+                    className={`text-black border font-semibold rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
+                        fullName?.trim()?.length > 5
+                            ? "border-green-500"
+                            : "border-black dark:border-white "
+                    }`}
                     placeholderTextColor="rgb(119,119,119)"
                     onChangeText={setFullName}
                     value={fullName}
                 />
 
                 <TextInput
-                    className="text-black font-semibold border border-black rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white dark:border-white"
+                    ref={passwordRef}
+                    className={`text-black font-semibold border rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
+                        password.length > 5
+                            ? "border-green-500"
+                            : "border-black dark:border-white"
+                    }`}
                     placeholder="password"
                     placeholderTextColor="rgb(119,119,119)"
                     autoCapitalize="none"
@@ -92,16 +207,7 @@ const Signup = () => {
             <View className="px-5 mt-10 mb-20">
                 <TouchableOpacity
                     className="bg-green-400 py-5 w-full rounded-3xl"
-                    onPress={() =>
-                        handleSignup({
-                            username,
-                            password,
-                            fullName,
-                            userRole,
-                            course,
-                            year
-                        })
-                    }
+                    onPress={handleSubmit}
                 >
                     <Text className="text-white font-black text-3xl text-center">
                         Sign Up

@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
-import Header from "../components/auth/IndexHeader.tsx";
+import Header from "../components/auth/IndexHeader";
 import Middle from "../components/auth/IndexMiddle.jsx";
 
 export default function Index() {
@@ -28,7 +28,7 @@ export default function Index() {
                 <Text className="text-2xl text-zinc-900 font-bold text-center mt-8 dark:text-white">
                     Already Have An Account ?
                 </Text>
-                <TouchableOpacity onPress={() => router.push("auth/Signin")}>
+                <TouchableOpacity onPress={() => router.push("/auth/Signin")}>
                     <Text className="text-4xl text-blue-400 font-bold text-center mt-2">
                         Sign In
                     </Text>

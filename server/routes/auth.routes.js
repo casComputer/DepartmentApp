@@ -1,30 +1,28 @@
 import express from "express";
+import { turso } from "../config/turso.js";
+
 const router = express.Router();
 
+import signupController from "../controllers/auth/signup.controller.js";
+
 router.post("/signin", async (req, res) => {
-    const data = req.body;
+  const data = req.body;
 
-    console.log(data);
+  console.log(data);
 
-    res.send("Login endpoint");
+  res.send("Login endpoint");
 });
 
-router.post("/signup", (req, res) => {
-    const data = req.body;
-    // Handle signup logic here
+router.post("/signup", signupController);
 
-    console.log(data);
-
-    res.json({ success: true });
+router.get("/users", async (req, res) => {
+  try {
+    const result = await turso.execute(`SELECT * FROM students`);
+    res.send(result.rows);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
-
-const user = {
-    username: "adwaith",
-    password: "adwaith.6565",
-    fullName: "AdwaithAnandSR",
-    userRole: "student",
-    course: "Bca",
-    year: "Third"
-};
 
 export default router;

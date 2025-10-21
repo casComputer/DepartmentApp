@@ -1,20 +1,20 @@
 import "dotenv/config";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import { router } from 'expo-router'
 
-import { storage } from "../utils/storage.ts";
+import { storage, clearUser } from "../utils/storage";
 
 const url = process.env.EXPO_PUBLIC_API_URL;
-
 const api = axios.create({
     baseURL: url
 });
 
 api.interceptors.request.use(
     async config => {
-        const token = storage["accessToken"];
+        const token = storage.getString("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
     },
     error => Promise.reject(error)
@@ -29,24 +29,32 @@ api.interceptors.response.use(
             originalReq._retry = true;
 
             try {
-                const refreshToken = storage["refreshToken"];
+                const refreshToken =
+                    await SecureStore.getItemAsync("refreshToken");
                 if (!refreshToken) throw new Error("No refresh token.");
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {
                     refreshToken
                 });
 
-                storage["accessToken"] = data.accessToken;
-                storage["refreshToken"] = data.refreshToken;
+                storage.set("accessToken", data.accessToken);
+                await SecureStore.setItemAsync(
+                    "refreshToken",
+                    data.refreshToken,
+                    {
+                        keychainAccessible: SecureStore.WHEN_UNLOCKED
+                    }
+                );
 
                 originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
-
+                
                 return api(originalReq);
             } catch (err) {
-                storage["accessToken"] = "";
-                storage["refreshToken"] = "";
-                // log out logic here
-                
+                storage.remove("accessToken");
+                await SecureStore.deleteItemAsync("refreshToken");
+                clearUser()
+                router.replace("/auth/Signin")
+
                 return Promise.reject(err);
             }
         }

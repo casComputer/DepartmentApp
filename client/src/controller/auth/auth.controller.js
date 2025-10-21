@@ -8,7 +8,7 @@ console.log("API_URL:", API_URL);
 let success = false,
     message = "";
 
-const signup = async data => {
+const authController = async data => {
     try {
         const response = await axios.post(`${API_URL}/auth/signup`, {
             ...data
@@ -44,4 +44,4 @@ const signup = async data => {
     }
 };
 
-export default signup;
+export default authController;

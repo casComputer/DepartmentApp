@@ -25,15 +25,15 @@ const Signup = () => {
     const [year, setYear] = useState("");
     const [course, setCourse] = useState("");
     const [message, setMessage] = useState({
-        type: "info",
-        message: "please wait"
+        type: "",
+        message: ""
     });
 
     const theme = useColorScheme();
 
-    const usernameRef = useRef();
-    const fullnameRef = useRef();
-    const passwordRef = useRef();
+    const usernameRef = useRef<TextInput>(null);
+    const fullnameRef = useRef<TextInput>(null);
+    const passwordRef = useRef<TextInput>(null);
 
     const handleSubmit = async () => {
         if (username.trim()?.length <= 5) {
@@ -116,7 +116,7 @@ const Signup = () => {
     return (
         <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
-            className="bg-white flex-grow h-[150vh] dark:bg-black"
+            className="bg-white dark:bg-black"
         >
             {/* BACKGROUND */}
 
@@ -131,15 +131,15 @@ const Signup = () => {
                 />
             )}
 
-            <Text className="text-black font-bold text-[20vw] px-5 mt-28 dark:text-white">
+            <Text className="text-black font-bold text-[15vw] px-5 mt-20 dark:text-white">
                 Signup
             </Text>
 
             {/* Form */}
 
-            <View className="flex-1 gap-5 mt-16 px-4">
+            <View className="flex-1 gap-5 px-4 mt-5">
                 <Text
-                    className={`font-bold text-lg text-center mt-5 ${
+                    className={`font-bold text-lg text-center ${
                         message.type === "error"
                             ? "text-red-500"
                             : message.type === "info"
@@ -151,7 +151,7 @@ const Signup = () => {
                 </Text>
                 <TextInput
                     ref={usernameRef}
-                    className={`text-black border font-semibold rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
+                    className={`text-bold border font-semibold rounded-[26px] overflow-hidden px-5 py-7 text-xl dark:text-white ${
                         username.trim().length > 5
                             ? "border-green-500"
                             : "border-black dark:border-white"
@@ -204,7 +204,7 @@ const Signup = () => {
             </View>
 
             {/* Buttons */}
-            <View className="px-5 mt-10 mb-20">
+            <View className="px-5 mt-3 mb-20">
                 <TouchableOpacity
                     className="bg-green-400 py-5 w-full rounded-3xl"
                     onPress={handleSubmit}
@@ -217,7 +217,7 @@ const Signup = () => {
                 <TouchableOpacity
                     onPress={() => router.replace("/auth/Signin")}
                 >
-                    <Text className="text-black text-2xl text-center font-bold mt-3 dark:text-white">
+                    <Text className="text-black text-xl text-center font-bold mt-3 dark:text-white">
                         Already have an account? SignIn
                     </Text>
                 </TouchableOpacity>

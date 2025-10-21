@@ -4,14 +4,9 @@ import { turso } from "../config/turso.js";
 const router = express.Router();
 
 import signupController from "../controllers/auth/signup.controller.js";
+import signinController from "../controllers/auth/signin.controller.js";
 
-router.post("/signin", async (req, res) => {
-  const data = req.body;
-
-  console.log(data);
-
-  res.send("Login endpoint");
-});
+router.post("/signin", signinController);
 
 router.post("/signup", signupController);
 

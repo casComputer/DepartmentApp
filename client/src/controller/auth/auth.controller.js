@@ -10,7 +10,7 @@ let success = false,
 
 const authController = async data => {
     try {
-        const response = await axios.post(`${API_URL}/auth/signup`, {
+        const response = await axios.post(`${API_URL}/auth/${data.endpoint}`, {
             ...data
         });
 

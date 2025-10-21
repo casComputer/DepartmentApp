@@ -21,4 +21,9 @@ const studentTable = () => {
     `);
 };
 
+const clearStudentTable = () => {
+  turso.execute(`DELETE FROM students`);
+};
+
+// clearStudentTable();
 // studentTable();

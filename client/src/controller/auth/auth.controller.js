@@ -17,14 +17,14 @@ const authController = async data => {
         console.log(response.data)
 
         if (response?.data?.success) {
-            const { refreshToken , accessToken, data } = response.data;
+            const { refreshToken , accessToken, user } = response.data;
             await SecureStore.setItemAsync("refreshToken", refreshToken);
 
-            console.log(data)
+            console.log(user)
 
             storage.set("refreshToken", refreshToken)
             storage.set("accessToken", accessToken)
-            setUserData({ })
+            setUserData({ ...user })
 
             success = true;
             message = "Registration Successful";

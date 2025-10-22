@@ -15,6 +15,11 @@ const signinController = async (req, res) => {
         `SELECT * FROM students WHERE studentId = ?`,
         [username]
       );
+
+
+      console.log(existUser)
+
+
     } else if (userRole === "teacher") {
       existUser = await turso.execute(
         `SELECT * FROM teachers WHERE teacherId = ?`,
@@ -26,10 +31,9 @@ const signinController = async (req, res) => {
         [username]
       );
     } else if (userRole === "admin") {
-      existUser = await turso.execute(
-        `SELECT * FROM admin WHERE adminID = ?`,
-        [username]
-      );
+      existUser = await turso.execute(`SELECT * FROM admin WHERE adminID = ?`, [
+        username,
+      ]);
     }
 
     if (!existUser.rows.length) {
@@ -39,7 +43,7 @@ const signinController = async (req, res) => {
       });
     }
 
-    const user = existUser.rows[0];
+    let user = existUser.rows[0]
 
     const validPassword = await comparePassword(password, user.password);
     if (!validPassword) {
@@ -48,10 +52,28 @@ const signinController = async (req, res) => {
         error: "Invalid username or password",
       });
     }
+    
+    user = {
+      ...user,
+      password: "",
+      userId:
+        userRole === "student"
+          ? user.studentId
+          : userRole === "teacher"
+          ? user.teacherId
+          : userRole === "parent"
+          ? user.parentId
+          : user.adminId,
+      role: userRole
+    };
 
-    const tokens = generateTokens(username, user.role);
+    const tokens = generateTokens(user.userId, user.role);
 
-    res.json({ success: true, ...tokens, data: user });
+    res.json({
+      success: true,
+      ...tokens,
+      user,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: "Server error" });

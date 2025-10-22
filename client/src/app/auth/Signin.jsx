@@ -8,10 +8,12 @@ import {
 } from "react-native";
 
 import handleSignin from "../../controller/auth/auth.controller.js";
+import { Chip } from "../../components/auth/StudentExtra.jsx";
 
 const Signin = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
 
   const usernameRef = useRef();
@@ -46,6 +48,15 @@ const Signin = () => {
       return;
     }
 
+    if (!role) {
+      setMessage({
+        type: "error",
+        message: "please select a role",
+      });
+
+      return;
+    }
+
     setMessage({
       type: "info",
       message: "please wait...",
@@ -54,6 +65,7 @@ const Signin = () => {
     const { success, message: resMessage } = await handleSignin({
       username,
       password,
+      userRole: role,
       endpoint: "signin",
     });
 
@@ -103,6 +115,20 @@ const Signin = () => {
           onChangeText={setPassword}
           value={password}
         />
+
+        <Text className="text-black font-bold text-xl dark:text-white px-3">
+          role:
+        </Text>
+        <View className="flex-row justify-center items-center py-5 px-3 gap-5">
+          {["Teacher", "Student", "Parent", "Admin"].map((y) => (
+            <Chip
+              key={y}
+              year={y}
+              setSelected={setRole}
+              isSelected={role === y}
+            />
+          ))}
+        </View>
       </View>
 
       <TouchableOpacity onPress={handleSubmit} style={styles.btn}>

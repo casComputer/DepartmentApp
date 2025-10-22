@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 
-const YearChip = ({ isSelected, year, setSelected }) => (
+export const Chip = ({ isSelected, year, setSelected }) => (
   <TouchableOpacity
     className={`rounded-2xl py-3 flex-1 justify-center items-center border-black dark:border-white ${isSelected ? "bg-[#f8459e] border-0" : "border"} `}
     onPress={() => setSelected(year)}
@@ -17,7 +17,7 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
       </Text>
       <View className="flex-row justify-center items-center py-5 px-3 gap-5">
         {["First", "Second", "Third", "Fourth"].map((y) => (
-          <YearChip
+          <Chip
             key={y}
             year={y}
             setSelected={setYear}
@@ -31,7 +31,7 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
       </Text>
       <View className="flex-row justify-center items-center py-5 px-3 gap-5">
         {["Bca", "Bsc"].map((c) => (
-          <YearChip
+          <Chip
             key={c}
             year={c}
             setSelected={setCourse}

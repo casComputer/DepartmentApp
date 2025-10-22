@@ -3,7 +3,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { router } from 'expo-router'
 
-import { storage, clearUser } from "../utils/storage";
+import { storage, clearUser } from "./storage";
 
 const url = process.env.EXPO_PUBLIC_API_URL;
 const api = axios.create({

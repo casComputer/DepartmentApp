@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 import handleSignin from "../../controller/auth/auth.controller.js";
 import { Chip } from "../../components/auth/StudentExtra.jsx";
@@ -15,6 +16,7 @@ const Signin = () => {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
+  const [isPassVisible, setIsPassVisible] = useState(false);
 
   const usernameRef = useRef();
 
@@ -105,16 +107,25 @@ const Signin = () => {
           value={username}
         />
 
-        <TextInput
-          ref={passwordRef}
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
-          autoCapitalize="none"
-          secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        />
+        <View className="relative">
+          <TextInput
+            ref={passwordRef}
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
+            autoCapitalize="none"
+            onChangeText={setPassword}
+            value={password}
+            secureTextEntry={!isPassVisible}
+          />
+          <TouchableOpacity onPress={()=> setIsPassVisible(prev=> !prev)} className="absolute top-1/2 -translate-y-1/2 right-5">
+            {isPassVisible ? (
+              <Feather name="eye" size={20} color="white" />
+            ) : (
+              <AntDesign name="eye-invisible" size={20} color="white" />
+            )}
+          </TouchableOpacity>
+        </View>
 
         <Text className="text-black font-bold text-xl dark:text-white px-3">
           role:
@@ -153,12 +164,13 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     marginTop: 80,
+    gap: 20,
   },
   input: {
     height: 70,
     borderRadius: 26,
     paddingHorizontal: 18,
-    marginBottom: 20,
+
     borderWidth: 1,
     fontSize: 18,
     borderColor: "white",

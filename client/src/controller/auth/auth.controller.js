@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
 
-import { storage ,setUserData } from "@/src/utils/storage";
+import { storage ,setUser } from "@/src/utils/storage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.20.90:3000";
 
@@ -14,20 +14,14 @@ const authController = async data => {
             ...data
         });
 
-        console.log(response.data)
-
         if (response?.data?.success) {
-            const { refreshToken , accessToken, data } = response.data;
+            const { refreshToken , accessToken, user } = response.data;
             await SecureStore.setItemAsync("refreshToken", refreshToken);
-
-            console.log(data)
-
-            storage.set("refreshToken", refreshToken)
             storage.set("accessToken", accessToken)
-            setUserData({ })
+            setUser({ ...user })
 
             success = true;
-            message = "Registration Successful";
+            message = "Authentication Successful";
         }
     } catch (error) {
         message = "An unexpected error occurred. Please try again.";

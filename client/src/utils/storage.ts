@@ -1,33 +1,55 @@
 import { createMMKV } from "react-native-mmkv";
 
+import { useAppStore
+  
+ } from "../store/app.store";
+
 export const storage = createMMKV();
+const updateUser = useAppStore.getState().updateUser;
 
 type UserData = {
-  username: string;
+  userId: string;
   fullname: string;
-  role: string;
+  role: "student" | "teacher" | "parent" | "admin" | null;
   course: string;
-  year: string;
+  year_of_study: string;
 };
 
-export const setUserData = ({
-  username,
+export const setUser = ({
+  userId,
   fullname,
   role,
-  course,
-  year,
+  course = "",
+  year_of_study = "",
 }: UserData) => {
-  storage.set("username", username);
+  storage.set("userId", userId);
   storage.set("fullname", fullname);
   storage.set("role", role);
   storage.set("course", course);
-  storage.set("year", year);
+  storage.set("year", year_of_study);
+  updateUser({ userId, fullname, role, course, year_of_study });
+};
+
+export const getUser = () => {
+  const userId = storage.getString("userId");
+  const fullname = storage.getString("fullname");
+  const role = storage.getString("role");
+  const course = storage.getString("course");
+  const year_of_study = storage.getString("year_of_study");
+
+  return {
+    userId,
+    fullname,
+    role,
+    course,
+    year_of_study,
+  };
 };
 
 export const clearUser = () => {
-  storage.remove("username");
+  storage.remove("userId");
   storage.remove("fullname");
   storage.remove("role");
   storage.remove("course");
-  storage.remove("year");
+  storage.remove("year_of_study");
 };

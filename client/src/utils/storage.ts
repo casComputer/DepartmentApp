@@ -10,7 +10,7 @@ const updateUser = useAppStore.getState().updateUser;
 type UserData = {
   userId: string;
   fullname: string;
-  role: "student" | "teacher" | "parent" | "admin" | "";
+  role: "student" | "teacher" | "parent" | "admin" | "unknown";
   course: string;
   year_of_study: string;
 };
@@ -35,7 +35,7 @@ export const setUser = ({
 export const getUser = () => {
   const userId = storage.getString("userId") || "";
   const fullname = storage.getString("fullname") || "";
-  const role = storage.getString("role") || "";
+  const role = (storage.getString("role") as UserData["role"]) || "unknown";
   const course = storage.getString("course") ||"";
   const year_of_study = storage.getString("year_of_study") || "";
 

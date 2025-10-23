@@ -8,17 +8,11 @@ const signinController = async (req, res) => {
     userRole = userRole.toLowerCase();
     let existUser = null;
 
-    console.log(userRole);
-
     if (userRole === "student") {
       existUser = await turso.execute(
         `SELECT * FROM students WHERE studentId = ?`,
         [username]
       );
-
-
-      console.log(existUser)
-
 
     } else if (userRole === "teacher") {
       existUser = await turso.execute(

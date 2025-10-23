@@ -15,6 +15,7 @@ api.interceptors.request.use(
         const token = storage.getString("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     error => Promise.reject(error)

@@ -4,21 +4,17 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
 import Header from "../../components/home/Header";
-import MiniAttentdenceCard from "../../components/home/MiniAttentdenceCard";
+import TodaysMiniAttentdenceCard from "../../components/home/TodaysMiniAttentdenceCard";
+import MonthlyAttendenceMiniReport from "../../components/home/MonthlyAttendenceMiniReport";
+import StudentOptions from "../../components/home/StudentOptions";
 
 const Home = () => {
   return (
     <View className="flex-1 pt-12">
-      <LinearGradient
-        colors={["rgba(46,217,177,0.7)", "transparent"]}
-        className="w-full h-44 absolute top-0 left-0"
-      />
-
-      
       <Header />
-      <MiniAttentdenceCard />
-
-   
+      <TodaysMiniAttentdenceCard />
+      <MonthlyAttendenceMiniReport />
+      <StudentOptions />
     </View>
   );
 };

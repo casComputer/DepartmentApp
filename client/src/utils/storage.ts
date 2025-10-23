@@ -1,11 +1,16 @@
 import { createMMKV } from "react-native-mmkv";
 
+import { useAppStore
+  
+ } from "../store/app.store";
+
 export const storage = createMMKV();
+const updateUser = useAppStore.getState().updateUser;
 
 type UserData = {
   userId: string;
   fullname: string;
-  role: string;
+  role: "student" | "teacher" | "parent" | "admin" | null;
   course: string;
   year_of_study: string;
 };
@@ -22,6 +27,7 @@ export const setUser = ({
   storage.set("role", role);
   storage.set("course", course);
   storage.set("year", year_of_study);
+  updateUser({ userId, fullname, role, course, year_of_study });
 };
 
 export const getUser = () => {
@@ -38,4 +44,12 @@ export const getUser = () => {
     course,
     year_of_study,
   };
+};
+
+export const clearUser = () => {
+  storage.remove("userId");
+  storage.remove("fullname");
+  storage.remove("role");
+  storage.remove("course");
+  storage.remove("year_of_study");
 };

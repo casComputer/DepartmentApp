@@ -9,11 +9,7 @@ import {
 const signupController = async (req, res) => {
   try {
     const { username, password, fullName, userRole, course, year } = req.body;
-    console.log(username);
-
     validateSignupFields(req.body);
-
-    console.log("validation success");
 
     // Check if username already exists
     const existUser = await turso.execute(
@@ -59,7 +55,15 @@ const signupController = async (req, res) => {
 
     const tokens = generateTokens(username, userRole);
 
-    res.json({ success: true, ...tokens, data: req.body });
+    let user = {
+      fullname: fullName,
+      course: course || "",
+      year: year || "",
+      userId: username,
+      role: userRole
+    };
+
+    res.json({ success: true, ...tokens, user });
   } catch (err) {
     console.error(err);
     res.status(400).json({

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { Feather, AntDesign } from "@expo/vector-icons";
 
 import { useAppStore } from "../../store/app.store";
 import handleSignup from "../../controller/auth/auth.controller.js";
@@ -28,6 +29,7 @@ const Signup = () => {
     type: "",
     message: "",
   });
+  const [isPassVisible, setIsPassVisible] = useState(false);
 
   const theme = useColorScheme();
 
@@ -181,11 +183,6 @@ const Signup = () => {
 
         <TextInput
           ref={passwordRef}
-          className={`text-black font-semibold border rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
-            password.length > 5
-              ? "border-green-500"
-              : "border-black dark:border-white"
-          }`}
           placeholder="password"
           placeholderTextColor="rgb(119,119,119)"
           autoCapitalize="none"
@@ -193,6 +190,33 @@ const Signup = () => {
           value={password}
           secureTextEntry
         />
+
+        <View className="relative">
+          <TextInput
+            ref={passwordRef}
+            className={`text-black font-semibold border rounded-[26px] overflow-hidden px-5 py-7 text-2xl dark:text-white ${
+              password.length > 5
+                ? "border-green-500"
+                : "border-black dark:border-white"
+            }`}
+            placeholder="Password"
+            placeholderTextColor={"rgba(255, 255, 255, 0.7)"}
+            autoCapitalize="none"
+            onChangeText={setPassword}
+            value={password}
+            secureTextEntry={!isPassVisible}
+          />
+          <TouchableOpacity
+            onPress={() => setIsPassVisible((prev) => !prev)}
+            className="absolute top-1/2 -translate-y-1/2 right-5"
+          >
+            {isPassVisible ? (
+              <Feather name="eye" size={20} color="white" />
+            ) : (
+              <AntDesign name="eye-invisible" size={20} color="white" />
+            )}
+          </TouchableOpacity>
+        </View>
 
         {userRole === "student" && (
           <StudentExtra

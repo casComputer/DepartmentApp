@@ -1,9 +1,7 @@
 import { create } from "zustand";
 
-import { getUser } from "../utils/storage";
-
 type User = {
-  role: "student" | "teacher" | "parent" | "admin" | "";
+  role: "student" | "teacher" | "parent" | "admin" | "unknown";
   userId?: string;
   fullname?: string;
   course?: string;
@@ -18,7 +16,7 @@ type AppState = {
 
 export const useAppStore = create<AppState>((set) => ({
   user: {
-    role: ""
+    role: "unknown",
   },
   setUserRole: (role: User["role"]) =>
     set((state) => ({

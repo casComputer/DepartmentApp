@@ -43,6 +43,14 @@ const createTableAdmin = () => {
   );
 };
 
+const createAdmin = () => {
+  turso.execute(
+    "INSERT INTO admin (adminId, fullname, password) VALUES ('admin', 'Administrator', 'admin');"
+  );
+}
+
+// createAdmin();
+
 const clearStudentTable = () => {
   turso.execute(`DELETE FROM students`);
 };

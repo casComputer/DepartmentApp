@@ -1,8 +1,6 @@
 import { createMMKV } from "react-native-mmkv";
 
-import { useAppStore
-  
- } from "../store/app.store";
+import { useAppStore } from "../store/app.store";
 
 export const storage = createMMKV();
 const updateUser = useAppStore.getState().updateUser;
@@ -22,7 +20,7 @@ export const setUser = ({
   course = "",
   year_of_study = "",
 }: UserData) => {
-  if(!role) return
+  if (!role) return;
 
   storage.set("userId", userId);
   storage.set("fullname", fullname);
@@ -36,7 +34,7 @@ export const getUser = () => {
   const userId = storage.getString("userId") || "";
   const fullname = storage.getString("fullname") || "";
   const role = (storage.getString("role") as UserData["role"]) || "unknown";
-  const course = storage.getString("course") ||"";
+  const course = storage.getString("course") || "";
   const year_of_study = storage.getString("year_of_study") || "";
 
   return {
@@ -56,4 +54,4 @@ export const clearUser = () => {
   storage.remove("year_of_study");
 };
 
-// updateUser(getUser())
+updateUser(getUser());

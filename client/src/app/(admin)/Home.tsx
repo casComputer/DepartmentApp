@@ -10,9 +10,7 @@ const Home = () => {
   return (
     <ScrollView contentContainerStyle={{ paddingTop: 60, paddingBottom: 150 }} >
       <Header />
-      <TodaysMiniAttentdenceCard />
-      <MonthlyAttendenceMiniReport />
-      <StudentOptions />
+      
     </ScrollView>
   );
 };

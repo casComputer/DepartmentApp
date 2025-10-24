@@ -7,14 +7,17 @@ const CircularProgress = ({
   size = 100,
   strokeWidth = 10,
   progress = 83,
-  showText = true,
+  maxProgress = 100,
+  showPercentage = true,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const normalizedProgress = Math.min(progress, maxProgress);
+  const strokeDashoffset =
+    circumference - (normalizedProgress / maxProgress) * circumference;
 
   return (
-    <View style={styles.container}>
+    <View className="justify-center items-center ">
       <Svg width={size} height={size}>
         {/* Background circle */}
         <Circle
@@ -41,11 +44,13 @@ const CircularProgress = ({
           originY={size / 2}
         />
       </Svg>
-      {showText && (
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{progress}%</Text>
-        </View>
-      )}
+
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>
+          {normalizedProgress}
+          {showPercentage && "%"}
+        </Text>
+      </View>
     </View>
   );
 };

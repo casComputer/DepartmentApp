@@ -5,11 +5,11 @@ import { View, useColorScheme } from "react-native";
 
 import { useAppStore  } from "../store/app.store";
 
+
 export default function RootLayout() {
   const theme = useColorScheme();
   const user = useAppStore(state=> state.user);
-
-
+ 
 
   console.log("Current User:", user);
 
@@ -18,7 +18,7 @@ export default function RootLayout() {
       <StatusBar style="auto" animated />
 
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={user.userId == null}>
+        <Stack.Protected guard={!user?.userId}>
           <Stack.Screen
             name="index"
             options={{ animation: "slide_from_right" }}
@@ -32,8 +32,8 @@ export default function RootLayout() {
             options={{ animation: "slide_from_right" }}
           />
         </Stack.Protected>
-        <Stack.Protected guard={user.userId != null}>
-          <Stack.Screen name="(secure)" />
+        <Stack.Protected guard={user.userId != "" && user.role === 'student'}>
+          <Stack.Screen name="(student)" />
         </Stack.Protected>
       </Stack>
     </View>

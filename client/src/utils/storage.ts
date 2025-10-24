@@ -56,4 +56,4 @@ export const clearUser = () => {
   storage.remove("year_of_study");
 };
 
-updateUser(getUser())
+// updateUser(getUser())

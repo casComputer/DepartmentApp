@@ -70,7 +70,7 @@ const Button = ({ icon, text, role }) => {
           <Text
             adjustsFontSizeToFit
             numberOfLines={1}
-            className="font-bold text-xl text-center text-white bg-green-500"
+            className="font-bold text-xl text-center text-white "
           >
             {text}
           </Text>

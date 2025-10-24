@@ -3,13 +3,11 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 
-import { useAppStore  } from "../store/app.store";
-
+import { useAppStore } from "../store/app.store";
 
 export default function RootLayout() {
   const theme = useColorScheme();
-  const user = useAppStore(state=> state.user);
- 
+  const user = useAppStore((state) => state.user);
 
   console.log("Current User:", user);
 
@@ -32,8 +30,11 @@ export default function RootLayout() {
             options={{ animation: "slide_from_right" }}
           />
         </Stack.Protected>
-        <Stack.Protected guard={user.userId != "" && user.role === 'student'}>
+        <Stack.Protected guard={user.userId != "" && user.role === "student"}>
           <Stack.Screen name="(student)" />
+        </Stack.Protected>
+        <Stack.Protected guard={user.userId != "" && user.role === "admin"}>
+          <Stack.Screen name="(admin)" />
         </Stack.Protected>
       </Stack>
     </View>

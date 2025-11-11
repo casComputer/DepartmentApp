@@ -5,7 +5,7 @@ import { router } from 'expo-router'
 
 import { storage, clearUser } from "./storage";
 
-const url = process.env.EXPO_PUBLIC_API_URL;
+const url = process.env.EXPO_PUBLIC_API_BASE_URL;
 const api = axios.create({
     baseURL: url
 });

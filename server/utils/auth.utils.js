@@ -1,22 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-// Generate access and refresh tokens
-export const generateTokens = (username, role) => {
-    const payload = { username, role };
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRES || "1m"
-    });
-    const refreshToken = jwt.sign(
-        payload,
-        process.env.JWT_REFRESH_TOKEN_SECRET,
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRES || "7d"
-        }
-    );
-    return { accessToken, refreshToken };
-};
-
 export const hashPassword = async password => {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
@@ -45,4 +29,16 @@ export const validateSignupFields = data => {
             throw new Error("Invalid year of study");
         }
     }
+};
+
+export const authenticateToken = async (req, res, next) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
 };

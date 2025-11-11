@@ -7,7 +7,11 @@ import { useAppStore } from "../store/app.store";
 
 export default function RootLayout() {
   const theme = useColorScheme();
-  const user = useAppStore((state) => state.user);
+  // let user = useAppStore((state) => state.user);
+  let user = {
+    userId: "123456",
+    role: "admin",
+  }
 
   console.log("Current User:", user);
 
@@ -15,7 +19,7 @@ export default function RootLayout() {
     <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
       <StatusBar style="auto" animated />
 
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
         <Stack.Protected guard={!user?.userId}>
           <Stack.Screen
             name="index"
@@ -30,12 +34,14 @@ export default function RootLayout() {
             options={{ animation: "slide_from_right" }}
           />
         </Stack.Protected>
+
         <Stack.Protected guard={user.userId != "" && user.role === "student"}>
           <Stack.Screen name="(student)" />
         </Stack.Protected>
         <Stack.Protected guard={user.userId != "" && user.role === "admin"}>
-          <Stack.Screen name="(admin)" />
+          <Stack.Screen name="(admin)/(tabs)" />
         </Stack.Protected>
+
       </Stack>
     </View>
   );

@@ -7,7 +7,7 @@ export const turso = createClient({
   authToken: process.env.PRIMARY_DATABASE_TOKEN,
 });
 
-const createStudentTable = () => {
+const createAllTables = () => {
   turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
@@ -17,42 +17,22 @@ const createStudentTable = () => {
         year_of_study text check (year_of_study IN ('First', 'Second', 'Third', 'Fourth')) not null
     );
     `);
-};
 
-const createTeacherTable = () => {
-  turso.execute(
-    "CREATE TABLE teachers ( teacherId TEXT PRIMARY Key, fullname text not null, password text not null, in_charge text)"
-  );
-};
-
-const createParentTable = () => {
-  turso.execute(
-    "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
-  );
-};
-
-const createParentChildTable = () => {
-  turso.execute(
-    "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
-  );
-};
-
-const createTableAdmin = () => {
-  turso.execute(
-    "CREATE TABLE admin (adminId TEXT primary key, fullname text not null, password text not null);"
-  );
-};
-
-const createAdmin = () => {
-  turso.execute(
-    "INSERT INTO admin (adminId, fullname, password) VALUES ('admin', 'Administrator', 'admin');"
-  );
-}
-
-// createAdmin();
-
-const clearStudentTable = () => {
-  turso.execute(`DELETE FROM students`);
+    turso.execute(
+      "CREATE TABLE teachers ( teacherId TEXT PRIMARY Key, fullname text not null, password text not null, in_charge text)"
+    );
+    
+    turso.execute(
+      "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
+    );
+    
+    turso.execute(
+      "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
+    );
+    
+    turso.execute(
+      "CREATE TABLE admin (adminId TEXT primary key, fullname text not null, password text not null);"
+    );
 };
 
 const deleteAllTables = () => {
@@ -62,6 +42,14 @@ const deleteAllTables = () => {
   turso.execute("drop table if exists admins");
   turso.execute("drop table if exists parent_child");
 };
+
+const createAdmin = () => {
+  turso.execute(
+    "INSERT INTO admin (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
+  );
+}
+
+// createAdmin()
 
 // deleteAllTables()
 

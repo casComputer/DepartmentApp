@@ -7,11 +7,11 @@ import { useAppStore } from "../store/app.store";
 
 export default function RootLayout() {
   const theme = useColorScheme();
-  // let user = useAppStore((state) => state.user);
-  let user = {
-    userId: "123456",
-    role: "admin",
-  }
+  let user = useAppStore((state) => state.user);
+  // let user = {
+  //   userId: "123456",
+  //   role: "admin",
+  // }
 
   console.log("Current User:", user);
 

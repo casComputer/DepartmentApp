@@ -3,7 +3,9 @@ import * as SecureStore from 'expo-secure-store';
 
 import { storage ,setUser } from "@utils/storage";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.20.90:3000";
+const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.20.90:3000";
+
+console.log("API_URL:", API_URL);
 
 let success = false,
     message = "";

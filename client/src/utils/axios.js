@@ -1,4 +1,4 @@
-import "dotenv/config";
+
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { router } from 'expo-router'
@@ -26,7 +26,7 @@ api.interceptors.response.use(
     async error => {
         const originalReq = error.config;
 
-        if (error.response?.status === 401 && !originalReq._retry) {
+        if (error.response?.status === 403 && !originalReq._retry) {
             originalReq._retry = true;
 
             try {

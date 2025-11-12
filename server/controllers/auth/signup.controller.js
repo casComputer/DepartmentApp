@@ -4,6 +4,8 @@ import { turso } from "../../config/turso.js";
 import { hashPassword, validateSignupFields } from "../../utils/auth.utils.js";
 import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
 
+// console.log(await hashPassword("admin1234"));
+
 const signupController = async (req, res) => {
     try {
         const { username, password, fullName, course, year } = req.body;

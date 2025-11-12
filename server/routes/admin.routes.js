@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/teachers", async (req, res) => {
     try {
+        console.log("Fetching teachers from database...");
         const result = await turso.execute("SELECT * FROM teachers");
         res.json(result.rows);
     } catch (error) {

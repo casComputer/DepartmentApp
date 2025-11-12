@@ -1,27 +1,52 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
-import React from 'react'
+import React, { useEffect } from "react";
+import { View, Text } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 
-const Item = ({ teacher }) => (
-  <TouchableOpacity className="bg-white rounded-3xl px-4 py-7 my-2">
-    <Text className="text-2xl font-bold ">{teacher.name}</Text>
-    
-  </TouchableOpacity>
-)
+import { fetchTeachers } from "@controller/admin/teachers.controller.js";
+import TeacherItem from "@components/admin/TeacherItem";
+
+const Header = ({ title }) => {
+  return (
+    <View className="py-5">
+      <Text className="text-white text-5xl font-bold px-3 transparent">
+        Manage Teachers
+      </Text>
+    </View>
+  );
+};
 
 const ManageTeachers = () => {
+  const [teachers, setTeachers] = React.useState([]);
+
+  useEffect(() => {
+    const loadTeachers = async () => {
+      try {
+        const teachers = await fetchTeachers();
+        console.log("Loaded teachers:", teachers);
+        setTeachers(teachers);
+      } catch (error) {
+        console.error("Failed to load teachers:", error);
+      }
+    };
+
+    loadTeachers();
+  }, []);
+
   return (
     <View className="flex-1 bg-green-700 pt-12 px-3">
-      <Text className="text-white text-4xl font-bold mb-10">Manage Teachers</Text>
+      <Header title={"Manage Teachers"} />
+
       <FlashList
-        data={[1, 2, 3, 4, 5]}
-        keyExtractor={(item) => item.toString()}
+        data={teachers}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.teacherId.toString()}
+        // style={{ backgroundColor: "red", flex: 1}}
         renderItem={({ item }) => (
-          <Item teacher={{ name: `Teacher ${item}`}} />
+          <TeacherItem fullname={`Teacher ${item.fullname}`} />
         )}
       />
     </View>
-  )
-}
+  );
+};
 
-export default ManageTeachers
+export default ManageTeachers;

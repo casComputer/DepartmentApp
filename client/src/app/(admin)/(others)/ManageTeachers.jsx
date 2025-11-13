@@ -8,7 +8,7 @@ import TeacherItem from "@components/admin/TeacherItem";
 const Header = ({ title }) => {
   return (
     <View className="py-5">
-      <Text className="text-white text-5xl font-bold px-3 transparent">
+      <Text adjustsFontSizeToFit numberOfLines={1} className="w-full h-fit text-black text-5xl font-bold px-3 transparent">
         Manage Teachers
       </Text>
     </View>
@@ -33,17 +33,17 @@ const ManageTeachers = () => {
   }, []);
 
   return (
-    <View className="flex-1 bg-green-700 pt-12 px-3">
+    <View className="flex-1 pt-12 px-3">
       <Header title={"Manage Teachers"} />
 
       <FlashList
         data={teachers}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.teacherId.toString()}
-        // style={{ backgroundColor: "red", flex: 1}}
         renderItem={({ item }) => (
-          <TeacherItem fullname={`Teacher ${item.fullname}`} />
+          <TeacherItem fullname={item.fullname} />
         )}
+        
       />
     </View>
   );

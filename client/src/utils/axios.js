@@ -1,7 +1,6 @@
-
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import { router } from 'expo-router'
+import { router } from "expo-router";
 
 import { storage, clearUser } from "./storage";
 
@@ -26,13 +25,24 @@ api.interceptors.response.use(
     async error => {
         const originalReq = error.config;
 
-        if (error.response?.status === 403 && !originalReq._retry) {
+        if (
+            (error.response?.status === 403 ||
+                error.response?.status === 401) &&
+            !originalReq._retry
+        ) {
             originalReq._retry = true;
 
             try {
                 const refreshToken =
                     await SecureStore.getItemAsync("refreshToken");
-                if (!refreshToken) throw new Error("No refresh token.");
+                console.log(refreshToken);
+                if (!refreshToken) {
+                    throw new Error("No refresh token.");
+                    storage.remove("accessToken");
+                    await SecureStore.deleteItemAsync("refreshToken");
+                    clearUser();
+                    router.replace("/auth/Signin");
+                }
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {
                     refreshToken
@@ -48,14 +58,14 @@ api.interceptors.response.use(
                 );
 
                 originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
-                
+
                 return api(originalReq);
             } catch (err) {
+                console.error(err);
                 storage.remove("accessToken");
                 await SecureStore.deleteItemAsync("refreshToken");
-                clearUser()
-                router.replace("/auth/Signin")
-
+                clearUser();
+                router.replace("/auth/Signin");
                 return Promise.reject(err);
             }
         }

@@ -1,52 +1,45 @@
 import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
+import { useQuery } from "@tanstack/react-query";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
-import TeacherItem from "@components/admin/TeacherItem";
 
-const Header = ({ title }) => {
-  return (
-    <View className="py-5">
-      <Text className="text-white text-5xl font-bold px-3 transparent">
-        Manage Teachers
-      </Text>
-    </View>
-  );
-};
+import TeacherItem from "@components/admin/TeacherItem";
+import Header from "@components/admin/Header.jsx";
 
 const ManageTeachers = () => {
-  const [teachers, setTeachers] = React.useState([]);
+    const {
+        data: teachers = [],
+        error,
+        isLoading
+    } = useQuery({
+        queryKey: ["teachers"],
+        queryFn: fetchTeachers
+    });
 
-  useEffect(() => {
-    const loadTeachers = async () => {
-      try {
-        const teachers = await fetchTeachers();
-        console.log("Loaded teachers:", teachers);
-        setTeachers(teachers);
-      } catch (error) {
-        console.error("Failed to load teachers:", error);
-      }
-    };
+    if (isLoading)
+        return (
+            <Text className="mt-12 w-full text-center font-black text-3xl text-black">
+                loading...
+            </Text>
+        );
 
-    loadTeachers();
-  }, []);
-
-  return (
-    <View className="flex-1 bg-green-700 pt-12 px-3">
-      <Header title={"Manage Teachers"} />
-
-      <FlashList
-        data={teachers}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.teacherId.toString()}
-        // style={{ backgroundColor: "red", flex: 1}}
-        renderItem={({ item }) => (
-          <TeacherItem fullname={`Teacher ${item.fullname}`} />
-        )}
-      />
-    </View>
-  );
+    return (
+        <View className="flex-1 ">
+            <FlashList
+                data={teachers}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item.teacherId.toString()}
+                className={"px-3"}
+                contentContainerStyle={{ paddingVertical: 60 }}
+                ListHeaderComponent={() => <Header title={"Manage Teachers"} />}
+                renderItem={({ item }) => (
+                    <TeacherItem item={item} />
+                )}
+            />
+        </View>
+    );
 };
 
 export default ManageTeachers;

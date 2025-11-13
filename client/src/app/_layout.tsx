@@ -2,7 +2,9 @@ import "../../global.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
+import { QueryClientProvider } from "@tanstack/react-query";
 
+import queryClient from "@utils/queryClient";
 import { useAppStore } from "../store/app.store";
 
 export default function RootLayout() {
@@ -18,20 +20,18 @@ export default function RootLayout() {
   return (
     <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
       <StatusBar style="auto" animated />
+          <QueryClientProvider client={queryClient}>
 
       <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
         <Stack.Protected guard={!user?.userId}>
           <Stack.Screen
             name="index"
-            options={{ animation: "slide_from_right" }}
           />
           <Stack.Screen
             name="auth/Signin"
-            options={{ animation: "slide_from_right" }}
           />
           <Stack.Screen
             name="auth/Signup"
-            options={{ animation: "slide_from_right" }}
           />
         </Stack.Protected>
 
@@ -43,6 +43,7 @@ export default function RootLayout() {
         </Stack.Protected>
 
       </Stack>
+          </QueryClientProvider >
     </View>
   );
 }

@@ -1,14 +1,10 @@
 import axios from "axios";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
-import { storage ,setUser } from "@utils/storage";
+import { storage, setUser } from "@utils/storage";
 
-const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.20.90:3000";
-
-console.log("API_URL:", API_URL);
-
-let success = false,
-    message = "";
+const API_URL =
+    process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.20.90:3000";
 
 const authController = async data => {
     try {
@@ -17,17 +13,20 @@ const authController = async data => {
         });
 
         if (response?.data?.success) {
-            const { refreshToken , accessToken, user } = response.data;
+            const { refreshToken, accessToken, user } = response.data;
+            
+            console.log(refreshToken, accessToken, user)
+            
             await SecureStore.setItemAsync("refreshToken", refreshToken);
-            storage.set("accessToken", accessToken)
-            setUser({ ...user })
+            storage.set("accessToken", accessToken);
+            setUser({ ...user });
 
-            success = true;
-            message = "Authentication Successful";
+            return { success: true, message: "Authentication Successful" };
         }
+
+        return { success: false, message: "Something went wrong" };
     } catch (error) {
-        message = "An unexpected error occurred. Please try again.";
-        success = false
+        let message = "An unexpected error occurred. Please try again.";
         if (error.response) {
             if (error.response.data?.error) {
                 message = error.response.data.error;
@@ -42,8 +41,7 @@ const authController = async data => {
         } else {
             message = error.message;
         }
-    } finally {
-        return { success, message };
+        return { success: false, message };
     }
 };
 

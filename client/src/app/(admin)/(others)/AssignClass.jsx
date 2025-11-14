@@ -1,43 +1,70 @@
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-const data = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
-];
+import { CLASS, COURSES } from "@constants/ClassAndCourses";
+import { assignClass } from "@controller/admin/teachers.controller";
+
+const Select = ({ title, options, select, selected }) => {
+  return (
+    <View className="mt-5 px-2 py-6 bg-white rounded-3xl ">
+      <Text className=" text-[6vw] px-3 font-bold  mb-3">
+        Select the {title}:
+      </Text>
+
+      {options.map((item) => (
+        <TouchableOpacity
+          onPress={() => select(item)}
+          key={item.id}
+          className={`px-4 py-6 rounded-full ${selected?.id == item.id ? "bg-violet-200" : ""}`}
+        >
+          <Text className="text-xl font-bold">{item.title}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
 
 const AssignClass = () => {
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
+
+  let {user} = useLocalSearchParams();
+  user = JSON.parse(user);
+
+  const handleAssignClass = ()=>{
+    if(selectedClass && selectedCourse && user && user.teacherId){
+      console.log(selectedClass, selectedCourse)
+      assignClass({ year: selectedClass, course: selectedCourse, teacherId: user.teacherId })
+    }
+  }
+
   return (
-    <View className="flex-1 mt-12">
-      <View className="flex-row items-center gap-3 px-3">
+    <View className="flex-1 mt-12 px-3 bg-zinc-100">
+      <View className="flex-row items-center gap-3 mb-5">
         <TouchableOpacity onPress={() => router.back()}>
-          <MaterialIcons
-            name="arrow-back-ios-new"
-            size={24}
-            color="black"
-          />
+          <MaterialIcons name="arrow-back-ios-new" size={24} color="black" />
         </TouchableOpacity>
         <Text className="font-black text-[7vw]">Assign Class</Text>
       </View>
 
+      <Select
+        title="Course"
+        options={COURSES}
+        select={setSelectedCourse}
+        selected={selectedCourse}
+      />
+      <Select
+        title="Year"
+        options={CLASS}
+        select={setSelectedClass}
+        selected={selectedClass}
+      />
 
-    <Text className=" text-gray-900 text-xl mt-16 px-5 font-bold text-[6vw] ">
-      Select the class:
-      </Text>
-
-      <TouchableOpacity>
-        <View className="mx-5 mt-5 p-4 border border-gray-300 rounded-lg">
-          <Text className="text-gray-900 text-lg">BCA</Text>
-        </View>
+      <TouchableOpacity onPress={handleAssignClass} className="w-full bg-pink-600 p-6 justify-center items-center rounded-3xl mt-5">
+        <Text className='text-[6vw] font-black '>Assign</Text>
       </TouchableOpacity>
-
 
     </View>
   );

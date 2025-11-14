@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const verified = true;
+
+import { verifyTeacher, cancelVerification } from "@controller/admin/teachers.controller";
 
 const Header = () => (
   <TouchableOpacity
@@ -24,8 +25,20 @@ const VerifyTeacher = () => {
   let { user } = useLocalSearchParams();
   user = JSON.parse(user);
 
+  const handleCancelVerification = () => {
+    if(user && user.teacherId){
+      cancelVerification(user.teacherId)
+    }
+  }
+  
+  const handleVerification = () => {
+    if(user && user.teacherId){
+      verifyTeacher(user.teacherId)
+    }
+  }
+
   return (
-    <View className="flex-1 pt-12 px-3">
+    <View className="flex-1 pt-12 px-3 bg-zinc-100">
       <Header />
 
       {/* Image */}
@@ -47,23 +60,29 @@ const VerifyTeacher = () => {
         />
       </View>
 
-      {!verified && (
-        <View className="flex-1 justify-center items-end flex-row gap-3 py-12">
-          <TouchableOpacity className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-6">
+      {!user.is_verified ? (
+        <View className="flex-1 justify-center items-end flex-row gap-3 py-20">
+          <TouchableOpacity onPress={handleCancelVerification} className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-6">
             <Text className="text-xl font-bold">Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-6">
+          <TouchableOpacity onPress={handleVerification} className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-6">
             <Text className="text-xl font-bold">Verify</Text>
           </TouchableOpacity>
         </View>
+      ) : (
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: `/(admin)/(others)/AssignClass`,
+              params: { user: JSON.stringify(user) },
+            })
+          }
+        >
+          <Text className="text-center bg-blue-500 font-semibold text-lg mt-10 py-6 rounded-3xl">
+            Assign class
+          </Text>
+        </TouchableOpacity>
       )}
-
-      {/* Assign job */}
-      <TouchableOpacity onPress={() => router.push(`/(admin)/(others)/AssignClass?user=${JSON.stringify(user)}`)}>
-        <Text className="text-center bg-blue-500 font-semibold text-lg mt-10 py-6 rounded-3xl">
-          Assign class
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };

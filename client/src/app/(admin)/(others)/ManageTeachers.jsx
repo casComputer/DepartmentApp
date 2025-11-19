@@ -17,7 +17,7 @@ const ManageTeachers = () => {
         fetchTeachers()
         .then(() => setLoading(false))
     }, []);
-
+    
     
 
     if (loading)

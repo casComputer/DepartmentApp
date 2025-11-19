@@ -18,7 +18,7 @@ const signupController = async (req, res) => {
         UNION
         SELECT parentId as id FROM parents WHERE parentId = ?
         UNION
-        SELECT adminId as id FROM admin WHERE adminId = ?
+        SELECT adminId as id FROM admins WHERE adminId = ?
         `,
             [username, username, username, username]
         );

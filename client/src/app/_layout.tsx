@@ -9,10 +9,9 @@ import { useAppStore } from "../store/app.store";
 
 export default function RootLayout() {
   const theme = useColorScheme();
-  let user = useAppStore((state) => state.user);
-  // let user = {
+  // let user = useAppStore((state) => state.user);
+  let user = { userId: "12345", role: "teacher" };
 
-  // }
 
   console.log("Current User:", user);
 
@@ -30,12 +29,15 @@ export default function RootLayout() {
           </Stack.Protected>
 
           <Stack.Protected
-            guard={user?.userId != "" && user?.role === "student"}
+            guard={user?.userId !== "" && user?.role === "student"}
           >
             <Stack.Screen name="(student)" />
           </Stack.Protected>
-          <Stack.Protected guard={user?.userId != "" && user?.role === "admin"}>
+          <Stack.Protected guard={user?.userId !== "" && user?.role === "admin"}>
             <Stack.Screen name="(admin)/(tabs)" />
+          </Stack.Protected>
+          <Stack.Protected guard={user?.userId !== "" && user?.role === "teacher"}>
+            <Stack.Screen name="(teacher)/(tabs)" />
           </Stack.Protected>
         </Stack>
       </QueryClientProvider>

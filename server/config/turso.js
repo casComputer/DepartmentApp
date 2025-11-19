@@ -45,7 +45,7 @@ const deleteAllTables = () => {
 
 const createAdmin = () => {
   turso.execute(
-    "INSERT INTO admin (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
+    "INSERT INTO admins (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
   );
 }
 

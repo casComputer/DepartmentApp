@@ -43,12 +43,6 @@ const refreshToken = async (req, res) => {
             const { accessToken, refreshToken: newRefreshToken } =
                 generateTokens(userId, role);
 
-            console.log(
-                "refreshed tokens ",
-                accessToken,
-                "\n",
-                newRefreshToken
-            );
             await storeRefreshToken(userId, newRefreshToken);
 
             res.json({ accessToken, refreshToken: newRefreshToken });

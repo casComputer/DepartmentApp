@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TextInput,

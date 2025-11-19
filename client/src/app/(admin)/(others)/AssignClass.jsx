@@ -6,6 +6,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { CLASS, COURSES } from "@constants/ClassAndCourses";
 import { assignClass } from "@controller/admin/teachers.controller";
 
+import { useAdminStore } from "@store/admin.store.js";
+
 const Select = ({ title, options, select, selected }) => {
   return (
     <View className="mt-5 px-2 py-6 bg-white rounded-3xl ">
@@ -17,9 +19,9 @@ const Select = ({ title, options, select, selected }) => {
         <TouchableOpacity
           onPress={() => select(item)}
           key={item.id}
-          className={`px-4 py-6 rounded-full ${selected?.id == item.id ? "bg-violet-200" : ""}`}
+          className={`px-4 py-6 rounded-full ${selected?.id === item.id ? "bg-violet-200" : ""}`}
         >
-          <Text className="text-xl font-bold">{item.title}</Text>
+          <Text className="text-xl font-bold capitalize">{item.title}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -29,13 +31,12 @@ const Select = ({ title, options, select, selected }) => {
 const AssignClass = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedClass, setSelectedClass] = useState(null);
+  let {userId} = useLocalSearchParams();
 
-  let {user} = useLocalSearchParams();
-  user = JSON.parse(user);
+  const user = useAdminStore((state) => state.teachers.find(t => t.teacherId === userId));
 
   const handleAssignClass = ()=>{
     if(selectedClass && selectedCourse && user && user.teacherId){
-      console.log(selectedClass, selectedCourse)
       assignClass({ year: selectedClass, course: selectedCourse, teacherId: user.teacherId })
     }
   }

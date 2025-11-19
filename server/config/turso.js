@@ -31,7 +31,7 @@ const createAllTables = () => {
     );
     
     turso.execute(
-      "CREATE TABLE admin (adminId TEXT primary key, fullname text not null, password text not null);"
+      "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
     );
 };
 

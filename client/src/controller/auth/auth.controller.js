@@ -15,8 +15,6 @@ const authController = async data => {
         if (response?.data?.success) {
             const { refreshToken, accessToken, user } = response.data;
             
-            console.log(refreshToken, accessToken, user)
-            
             await SecureStore.setItemAsync("refreshToken", refreshToken);
             storage.set("accessToken", accessToken);
             setUser({ ...user });

@@ -18,8 +18,15 @@ router.post("/logout", logoutController);
 
 router.get("/users", async (req, res) => {
   try {
-    const result = await turso.execute(`SELECT * FROM students`);
-    res.send(result.rows);
+    const students = await turso.execute(`SELECT * FROM students`);
+    const teachers = await turso.execute(`SELECT * FROM teachers`);
+    const admins = await turso.execute(`SELECT * FROM admins`);
+    const result = {
+      students: students.rows,
+      teachers: teachers.rows,
+      admins: admins.rows
+    };
+    res.send(result);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal server error" });

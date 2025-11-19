@@ -16,10 +16,10 @@ router.get("/teachers", async (req, res) => {
 router.post("/assignClass", async (req, res) => {
     try {
         const { course, year, teacherId } = req.body
-
+        
         await turso.execute(
             `UPDATE teachers SET in_charge_class = ?, in_charge_year = ?, is_in_charge = TRUE WHERE teacherId = ?`,
-            [course, year, teacherId]
+            [course.id, year.id, teacherId]
         );
         
         res.json({ message: "Class assigned successfully", success: true });
@@ -27,12 +27,18 @@ router.post("/assignClass", async (req, res) => {
         console.error("Error fetching teachers:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-    }
-);
+});
 
-router.push("/verifyTeacher", async (req, res) =>{
+router.post("/verifyTeacher", async (req, res) =>{
     const { teacherId} = req.body 
 
-    await turso.execute(`update teachers set is_verified `)
+    try {
+        await turso.execute(`update teachers set is_verified = TRUE where teacherId = ?`, [teacherId])
+        res.json({ message: "Teacher verified successfully", success: true });
+    } catch (error) {
+        console.error("Error verifying teacher:", error);
+        res.status(500).json({ error: "Internal Server Error", success: false });
+    }
+
 })
 export default router;

@@ -19,7 +19,7 @@ const createAllTables = () => {
     `);
 
     turso.execute(
-      "CREATE TABLE teachers ( teacherId TEXT PRIMARY Key, fullname text not null, password text not null, in_charge text)"
+      "CREATE TABLE teachers ( teacherId TEXT PRIMARY Key, fullname text not null, password text not null, in_charge_class text, in_charge_year text, is_verified BOOLEAN DEFAULT FALSE, is_in_charge BOOLEAN DEFAULT FALSE)"
     );
     
     turso.execute(
@@ -31,7 +31,7 @@ const createAllTables = () => {
     );
     
     turso.execute(
-      "CREATE TABLE admin (adminId TEXT primary key, fullname text not null, password text not null);"
+      "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
     );
 };
 
@@ -45,7 +45,7 @@ const deleteAllTables = () => {
 
 const createAdmin = () => {
   turso.execute(
-    "INSERT INTO admin (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
+    "INSERT INTO admins (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
   );
 }
 

@@ -35,9 +35,7 @@ api.interceptors.response.use(
             try {
                 const refreshToken =
                     await SecureStore.getItemAsync("refreshToken");
-                console.log(refreshToken);
                 if (!refreshToken) {
-                    throw new Error("No refresh token.");
                     storage.remove("accessToken");
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();

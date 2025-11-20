@@ -4,7 +4,6 @@ import { router } from "expo-router";
 
 const ICON_SIZE = 18,
     DEFAULT_ICON_COLOR = "rgb(151,95,33)";
-const verified = false;
 
 const TeacherItem = ({ item }) => {
     return (
@@ -12,7 +11,7 @@ const TeacherItem = ({ item }) => {
             onPress={() =>
                 router.push({
                     pathname: "(admin)/VerifyTeacher",
-                    params: { user: JSON.stringify(item) }
+                    params: { teacherId: item.teacherId, },
                 })
             }
             className="flex-row items-center justify-between bg-white rounded-3xl px-4 py-7 my-2 shadow-2xl"
@@ -23,15 +22,15 @@ const TeacherItem = ({ item }) => {
             <View className="flex-row gap-2 justify-center items-center">
                 <Octicons
                     name="verified"
-                    size={18}
-                    color={verified ? "#3af43a" : DEFAULT_ICON_COLOR}
+                    size={ICON_SIZE}
+                    color={item.is_verified ? "#3af43a" : DEFAULT_ICON_COLOR}
                 />
                 <Text
                     className={`text-sm font-bold ${
-                        verified ? "text-green-500" : "text-gray-500"
+                        item.is_verified ? "text-green-500" : "text-gray-500"
                     } `}
                 >
-                    {verified ? "Verified" : "Not Verified"}
+                    {item.is_verified ? "Verified" : "Not Verified"}
                 </Text>
             </View>
         </TouchableOpacity>

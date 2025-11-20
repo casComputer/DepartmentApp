@@ -1,24 +1,26 @@
-import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { useState , useEffect} from "react";
+import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { useQuery } from "@tanstack/react-query";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
+import { useAdminStore } from "@store/admin.store.js";
 
 import TeacherItem from "@components/admin/TeacherItem";
 import Header from "@components/admin/Header.jsx";
 
 const ManageTeachers = () => {
-    const {
-        data: teachers = [],
-        error,
-        isLoading
-    } = useQuery({
-        queryKey: ["teachers"],
-        queryFn: fetchTeachers
-    });
+    const teachers = useAdminStore((state) => state.teachers);
+    const [loading, setLoading] =useState(false)
 
-    if (isLoading)
+    useEffect(() => {
+        setLoading(true)
+        fetchTeachers()
+        .then(() => setLoading(false))
+    }, []);
+    
+    
+
+    if (loading)
         return (
             <Text className="mt-12 w-full text-center font-black text-3xl text-black">
                 loading...

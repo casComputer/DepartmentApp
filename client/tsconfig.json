@@ -7,6 +7,7 @@
       "@constants/*": ["./src/constants/*"],
       "@components/*": ["./src/components/*"],
       "@controller/*": ["./src/controller/*"],
+      "@constants/*": ["./src/constants/*"],
       "@store/*": ["./src/store/*"],
       "@utils/*": ["./src/utils/*"],
       "@app/*": ["./src/app/*"],

@@ -4,8 +4,6 @@ import { turso } from "../../config/turso.js";
 import { hashPassword, validateSignupFields } from "../../utils/auth.utils.js";
 import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
 
-// console.log(await hashPassword("admin1234"));
-
 const signupController = async (req, res) => {
     try {
         const { username, password, fullName, course, year } = req.body;
@@ -20,7 +18,7 @@ const signupController = async (req, res) => {
         UNION
         SELECT parentId as id FROM parents WHERE parentId = ?
         UNION
-        SELECT adminId as id FROM admin WHERE adminId = ?
+        SELECT adminId as id FROM admins WHERE adminId = ?
         `,
             [username, username, username, username]
         );
@@ -38,19 +36,16 @@ const signupController = async (req, res) => {
                 `INSERT INTO students (studentId, fullname, password, course, year_of_study) VALUES (?, ?, ?, ?, ?)`,
                 [username, fullName, hashedPassword, course, year]
             );
-            console.log("student added");
         } else if (userRole === "parent") {
             await turso.execute(
                 `INSERT INTO parents (parentId, fullname, password) VALUES (?, ?, ?)`,
                 [username, fullName, hashedPassword]
             );
-            console.log("parent added");
         } else if (userRole === "teacher") {
             await turso.execute(
                 `INSERT INTO teachers (teacherId, fullname, password) VALUES (?, ?, ?)`,
                 [username, fullName, hashedPassword]
             );
-            console.log("teacher added");
         }
 
         const tokens = generateTokens(username, userRole);

@@ -13,16 +13,14 @@ const signinController = async (req, res) => {
             student: "students",
             teacher: "teachers",
             parent: "parents",
-            admin: "admin"
+            admin: "admins"
         };
 
         const table = tableMap[userRole];
         const existUser = await turso.execute(
-            `SELECT * FROM ${table} WHERE ${table === "admin" ? table : table.slice(0, -1)}Id = ?`,
+            `SELECT * FROM ${table} WHERE ${table.slice(0, -1)}Id = ?`,
             [username]
         );
-
-        console.log(existUser);
 
         if (!existUser.rows.length) {
             return res.status(400).json({

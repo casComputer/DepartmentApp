@@ -1,5 +1,6 @@
 import { turso } from "../../config/turso.js";
 import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
+import { validateCourseAndYear } from "../utils/validateCourseAndYear.js"
 
 export const getTeachers = async (req, res) => {
     try {
@@ -20,10 +21,7 @@ export const assignClass = async (req, res) => {
     try {
         const { course, year, teacherId } = req.body;
 
-        const isValidCourse = COURSES.includes(course);
-        const isValidYear = YEAR.includes(year);
-
-        if (!isValidYear || !isValidCourse)
+        if (!validateCourseAndYear(course, year))
             return res
                 .status(405)
                 .json({ message: "invalid course or year", success: false });

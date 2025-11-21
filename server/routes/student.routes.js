@@ -5,24 +5,10 @@ import { validateCourseAndYear } from "../utils/validateCourseAndYear.js";
 
 const router = express.Router();
 
-router.get("/getAllStudents", async (req, res) => {
-    try {
-        const result = await turso.execute(
-            "SELECT studentId, fullname from students "
-        );
-
-        res.send(result);
-    } catch (err) {
-        console.error("Error while fetching student details: ", err);
-        res.status(500).json({
-            error: "Error while fetching student details",
-            success: false
-        });
-    }
-});
-
 router.post("/getStudents", async (req, res) => {
     const { course, year } = req.body;
+
+    console.log(course, year, validateCourseAndYear(course, year));
 
     if (!validateCourseAndYear(course, year))
         return res

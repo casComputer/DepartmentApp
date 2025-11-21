@@ -1,6 +1,6 @@
 import { turso } from "../../config/turso.js";
 import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
-import { validateCourseAndYear } from "../utils/validateCourseAndYear.js"
+import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js"
 
 export const getTeachers = async (req, res) => {
     try {

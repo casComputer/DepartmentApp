@@ -19,7 +19,14 @@ const createAllTables = () => {
     `);
 
     turso.execute(
-      "CREATE TABLE teachers ( teacherId TEXT PRIMARY Key, fullname text not null, password text not null, in_charge_class text, in_charge_year text, is_verified BOOLEAN DEFAULT FALSE, is_in_charge BOOLEAN DEFAULT FALSE)"
+      `CREATE TABLE teachers ( 
+          teacherId TEXT PRIMARY Key, 
+          fullname text not null, 
+          password text not null,
+          in_charge_class text check (in_charge_class IN ('Bca', 'Bsc')) ,
+          in_charge_year text check (in_charge_year IN ('First', 'Second', 'Third', 'Fourth')) , 
+          is_verified BOOLEAN DEFAULT FALSE,
+          is_in_charge BOOLEAN DEFAULT FALSE)`
     );
     
     turso.execute(

@@ -3,6 +3,8 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import attendanceRoutes from "./routes/attendance.routes.js";
+import studentRoutes from "./routes/student.routes.js";
 
 import { authenticateToken } from "./utils/auth.utils.js";
 
@@ -16,6 +18,8 @@ app.use("/auth", authRoutes);
 
 app.use(authenticateToken);
 app.use("/admin", adminRoutes);
+app.use("/attendance", attendanceRoutes);
+app.use("/student", studentRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });

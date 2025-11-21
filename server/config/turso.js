@@ -3,12 +3,12 @@ import "dotenv/config";
 import { createClient } from "@libsql/client/web";
 
 export const turso = createClient({
-  url: process.env.PRIMARY_DATABASE_URL,
-  authToken: process.env.PRIMARY_DATABASE_TOKEN,
+    url: process.env.PRIMARY_DATABASE_URL,
+    authToken: process.env.PRIMARY_DATABASE_TOKEN
 });
 
 const createAllTables = () => {
-  turso.execute(`
+    turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
         fullname TEXT not null,
@@ -19,7 +19,7 @@ const createAllTables = () => {
     `);
 
     turso.execute(
-      `CREATE TABLE teachers ( 
+        `CREATE TABLE teachers ( 
           teacherId TEXT PRIMARY Key, 
           fullname text not null, 
           password text not null,
@@ -28,40 +28,36 @@ const createAllTables = () => {
           is_verified BOOLEAN DEFAULT FALSE,
           is_in_charge BOOLEAN DEFAULT FALSE)`
     );
-    
+
     turso.execute(
-      "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
+        "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
     );
-    
+
     turso.execute(
-      "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
+        "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
     );
-    
+
     turso.execute(
-      "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
+        "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
     );
 };
 
 const deleteAllTables = () => {
-  turso.execute("drop table if exists students");
-  turso.execute("drop table if exists teachers");
-  turso.execute("drop table if exists parents");
-  turso.execute("drop table if exists admins");
-  turso.execute("drop table if exists parent_child");
+    turso.execute("drop table if exists students");
+    turso.execute("drop table if exists teachers");
+    turso.execute("drop table if exists parents");
+    turso.execute("drop table if exists admins");
+    turso.execute("drop table if exists parent_child");
 };
 
-const createAdmin = () => {
-  turso.execute(
-    "INSERT INTO admins (adminId, fullname, password) VALUES ('admin1234', 'Administrator', '$2b$10$FhjsbZTgm/yWOIkQlIYNluDYvZBi9nRRMjmLxmaYVsW6H9tAhIvU2');"
-  );
-}
+const createClasses = () => {
+    turso.execute(`
+    create table classes (
+        course text check (course in ('Bca', 'Bsc')),
+        year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
+        numberOfStudents int,
+        in_charge text REFERENCES teachers(teacherId)
+        )
+`);
+};
 
-// createAdmin()
-
-// deleteAllTables()
-
-// createStudentTable();
-// createParentTable();
-// createTeacherTable();
-// createParentChildTable();
-// createTableAdmin();

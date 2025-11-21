@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import studentRoutes from "./routes/student.routes.js";
+import classRoutes from "./routes/class.routes.js";
 
 import { authenticateToken } from "./utils/auth.utils.js";
 
@@ -19,6 +20,7 @@ app.use(authenticateToken);
 app.use("/admin", adminRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);
+app.use("/class", classRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });

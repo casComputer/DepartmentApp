@@ -1,4 +1,5 @@
 import { turso } from "../../config/turso.js";
+import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
 
 export const getTeachers = async (req, res) => {
     try {
@@ -8,7 +9,10 @@ export const getTeachers = async (req, res) => {
         res.json(result.rows);
     } catch (error) {
         console.error("Error fetching teachers:", error);
-        res.status(500).json({ error: "Internal Server Error", success: false });
+        res.status(500).json({
+            error: "Internal Server Error",
+            success: false
+        });
     }
 };
 
@@ -16,15 +20,26 @@ export const assignClass = async (req, res) => {
     try {
         const { course, year, teacherId } = req.body;
 
+        const isValidCourse = COURSES.includes(course);
+        const isValidYear = YEAR.includes(year);
+
+        if (!isValidYear || !isValidCourse)
+            return res
+                .status(403)
+                .json({ message: "invalid course or year", success: false });
+
         await turso.execute(
             `UPDATE teachers SET in_charge_class = ?, in_charge_year = ?, is_in_charge = TRUE WHERE teacherId = ?`,
-            [course.id, year.id, teacherId]
+            [course, year, teacherId]
         );
 
         res.json({ message: "Class assigned successfully", success: true });
     } catch (error) {
         console.error("Error fetching teachers:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        });
     }
 };
 

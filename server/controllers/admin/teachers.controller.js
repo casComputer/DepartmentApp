@@ -25,7 +25,7 @@ export const assignClass = async (req, res) => {
 
         if (!isValidYear || !isValidCourse)
             return res
-                .status(403)
+                .status(405)
                 .json({ message: "invalid course or year", success: false });
 
         await turso.execute(

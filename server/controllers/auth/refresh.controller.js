@@ -9,12 +9,12 @@ import {
 } from "../../utils/token.utils.js";
 
 const refreshToken = async (req, res) => {
-    const { refreshToken } = req.body;
-    if (!refreshToken)
+    const { refreshToken: clientRefreshToken } = req.body;
+    if (!clientRefreshToken)
         return res.status(401).json({ message: "No token provided" });
 
     jwt.verify(
-        refreshToken,
+        clientRefreshToken,
         process.env.JWT_REFRESH_TOKEN_SECRET,
         async (err, user) => {
             if (err)
@@ -25,7 +25,7 @@ const refreshToken = async (req, res) => {
             const userId = user.userId,
                 role = user.role;
                 
-            const valid = await verifyRefreshToken(userId, refreshToken);
+            const valid = await verifyRefreshToken(userId, clientRefreshToken);
             if (!valid)
                 return res
                     .status(403)

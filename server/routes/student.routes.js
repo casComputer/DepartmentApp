@@ -24,8 +24,6 @@ router.get("/getAllStudents", async (req, res) => {
 router.post("/getStudents", async (req, res) => {
     const { course, year } = req.body;
 
-    console.log(course, year);
-
     if (!validateCourseAndYear(course, year))
         return res
             .status(405)
@@ -36,8 +34,6 @@ router.post("/getStudents", async (req, res) => {
             "SELECT studentId, fullname from students where course = ? and year_of_study = ?",
             [course, year]
         );
-
-        console.log(result);
 
         const students = result?.rows || [];
 

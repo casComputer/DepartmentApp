@@ -7,6 +7,11 @@ export const getTeachers = async (req, res) => {
         const result = await turso.execute(
             "SELECT teacherId, fullname, is_verified, is_in_charge, in_charge_class, in_charge_year FROM teachers"
         );
+        
+        
+        
+        // todo: fetch in_charge details from classes table insted of teachers table
+        
         res.json(result.rows);
     } catch (error) {
         console.error("Error fetching teachers:", error);
@@ -26,10 +31,11 @@ export const assignClass = async (req, res) => {
                 .status(405)
                 .json({ message: "invalid course or year", success: false });
 
-        await turso.execute(
-            `UPDATE teachers SET in_charge_class = ?, in_charge_year = ?, is_in_charge = TRUE WHERE teacherId = ?`,
-            [course, year, teacherId]
-        );
+        await turso.execute(`
+        	update classes set in_charge = ? where year = ? and course = ?
+        `, 
+        [teacherId, year, course]
+        )
 
         res.json({ message: "Class assigned successfully", success: true });
     } catch (error) {

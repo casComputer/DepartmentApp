@@ -4,7 +4,11 @@ import { router } from "expo-router";
 
 import { storage, clearUser } from "./storage";
 
-const url = process.env.EXPO_PUBLIC_API_BASE_URL;
+// const url = process.env.EXPO_PUBLIC_API_BASE_URL;
+const url = "http://10.35.94.212:3000"
+
+console.log(url);
+
 const api = axios.create({
     baseURL: url
 });
@@ -39,7 +43,6 @@ api.interceptors.response.use(
                     storage.remove("accessToken");
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();
-                    router.replace("/auth/Signin");
                 }
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {

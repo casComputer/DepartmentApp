@@ -1,33 +1,40 @@
-import { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { FlashList } from "@shopify/flash-list";
+import { useQuery } from "@tanstack/react-query";
+import { useLocalSearchParams } from "expo-router";
 
-import Header from "@components/common/Header";
+import Header from "@components/common/Header.jsx";
+import { AttendanceItem, Options } from "@components/teacher/Attendance.jsx";
+
+import { fetchStudentsByClass } from "@controller/teacher/students.controller.js";
 
 const Attendance = () => {
-	const [width, setWidth] = useState();
+    const { course, year } = useLocalSearchParams();
+    const [students, setStudents] = useState([]);
 
-	return (
-		<View className="flex-1 pt-12">
-			<Header title="Attendance" />
-			<ScrollView className="px-5 mt-10">
-				<View
-					onLayout={(event) => {
-						const { width } = event.nativeEvent.layout;
-						setWidth((width - 50) / 5);
-					}}
-					style={{ gap: 10 }}
-					className="flex-row justify-between">
-                        
-					<TouchableOpacity
-						style={{ width: width, height: width }}
-						className=" border-2 rounded-full justify-center items-center">
-						<Text className="text-[6vw] font-black">1</Text>
-					</TouchableOpacity>
-					
-				</View>
-			</ScrollView>
-		</View>
-	);
+    useEffect(() => {
+        if (!course || !year) return;
+        fetchStudentsByClass({ course, year, setStudents });
+    }, [course, year, fetchStudentsByClass]);
+
+
+    return (
+        <View className="flex-1 pt-12">
+            <Header title="Attendance" />
+            <Options />
+
+            <FlashList
+                data={students}
+                numColumns={5}
+                contentContainerStyle={{
+                    paddingVertical: 50,
+                    paddingHorizontal: 10
+                }}
+                renderItem={({ item }) => <AttendanceItem item={item} />}
+            />
+        </View>
+    );
 };
 
 export default Attendance;

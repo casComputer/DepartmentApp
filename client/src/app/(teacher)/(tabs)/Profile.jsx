@@ -1,12 +1,16 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text } from "react-native";
+import React from "react";
+
+import { useAppStore } from "@store/app.store.ts";
 
 const Profile = () => {
-  return (
-    <View className="flex-1 justify-center items-center bg-blue-700">
-      <Text>index</Text>
-    </View>
-  )
-}
+    const username = useAppStore(state => state.user?.userId || "");
 
-export default Profile
+    return (
+        <View className="flex-1 justify-center items-center bg-blue-700">
+            <Text>{username}</Text>
+        </View>
+    );
+};
+
+export default Profile;

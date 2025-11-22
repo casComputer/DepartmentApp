@@ -42,7 +42,7 @@ router.post("/fetchStudentsByClassTeacher", async (req, res) => {
         const classResult = await turso.execute(
             `
             SELECT course, year 
-            FROM class
+            FROM classes
             WHERE in_charge = ?
             `,
             [teacherId]

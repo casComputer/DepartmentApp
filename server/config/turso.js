@@ -75,15 +75,15 @@ const insertDefaultValues = () => {
     `);
 };
 
-turso.execute(`
-    insert into classes values 
-        ('Bca', 'First', 0),
-        ('Bca', 'Second', 0),
-        ('Bca', 'Third', 0),
-        ('Bca', 'Fourth', 0),
-        
-        ('Bsc', 'First', 0),
-        ('Bsc', 'Second', 0),
-        ('Bsc', 'Third', 0),
-        ('Bsc', 'Fourth', 0);
+turso.execute(`insert into classes values 
+    ('Bca', 'First', 0, NULL),
+    ('Bca', 'Second', 0, NULL),
+    ('Bca', 'Third', 0, NULL),
+    ('Bca', 'Fourth', 0, NULL),
+    
+    ('Bsc', 'First', 0, NULL),
+    ('Bsc', 'Second', 0, NULL),
+    ('Bsc', 'Third', 0, NULL),
+    ('Bsc', 'Fourth', 0, NULL);
+    
 `);

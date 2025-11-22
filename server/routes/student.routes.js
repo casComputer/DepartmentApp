@@ -59,7 +59,7 @@ router.post("/fetchStudentsByClassTeacher", async (req, res) => {
 
         const studentResult = await turso.execute(
             `
-            SELECT studentId, fullname 
+            SELECT studentId, fullname , is_verified 
             FROM students
             WHERE course = ? AND year_of_study = ?
             `,

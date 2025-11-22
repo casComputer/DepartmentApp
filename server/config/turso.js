@@ -45,8 +45,9 @@ const createAllTables = () => {
         create table classes (
             course text check (course in ('Bca', 'Bsc')),
             year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
-            numberOfStudents int,
-            in_charge text REFERENCES teachers(teacherId)
+            strength integer,
+            in_charge text REFERENCES teachers(teacherId),
+            primary key (course, year)
         )
     `);
 };
@@ -59,7 +60,7 @@ const deleteAllTables = () => {
     turso.execute("drop table if exists parent_child");
 };
 
-const insertDefaultValues = ()=>{
+const insertDefaultValues = () => {
     turso.execute(`
         insert into classes values 
             ('Bca', 'First', 0),
@@ -71,9 +72,8 @@ const insertDefaultValues = ()=>{
             ('Bsc', 'Second', 0),
             ('Bsc', 'Third', 0),
             ('Bsc', 'Fourth', 0),
-    `)
-    
-}
+    `);
+};
 
 turso.execute(`
     insert into classes values 
@@ -85,5 +85,5 @@ turso.execute(`
         ('Bsc', 'First', 0),
         ('Bsc', 'Second', 0),
         ('Bsc', 'Third', 0),
-        ('Bsc', 'Fourth', 0),
-`)
+        ('Bsc', 'Fourth', 0);
+`);

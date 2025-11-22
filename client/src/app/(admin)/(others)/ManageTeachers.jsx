@@ -5,7 +5,7 @@ import { FlashList } from "@shopify/flash-list";
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 import { useAdminStore } from "@store/admin.store.js";
 
-import TeacherItem from "@components/admin/TeacherItem";
+import TeacherItem from "@components/common/UserItem.jsx";
 import Header from "@components/admin/Header.jsx";
 
 const ManageTeachers = () => {
@@ -18,9 +18,7 @@ const ManageTeachers = () => {
         .then(() => setLoading(false))
     }, []);
     
-    
-
-    if (loading)
+    if (loading && teachers.length == 0)
         return (
             <Text className="mt-12 w-full text-center font-black text-3xl text-black">
                 loading...

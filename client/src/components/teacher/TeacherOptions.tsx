@@ -9,7 +9,7 @@ const TeacherOptions = () => {
 		<View className="px-3 mt-12 flex-1 gap-3">
 			{/* First Row of Options */}
 
-			<TouchableOpacity className="flex-row items-center gap-4 px-6 py-7 border-b border-gray-200 shadow bg-white w-full rounded-3xl overflow-hidden">
+			<TouchableOpacity onPress={()=> router.push('/(teacher)/(others)/ManageStudents')} className="flex-row items-center gap-4 px-6 py-7 border-b border-gray-200 shadow bg-white w-full rounded-3xl overflow-hidden">
 				<MaterialCommunityIcons
 					name="account-group-outline"
 					size={ICONS_SIZE}

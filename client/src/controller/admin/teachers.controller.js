@@ -18,8 +18,8 @@ export const fetchTeachers = async () => {
 export const assignClass = async ({ year, course, teacherId }) => {
 	try {
 		const res = await axios.post("/admin/assignClass", {
-			year,
-			course,
+			year: year.id,
+			course: course.id,
 			teacherId,
 		});
 

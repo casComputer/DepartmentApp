@@ -6,6 +6,8 @@ import TeacherOptions from "@components/teacher/TeacherOptions";
 
 
 const Home = () => {
+    
+    
 
   return (
     <ScrollView contentContainerStyle={{ paddingTop: 60, paddingBottom: 150 }} >

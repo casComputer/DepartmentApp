@@ -18,5 +18,56 @@ router.post('/saveStudentDetails', saveStudentDetails)
 
 router.post('/verifyMultipleStudents', verifyMultipleStudents );
 
+router.post("/autoAssignRollNoAlphabetically", async (req, res) => {
+  try {
+    const { course, year } = req.body;
+
+    if (!course || !year) {
+      return res.status(400).json({ error: "course and year are required" });
+    }
+    
+    await turso.execute(
+	  `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
+	  [course, year]
+	);
+
+
+    // Fetch students sorted by name
+    const { rows: students } = await turso.execute(
+      `
+	      SELECT studentId, name
+	      FROM students
+	      WHERE course = ? 
+		AND year_of_study = ?
+	      ORDER BY name ASC
+	      `,
+	      [course, year]
+	    );
+
+    // Assign roll numbers
+    let rollno = 1;
+
+    for (const s of students) {
+      await turso.execute(
+        `
+        UPDATE students
+        SET rollno = ?
+        WHERE studentId = ?
+        `,
+        [rollno, s.studentId]
+      );
+
+      rollno++;
+    }
+
+
+    res.json({ success: true,  students });
+
+  } catch (err) {
+    console.log("Error while assigning roll numbers:", err);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
 
 export default router;

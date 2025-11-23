@@ -47,7 +47,6 @@ export const getUser = () => {
 };
 
 export const clearUser = () => {
-    
     storage.remove("userId");
     storage.remove("fullname");
     storage.remove("role");
@@ -57,3 +56,21 @@ export const clearUser = () => {
 };
 
 updateUser(getUser());
+
+/*
+=======
+common
+=======
+userId
+fullname
+role
+course
+year_of_study
+
+========
+TEACHER
+========
+students
+in_charge
+
+*/

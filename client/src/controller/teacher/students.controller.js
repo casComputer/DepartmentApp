@@ -5,6 +5,37 @@ import { ToastAndroid } from "react-native";
 import { useTeacherStore } from "@store/teacher.store.js";
 import { storage } from "@utils/storage.ts";
 
+export const assignRollByGroup = async ({ students }) => {
+    try {
+        const res = await axios.post("/student/assignGroupedRollNo", {
+            students
+        });
+        if (res.data?.success) {
+            res.data?.updated?.forEach(s =>
+                useTeacherStore
+                    .getState()
+                    .updateStudentRollNo(s.studentId, s.rollno)
+            );
+            
+            res.data?.failed?.forEach(s =>
+                useTeacherStore
+                    .getState()
+                    .updateStudentRollNo(s.studentId, null)
+            );
+            
+            ToastAndroid.show(
+    `Successfully assigned roll numbers to ${res.data?.updated?.length} students.` +
+    `${res.data?.failed?.length > 0 ? ` Failed: ${res.data.failed.length}` : ''}`,
+    ToastAndroid.SHORT
+);
+            
+        }
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show("Roll numbers assigning failed!", ToastAndroid.SHORT);
+    }
+};
+
 export const assignRollAlphabetically = async ({ course, year }) => {
     try {
         const res = await axios.post(
@@ -15,7 +46,7 @@ export const assignRollAlphabetically = async ({ course, year }) => {
             }
         );
         if (res.data?.success) {
-            res.data?.students.forEach((s) =>
+            res.data?.students.forEach(s =>
                 useTeacherStore
                     .getState()
                     .updateStudentRollNo(s.studentId, s.rollno)
@@ -27,6 +58,10 @@ export const assignRollAlphabetically = async ({ course, year }) => {
         }
     } catch (error) {
         console.error(error);
+        ToastAndroid.show(
+            "Roll numbers assigned successfully",
+            ToastAndroid.SHORT
+        );
     }
 };
 

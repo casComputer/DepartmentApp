@@ -19,6 +19,6 @@ router.post("/verifyMultipleStudents", verifyMultipleStudents);
 
 router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically );
 
-router.post("/assignRollNo", assignRollNo );
+router.post("/assignGroupedRollNo", assignRollNo );
 
 export default router;

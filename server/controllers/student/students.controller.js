@@ -70,8 +70,8 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
                 year
             });
         }
-        
-      return res.json({
+
+        return res.json({
             success: true,
             course,
             year,
@@ -84,15 +84,15 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
             error: "Server error while fetching student details"
         });
     }
-}
+};
 
 export const verifyStudent = async (req, res) => {
     const { studentId } = req.body;
-   
+
     try {
         await turso.execute(
-           'UPDATE students SET is_verified = true WHERE studentId = ?',
-           [studentId]
+            "UPDATE students SET is_verified = true WHERE studentId = ?",
+            [studentId]
         );
 
         res.json({ success: true, message: "Student verified" });
@@ -100,71 +100,72 @@ export const verifyStudent = async (req, res) => {
         console.error(error);
         res.status(500).json({ success: false, error: "Server error" });
     }
-}
+};
 
 export const cancelStudentVerification = async (req, res) => {
     const { studentId } = req.body;
-    
+
     try {
-         await turso.execute(
-            'DELETE FROM students WHERE studentId = ?',
-            [studentId]
-         );
+        await turso.execute("DELETE FROM students WHERE studentId = ?", [
+            studentId
+        ]);
 
         res.json({ success: true, message: "Student deleted" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, error: "Server error" });
     }
-}
+};
 
-export const saveStudentDetails = async (req, res)=> {
-	
-	try{
-		const { studentId, rollno } = req.body
-		
-		
-		// assign roll number
-		await turso.execute(`
+export const saveStudentDetails = async (req, res) => {
+    try {
+        const { studentId, rollno } = req.body;
+
+        // assign roll number
+        await turso.execute(
+            `
 			update students set rollno = ? where studentId = ?
-		`, [rollno, studentId])
-		
-		
-		res.json({
-			success: true,
-			message: 'Student details saved successfully'
-		})
-		
-		
-	}catch(err){
-	
-		if (err.code === "SQLITE_CONSTRAINT" || 
-	       		 err.rawCode === "SQLITE_CONSTRAINT" || 
-			err.message.includes("UNIQUE constraint failed")) 
-	        {
-			return res.json({
-			    success: false,
-			    error:"SQLITE_CONSTRAINT",
-			    message: "This roll number is already assigned to another student in this class."
-			});
-		    }
-		console.error("Error while saving student details", err)
-		res.status(500).json({ message: "Internal Error: while saving student details", error:"INTERNAL_ERROR", success: false })
-	}
+		`,
+            [rollno, studentId]
+        );
 
-	
-
-}
+        res.json({
+            success: true,
+            message: "Student details saved successfully"
+        });
+    } catch (err) {
+        if (
+            err.code === "SQLITE_CONSTRAINT" ||
+            err.rawCode === "SQLITE_CONSTRAINT" ||
+            err.message.includes("UNIQUE constraint failed")
+        ) {
+            return res.json({
+                success: false,
+                error: "SQLITE_CONSTRAINT",
+                message:
+                    "This roll number is already assigned to another student in this class."
+            });
+        }
+        console.error("Error while saving student details", err);
+        res.status(500).json({
+            message: "Internal Error: while saving student details",
+            error: "INTERNAL_ERROR",
+            success: false
+        });
+    }
+};
 
 export const verifyMultipleStudents = async (req, res) => {
     try {
         const { students } = req.body;
 
-        if (!Array.isArray(students) || students.length === 0) 
-            return res.status(400).json({ error: "students must be a non-empty array" });
-        
+        if (!Array.isArray(students) || students.length === 0)
+            return res
+                .status(400)
+                .json({ error: "students must be a non-empty array" });
+
         // Build placeholders: (?, ?, ?, ...)
-        const placeholders = students.map(() => '?').join(',');
+        const placeholders = students.map(() => "?").join(",");
 
         const query = `
             UPDATE students 
@@ -174,72 +175,73 @@ export const verifyMultipleStudents = async (req, res) => {
 
         await turso.execute(query, students);
 
-        res.json({ success: true, message: 'students verified' });
-        
+        res.json({ success: true, message: "students verified" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error", success: false });
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        });
     }
-}
+};
 
+export const autoAssignRollNoAlphabetically = async (req, res) => {
+    try {
+        const { course, year } = req.body;
 
+        if (!course || !year) {
+            return res
+                .status(400)
+                .json({ error: "course and year are required" });
+        }
 
- export const autoAssignRollNoAlphabetically = async (req, res) => {
-  try {
-    const { course, year } = req.body;
+        await turso.execute(
+            `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
+            [course, year]
+        );
 
-    if (!course || !year) {
-      return res.status(400).json({ error: "course and year are required" });
-    }
-    
-    await turso.execute(
-	  `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
-	  [course, year]
-	);
-
-
-    // Fetch students sorted by name
-    const { rows: students } = await turso.execute(
-      `
+        // Fetch students sorted by name
+        const { rows: students } = await turso.execute(
+            `
 	      SELECT studentId, fullname
 	      FROM students
 	      WHERE course = ? 
 		AND year_of_study = ?
 	      ORDER BY fullname ASC
 	      `,
-	      [course, year]
-	    );
+            [course, year]
+        );
 
-    // Assign roll numbers
-    let rollno = 1, updated = [];
+        // Assign roll numbers
+        let rollno = 1,
+            updated = [];
 
-    for (const s of students) {
-      await turso.execute(
-        `
+        for (const s of students) {
+            await turso.execute(
+                `
         UPDATE students
         SET rollno = ?
         WHERE studentId = ?
         `,
-        [rollno, s.studentId]
-      );
-      
-      updated.push({ ...s, rollno })
+                [rollno, s.studentId]
+            );
 
-      rollno++;
+            updated.push({ ...s, rollno });
+
+            rollno++;
+        }
+
+        res.json({ success: true, students: updated });
+    } catch (err) {
+        console.log("Error while assigning roll numbers:", err);
+        res.status(500).json({ error: "Internal error", success: false });
     }
-    
-    res.json({ success: true,  students: updated });
-
-  } catch (err) {
-    console.log("Error while assigning roll numbers:", err);
-    res.status(500).json({ error: "Internal error", success: false });
-  }
-}
+};
 
 export const assignRollNo = async (req, res) => {
     try {
-        const { students } = req.body; 
-        
+        const { students } = req.body;
+
         if (!Array.isArray(students)) {
             return res.status(400).json({
                 success: false,
@@ -264,7 +266,6 @@ export const assignRollNo = async (req, res) => {
                 );
 
                 success.push({ studentId, rollno });
-
             } catch (err) {
                 if (err.message?.includes("SQLITE_CONSTRAINT")) {
                     errors.push({
@@ -287,7 +288,6 @@ export const assignRollNo = async (req, res) => {
             updated: success,
             failed: errors
         });
-
     } catch (err) {
         console.error("Error in assignRollNo:", err);
         return res.status(500).json({
@@ -295,4 +295,4 @@ export const assignRollNo = async (req, res) => {
             message: "Internal server error"
         });
     }
-}
+};

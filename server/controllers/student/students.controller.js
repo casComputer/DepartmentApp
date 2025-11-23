@@ -123,9 +123,12 @@ export const saveStudentDetails = async (req, res)=> {
 	try{
 		const { studentId, rollno } = req.body
 		
+		
+		// assign roll number
 		await turso.execute(`
 			update students set rollno = ? where studentId = ?
 		`, [rollno, studentId])
+		
 		
 		res.json({
 			success: true,
@@ -134,8 +137,19 @@ export const saveStudentDetails = async (req, res)=> {
 		
 		
 	}catch(err){
-		console.error("Error while saving student details")
-		res.status(500).json({ message: "Internal Error: while saving student details", success: false })
+	
+		if (err.code === "SQLITE_CONSTRAINT" || 
+	       		 err.rawCode === "SQLITE_CONSTRAINT" || 
+			err.message.includes("UNIQUE constraint failed")) 
+	        {
+			return res.json({
+			    success: false,
+			    error:"SQLITE_CONSTRAINT",
+			    message: "This roll number is already assigned to another student in this class."
+			});
+		    }
+		console.error("Error while saving student details", err)
+		res.status(500).json({ message: "Internal Error: while saving student details", error:"INTERNAL_ERROR", success: false })
 	}
 
 	
@@ -167,3 +181,8 @@ export const verifyMultipleStudents = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", success: false });
     }
 }
+
+
+
+ // turso.execute(`insert into students select * from st;`);
+

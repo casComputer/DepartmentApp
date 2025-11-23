@@ -35,17 +35,17 @@ router.post("/autoAssignRollNoAlphabetically", async (req, res) => {
     // Fetch students sorted by name
     const { rows: students } = await turso.execute(
       `
-	      SELECT studentId, name
+	      SELECT studentId, fullname
 	      FROM students
 	      WHERE course = ? 
 		AND year_of_study = ?
-	      ORDER BY name ASC
+	      ORDER BY fullname ASC
 	      `,
 	      [course, year]
 	    );
 
     // Assign roll numbers
-    let rollno = 1;
+    let rollno = 1, updated = [];
 
     for (const s of students) {
       await turso.execute(
@@ -56,18 +56,20 @@ router.post("/autoAssignRollNoAlphabetically", async (req, res) => {
         `,
         [rollno, s.studentId]
       );
+      
+      updated.push({ ...s, rollno })
 
       rollno++;
     }
-
-
-    res.json({ success: true,  students });
+    
+    res.json({ success: true,  students: updated });
 
   } catch (err) {
     console.log("Error while assigning roll numbers:", err);
-    res.status(500).json({ error: "Internal error" });
+    res.status(500).json({ error: "Internal error", success: false });
   }
 });
 
+turso.execute("update students set rollno = null")
 
 export default router;

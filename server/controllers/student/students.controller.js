@@ -184,5 +184,115 @@ export const verifyMultipleStudents = async (req, res) => {
 
 
 
- // turso.execute(`insert into students select * from st;`);
+ export const autoAssignRollNoAlphabetically = async (req, res) => {
+  try {
+    const { course, year } = req.body;
 
+    if (!course || !year) {
+      return res.status(400).json({ error: "course and year are required" });
+    }
+    
+    await turso.execute(
+	  `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
+	  [course, year]
+	);
+
+
+    // Fetch students sorted by name
+    const { rows: students } = await turso.execute(
+      `
+	      SELECT studentId, fullname
+	      FROM students
+	      WHERE course = ? 
+		AND year_of_study = ?
+	      ORDER BY fullname ASC
+	      `,
+	      [course, year]
+	    );
+
+    // Assign roll numbers
+    let rollno = 1, updated = [];
+
+    for (const s of students) {
+      await turso.execute(
+        `
+        UPDATE students
+        SET rollno = ?
+        WHERE studentId = ?
+        `,
+        [rollno, s.studentId]
+      );
+      
+      updated.push({ ...s, rollno })
+
+      rollno++;
+    }
+    
+    res.json({ success: true,  students: updated });
+
+  } catch (err) {
+    console.log("Error while assigning roll numbers:", err);
+    res.status(500).json({ error: "Internal error", success: false });
+  }
+}
+
+export const assignRollNo = async (req, res) => {
+    try {
+        const { students } = req.body; 
+        
+        if (!Array.isArray(students)) {
+            return res.status(400).json({
+                success: false,
+                message: "students must be an array"
+            });
+        }
+
+        const errors = [];
+        const success = [];
+
+        for (const stu of students) {
+            const { studentId, rollno } = stu;
+
+            try {
+                await turso.execute(
+                    `
+                    UPDATE students 
+                    SET rollno = ?
+                    WHERE studentId = ?
+                    `,
+                    [rollno, studentId]
+                );
+
+                success.push({ studentId, rollno });
+
+            } catch (err) {
+                if (err.message?.includes("SQLITE_CONSTRAINT")) {
+                    errors.push({
+                        studentId,
+                        rollno,
+                        error: "Duplicate rollno for this course/year (unique constraint failed)"
+                    });
+                } else {
+                    errors.push({
+                        studentId,
+                        rollno,
+                        error: err.message || "Unknown DB error"
+                    });
+                }
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            updated: success,
+            failed: errors
+        });
+
+    } catch (err) {
+        console.error("Error in assignRollNo:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}

@@ -15,7 +15,10 @@ const createAllTables = () => {
         password TEXT not null,
         course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
         year_of_study text check (year_of_study IN ('First', 'Second', 'Third', 'Fourth')) not null,
-        is_verified BOOLEAN DEFAULT FALSE
+        is_verified BOOLEAN DEFAULT FALSE,
+        rollno integer default NULL,
+        
+        UNIQUE (course, year_of_study, rollno)
     );
     `);
 
@@ -75,4 +78,8 @@ const insertDefaultValues = () => {
             ('Bsc', 'Fourth', 0),
     `);
 };
+
+
+
+
 

@@ -1,15 +1,26 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
 import StudentItem from "@components/common/UserItem.jsx";
+import { ListEmptyComponent, ListHeaderComponent } from "@components/teacher/ManageStudentList.jsx";
 
-import { fetchStudentsByClassTeacher } from "@controller/teacher/students.controller.js";
+import {
+    fetchStudentsByClassTeacher,
+    verifyMultipleStudents
+} from "@controller/teacher/students.controller.js";
 
 import { useAppStore } from "@store/app.store.ts";
 import { useTeacherStore } from "@store/teacher.store.js";
+
+import { storage } from "@utils/storage.ts";
+
+useTeacherStore.setState({
+    students: JSON.parse(storage.getString("students") ?? "[]"),
+    inCharge: JSON.parse(storage.getString("in_charge") ?? "{}")
+});
 
 const handlePress = item => {
     if (item)
@@ -23,6 +34,7 @@ const handlePress = item => {
         });
 };
 
+
 const ManageStudents = () => {
     const [status, setStatus] = useState("LOADING");
     const teacherId = useAppStore(state => state.user?.userId);
@@ -31,52 +43,47 @@ const ManageStudents = () => {
     const inChargeYear = useTeacherStore(state => state.inCharge.year);
 
     useEffect(() => {
-        fetchStudentsByClassTeacher({ teacherId, setStatus });
+        useTeacherStore.setState({
+            students: JSON.parse(storage.getString("students") ?? "[]"),
+            inCharge: JSON.parse(storage.getString("in_charge") ?? "{}")
+        });
     }, []);
 
-    if (status === "LOADING" && students.length === 0)
-        return (
-            <Text className="text-2xl font-black pt-14 text-center">
-                Loading...
-            </Text>
-        );
+    useEffect(() => {
+        if (teacherId) fetchStudentsByClassTeacher({ teacherId, setStatus });
+    }, [teacherId]);
 
-    if (status === "ERROR")
-        return (
-            <Text className="text-2xl font-black pt-14 text-center">
-                Something Went Wrong!, Try again later.
-            </Text>
-        );
 
-    if (status === "CLASS_EMPTY")
-        return (
-            <Text className="text-2xl font-black pt-14 text-center">
-                No Students Yet !
-            </Text>
-        );
-
-    if (status === "NO_CLASS_ASSIGNED")
-        return (
-            <Text className="text-2xl font-black pt-14 text-center">
-                You are not assigned to any class !
-            </Text>
-        );
+    const handleVerifyAll = () => {
+        verifyMultipleStudents(students);
+    };
 
     return (
         <View className={" pt-12 flex-1"}>
             <Header title={"Manage Students"} />
-            <Text className="text-3xl font-bold px-5 my-8">
-                {inChargeYear} {inChargeCourse}
-            </Text>
+
             <FlashList
                 data={students}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.studentId.toString()}
-                className={"px-3"}
+                className={"px-3 py-8"}
                 contentContainerStyle={{ paddingBottom: 60 }}
                 renderItem={({ item }) => (
-                    <StudentItem item={item} handlePress={handlePress} />
+                    <StudentItem
+                        item={item}
+                        handlePress={handlePress}
+                        highlight={!item.rollno || item.rollno == 0}
+                    />
                 )}
+                ListHeaderComponent={
+                    <ListHeaderComponent
+                        loading={status === "LOADING"}
+                        year={inChargeYear}
+                        course={inChargeCourse}
+                        handleVerifyAll={handleVerifyAll}
+                    />
+                }
+                ListEmptyComponent={<ListEmptyComponent status={status} />}
             />
         </View>
     );

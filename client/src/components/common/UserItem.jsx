@@ -7,9 +7,15 @@ import Header from "@components/common/Header.jsx";
 const ICON_SIZE = 18,
     DEFAULT_ICON_COLOR = "rgb(151,95,33)";
 
-const UserItem = ({ item, handlePress }) => {
+const UserItem = ({ item, handlePress, highlight }) => {
     return (
-        <TouchableOpacity onPress={()=> handlePress(item)} className="flex-row items-center justify-between bg-white rounded-3xl px-4 py-7 my-2 shadow-2xl">
+        <TouchableOpacity
+            onPress={() => handlePress(item)}
+            style={{
+                borderColor: highlight ? "red" : "transparent",
+                borderWidth: highlight ? 1 : 0
+            }}
+            className="flex-row items-center justify-between bg-white rounded-3xl px-4 py-7 my-2 shadow-2xl">
             <Text numberOfLines={1} className="text-2xl font-bold max-w-[80%]">
                 {item.fullname}
             </Text>

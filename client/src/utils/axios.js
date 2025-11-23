@@ -5,7 +5,8 @@ import { router } from "expo-router";
 import { storage, clearUser } from "./storage";
 
 // const url = process.env.EXPO_PUBLIC_API_BASE_URL;
-const url = "http://10.35.94.212:3000"
+// const url = "http://10.35.94.212:3000";
+const url = "https://dc-connect.onrender.com"
 
 console.log(url);
 
@@ -43,6 +44,7 @@ api.interceptors.response.use(
                     storage.remove("accessToken");
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();
+                    router.replace("/auth/Signin");
                 }
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {
@@ -62,11 +64,26 @@ api.interceptors.response.use(
 
                 return api(originalReq);
             } catch (err) {
-                console.error(err);
-                storage.remove("accessToken");
-                await SecureStore.deleteItemAsync("refreshToken");
-                clearUser();
-                router.replace("/auth/Signin");
+                console.error(
+                    "Refresh error:",
+                    err.response?.status,
+                    err.message
+                );
+
+                // Only logout if refresh token is invalid/expired
+                const status = err.response?.status;
+
+                if (status === 401 || status === 403) {
+                    console.log("Refresh token invalid → logging out");
+                    storage.remove("accessToken");
+                    await SecureStore.deleteItemAsync("refreshToken");
+                    clearUser();
+                    router.replace("/auth/Signin");
+                    return Promise.reject(err);
+                }
+
+                // Otherwise server/network error
+                console.log("Server or network issue → do NOT log out");
                 return Promise.reject(err);
             }
         }

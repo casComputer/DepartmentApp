@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 
 import GroupItem from "@components/teacher/RollGroupItem.jsx";
 
+import { assignRollByGroup } from "@controller/teacher/students.controller.js";
+
 const RollGroup = ({ students }) => {
     const [groups, setGroups] = useState([]);
 
@@ -46,7 +48,7 @@ const RollGroup = ({ students }) => {
     };
 
     const handleSave = () => {
-        let rollNo = 1;
+        let rollno = 1;
 
         const sortedGroups = groups.map(group => {
             // Filter students assigned to this group
@@ -58,19 +60,19 @@ const RollGroup = ({ students }) => {
             groupStudents.sort((a, b) => a.fullname.localeCompare(b.fullname));
 
             // Assign roll numbers
-            const studentsWithRollNo = groupStudents.map(s => ({
+            const studentsWithrollno = groupStudents.map(s => ({
                 ...s,
-                rollNo: rollNo++
+                rollno: rollno++
             }));
 
             return {
                 ...group,
-                students: studentsWithRollNo
+                students: studentsWithrollno
             };
         });
 
-        const newStudents = sortedGroups[1].students
-        
+        const newStudents = sortedGroups[1].students;
+        assignRollByGroup({ students: newStudents });
     };
 
     return (

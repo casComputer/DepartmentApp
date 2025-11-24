@@ -19,11 +19,18 @@ export const useTeacherStore = create((set, get) => ({
                 s.studentId === studentId ? { ...s, rollno: rollno } : s
             )
         })),
-
+    updateStudentsBulk: updates =>
+    set(state => ({
+        students: state.students.map(st => ({
+            ...st,
+            rollno: updates[st.studentId] ?? null
+        }))
+    })),
     removeStudent: id =>
         set(state => ({
             students: state.students.filter(s => s.studentId !== id)
         })),
+
     inCharge: {
         course: "",
         year: ""

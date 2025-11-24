@@ -5,7 +5,10 @@ import { router } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
 import StudentItem from "@components/common/UserItem.jsx";
-import { ListEmptyComponent, ListHeaderComponent } from "@components/teacher/ManageStudentList.jsx";
+import {
+    ListEmptyComponent,
+    ListHeaderComponent
+} from "@components/teacher/ManageStudentList.jsx";
 
 import {
     fetchStudentsByClassTeacher,
@@ -34,7 +37,6 @@ const handlePress = item => {
         });
 };
 
-
 const ManageStudents = () => {
     const [status, setStatus] = useState("LOADING");
     const teacherId = useAppStore(state => state.user?.userId);
@@ -53,13 +55,12 @@ const ManageStudents = () => {
         if (teacherId) fetchStudentsByClassTeacher({ teacherId, setStatus });
     }, [teacherId]);
 
-
     const handleVerifyAll = () => {
         verifyMultipleStudents(students);
     };
 
     return (
-        <View className={" pt-12 flex-1"}>
+        <View className={" pt-12 flex-1 bg-white"}>
             <Header title={"Manage Students"} />
 
             <FlashList

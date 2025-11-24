@@ -18,7 +18,7 @@ export const ListHeaderComponent = ({
 
     return (
         <View className="flex-row justify-between items-center py-5">
-            <Text className="text-3xl font-bold">
+            <Text className="text-3xl font-bold pl-3">
                 {year} {course}
             </Text>
             {loading ? (
@@ -30,17 +30,15 @@ export const ListHeaderComponent = ({
                             router.push("(teacher)/AssignRollNumber")
                         }
                         disabled={verifying}
-                        style={{ elevation: 5 }}
-                        className="px-3 py-2 rounded-3xl bg-green-500 justify-center items-center">
+                        className="px-4 py-2 rounded-3xl bg-emerald-500 justify-center items-center">
                         <Text className="text-xl font-bold text-white">
-                            Assign RollNo
+                            Roll Number
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={handlePress}
                         disabled={verifying}
-                        style={{ elevation: 5 }}
-                        className="px-3 py-2 rounded-3xl bg-green-500 justify-center items-center">
+                        className="px-4 py-2 rounded-3xl bg-emerald-500 justify-center items-center">
                         <Text className="text-xl font-bold text-white">
                             {verifying ? "Verifying" : "Verify"}
                         </Text>

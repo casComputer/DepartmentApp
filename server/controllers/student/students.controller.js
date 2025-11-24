@@ -240,7 +240,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
 
 export const assignRollNo = async (req, res) => {
     try {
-        const { students } = req.body;
+        const { students, course, year } = req.body;
 
         if (!Array.isArray(students)) {
             return res.status(400).json({
@@ -248,6 +248,17 @@ export const assignRollNo = async (req, res) => {
                 message: "students must be an array"
             });
         }
+        
+        if(!course || !year)
+        return res.status(400).json({
+                success: false,
+                message: "course and year is not provided"
+            });
+        
+        await turso.execute(
+            `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
+            [course, year]
+        );
 
         const errors = [];
         const success = [];

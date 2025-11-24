@@ -57,6 +57,26 @@ export const clearUser = () => {
 
 updateUser(getUser());
 
+export const bulkAssignRollNumbers = ({ assignedList, key }) => {
+    const raw = storage.getString(key);
+    if (!raw) return false;
+
+    let students = JSON.parse(raw);
+
+    const assignedMap = {};
+    assignedList.forEach(item => {
+        assignedMap[item.studentId] = item.rollno;
+    });
+
+    students = students.map(st => ({
+        ...st,
+        rollno: assignedMap[st.studentId] ?? null
+    }));
+
+    storage.set(key, JSON.stringify(students));
+    return true;
+};
+
 /*
 =======
 common

@@ -1,7 +1,9 @@
 import express from "express";
 
 import { turso } from "../config/turso.js";
-import { cancelStudentVerification, fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails, verifyStudent, verifyMultipleStudents, autoAssignRollNoAlphabetically, assignRollNo } from "../controllers/student/students.controller.js"
+
+import { cancelStudentVerification, fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails, verifyStudent, verifyMultipleStudents } from "../controllers/student/students.controller.js"
+import {  autoAssignRollNoAlphabetically, assignGroupedRollNo } from "../controllers/student/rollno.controller.js"
 
 const router = express.Router();
 
@@ -19,6 +21,6 @@ router.post("/verifyMultipleStudents", verifyMultipleStudents);
 
 router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically );
 
-router.post("/assignGroupedRollNo", assignRollNo );
+router.post("/assignGroupedRollNo", assignGroupedRollNo );
 
 export default router;

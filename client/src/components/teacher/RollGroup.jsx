@@ -5,7 +5,7 @@ import GroupItem from "@components/teacher/RollGroupItem.jsx";
 
 import { assignRollByGroup } from "@controller/teacher/students.controller.js";
 
-const RollGroup = ({ students }) => {
+const RollGroup = ({ students, inCharge, setLoading }) => {
     const [groups, setGroups] = useState([]);
 
     const getAssignedMap = () => {
@@ -47,7 +47,8 @@ const RollGroup = ({ students }) => {
         ]);
     };
 
-    const handleSave = () => {
+    const handleSave = async() => {
+        setLoading(true)
         let rollno = 1;
 
         const sortedGroups = groups.map(group => {
@@ -71,12 +72,12 @@ const RollGroup = ({ students }) => {
             };
         });
 
-        const newStudents = sortedGroups[1].students;
-        assignRollByGroup({ students: newStudents });
+        await assignRollByGroup({ students: sortedGroups, course:inCharge.course, year: inCharge.year });
+        setLoading(false)
     };
 
     return (
-        <View className="w-full mt-5 px-3">
+        <View className="w-full px-3">
             <Text className="text-3xl font-bold py-3">Create Groups</Text>
 
             <TouchableOpacity
@@ -87,10 +88,16 @@ const RollGroup = ({ students }) => {
             </TouchableOpacity>
 
             {groups.length === 0 ? (
-                <Text className="font-bold text-lg text-center">
-                    Create groups to organize Students.{"\n"}Sorting follows the
-                    order in which groups are created.
-                </Text>
+                <>
+                    <Text className="font-bold text-lg text-center">
+                        Create groups to organize Students.{"\n"}Sorting follows
+                        the order in which groups are created.
+                    </Text>
+                    <Text className="mt-3 font-bold text-lg text-center text-orange-500">
+                        Note: This will remove already assigned roll umber for
+                        all students in this class
+                    </Text>
+                </>
             ) : (
                 <>
                     {groups.map(g => (

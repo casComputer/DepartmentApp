@@ -248,13 +248,13 @@ export const assignRollNo = async (req, res) => {
                 message: "students must be an array"
             });
         }
-        
-        if(!course || !year)
-        return res.status(400).json({
+
+        if (!course || !year)
+            return res.status(400).json({
                 success: false,
-                message: "course and year is not provided"
+                message: "course or year is not provided"
             });
-        
+
         await turso.execute(
             `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
             [course, year]

@@ -19,7 +19,10 @@ const infoText = "Note: Auto-assigning will reset existing roll numbers.";
 
 const AssignRoleNumber = () => {
     const inCharge = useTeacherStore(state => state.inCharge);
-    const students = useTeacherStore(state => state.students);
+    const getVerifiedStudents = useTeacherStore(
+        state => state.getVerifiedStudents
+    );
+    const students = getVerifiedStudents();
     const [loading, setLoading] = useState(false);
 
     const handleAlphebetic = () => {
@@ -44,17 +47,18 @@ const AssignRoleNumber = () => {
             contentContainerStyle={{
                 paddingBottom: 70
             }}
-            className="pt-12 px-3 bg-white ">
-            
+            className="pt-12 px-3 bg-white "
+        >
             <Header />
-            
+
             {loading && <ActivityIndicator size="large" color="#000" />}
-           
+
             <Info text={infoText} />
 
             <TouchableOpacity
                 onPress={handleAlphebetic}
-                className="w-full justify-center items-center py-7 rounded-full bg-emerald-500  mt-3">
+                className="w-full justify-center items-center py-7 rounded-full bg-emerald-500  mt-3"
+            >
                 <Text className="text-white text-2xl font-bold">
                     Alphabetical Order
                 </Text>
@@ -62,7 +66,11 @@ const AssignRoleNumber = () => {
 
             <Text className="text-2xl font-semibold text-center my-8">OR</Text>
 
-            <Grouping students={students} inCharge={inCharge} setLoading={setLoading} />
+            <Grouping
+                students={students}
+                inCharge={inCharge}
+                setLoading={setLoading}
+            />
         </ScrollView>
     );
 };

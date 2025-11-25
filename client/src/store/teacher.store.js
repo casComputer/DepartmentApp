@@ -74,6 +74,12 @@ export const useTeacherStore = create((set, get) => ({
             return { students: updated };
         }),
 
+    
+    getVerifiedStudents: () => {
+        const { students } = get();
+        return students.filter(s => Boolean(s.is_verified));
+    },
+
     // incharge
 
     setInCharge: (course, year) =>

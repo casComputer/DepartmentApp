@@ -77,6 +77,18 @@ export const bulkAssignRollNumbers = ({ assignedList, key }) => {
     return true;
 };
 
+export const saveStudentsCount = ({ count, course, year }) => {
+    if (!course || !year) return;
+    storage.set(`${year}-${course}-count`, count.toString());
+    console.log(`[save] ${year}-${course}: ${count}`);
+};
+
+export const getStudentCount = ({ course, year }) => {
+    if (!course || !year) return 0;
+    const value = parseInt(storage.getString(`${year}-${course}-count`), 10);
+    return Number.isNaN(value) ? 0 : value;
+};
+
 /*
 =======
 common
@@ -92,5 +104,6 @@ TEACHER
 ========
 students
 in_charge
+
 
 */

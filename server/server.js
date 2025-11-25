@@ -7,7 +7,7 @@ import attendanceRoutes from "./routes/attendance.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import classRoutes from "./routes/class.routes.js";
 
-import { authenticateToken } from "./utils/auth.utils.js";
+import { authenticateToken } from "./middleware/authentication.middleware.js";
 
 const app = express();
 const PORT = 3000;

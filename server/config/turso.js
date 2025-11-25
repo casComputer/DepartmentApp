@@ -18,7 +18,8 @@ const createAllTables = () => {
         is_verified BOOLEAN DEFAULT FALSE,
         rollno integer default NULL,
         
-        UNIQUE (course, year_of_study, rollno)
+        UNIQUE (course, year_of_study, rollno),
+        CHECK (is_verified = 1 OR rollno IS NULL)
     );
     `);
 
@@ -78,8 +79,5 @@ const insertDefaultValues = () => {
             ('Bsc', 'Fourth', 0),
     `);
 };
-
-
-
 
 

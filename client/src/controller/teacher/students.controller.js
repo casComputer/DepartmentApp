@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
 
 import { useTeacherStore } from "@store/teacher.store.js";
-import { storage } from "@utils/storage.ts";
+import { saveStudentsCount } from "@utils/storage.ts";
 
 export const assignRollByGroup = async ({ students, year, course }) => {
     try {
@@ -161,27 +161,23 @@ export const cancelStudentVerification = async ({ studentId }) => {
     }
 };
 
-export const fetchStudentsByClass = async ({ course, year, setStudents }) => {
+export const fetchStudentsByClass = async ({ course, year }) => {
     try {
         const res = await axios.post("/student/fetchStudentsByClass", {
             course,
             year
         });
-        const numberOfStudents = res.data.numberOfStudents;
+        
 
-        const studentsArray = Array.from(
-            { length: numberOfStudents },
-            (_, index) => ({
-                id: index + 1,
-                isSelected: false
-            })
-        );
+        const numberOfStudents = res.data?.numberOfStudents;
+        console.log(numberOfStudents)
+        saveStudentsCount({ count: numberOfStudents, year, course})
 
-        setStudents(studentsArray);
+        return numberOfStudents
     } catch (error) {
-        console.error(error.response.data);
+        console.error(error);
         ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
-        return false;
+        return 0;
     }
 };
 
@@ -201,12 +197,6 @@ export const fetchStudentsByClassTeacher = async ({ teacherId, setStatus }) => {
                     year: data?.year
                 }
             });
-
-            storage.set("students", JSON.stringify(data.students));
-            storage.set(
-                "in_charge",
-                JSON.stringify({ course: data?.course, year: data?.year })
-            );
 
             setStatus("HAS_STUDENTS");
             return null;

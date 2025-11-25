@@ -6,22 +6,30 @@ const ITEM_SIZE = (vw - 6 * 10) / 5;
 
 import CheckBox from "@components/common/CheckBox.jsx";
 
-export const AttendanceItem = ({ item }) => {
+export const AttendanceItem = ({ item, toggleAttendance }) => {
     return (
         <TouchableOpacity
             style={{
                 width: ITEM_SIZE,
                 height: ITEM_SIZE,
                 margin: 6,
-                marginVertical: 10
+                marginVertical: 10,
+                elevation: 3, // mmm
+                borderRadius: ITEM_SIZE / 2,
+                backgroundColor: item.present ? 'rgb(196, 181, 253)' : 'white',
+                justifyContent: 'center',
+                alignItems: 'center',
+                
             }}
-            className="rounded-full justify-center items-center bg-white">
+            onPress={() => toggleAttendance(item?.id)}
+        >
             <Text
+            
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                style={{ fontSize: vw * 0.08 }}
-                className="font-black text-center">
-                {item.id}
+                style={{ fontSize: 30, fontWeight: "900", textAlign: "center" }}
+            >
+                {item?.id}
             </Text>
         </TouchableOpacity>
     );

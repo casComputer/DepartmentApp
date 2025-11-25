@@ -19,7 +19,7 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
     // Compute available students for a specific group
     const getAvailableStudents = groupId => {
         const assigned = getAssignedMap();
-
+        
         return students.filter(
             s => !assigned[s.studentId] || assigned[s.studentId] === groupId
         );

@@ -8,7 +8,7 @@ const ICON_SIZE = 26,
 const Header = ({ title }) => {
     return (
         <View className="flex-row items-center px-2 bg-transparent">
-            <TouchableOpacity className="p-2" onPress={() => router.back()}>
+            <TouchableOpacity className="p-1" onPress={() => router.back()}>
                 <MaterialIcons
                     name="arrow-back-ios-new"
                     size={ICON_SIZE}
@@ -16,7 +16,7 @@ const Header = ({ title }) => {
                     style={{ fontWeight: "bold" }}
                 />
             </TouchableOpacity>
-            <Text className="text-[10vw] font-bold px-2">{title}</Text>
+            <Text className="text-[10vw] font-bold">{title}</Text>
         </View>
     );
 };

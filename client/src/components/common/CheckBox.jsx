@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import Animated, {
     useSharedValue,
     withSpring,
-    withTiming,
     useAnimatedStyle
 } from "react-native-reanimated";
 
@@ -24,7 +23,7 @@ const AnimatedCheckbox = ({
             damping: 12,
             stiffness: 150
         });
-    }, [checked]);
+    }, [checked, fill]);
 
     const bgStyle = useAnimatedStyle(() => {
         return {
@@ -51,9 +50,10 @@ const AnimatedCheckbox = ({
                         {
                             flex: 1,
                             borderWidth: 1,
-                            borderRadius: 8,
+                            borderRadius: 5,
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
+                            borderColor: inactiveBorderColor
                         },
                         bgStyle
                     ]}>

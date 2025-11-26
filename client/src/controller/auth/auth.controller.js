@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { storage, setUser } from "@utils/storage";
 
 const API_URL =
-    process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.20.90:3000";
+	process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
 
 const authController = async data => {
     try {

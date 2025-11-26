@@ -26,6 +26,11 @@ const Attendance = () => {
     return (
         <ScrollView className="flex-1 py-12" contentContainerStyle={{ paddingBottom:  100,}}>
             <Header title="Attendance" />
+            <TouchableOpacity
+                onPress={() => router.push('/(teacher)/(others)/AttendanceHistory')}
+                className="mt-4 ml-5">
+                <Text className="text-2xl text-blue-500 font-bold">History</Text>
+            </TouchableOpacity>
             <View className="px-5 mt-5">
                 <Select
                     title="Year"

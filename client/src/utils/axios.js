@@ -52,13 +52,15 @@ api.interceptors.response.use(
                 });
 
                 storage.set("accessToken", data.accessToken);
-                await SecureStore.setItemAsync(
-                    "refreshToken",
-                    data.refreshToken,
-                    {
-                        keychainAccessible: SecureStore.WHEN_UNLOCKED
-                    }
-                );
+
+                // ======= temporary removed token rotaion =======
+                // await SecureStore.setItemAsync(
+                //     "refreshToken",
+                //     data.refreshToken,
+                //     {
+                //         keychainAccessible: SecureStore.WHEN_UNLOCKED
+                //     }
+                // );
 
                 originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
 

@@ -2,8 +2,9 @@ import express from "express";
 
 import { turso } from "../config/turso.js";
 
-import { cancelStudentVerification, fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails, verifyStudent, verifyMultipleStudents } from "../controllers/student/students.controller.js"
-import {  autoAssignRollNoAlphabetically, assignGroupedRollNo } from "../controllers/student/rollno.controller.js"
+import { fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails,  } from "../controllers/student/students.controller.js"
+import { autoAssignRollNoAlphabetically, assignGroupedRollNo } from "../controllers/student/rollno.controller.js"
+import { verifyStudent, verifyMultipleStudents, cancelStudentVerification } from "../controllers/student/verification.controller.js"
 
 const router = express.Router();
 

@@ -7,12 +7,14 @@ import {
     ActivityIndicator
 } from "react-native";
 
+import CheckBox from "@components/common/CheckBox.jsx";
+
 const { width: vw } = Dimensions.get("window");
+
 export const ITEM_SIZE = (vw - 6 * 10) / 5,
     MARGIN_X = 6,
     MARGIN_Y = 10;
 
-import CheckBox from "@components/common/CheckBox.jsx";
 
 export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
     return (
@@ -22,15 +24,17 @@ export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
                 height: ITEM_SIZE,
                 marginHorizontal: MARGIN_X,
                 marginVertical: MARGIN_Y,
-                elevation: 3,
+                elevation: 4,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
                 borderRadius: ITEM_SIZE / 2,
                 backgroundColor: item.present ? "rgb(196, 181, 253)" : "white",
                 justifyContent: "center",
                 alignItems: "center"
             }}
-            delayLongPress={150}
-            onLongPress={() => (isSelecting.value = true)}
-            onPress={() => toggleAttendance(item.id)}>
+            onPress={() => toggleAttendance(item.rollno)}>
             <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
@@ -39,7 +43,7 @@ export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
                     fontWeight: "900",
                     textAlign: "center"
                 }}>
-                {item.id}
+                {item.rollno}
             </Text>
         </TouchableOpacity>
     );
@@ -77,3 +81,13 @@ export const ListEmptyComponent = () => (
         more details.
     </Text>
 );
+
+export const AttendanceHistoryRenderItem = ({ item })=>{
+    return(
+
+        <View>
+            <Text>{
+            item.course} {item.year}</Text>
+        </View>
+    )
+}

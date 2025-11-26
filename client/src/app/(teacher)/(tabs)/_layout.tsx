@@ -15,7 +15,7 @@ export default function TabLayout() {
     useEffect(() => {
         loadStudents();
         loadInCharge();
-    }, []);
+    }, [loadInCharge, loadStudents]);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>

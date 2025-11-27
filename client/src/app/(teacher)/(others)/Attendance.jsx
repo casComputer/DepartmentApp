@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, ToastAndroid, Alert } from "react-native";
+import { View, ToastAndroid } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -10,10 +10,8 @@ import {
     AttendanceItem
 } from "@components/teacher/Attendance";
 
-import {
-    saveAttendance,
-    fetchStudentsForAttendance
-} from "@controller/teacher/attendance.controller.js";
+import { fetchStudentsByClass } from "@controller/teacher/students.controller.js";
+import { saveAttendance } from "@controller/teacher/attendance.controller.js";
 
 import { getStudentCount } from "@utils/storage";
 

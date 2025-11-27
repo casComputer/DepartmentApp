@@ -7,6 +7,7 @@ const ICON_SIZE = 26,
 
 const Header = ({ title }) => {
     return (
+
         <View className="flex-row items-center px-2 self-start">
             <TouchableOpacity className="p-1" onPress={() => router.back()}>
                 <MaterialIcons

@@ -41,6 +41,7 @@ const Attendance = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
             <View className="px-5 mt-5">
                 <Select
                     title="Year"

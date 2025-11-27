@@ -8,6 +8,7 @@ import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.
 import { FlashList } from "@shopify/flash-list";
 
 const AttendanceHistory = () => {
+
     const limit = 10;
     const {
         data,
@@ -53,6 +54,7 @@ const AttendanceHistory = () => {
             />
         </View>
     );
+
 };
 
 export default AttendanceHistory;

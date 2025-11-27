@@ -16,6 +16,7 @@ export const ITEM_SIZE = (vw - 6 * 10) / 5,
     MARGIN_X = 6,
     MARGIN_Y = 10;
 
+
 export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
     return (
         <TouchableOpacity
@@ -43,6 +44,7 @@ export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
                     fontWeight: "900",
                     textAlign: "center",
                     width: "90%"
+
                 }}>
                 {item.rollno}
             </Text>

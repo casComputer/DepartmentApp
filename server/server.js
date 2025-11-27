@@ -7,6 +7,8 @@ import attendanceRoutes from "./routes/attendance.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import classRoutes from "./routes/class.routes.js";
 
+import data from  "./cron/attendance.js"
+
 import { authenticateToken } from "./middleware/authentication.middleware.js";
 
 const app = express();
@@ -21,6 +23,7 @@ app.use("/admin", adminRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);
 app.use("/class", classRoutes);
+
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });

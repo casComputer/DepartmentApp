@@ -36,6 +36,9 @@ export const revokeRefreshToken = async userId => {
 
 export const generateTokens = (userId, role) => {
     const payload = { userId, role };
+    
+    if(!userId || !role) throw new Error('token payloads were undefined')
+    
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRES || "1m"
     });

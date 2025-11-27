@@ -64,7 +64,7 @@ const Avatar = ({ fullname, username }) => (
     </>
 );
 
-const Inputs = ({ fullname, rollno, username, setRoll }) => {
+const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
     return (
         <View>
             <View className="w-full rounded-full border-black border mt-5">
@@ -91,12 +91,11 @@ const Inputs = ({ fullname, rollno, username, setRoll }) => {
                     }}
                     className="text-black flex-1 font-bold px-5 py-5 rounded-full"
                     value={`${rollno}`}
+                    disabled={!is_verified}
                     keyboardType="number-pad"
                     onChangeText={(rollno)=>{
-                        let cleaned = (rollno ?? "").toString().replace(/\D+/g, "");
-
+                        let cleaned = (rollno ?? "").toString().replace(/\D+/g, "")
                         if (cleaned.length > 1) cleaned = cleaned.replace(/^0+/, "");
-                        
                         setRoll(cleaned)
                     }}
                 />
@@ -169,6 +168,7 @@ const VerifyStudent = () => {
                 rollno={roll}
                 setRoll={setRoll}
                 username={username}
+                is_verified={is_verified}
             />
 
             <View className="flex-row gap-3 mt-10 px-3 ">

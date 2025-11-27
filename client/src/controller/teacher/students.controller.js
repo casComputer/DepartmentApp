@@ -147,13 +147,17 @@ export const verifyStudent = async ({ studentId }) => {
 
 export const cancelStudentVerification = async ({ studentId }) => {
     try {
+            ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
         const res = await axios.post("/student/cancelStudentVerification", {
             studentId
         });
         if (res.data.success) {
             useTeacherStore.getState().removeStudent(studentId);
             ToastAndroid.show("Removed student", ToastAndroid.SHORT);
+            
             router.back();
+        }else{
+            ToastAndroid.show(`Student couldn't removed: ${res.data?.message} `, ToastAndroid.SHORT);
         }
     } catch (error) {
         console.error("Error while removing student: ", error);

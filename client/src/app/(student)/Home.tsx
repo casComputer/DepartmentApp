@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {  ScrollView } from "react-native";
 import React from "react";
 
-import Header from "@components/student/home/Header";
+import Header from "@components/common/HomeHeader.jsx";
 import TodaysMiniAttentdenceCard from "@components/student/home/TodaysMiniAttentdenceCard";
 import MonthlyAttendenceMiniReport from "@components/student/home/MonthlyAttendenceMiniReport";
 import StudentOptions from "@components/student/home/StudentOptions";

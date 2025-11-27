@@ -8,7 +8,7 @@ import {
     generateTokens
 } from "../../utils/token.utils.js";
 
-const refreshToken = async (req, res) => {
+export const refreshTokenRotation = async (req, res) => {
     const { refreshToken: clientRefreshToken } = req.body;
     if (!clientRefreshToken)
         return res.status(401).json({ message: "No token provided" });
@@ -50,4 +50,32 @@ const refreshToken = async (req, res) => {
     );
 };
 
-export default refreshToken;
+export const refreshAccessToken = async (req, res) => {
+    const { refreshToken: clientRefreshToken } = req.body;
+    if (!clientRefreshToken)
+        return res.status(401).json({ message: "No token provided" });
+
+    jwt.verify(
+        clientRefreshToken,
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        (err, user) => {
+            if (err)
+                return res
+                    .status(403)
+                    .json({ message: "Invalid or expired token" });
+
+            const userId = user.userId;
+            const role = user.role;
+
+            // create a new ACCESS TOKEN
+            const accessToken = jwt.sign(
+                { userId, role },
+                process.env.JWT_ACCESS_TOKEN_SECRET,
+                { expiresIn: "15m" }
+            );
+
+            return res.json({ accessToken });
+        }
+    );
+};
+

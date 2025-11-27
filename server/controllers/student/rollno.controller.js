@@ -1,6 +1,4 @@
 import { turso } from "../../config/turso.js";
-import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
-
 
 export const autoAssignRollNoAlphabetically = async (req, res) => {
     try {

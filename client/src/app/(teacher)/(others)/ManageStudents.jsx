@@ -50,8 +50,8 @@ const ManageStudents = () => {
         return () => clearTimeout(t);
     }, []);
 
-    const handleVerifyAll = () => {
-        verifyMultipleStudents(students);
+    const handleVerifyAll = async () => {
+        await verifyMultipleStudents(students);
     };
 
     const safeData = Array.isArray(students) ? students : [];

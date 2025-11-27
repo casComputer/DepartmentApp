@@ -148,6 +148,7 @@ export const verifyStudent = async ({ studentId }) => {
 export const cancelStudentVerification = async ({ studentId }) => {
     try {
         ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
+
         const res = await axios.post("/student/cancelStudentVerification", {
             studentId
         });
@@ -171,7 +172,6 @@ export const cancelStudentVerification = async ({ studentId }) => {
 // note: use this as current user as class teacher
 export const fetchStudentsByClassTeacher = async ({ teacherId, setStatus }) => {
     try {
-
         const { data } = await axios.post(
             "/student/fetchStudentsByClassTeacher",
             { teacherId }

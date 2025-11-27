@@ -3,43 +3,33 @@ import { turso } from "../config/turso.js";
 
 const router = express.Router();
 
-router.post("/save", async(req, res) => {
-
-	try{
-		const { attendance, course, year, teacherId, hour } = req.body;
-        console.log("inserting..")
-        console.log(req.body)
-		await turso.execute("insert into attendance (course, year, hour, date, timestamp, teacherId) values (?, ?, ? , ?, ?, ?)", ['Bca', year, hour, 'date', 'time', teacherId])
-		console.log("inserted")
-	} catch(err){
-		console.error(err)
-	}
-
-})
 
 router.post("/save", async (req, res) => {
-     const tx = await turso.transaction(); 
-   
+     const tx = await turso.transaction('write');
 
     try {
         const { attendance, course, year, teacherId, hour } = req.body;
-        
-        console.log("REQ BODY:", req.body);
 
         const date = new Date().toISOString().slice(0, 10);
         const timestamp = new Date().toISOString().replace("T", " ").slice(0, 19);
-
+        
+        const present = attendance.filter((r) => r.present);
+        const absent = attendance.filter((r) => !r.present);
+        
+        const pCount = present?.length || 0, aCount = absent?.length || 0
         
 
+
+        
         // Insert into main attendance table
         const insertAttendance =
-            `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId)
-             VALUES (?, ?, ?, ?, ?, ?)`;
+            `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        const result = await tx.execute(insertAttendance, [
-            'Bca', year, hour, date, timestamp, teacherId
-        ]);
-
+        const result = await tx.execute({
+        	sql: insertAttendance, 
+        	args: [ course, year, hour, date, timestamp, teacherId, pCount, aCount]
+        });
         
         const attendanceId = result.lastInsertRowid;
 
@@ -48,15 +38,19 @@ router.post("/save", async (req, res) => {
             `INSERT INTO attendance_details (attendanceId, studentId, status)
              VALUES (?, ?, ?)`;
              
-        const present = attendance.filter((r) => r.present);
-        const absent = attendance.filter((r) => !r.present);
-
+        
         for (const s of present) {
-            await tx.execute(insertDetail, [attendanceId, s.studentId, "present"]);
+            await tx.execute({
+            	sql: insertDetail, 
+            	args: [attendanceId, s.studentId, "present"]
+            });
         }
 
         for (const s of absent) {
-            await tx.execute(insertDetail, [attendanceId, s.studentId, "absent"]);
+            await tx.execute({
+            	sql: insertDetail, 
+            	args: [attendanceId, s.studentId, "absent"]
+            });
         }
 
  
@@ -91,27 +85,26 @@ router.post("/getAttandanceTakenByTeacher", async (req, res) => {
 		const { teacherId, page = 1, limit = 10 } = req.body;
 		const offset = (page - 1) * limit;
 
-		const { rows } = await turso.execute(
+		const { rows: attendance } = await turso.execute(
 			"SELECT * FROM attendance WHERE teacherId = ? ORDER BY date DESC LIMIT ? OFFSET ?",
 			[teacherId, limit, offset]
 		);
-
-		let attendance = rows.map((item) => {
-			return {
-				...item,
-				present: JSON.parse(item.present || "[]"),
-				absent: JSON.parse(item.absent || "[]"),
-				late_present: JSON.parse(item.late_present || "[]"),
-			};
-		});
+		
+		console.log(attendance)
+	
+		// extra data for infinite scrolling
 
 		const totalCountResult = await turso.execute(
 			"SELECT COUNT(*) as count FROM attendance WHERE teacherId = ?",
 			[teacherId]
 		);
 		const totalCount = totalCountResult.rows[0].count;
+		
+		console.log("total count")
 
 		const hasMore = page * limit < totalCount;
+
+		console.log('hasmore ', hasMore)
 
 		res.json({
 			success: true,
@@ -150,48 +143,9 @@ router.post("/fetchStudentsForAttendance", async (req, res)=>{
 	}
 })
 
+		
+	
 
 
 
-
-
-
-
-
-
-console.log(await turso.execute("pragma table_info(attendance_details)"))
-
-
-
-await turso.execute(`
-
-CREATE TABLE IF NOT EXISTS attendance (
-    attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
-    course TEXT NOT NULL,
-    year TEXT NOT NULL,
-    hour INTEGER NOT NULL,
-    date DATE NOT NULL,
-    timestamp TEXT NOT NULL,
-    teacherId TEXT NOT NULL,
-    UNIQUE (course, year, hour, date)  -- prevent double attendance
-);`
-)
-
-turso.execute(`
-CREATE TABLE IF NOT EXISTS attendance_details (
-    attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
-    attendanceId INTEGER NOT NULL,
-    studentId TEXT NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('present','absent')),
-    FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
-    FOREIGN KEY (studentId) REFERENCES students(studentId)
-);
-
-
-`)
-
-
-
-
-
-export default router;
+export default router; 

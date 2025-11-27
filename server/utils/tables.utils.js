@@ -53,35 +53,41 @@ const createAllTables = () => {
 
 	
 
-   
-	turso.execute(`  
-		CREATE TABLE attendance (
+		
+	await turso.execute(`
+		CREATE TABLE IF NOT EXISTS attendance (
 			attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
 			course TEXT NOT NULL,
 			year TEXT NOT NULL,
 			hour TEXT NOT NULL,
-			date TEXT NOT NULL,
+			date DATE NOT NULL,
 			timestamp TEXT NOT NULL,
 			teacherId TEXT NOT NULL,
+			present_count int not null default 0,
+			absent_count int not null default 0,
+			late_count int not null default 0,
+			strength INTEGER
+      			GENERATED ALWAYS AS (present_count + absent_count + late_count) STORED,
 			
+			UNIQUE (course, year, hour, date),
 			FOREIGN KEY (course, year) REFERENCES classes(course, year),
 			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId)
-		); 
-	`)
+		);`
+	)
 
-    
+
+
 	turso.execute(`
-		CREATE TABLE attendance_details (
+		CREATE TABLE IF NOT EXISTS attendance_details (
 			attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
 			attendanceId INTEGER NOT NULL,
 			studentId TEXT NOT NULL,
-			status TEXT NOT NULL CHECK (status IN ('present', 'absent', 'late')),
-
+			status TEXT NOT NULL CHECK (status IN ('present','absent', 'late')),
+			
 			FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
 			FOREIGN KEY (studentId) REFERENCES students(studentId)
 		);
 	`)
-
 
 };
 

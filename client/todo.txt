@@ -2,3 +2,6 @@ cancel teacher verification
 
 add rn responsive font lib
 likely to migrate from ToastAndroid
+
+option editable for editing attendence that taken within 10min
+delete all related attendence docs of a class when auto assign rollno

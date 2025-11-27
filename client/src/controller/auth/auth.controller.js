@@ -1,10 +1,14 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-import { storage, setUser } from "@utils/storage";
+import { storage } from "@utils/storage.js";
+import { useAppStore } from "@store/app.store.js";
 
-const API_URL =
-	process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
+let API_URL =
+    process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
+
+// API_URL = "http://10.35.94.212:3000"
+console.log(API_URL);
 
 const authController = async data => {
     try {
@@ -14,10 +18,11 @@ const authController = async data => {
 
         if (response?.data?.success) {
             const { refreshToken, accessToken, user } = response.data;
-            
+
             await SecureStore.setItemAsync("refreshToken", refreshToken);
             storage.set("accessToken", accessToken);
-            setUser({ ...user });
+            console.log(user);
+            useAppStore.getState().setUser({ ...user });
 
             return { success: true, message: "Authentication Successful" };
         }

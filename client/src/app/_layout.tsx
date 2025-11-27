@@ -6,7 +6,34 @@ import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import queryClient from "@utils/queryClient";
-import { useAppStore } from "../store/app.store";
+import { useAppStore } from "@store/app.store.js";
+import { getUser } from "@storage/user.storage.js";
+
+useAppStore.getState().hydrateUser(getUser());
+
+const Layout = ({ userId, role }) => (
+    <Stack
+        screenOptions={{
+            headerShown: false,
+            animation: "slide_from_right"
+        }}>
+        <Stack.Protected guard={!userId || role === "unknown"}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="auth/Signin" />
+            <Stack.Screen name="auth/Signup" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={userId !== "" && role === "student"}>
+            <Stack.Screen name="(student)" />
+        </Stack.Protected>
+        <Stack.Protected guard={userId !== "" && role === "admin"}>
+            <Stack.Screen name="(admin)/(tabs)" />
+        </Stack.Protected>
+        <Stack.Protected guard={userId !== "" && role === "teacher"}>
+            <Stack.Screen name="(teacher)/(tabs)" />
+        </Stack.Protected>
+    </Stack>
+);
 
 export default function RootLayout() {
     const theme = useColorScheme();
@@ -14,12 +41,10 @@ export default function RootLayout() {
     let userId = useAppStore(state => state.user.userId);
     let role = useAppStore(state => state.user.role);
 
-    // let userId = "",
-    // role = "unknown";
+    // (userId = ""), (role = "unknown");
 
     React.useEffect(() => {
         if (!mounted) return;
-        console.log(!userId || !role || role == "unknown");
         if (!userId || !role || role == "unknown")
             router.replace("Auth/SignIn");
         setMounted(true);
@@ -31,29 +56,7 @@ export default function RootLayout() {
         <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
             <StatusBar style="auto" animated />
             <QueryClientProvider client={queryClient}>
-                <Stack
-                    screenOptions={{
-                        headerShown: false,
-                        animation: "slide_from_right"
-                    }}>
-                    <Stack.Protected guard={!userId || role === "unknown"}>
-                        <Stack.Screen name="index" />
-                        <Stack.Screen name="auth/Signin" />
-                        <Stack.Screen name="auth/Signup" />
-                    </Stack.Protected>
-
-                    <Stack.Protected
-                        guard={userId !== "" && role === "student"}>
-                        <Stack.Screen name="(student)" />
-                    </Stack.Protected>
-                    <Stack.Protected guard={userId !== "" && role === "admin"}>
-                        <Stack.Screen name="(admin)/(tabs)" />
-                    </Stack.Protected>
-                    <Stack.Protected
-                        guard={userId !== "" && role === "teacher"}>
-                        <Stack.Screen name="(teacher)/(tabs)" />
-                    </Stack.Protected>
-                </Stack>
+                <Layout userId={userId} role={role} />
             </QueryClientProvider>
         </View>
     );

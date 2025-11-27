@@ -13,12 +13,12 @@ const CircularProgress = ({
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-    const normalizedProgress = Math.min(progress, maxProgress);
+    const normalizedProgress = Number(Math.min(progress, maxProgress)?.toFixed(1));
     const strokeDashoffset =
         circumference - (normalizedProgress / maxProgress) * circumference;
 
     return (
-        <View className="justify-center items-center ">
+        <View className="justify-center items-center flex-1">
             <Svg width={size} height={size}>
                 {/* Background circle */}
                 <Circle

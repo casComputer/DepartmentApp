@@ -1,4 +1,4 @@
-import {  ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import React from "react";
 
 import Header from "@components/common/HomeHeader.jsx";
@@ -7,14 +7,20 @@ import MonthlyAttendenceMiniReport from "@components/student/home/MonthlyAttende
 import StudentOptions from "@components/student/home/StudentOptions";
 
 const Home = () => {
-  return (
-    <ScrollView contentContainerStyle={{ paddingTop: 60, paddingBottom: 150 }} >
-      <Header />
-      <TodaysMiniAttentdenceCard />
-      <MonthlyAttendenceMiniReport />
-      <StudentOptions />
-    </ScrollView>
-  );
+    return (
+        <ScrollView
+            contentContainerStyle={{
+                paddingTop: 60,
+                paddingBottom: 150,
+                backgroundColor: "white",
+                flexGrow: 1
+            }}>
+            <Header />
+            <TodaysMiniAttentdenceCard />
+            <MonthlyAttendenceMiniReport />
+            <StudentOptions />
+        </ScrollView>
+    );
 };
 
 export default Home;

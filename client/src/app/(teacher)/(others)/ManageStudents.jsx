@@ -15,7 +15,7 @@ import {
     verifyMultipleStudents
 } from "@controller/teacher/students.controller.js";
 
-import { useAppStore } from "@store/app.store.ts";
+import { useAppStore } from "@store/app.store.js";
 import { useTeacherStore } from "@store/teacher.store.js";
 
 const handlePress = item => {

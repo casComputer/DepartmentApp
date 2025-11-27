@@ -8,13 +8,13 @@ import {
 } from "react-native";
 
 import CheckBox from "@components/common/CheckBox.jsx";
+import CircularProgress from "@components/common/CircularProgress.jsx";
 
 const { width: vw } = Dimensions.get("window");
 
 export const ITEM_SIZE = (vw - 6 * 10) / 5,
     MARGIN_X = 6,
     MARGIN_Y = 10;
-
 
 export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
     return (
@@ -41,7 +41,8 @@ export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
                 style={{
                     fontSize: 30,
                     fontWeight: "900",
-                    textAlign: "center"
+                    textAlign: "center",
+                    width: "90%"
                 }}>
                 {item.rollno}
             </Text>
@@ -82,12 +83,78 @@ export const ListEmptyComponent = () => (
     </Text>
 );
 
-export const AttendanceHistoryRenderItem = ({ item })=>{
-    return(
+const AttendanceHistoryExtra = ({
+    present = 0,
+    absent = 0,
+    late_present = 0,
+    strength = 0
+}) => {
+    const totalPresent = present + late_present;
+    const progress = strength === 0 ? 0 : present / strength;
 
-        <View>
-            <Text>{
-            item.course} {item.year}</Text>
+    return (
+        <View className="flex-row items-center">
+            {/* LEFT */}
+            <View className="flex-1">
+                <Text numberOfLines={1} className="text-md font-semibold">
+                    Present: {present}
+                </Text>
+                <Text numberOfLines={1} className="text-md font-semibold">
+                    Absent: {absent}
+                </Text>
+                <Text numberOfLines={1} className="text-md font-semibold">
+                    Late: {late_present}
+                </Text>
+            </View>
+
+            {/* MIDDLE */}
+            <View className="flex-1 items-center">
+                <CircularProgress progress={progress * 100} />
+            </View>
+
+            {/* RIGHT */}
+            <View className="flex-1">
+                <Text
+                    numberOfLines={1}
+                    className="text-lg font-semibold text-right">
+                    Strength: {strength}
+                </Text>
+            </View>
         </View>
-    )
-}
+    );
+};
+
+export const AttendanceHistoryRenderItem = ({ item, index }) => {
+    const present = item.present_count;
+    const absent = item.absent_count;
+    const late_present = item.late_count;
+    const strength = item.strength;
+
+    console.log(index);
+
+    return (
+        <View
+            className="w-full px-4 my-2">
+            <TouchableOpacity
+                className="w-full bg-white rounded-3xl px-5 py-8"
+                style={{ elevation: 5, shadowColor: "black" }}>
+                <View className="flex-row justify-between items-center">
+                    <Text className="text-2xl font-bold">
+                        {item.year} {item.course} {"\n"}
+                        {item.hour} Hour
+                    </Text>
+                    <Text className="text-xl font-bold text-right">
+                        {item.timestamp.split(" ").join("\n")}
+                    </Text>
+                </View>
+
+                <AttendanceHistoryExtra
+                    present={present}
+                    absent={absent}
+                    late_present={late_present}
+                    strength={strength}
+                />
+           </TouchableOpacity>
+        </View>
+    );
+};

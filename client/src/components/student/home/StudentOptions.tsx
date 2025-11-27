@@ -13,8 +13,12 @@ const ICONS_SIZE = 40;
 
 const StudentOptions = () => {
     return (
-        <View className="px-6 mt-12 flex-1">
-            <View className="shadow bg-white w-full rounded-3xl gap-3 overflow-hidden py-3">
+        <View
+            
+            className="px-6 mt-12 flex-1">
+            <View
+                style={{ elevation: 3, shadowColor: "black" }}
+                className=" bg-white w-full rounded-3xl gap-3 overflow-hidden py-3">
                 {/* First Row of Options */}
                 <View className="flex-row justify-between">
                     <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1 ">
@@ -27,8 +31,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Ask Leave
                         </Text>
                     </TouchableOpacity>
@@ -42,8 +45,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Attendence
                         </Text>
                     </TouchableOpacity>
@@ -58,8 +60,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Assignment
                         </Text>
                     </TouchableOpacity>
@@ -78,8 +79,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Fees
                         </Text>
                     </TouchableOpacity>
@@ -94,8 +94,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Exam Results
                         </Text>
                     </TouchableOpacity>
@@ -118,8 +117,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Notes
                         </Text>
                     </TouchableOpacity>
@@ -134,8 +132,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Internal Marks
                         </Text>
                     </TouchableOpacity>
@@ -150,8 +147,7 @@ const StudentOptions = () => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold"
-                        >
+                            className="text-lg font-semibold">
                             Course
                         </Text>
                     </TouchableOpacity>

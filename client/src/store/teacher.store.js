@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { storage } from "@utils/storage.ts";
+import { storage } from "@utils/storage.js";
 
 const STUDENT_KEY = "students";
 
@@ -75,7 +75,7 @@ export const useTeacherStore = create((set, get) => ({
     removeStudent: id =>
         set(state => {
             const filtered = state.students.filter(s => s.studentId !== id);
-            
+
             const updated = filtered.map(s => ({ ...s, rollno: null }));
 
             storage.set(STUDENT_KEY, JSON.stringify(updated));

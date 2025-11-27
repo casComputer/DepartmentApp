@@ -5,32 +5,42 @@ import { router } from "expo-router";
 import Header from "@components/common/Header";
 import Select from "@/components/common/Select";
 
-import { YEAR, COURSES } from "@constants/ClassAndCourses";
+import { YEAR, COURSES, HOURS } from "@constants/ClassAndCourses";
 
 const Attendance = () => {
     const [selectedClass, setSelectedClass] = useState(null);
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [selectedHour, setSelectedHour] = useState(null);
 
     const handleProceed = () => {
-        if (selectedClass && selectedCourse) {
+        if (selectedClass && selectedCourse && selectedHour) {
             router.push({
                 pathname: "/(teacher)/(others)/Attendance",
                 params: {
                     year: selectedClass.id,
-                    course: selectedCourse.id
+                    course: selectedCourse.id,
+                    hour: selectedHour.id
                 }
             });
         }
     };
 
     return (
-        <ScrollView className="flex-1 py-12" contentContainerStyle={{ paddingBottom:  100,}}>
-            <Header title="Attendance" />
-            <TouchableOpacity
-                onPress={() => router.push('/(teacher)/(others)/AttendanceHistory')}
-                className="mt-4 ml-5">
-                <Text className="text-2xl text-blue-500 font-bold">History</Text>
-            </TouchableOpacity>
+        <ScrollView
+            className="flex-1 py-12"
+            contentContainerStyle={{ paddingBottom: 100 }}>
+            <View className="flex-row items-center justify-between pr-4">
+                <Header title="Attendance" />
+                <TouchableOpacity
+                    onPress={() =>
+                        router.push("/(teacher)/(others)/AttendanceHistory")
+                    }
+                    className="mt-4 ml-5">
+                    <Text className="text-3xl text-blue-500 font-bold">
+                        History
+                    </Text>
+                </TouchableOpacity>
+            </View>
             <View className="px-5 mt-5">
                 <Select
                     title="Year"
@@ -43,6 +53,12 @@ const Attendance = () => {
                     options={COURSES}
                     select={setSelectedCourse}
                     selected={selectedCourse}
+                />
+                <Select
+                    title="Hour"
+                    options={HOURS}
+                    select={setSelectedHour}
+                    selected={selectedHour}
                 />
             </View>
 

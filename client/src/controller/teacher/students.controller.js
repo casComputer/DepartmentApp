@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
 
 import { useTeacherStore } from "@store/teacher.store.js";
-import { saveStudentsCount } from "@utils/storage.ts";
+import { saveStudentsCount } from "@utils/storage.js";
 
 export const assignRollByGroup = async ({ students, year, course }) => {
     try {
@@ -147,17 +147,20 @@ export const verifyStudent = async ({ studentId }) => {
 
 export const cancelStudentVerification = async ({ studentId }) => {
     try {
-            ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
+        ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
         const res = await axios.post("/student/cancelStudentVerification", {
             studentId
         });
         if (res.data.success) {
             useTeacherStore.getState().removeStudent(studentId);
             ToastAndroid.show("Removed student", ToastAndroid.SHORT);
-            
+
             router.back();
-        }else{
-            ToastAndroid.show(`Student couldn't removed: ${res.data?.message} `, ToastAndroid.SHORT);
+        } else {
+            ToastAndroid.show(
+                `Student couldn't removed: ${res.data?.message} `,
+                ToastAndroid.SHORT
+            );
         }
     } catch (error) {
         console.error("Error while removing student: ", error);
@@ -165,29 +168,10 @@ export const cancelStudentVerification = async ({ studentId }) => {
     }
 };
 
-export const fetchStudentsByClass = async ({ course, year }) => {
-    try {
-        const res = await axios.post("/student/fetchStudentsByClass", {
-            course,
-            year
-        });
-        
-
-        const numberOfStudents = res.data?.numberOfStudents;
-        console.log(numberOfStudents)
-        saveStudentsCount({ count: numberOfStudents, year, course})
-
-        return numberOfStudents
-    } catch (error) {
-        console.error(error);
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
-        return 0;
-    }
-};
-
 // note: use this as current user as class teacher
 export const fetchStudentsByClassTeacher = async ({ teacherId, setStatus }) => {
     try {
+
         const { data } = await axios.post(
             "/student/fetchStudentsByClassTeacher",
             { teacherId }
@@ -227,6 +211,7 @@ export const fetchStudentsByClassTeacher = async ({ teacherId, setStatus }) => {
     } catch (error) {
         console.error("fetchStudentsByClassTeacher Error: ", error);
         setStatus("ERROR");
+        console.log(error.message, error.response);
         ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
         return null;
     }

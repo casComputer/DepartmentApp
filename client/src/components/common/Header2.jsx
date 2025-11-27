@@ -4,9 +4,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
-const Header = ({ onSave, saving }) => (
+const Header = ({ onSave, saving, disabled }) => (
     <View className="flex-row items-center justify-between pl-2 pr-3">
         <TouchableOpacity
+        
             className="flex-row items-center gap-0"
             onPress={() => router.back()}>
             <MaterialIcons
@@ -16,12 +17,13 @@ const Header = ({ onSave, saving }) => (
             />
             <Text
                 style={{ fontSize: RFPercentage(3.5) }}
+                
                 className="text-blue-500 font-semibold">
                 Back
             </Text>
         </TouchableOpacity>
         {onSave && (
-            <TouchableOpacity disabled={saving} onPress={onSave}>
+            <TouchableOpacity disabled={saving || disabled} onPress={onSave}>
                 <Text
                     style={{ fontSize: RFPercentage(3.5) }}
                     className="text-blue-500 font-semibold">

@@ -8,6 +8,7 @@
       "@controller/*": ["./src/controller/*"],
       "@constants/*": ["./src/constants/*"],
       "@store/*": ["./src/store/*"],
+      "@storage/*": ["./src/storage/*"],
       "@utils/*": ["./src/utils/*"],
       "@app/*": ["./src/app/*"],
       "@assets/*": ["./assets/*"]

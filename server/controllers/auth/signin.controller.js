@@ -52,6 +52,8 @@ const signinController = async (req, res) => {
 
         const tokens = generateTokens(user.userId, user.role);
         await storeRefreshToken(user.userId, tokens.refreshToken);
+        
+        console.log(user)
 
         res.json({
             success: true,

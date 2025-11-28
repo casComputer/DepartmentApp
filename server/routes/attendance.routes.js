@@ -89,7 +89,7 @@ router.post("/getAttandanceTakenByTeacher", async (req, res) => {
         const offset = (page - 1) * limit;
 
         const { rows: attendance } = await turso.execute(
-            "SELECT * FROM attendance WHERE teacherId = ? ORDER BY date DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM attendance WHERE teacherId = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?",
             [teacherId, limit, offset]
         );
 

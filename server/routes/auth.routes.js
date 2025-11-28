@@ -89,7 +89,11 @@ router.get("/report", async (req, res) => {
             LEFT JOIN attendance a
                 ON a.attendanceId = ad.attendanceId
                 AND a.date BETWEEN ? AND ?    
-            
+                
+            WHERE 
+                s.rollno IS NOT NULL
+                AND s.is_verified = true
+    
             GROUP BY s.studentId
             ORDER BY s.studentId ASC;
         `,

@@ -48,5 +48,10 @@ export const HOURS = [
         id: "Fourth",
         title: "Fourth",
         key: 4
+    },
+    {
+        id: "Fifth",
+        title: "Fifth",
+        key: 5
     }
     ]

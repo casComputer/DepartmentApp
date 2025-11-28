@@ -10,7 +10,7 @@ import {
     AttendanceItem
 } from "@components/teacher/Attendance";
 
-import { fetchStudentsByClass } from "@controller/teacher/students.controller.js";
+import { fetchStudentsForAttendance } from "@controller/teacher/attendance.controller.js";
 import { saveAttendance } from "@controller/teacher/attendance.controller.js";
 
 import { getStudentCount } from "@utils/storage";

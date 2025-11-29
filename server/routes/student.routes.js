@@ -1,6 +1,8 @@
 import express from "express";
+import { Worker } from 'worker_threads'
 
 import { turso } from "../config/turso.js";
+import AttendanceModel from "../models/monthlyAttendanceReport.js"
 
 import { fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails,  } from "../controllers/student/students.controller.js"
 import { autoAssignRollNoAlphabetically, assignGroupedRollNo } from "../controllers/student/rollno.controller.js"
@@ -34,14 +36,7 @@ router.post("/getTodaysAttendanceReport", async(req, res)=>{
 		const today = new Date();
 
 		const date = today.toISOString().slice(0, 10)
-		
-		/*
-			const day = today.getDate();
-			const weekday = today.toLocaleString('en-US', { weekday: 'long' }); 
-			const month = today.toLocaleString('en-US', { month: 'long' });
-			const year = today.getFullYear();
-		*/
-		
+	
 		const { rows } = await turso.execute(`
 			SELECT *
 				FROM attendance a
@@ -76,7 +71,24 @@ router.post("/getTodaysAttendanceReport", async(req, res)=>{
 })
 
     
-    
+router.post("/getMonthlyAttendanceMiniReport", async(req, res)=>{
+	try{
+		const { userId } = req.body
+		const data = await AttendanceModel.find({ 'studentsReport.studentId': userId })
+		
+		if(data.length > 0) {
+			
+		}
+		
+		new Worker("./workers/monthlyAttendance.js");
+		
+		
+		console.log(data)
+		
+	} catch(err){
+		console.error("Error while fetching monthly attendance report: ", err)
+	}
+})
     
    
 

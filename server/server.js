@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 
+import "./config/mongoose.js"
+
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";

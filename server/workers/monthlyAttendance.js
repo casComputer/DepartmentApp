@@ -1,5 +1,9 @@
 import { parentPort } from "worker_threads";
+
 import { turso } from "../config/turso.js";
+import AttendanceModel from "../models/monthlyAttendanceReport.js"
+
+import { getWorkingHoursThisMonth, getYYYYMMDD } from "../utils/workHour.js"
 
 (async () => {
 
@@ -35,7 +39,9 @@ import { turso } from "../config/turso.js";
         
             LEFT JOIN attendance a
                 ON a.attendanceId = ad.attendanceId
-                AND a.date BETWEEN ? AND ?    
+                AND a.date BETWEEN ? AND ?   
+                
+            WHERE s.rollno NOT NULL AND s.is_verified = true 
             
             GROUP BY s.studentId
             ORDER BY s.studentId ASC;
@@ -53,6 +59,10 @@ import { turso } from "../config/turso.js";
             approximateWorkingDays,
             studentsReport
         };
+        
+        await AttendanceModel.create(
+        	report
+        )
 
         console.log(report);
 

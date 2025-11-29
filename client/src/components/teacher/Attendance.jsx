@@ -126,13 +126,11 @@ const AttendanceHistoryExtra = ({
     );
 };
 
-export const AttendanceHistoryRenderItem = ({ item, index }) => {
+export const AttendanceHistoryRenderItem = ({ item }) => {
     const present = item.present_count;
     const absent = item.absent_count;
     const late_present = item.late_count;
     const strength = item.strength;
-
-    console.log(index);
 
     return (
         <View

@@ -3,6 +3,7 @@ import { Worker } from "worker_threads";
 
 import { turso } from "../config/turso.js";
 import AttendanceModel from "../models/monthlyAttendanceReport.js";
+import { getFirstAndLastDate, getRemainingWorkSummary } from '../utils/workHour.js'
 
 import {
     fetchStudentsByClass,
@@ -85,31 +86,42 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
     try {
         const { userId } = req.body;
         
-        const { rows } = await turso.execute(`
-            select count(Distinct(date)) as workedDays from attendance
-                where date between ? And ?`
-            , ['2025-11-01', '2025-11-31']
-        )
-        
-        const workedDays = rows[0]?.workedDays || 0
-        
-        const report = await AttendanceModel.find(
-            { "studentsReport.studentId": userId },
-            {
-                _id: 0,
-                approximateWorkingHours: 1,
-                approximateWorkingDays: 1,
-                remainingDays: 1,
-                remainingHours: 1,
-                date: 1,
-                studentsReport: { $elemMatch: { studentId: userId } }
-            }
+        const {first, last} = getFirstAndLastDate()
+
+        const { rows } = await turso.execute(
+            `
+            SELECT
+                COUNT(CASE WHEN ad.status = 'present' THEN 1 END) AS total_present,
+                COUNT(DISTINCT a.date) AS workedDays,
+                
+                (COUNT(CASE WHEN ad.status = 'present' THEN 1 END) * 100.0) 
+                    / (COUNT(DISTINCT a.date) * 5) AS percentage
+            
+            FROM attendance_details ad
+            
+            JOIN attendance a
+                ON a.attendanceId = ad.attendanceId
+            
+            WHERE ad.studentId = ?
+                AND a.date BETWEEN ? AND ?
+                
+            GROUP BY ad.studentId;`,
+            [userId, first, last]
         );
-        if (report.length > 0) {
-            return res.json({ success: true, report: {...report, workedDays} });
+        
+        console.log(first, last, userId);
+
+        const workedDays = rows[0]?.workedDays || 0;
+
+        const { remainingDays, remainingHours } = getRemainingWorkSummary();
+        
+        if (rows.length > 0) {
+            return res.json({
+                success: true,
+                report: { ...rows[0], workedDays, remainingHours, remainingDays}
+            });
         }
 
-        new Worker("./workers/monthlyAttendance.js");
         res.json({
             success: false,
             message: "No data available, try again later!"

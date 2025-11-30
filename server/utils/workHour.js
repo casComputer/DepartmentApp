@@ -130,3 +130,15 @@ export const getYYYYMMDD = () => {
 
     return `${year}-${month}-${day}`; // YYYY-MM-DD
 };
+
+export const getFirstAndLastDate = (date = new Date()) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+
+    const first = `${year}-${month}-01`;
+    const last = `${year}-${month}-31`;
+
+    return { first, last };
+};
+
+console.log(getFirstDayOfMonth());

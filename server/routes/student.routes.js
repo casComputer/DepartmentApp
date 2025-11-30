@@ -84,8 +84,17 @@ router.post("/getTodaysAttendanceReport", async (req, res) => {
 router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
     try {
         const { userId } = req.body;
+        
+        const { rows } = await turso.execute(`
+            select count(Distinct(date)) as workedDays from attendance
+                where date between ? And ?`
+            , ['2025-11-01', '2025-11-31']
+        )
+        
+        const workedDays = rows[0]?.workedDays || 0
+        
         const report = await AttendanceModel.find(
-            { "studentsReport.studentId": userId }, 
+            { "studentsReport.studentId": userId },
             {
                 _id: 0,
                 approximateWorkingHours: 1,
@@ -93,11 +102,11 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
                 remainingDays: 1,
                 remainingHours: 1,
                 date: 1,
-                studentsReport: { $elemMatch: { studentId: userId } } 
+                studentsReport: { $elemMatch: { studentId: userId } }
             }
         );
         if (report.length > 0) {
-            return res.json({ success: true, report });
+            return res.json({ success: true, report: {...report, workedDays} });
         }
 
         new Worker("./workers/monthlyAttendance.js");

@@ -1,12 +1,23 @@
 import express from "express";
-import { Worker } from 'worker_threads'
+import { Worker } from "worker_threads";
 
 import { turso } from "../config/turso.js";
-import AttendanceModel from "../models/monthlyAttendanceReport.js"
+import AttendanceModel from "../models/monthlyAttendanceReport.js";
 
-import { fetchStudentsByClass, fetchStudentsByClassTeacher, saveStudentDetails,  } from "../controllers/student/students.controller.js"
-import { autoAssignRollNoAlphabetically, assignGroupedRollNo } from "../controllers/student/rollno.controller.js"
-import { verifyStudent, verifyMultipleStudents, cancelStudentVerification } from "../controllers/student/verification.controller.js"
+import {
+    fetchStudentsByClass,
+    fetchStudentsByClassTeacher,
+    saveStudentDetails
+} from "../controllers/student/students.controller.js";
+import {
+    autoAssignRollNoAlphabetically,
+    assignGroupedRollNo
+} from "../controllers/student/rollno.controller.js";
+import {
+    verifyStudent,
+    verifyMultipleStudents,
+    cancelStudentVerification
+} from "../controllers/student/verification.controller.js";
 
 const router = express.Router();
 
@@ -22,22 +33,22 @@ router.post("/saveStudentDetails", saveStudentDetails);
 
 router.post("/verifyMultipleStudents", verifyMultipleStudents);
 
-router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically );
+router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically);
 
-router.post("/assignGroupedRollNo", assignGroupedRollNo );
+router.post("/assignGroupedRollNo", assignGroupedRollNo);
 
 // actual student routes that are accessed by students
 
-router.post("/getTodaysAttendanceReport", async(req, res)=>{
-	try{
-		const { userId } = req.body
-		
-		
-		const today = new Date();
+router.post("/getTodaysAttendanceReport", async (req, res) => {
+    try {
+        const { userId } = req.body;
 
-		const date = today.toISOString().slice(0, 10)
-	
-		const { rows } = await turso.execute(`
+        const today = new Date();
+
+        const date = today.toISOString().slice(0, 10);
+
+        const { rows } = await turso.execute(
+            `
 			SELECT *
 				FROM attendance a
 				JOIN students s
@@ -51,44 +62,56 @@ router.post("/getTodaysAttendanceReport", async(req, res)=>{
 
 			WHERE s.studentId = ?
 			AND a.date = ?
-		`,[userId, date]
-		);
+		`,
+            [userId, date]
+        );
 
-		let attendance = rows.reduce((acc, item) => {
-			acc[item.hour] = item.status;
-			return acc;
-		}, {});
+        let attendance = rows.reduce((acc, item) => {
+            acc[item.hour] = item.status;
+            return acc;
+        }, {});
 
-		res.json({
-			attendance, success: true
-		})
+        res.json({
+            attendance,
+            success: true
+        });
+    } catch (err) {
+        console.error("Error while getting daily attendance report: ", err);
+        res.json({ mesage: "internal server error", success: false });
+    }
+});
 
-		
-	} catch(err){
-		console.error("Error while getting daily attendance report: ", err)
-		res.json({ mesage:  "internal server error" , success: false })
-	}
-})
+router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const report = await AttendanceModel.find(
+            { "studentsReport.studentId": userId }, 
+            {
+                _id: 0,
+                approximateWorkingHours: 1,
+                approximateWorkingDays: 1,
+                remainingDays: 1,
+                remainingHours: 1,
+                date: 1,
+                studentsReport: { $elemMatch: { studentId: userId } } 
+            }
+        );
+        if (report.length > 0) {
+            return res.json({ success: true, report });
+        }
 
-    
-router.post("/getMonthlyAttendanceMiniReport", async(req, res)=>{
-	try{
-		const { userId } = req.body
-		const report = await AttendanceModel.find({ 'studentsReport.studentId': userId })
-		
-		if(report.length > 0) {
-			return res.json({ success: true, report })
-		}
-		
-		new Worker("./workers/monthlyAttendance.js");
-		res.json({ success: false, message: "No data available, try again later!"})
-	} catch(err){
-		console.error("Error while fetching monthly attendance report: ", err)
-		res.status(500).json({ success: false, message: 'Internal Server Error!'})
-	}
-})
-    
-   
-
+        new Worker("./workers/monthlyAttendance.js");
+        res.json({
+            success: false,
+            message: "No data available, try again later!"
+        });
+    } catch (err) {
+        console.error("Error while fetching monthly attendance report: ", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+    }
+});
 
 export default router;

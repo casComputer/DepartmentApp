@@ -1,12 +1,15 @@
 import { parentPort } from "worker_threads";
 
 import { turso } from "../config/turso.js";
-import AttendanceModel from "../models/monthlyAttendanceReport.js"
+import AttendanceModel from "../models/monthlyAttendanceReport.js";
 
-import { getWorkingHoursThisMonth, getYYYYMMDD } from "../utils/workHour.js"
+import {
+    getWorkingHoursThisMonth,
+    getYYYYMMDD,
+    getRemainingWorkSummary
+} from "../utils/workHour.js";
 
 (async () => {
-
     try {
         // getting start and end of month
         const now = new Date();
@@ -54,15 +57,18 @@ import { getWorkingHoursThisMonth, getYYYYMMDD } from "../utils/workHour.js"
             totalHours: approximateWorkingHours
         } = getWorkingHoursThisMonth();
 
+        const { remainingDays,
+        remainingHours } = getRemainingWorkSummary();
+
         const report = {
             approximateWorkingHours,
             approximateWorkingDays,
+            remainingDays,
+        remainingHours ,
             studentsReport
         };
-        
-        await AttendanceModel.create(
-        	report
-        )
+
+        await AttendanceModel.create(report);
 
         console.log(report);
 
@@ -71,4 +77,3 @@ import { getWorkingHoursThisMonth, getYYYYMMDD } from "../utils/workHour.js"
         console.error("Worker error:", err);
     }
 })();
-

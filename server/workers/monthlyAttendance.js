@@ -1,5 +1,6 @@
 import { parentPort } from "worker_threads";
 
+import "../config/mongoose.js";
 import { turso } from "../config/turso.js";
 import AttendanceModel from "../models/monthlyAttendanceReport.js";
 
@@ -57,20 +58,17 @@ import {
             totalHours: approximateWorkingHours
         } = getWorkingHoursThisMonth();
 
-        const { remainingDays,
-        remainingHours } = getRemainingWorkSummary();
+        const { remainingDays, remainingHours } = getRemainingWorkSummary();
 
         const report = {
             approximateWorkingHours,
             approximateWorkingDays,
             remainingDays,
-        remainingHours ,
+            remainingHours,
             studentsReport
         };
 
         await AttendanceModel.create(report);
-
-        console.log(report);
 
         parentPort?.postMessage("done");
     } catch (err) {

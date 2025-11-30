@@ -74,19 +74,17 @@ router.post("/getTodaysAttendanceReport", async(req, res)=>{
 router.post("/getMonthlyAttendanceMiniReport", async(req, res)=>{
 	try{
 		const { userId } = req.body
-		const data = await AttendanceModel.find({ 'studentsReport.studentId': userId })
+		const report = await AttendanceModel.find({ 'studentsReport.studentId': userId })
 		
 		if(data.length > 0) {
-			
+			return res.json({ success: true, report })
 		}
 		
 		new Worker("./workers/monthlyAttendance.js");
-		
-		
-		console.log(data)
-		
+		res.json({ success: false, message: "No data available, try again later!"})
 	} catch(err){
 		console.error("Error while fetching monthly attendance report: ", err)
+		res.status(500).json({ success: false, message: 'Internal Server Error!'})
 	}
 })
     

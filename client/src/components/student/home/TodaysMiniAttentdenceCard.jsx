@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ActivityIndicator,
+    useColorScheme
+} from "react-native";
 import { useQuery } from "@tanstack/react-query";
 
 import { getTodaysAttendanceReport } from "@controller/student/attendance.controller.js";
@@ -12,7 +18,6 @@ const year = today.getFullYear();
 
 const Bubble = ({ item, attendance }) => (
     <View
-        key={item.key}
         style={{
             backgroundColor:
                 attendance?.[item.id] === "present"
@@ -22,50 +27,65 @@ const Bubble = ({ item, attendance }) => (
                     : "rgb(156, 163, 175)",
             borderRadius: "50%"
         }}
-        className="w-8 h-8  justify-center items-center">
+        className="w-8 h-8 justify-center items-center">
         <Text className="text-white font-black text-xl">{item.key}</Text>
     </View>
 );
 
 const MiniAttentdenceCard = () => {
-    const { data: attendance} = useQuery({
+    const { data: attendance } = useQuery({
         queryKey: ["todaysAttendanceReport"],
         queryFn: getTodaysAttendanceReport
     });
 
-
+    const theme = useColorScheme();
 
     return (
         <View className="px-6 mt-12">
             <TouchableOpacity
-                style={{ elevation: 3, shadowColor: "black" }}
-                className=" bg-white w-full rounded-3xl overflow-hidden p-8 gap-8">
+                style={{ elevation: 3 }}
+                className="bg-white w-full rounded-3xl overflow-hidden p-8 gap-8 dark:bg-zinc-900">
                 {/* Top */}
 
                 <View className="flex-row items-center">
-                    <Text className="text-black text-5xl font-bold">{day}</Text>
+                    <Text className="text-black text-5xl font-bold dark:text-white">
+                        {day}
+                    </Text>
                     <View className="ml-5">
-                        <Text className="text-black text-xl font-semibold">
+                        <Text className="text-black text-xl font-semibold dark:text-white ">
                             {weekday}
                         </Text>
-                        <Text className="text-black text-md font-semibold ">
+                        <Text className="text-black text-md font-semibold dark:text-white">
                             {month} {year}
                         </Text>
                     </View>
                 </View>
 
                 <View>
-                    <Text className="text-black text-xl font-semibold ">
+                    <Text className="text-black text-xl font-semibold dark:text-white">
                         Todays Attendance
                     </Text>
 
                     <View className="flex-row items-center mt-4 gap-4">
-                        {!attendance ? (
-                            <ActivityIndicator color="black" />
+                        {(attendance && Object.keys(attendance).length === 0) &&
+                        (weekday.toLowerCase() === "saturday" ||
+                            weekday.toLowerCase() === "sunday") ? (
+                            <Text className="text-2xl font-bold dark:text-white">
+                                Holiday 🎉
+                            </Text>
                         ) : (
                             HOURS.map(item => (
-                                <Bubble item={item} attendance={attendance} />
+                                <Bubble
+                                    key={item.key}
+                                    item={item}
+                                    attendance={attendance}
+                                />
                             ))
+                        )}
+                        {!attendance && (
+                            <ActivityIndicator
+                                color={theme == "dark" ? "black" : "white"}
+                            />
                         )}
                     </View>
                 </View>

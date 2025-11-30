@@ -40,7 +40,14 @@ const Attendance = () => {
                         year
                     });
 
-                setStudents(newStudents);
+                setStudents(prev =>
+                    prev.map((student, i) => ({
+                        ...student,
+                        rollno: newStudents[i]?.rollno ,
+                        studentId: newStudents[i]?.studentId 
+                    }))
+                );
+                
                 if (storedCount !== newStudents?.length)
                     ToastAndroid.show(
                         `Change in student strength found!`,
@@ -68,6 +75,8 @@ const Attendance = () => {
         try {
             setSaving(true);
 
+            console.log(students, course, year, hour);
+
             await saveAttendance({
                 students,
                 course,
@@ -78,7 +87,6 @@ const Attendance = () => {
             console.error("Failed to save attendance:", err);
         } finally {
             setSaving(false);
-            router.back();
         }
     };
 

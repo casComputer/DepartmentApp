@@ -24,13 +24,15 @@ const Layout = ({ userId, role }) => (
         </Stack.Protected>
 
         <Stack.Protected guard={userId !== "" && role === "student"}>
-            <Stack.Screen name="(student)" />
+            <Stack.Screen name="(student)/(tabs)" />
+            <Stack.Screen name="(student)/(others)" />
         </Stack.Protected>
         <Stack.Protected guard={userId !== "" && role === "admin"}>
             <Stack.Screen name="(admin)/(tabs)" />
         </Stack.Protected>
         <Stack.Protected guard={userId !== "" && role === "teacher"}>
             <Stack.Screen name="(teacher)/(tabs)" />
+            <Stack.Screen name="(teacher)/(others)" />
         </Stack.Protected>
     </Stack>
 );

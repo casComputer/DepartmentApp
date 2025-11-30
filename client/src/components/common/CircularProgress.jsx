@@ -1,6 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, useColorScheme } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import Animated, {
+    useSharedValue,
+    withTiming,
+    useAnimatedProps
+} from "react-native-reanimated";
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const CircularProgress = ({
     size = 100,
@@ -8,21 +15,42 @@ const CircularProgress = ({
     progress = 83,
     maxProgress = 100,
     showPercentage = true,
-    strokeFillColor = "#4F46E5", 
-
+    strokeFillColor = "#4F46E5",
+    animated = true
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-    const normalizedProgress = Number(Math.min(progress, maxProgress)?.toFixed(1));
-    const strokeDashoffset =
-        circumference - (normalizedProgress / maxProgress) * circumference;
+
+    const normalizedProgress = Number(
+        Math.min(progress, maxProgress).toFixed(1)
+    );
+    // Shared value for animation
+    const strokeDashoffset = useSharedValue(circumference);
+
+    const theme = useColorScheme();
+
+    useEffect(() => {
+        strokeDashoffset.value = animated
+            ? withTiming(
+                  circumference -
+                      (normalizedProgress / maxProgress) * circumference,
+                  { duration: 1000 }
+              )
+            : circumference -
+              (normalizedProgress / maxProgress) * circumference;
+    }, [progress]);
+
+    // Animated props for the circle
+    const animatedProps = useAnimatedProps(() => ({
+        strokeDashoffset: strokeDashoffset.value
+    }));
 
     return (
-        <View className="justify-center items-center flex-1">
-            <Svg width={size} height={size}>
+        <View style={styles.container}>
+            <Svg width={size + 1} height={size + 1}>
                 {/* Background circle */}
                 <Circle
-                    stroke={'#e6e6e6'}
+                    stroke={theme === "dark" ? "#3a3a3a" : "#e6e6e6"}
                     fill="none"
                     cx={size / 2}
                     cy={size / 2}
@@ -30,7 +58,7 @@ const CircularProgress = ({
                     strokeWidth={strokeWidth}
                 />
                 {/* Progress circle */}
-                <Circle
+                <AnimatedCircle
                     stroke={strokeFillColor}
                     fill="none"
                     cx={size / 2}
@@ -38,7 +66,7 @@ const CircularProgress = ({
                     r={radius}
                     strokeWidth={strokeWidth}
                     strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
+                    animatedProps={animatedProps}
                     strokeLinecap="round"
                     rotation="-90"
                     originX={size / 2}
@@ -47,7 +75,7 @@ const CircularProgress = ({
             </Svg>
 
             <View style={styles.textContainer}>
-                <Text style={styles.text}>
+                <Text style={styles.text} className="text-black dark:text-white">
                     {normalizedProgress}
                     {showPercentage && "%"}
                 </Text>
@@ -59,7 +87,8 @@ const CircularProgress = ({
 const styles = StyleSheet.create({
     container: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        flex: 1
     },
     textContainer: {
         position: "absolute"
@@ -67,7 +96,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         fontWeight: "600",
-        color: "#4F46E5"
     }
 });
 

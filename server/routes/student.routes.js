@@ -76,7 +76,7 @@ router.post("/getMonthlyAttendanceMiniReport", async(req, res)=>{
 		const { userId } = req.body
 		const report = await AttendanceModel.find({ 'studentsReport.studentId': userId })
 		
-		if(data.length > 0) {
+		if(report.length > 0) {
 			return res.json({ success: true, report })
 		}
 		

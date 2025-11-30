@@ -140,5 +140,3 @@ export const getFirstAndLastDate = (date = new Date()) => {
 
     return { first, last };
 };
-
-console.log(getFirstDayOfMonth());

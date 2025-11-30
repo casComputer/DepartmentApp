@@ -8,7 +8,6 @@ import { storage, clearUser } from "./storage";
 
 // const url = "http://10.35.94.212:3000";
 // const url = "http://10.35.94.162:3000";
-// const url = "https://dc-connect.onrender.com"
 const url = "https://dc-connect.onrender.com";
 
 console.log(url);

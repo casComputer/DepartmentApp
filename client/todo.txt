@@ -5,3 +5,5 @@ likely to migrate from ToastAndroid
 
 option editable for editing attendence that taken within 10min
 delete all related attendence docs of a class when auto assign rollno
+
+leave taken chart in students

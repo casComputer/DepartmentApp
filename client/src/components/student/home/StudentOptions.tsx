@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, useColorScheme } from "react-native";
 import {
     AntDesign,
     Entypo,
@@ -8,44 +8,51 @@ import {
     MaterialCommunityIcons,
     SimpleLineIcons
 } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 const ICONS_SIZE = 40;
 
+// router.push("/(student)/(others)/MonthlyReport");
+
 const StudentOptions = () => {
+    const theme = useColorScheme();
+    const iconColor = theme === "dark" ? "#dadada" : "black";
+
     return (
-        <View
-            
-            className="px-6 mt-12 flex-1">
+        <View className="px-6 mt-12 flex-1">
             <View
                 style={{ elevation: 3, shadowColor: "black" }}
-                className=" bg-white w-full rounded-3xl gap-3 overflow-hidden py-3">
+                className=" bg-white w-full rounded-3xl gap-3 overflow-hidden py-3 dark:bg-zinc-900">
                 {/* First Row of Options */}
                 <View className="flex-row justify-between">
                     <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1 ">
                         <MaterialCommunityIcons
                             name="chat-question"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Ask Leave
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1 ">
+                    <TouchableOpacity
+                        onPress={() =>
+                            router.push("/(student)/(others)/MonthlyReport")                        }
+                        className="p-4 justify-center items-center gap-2 flex-1 ">
                         <SimpleLineIcons
                             name="note"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Attendence
                         </Text>
                     </TouchableOpacity>
@@ -54,13 +61,13 @@ const StudentOptions = () => {
                         <SimpleLineIcons
                             name="notebook"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Assignment
                         </Text>
                     </TouchableOpacity>
@@ -73,13 +80,13 @@ const StudentOptions = () => {
                         <FontAwesome6
                             name="hand-holding-dollar"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Fees
                         </Text>
                     </TouchableOpacity>
@@ -88,13 +95,13 @@ const StudentOptions = () => {
                         <AntDesign
                             name="file-search"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Exam Results
                         </Text>
                     </TouchableOpacity>
@@ -103,21 +110,27 @@ const StudentOptions = () => {
                         <AntDesign
                             name="message"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
-                        <Text className="text-lg font-semibold">Chat</Text>
+                        <Text className="text-lg font-semibold dark:text-white">
+                            Chat
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Third Row of Options */}
                 <View className="flex-row justify-between">
                     <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-                        <Entypo name="book" size={ICONS_SIZE} color="black" />
+                        <Entypo
+                            name="book"
+                            size={ICONS_SIZE}
+                            color={iconColor}
+                        />
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Notes
                         </Text>
                     </TouchableOpacity>
@@ -126,13 +139,13 @@ const StudentOptions = () => {
                         <Feather
                             name="check-circle"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Internal Marks
                         </Text>
                     </TouchableOpacity>
@@ -141,13 +154,13 @@ const StudentOptions = () => {
                         <FontAwesome
                             name="graduation-cap"
                             size={ICONS_SIZE}
-                            color="black"
+                            color={iconColor}
                         />
 
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-lg font-semibold">
+                            className="text-lg font-semibold dark:text-white">
                             Course
                         </Text>
                     </TouchableOpacity>

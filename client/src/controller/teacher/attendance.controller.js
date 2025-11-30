@@ -1,5 +1,6 @@
 import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
+import { router } from 'expo-router'
 
 import { useAppStore } from "@store/app.store.js";
 import { saveStudentsCount } from "@utils/storage.js";
@@ -23,6 +24,7 @@ export const saveAttendance = async ({ students, course, year, hour }) => {
                 "Attendance saved successfully",
                 ToastAndroid.SHORT
             );
+            router.back()
         } else {
             ToastAndroid.show("Failed to save attendance", ToastAndroid.LONG);
             return false;

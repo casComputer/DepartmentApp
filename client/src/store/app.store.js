@@ -1,10 +1,15 @@
 import { create } from "zustand";
 
-import { setUser as saveUserToStorage } from "@storage/user.storage.js";
+import {
+    setUser as saveUserToStorage,
+    clearUser
+} from "@storage/user.storage.js";
+
+import { Color } from "@constants/TWPallet.js";
 
 export const useAppStore = create(set => ({
     user: {
-        role: 'unknown'
+        role: "unknown"
     },
 
     setUser: payload =>
@@ -27,7 +32,14 @@ export const useAppStore = create(set => ({
     hydrateUser: user => set({ user }),
 
     removeUser: () =>
-        set(() => ({
-            user: "unknown"
-        }))
+        set(() => {
+            clearUser();
+            return {
+                user: "unknown"
+            };
+        })
+}));
+
+export const useThemeStore = create(set => ({
+    gradientColors: [Color["orange"][100], "#ffffff", Color["orange"][100]]
 }));

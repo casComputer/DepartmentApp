@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     ScrollView,
     Text,
@@ -5,8 +6,10 @@ import {
     TouchableOpacity,
     Dimensions
 } from "react-native";
+import { useQuery } from "@tanstack/react-query";
 
 import CircularProgress from "@components/common/CircularProgress";
+import { getMonthlyAttendenceMiniReport } from "@controller/student/attendance.controller.js";
 
 const { width: vw } = Dimensions.get("window");
 
@@ -17,6 +20,11 @@ const gap = vw * 0.1;
 const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
 
 export default function MonthlyAttendenceMiniReport() {
+    const { data: report, status } = useQuery({
+        queryKey: ["MonthlyAttendenceMiniReport"],
+        queryFn: getMonthlyAttendenceMiniReport
+    });
+
     return (
         <TouchableOpacity
             style={{
@@ -25,23 +33,23 @@ export default function MonthlyAttendenceMiniReport() {
                 width: containerWidth,
                 gap: gap
             }}
-            className="shadow bg-white mx-auto mt-12  rounded-3xl overflow-hidden p-5 flex-row justify-between items-center">
+            className="bg-white mx-auto mt-12 rounded-3xl overflow-hidden p-5 flex-row justify-between items-center dark:bg-zinc-900">
             <View className="flex-1">
                 <CircularProgress
-                    progress={83}
+                    progress={report?.percentage || 0}
                     size={size}
                     strokeFillColor={"rgb(247,55,159)"}
                 />
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white">
                     Attendance
                 </Text>
             </View>
             <View className="flex-1">
                 <CircularProgress
-                    progress={3}
+                    progress={0}
                     maxProgress={30}
                     size={size}
                     showPercentage={false}
@@ -50,22 +58,22 @@ export default function MonthlyAttendenceMiniReport() {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white">
                     Leave Taken
                 </Text>
             </View>
             <View className="flex-1">
                 <CircularProgress
-                    progress={23}
+                    progress={report?.remainingDays || 0}
                     size={size}
                     showPercentage={false}
-                    maxProgress={30}
+                    maxProgress={31}
                     strokeFillColor={"rgb(247,55,159)"}
                 />
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white">
                     Ongoing Days
                 </Text>
             </View>

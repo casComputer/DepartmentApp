@@ -52,5 +52,4 @@ export const clearUser = () => {
     storage.remove("role");
     storage.remove("course");
     storage.remove("year_of_study");
-    useAppStore.getState().removeUser();
 };

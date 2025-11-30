@@ -12,6 +12,8 @@ function getYYYYMMDD() {
 const reportSchema = new mongoose.Schema({
     approximateWorkingHours: Number,
     approximateWorkingDays: Number,
+    remainingDays: Number,
+    remainingHours: Number,
 
     studentsReport: [
         {

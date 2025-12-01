@@ -110,10 +110,9 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
         );
         
         
+        const { remainingDays, remainingHours } = getRemainingWorkSummary();
         if (rows.length > 0) {
             const workedDays = rows[0].workedDays || 0;
-    
-            const { remainingDays, remainingHours } = getRemainingWorkSummary();
             
             return res.json({
                 success: true,
@@ -123,7 +122,10 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
 
         res.json({
             success: false,
-            message: "No data available, try again later!"
+            message: "No data available, try again later!",
+            report: {
+                remainingDays, remainingHours
+            }
         });
     } catch (err) {
         console.error("Error while fetching monthly attendance report: ", err);

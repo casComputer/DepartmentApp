@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, useColorScheme } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import {
     AntDesign,
     Entypo,
@@ -7,17 +7,13 @@ import {
     FontAwesome6,
     MaterialCommunityIcons,
     SimpleLineIcons
-} from "@expo/vector-icons";
+} from "@icons";
 import { router } from "expo-router";
 
 const ICONS_SIZE = 40;
 
-// router.push("/(student)/(others)/MonthlyReport");
-
 const StudentOptions = () => {
-    const theme = useColorScheme();
-    const iconColor = theme === "dark" ? "#dadada" : "black";
-
+    
     return (
         <View className="px-6 mt-12 flex-1">
             <View
@@ -29,7 +25,6 @@ const StudentOptions = () => {
                         <MaterialCommunityIcons
                             name="chat-question"
                             size={ICONS_SIZE}
-                            color={iconColor}
                         />
 
                         <Text
@@ -46,7 +41,7 @@ const StudentOptions = () => {
                         <SimpleLineIcons
                             name="note"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text
@@ -61,7 +56,7 @@ const StudentOptions = () => {
                         <SimpleLineIcons
                             name="notebook"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text
@@ -80,7 +75,7 @@ const StudentOptions = () => {
                         <FontAwesome6
                             name="hand-holding-dollar"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text
@@ -95,7 +90,7 @@ const StudentOptions = () => {
                         <AntDesign
                             name="file-search"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text
@@ -110,7 +105,7 @@ const StudentOptions = () => {
                         <AntDesign
                             name="message"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text className="text-lg font-semibold dark:text-white">
@@ -125,7 +120,7 @@ const StudentOptions = () => {
                         <Entypo
                             name="book"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
                         <Text
                             adjustsFontSizeToFit
@@ -139,7 +134,7 @@ const StudentOptions = () => {
                         <Feather
                             name="check-circle"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text
@@ -154,7 +149,7 @@ const StudentOptions = () => {
                         <FontAwesome
                             name="graduation-cap"
                             size={ICONS_SIZE}
-                            color={iconColor}
+                            
                         />
 
                         <Text

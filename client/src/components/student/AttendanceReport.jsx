@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
-import Feather from "@expo/vector-icons/Feather";
-import { withUniwind } from "uniwind";
+import {Feather} from "@icons";
 
 import { Color } from "@constants/TWPallet.js";
 import { yearlyData } from "@constants/SampleData.js";
 
-const UniFeather = withUniwind(Feather);
 
 export const Chart = () => {
     const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -61,18 +59,16 @@ export const SelectYear = () => {
     return (
         <View className="w-full mt-12 h-16 flex-row items-center justify-between px-20 mb-3">
             <TouchableOpacity onPress={() => handleChangeYear(-1)}>
-                <UniFeather
+                <Feather
                     name="chevron-left"
                     size={24}
-                    className="dark:text-white"
                 />
             </TouchableOpacity>
             <Text className="text-2xl font-bold dark:text-white ">{year}</Text>
             <TouchableOpacity onPress={() => handleChangeYear(1)}>
-                <UniFeather
+                <Feather
                     name="chevron-right"
                     size={24}
-                    className="dark:text-white"
                 />
             </TouchableOpacity>
         </View>

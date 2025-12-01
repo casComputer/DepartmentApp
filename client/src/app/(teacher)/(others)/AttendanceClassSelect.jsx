@@ -27,20 +27,15 @@ const Attendance = () => {
 
     return (
         <ScrollView
-            className="flex-1 py-12"
-            contentContainerStyle={{ paddingBottom: 100 }}>
-            <View className="flex-row items-center justify-between pr-4">
-                <Header title="Attendance" />
-                <TouchableOpacity
-                    onPress={() =>
-                        router.push("/(teacher)/(others)/AttendanceHistory")
-                    }
-                    className="mt-4 ml-5">
-                    <Text className="text-3xl text-blue-500 font-bold">
-                        History
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1, }}>
+            <Header
+                title="Attendance"
+                extraButton={true}
+                buttonTitle={"History"}
+                handlePress={() =>
+                    router.push("/(teacher)/(others)/AttendanceHistory")
+                }
+            />
 
             <View className="px-5 mt-5">
                 <Select

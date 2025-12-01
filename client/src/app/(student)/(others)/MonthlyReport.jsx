@@ -16,11 +16,16 @@ import { SelectYear, Chart } from "@components/student/AttendanceReport.jsx";
 const MonthlyReport = () => {
     const gradientColors = useThemeStore(state => state.gradientColors);
 
+    console.log(new Date('2025', 0, 1));
+
     return (
         <LinearGradient colors={gradientColors} className="flex-1">
             <ScrollView
                 contentInsetAdjustmentBehavior="automatic"
                 showsVerticalScrollIndicator={false}
+                alwaysBounceVertical
+                bounces
+                overScrollMode="always"
                 className="pt-24 dark:bg-black">
                 <SelectYear />
 

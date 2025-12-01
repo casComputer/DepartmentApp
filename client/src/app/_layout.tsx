@@ -4,6 +4,7 @@ import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
@@ -57,9 +58,11 @@ export default function RootLayout() {
     return (
         <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
             <StatusBar style="auto" animated />
-            <QueryClientProvider client={queryClient}>
-                <Layout userId={userId} role={role} />
-            </QueryClientProvider>
+            <KeyboardProvider>
+                <QueryClientProvider client={queryClient}>
+                    <Layout userId={userId} role={role} />
+                </QueryClientProvider>
+            </KeyboardProvider>
         </View>
     );
 }

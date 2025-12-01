@@ -41,5 +41,6 @@ export const useAppStore = create(set => ({
 }));
 
 export const useThemeStore = create(set => ({
-    gradientColors: [Color["orange"][100], "#ffffff", Color["orange"][100]]
+    gradientColors: [Color["orange"][100], "#ffffff", Color["orange"][100]],
+    secondaryGradientColors: [Color["orange"][200], "#ffffff", Color["orange"][100]]
 }));

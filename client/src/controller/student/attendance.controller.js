@@ -44,12 +44,9 @@ export const getMonthlyAttendenceMiniReport = async () => {
 
         if (res.data.success) return res.data.report;
         else {
-            ToastAndroid.show(
-                "Failed to fetching monthly attendance report!",
-                ToastAndroid.LONG
-            );
-            throw new Error("Failed to fetching monthly attendance report!");
-            return {};
+            ToastAndroid.show(res.data.message, ToastAndroid.LONG);
+
+            return res.data.report;
         }
     } catch (error) {
         console.error(error);

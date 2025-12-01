@@ -1,6 +1,6 @@
-// metro.config.js
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+const { withUniwindConfig } = require('uniwind/metro'); 
+
 require("dotenv").config();
 
 const config = getDefaultConfig(__dirname);
@@ -23,4 +23,4 @@ if (isTermux) {
     process.env.CHOKIDAR_USEPOLLING = "true";
 }
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+module.exports = withUniwindConfig(config, { cssEntryFile: "./global.css" });

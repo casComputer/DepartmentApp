@@ -113,7 +113,7 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
         const { remainingDays, remainingHours } = getRemainingWorkSummary();
         if (rows.length > 0) {
             const workedDays = rows[0].workedDays || 0;
-            
+
             return res.json({
                 success: true,
                 report: { ...rows[0], workedDays, remainingHours, remainingDays}

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@icons";
 
 import { router } from "expo-router";
 
@@ -15,7 +15,6 @@ const AdminOptions = () => {
                 <MaterialCommunityIcons
                     name="account-group-outline"
                     size={ICONS_SIZE}
-                    color="#4B5563"
                 />
                 <Text className="font-bold text-xl text-gray-700 ">
                     Manage Teachers
@@ -29,7 +28,6 @@ const AdminOptions = () => {
                 <MaterialCommunityIcons
                     name="account-group-outline"
                     size={ICONS_SIZE}
-                    color="#4B5563"
                 />
                 <Text className="font-bold text-xl text-gray-700 ">
                     Manage Classes

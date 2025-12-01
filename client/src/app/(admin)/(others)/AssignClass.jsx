@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@icons";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { CLASS, COURSES } from "@constants/ClassAndCourses";
@@ -35,7 +35,6 @@ const AssignClass = () => {
                     <MaterialIcons
                         name="arrow-back-ios-new"
                         size={24}
-                        color="black"
                     />
                 </TouchableOpacity>
                 <Text className="font-black text-[7vw]">Assign Class</Text>

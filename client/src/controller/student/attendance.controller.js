@@ -44,8 +44,6 @@ export const getMonthlyAttendenceMiniReport = async () => {
 
         if (res.data.success) return res.data.report;
         else {
-            ToastAndroid.show(res.data.message, ToastAndroid.LONG);
-
             return res.data.report;
         }
     } catch (error) {

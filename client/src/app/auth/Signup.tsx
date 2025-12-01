@@ -9,10 +9,9 @@ import {
     Dimensions
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather, AntDesign } from "@expo/vector-icons";
+import { Feather, AntDesign } from "@icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { withUniwind } from "uniwind";
 
 import { useAppStore, useThemeStore } from "../../store/app.store";
 import handleSignup from "../../controller/auth/auth.controller.js";
@@ -20,8 +19,6 @@ import handleSignup from "../../controller/auth/auth.controller.js";
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
 
 const gradientColors = useThemeStore.getState().gradientColors;
-const StyledFeather = withUniwind(Feather);
-const StyledAntDesign = withUniwind(AntDesign);
 
 const Message = ({ message }) => (
     <Text
@@ -203,16 +200,14 @@ const Signup = () => {
                             onPress={() => setIsPassVisible(prev => !prev)}
                             className="absolute top-1/2 -translate-y-1/2 right-5">            
                             {isPassVisible ? (
-                            <StyledFeather
+                            <Feather
                                 name="eye"
                                 size={20}
-                                className="text-black dark:text-white"
                             />
                         ) : (
-                            <StyledAntDesign
+                            <AntDesign
                                 name="eye-invisible"
                                 size={20}
-                                className="text-black dark:text-white"
                             />
                         )}
 

@@ -136,4 +136,20 @@ router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
     }
 });
 
+router.post("/getAttendanceReport", async (req, res) => {
+    try {
+        const { userId, year } = req.body;
+        
+        const first = `${year}-01-01`;
+        const last = `${year}-12-31`;
+
+    } catch (err) {
+        console.error("Error while fetching attendance report: ", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+    }
+});
+
 export default router;

@@ -56,27 +56,39 @@ router.post("/saveWorklog", async (req, res) => {
 
 router.post("/getWorklogs", async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, page=1, limit=15 } = req.body;
 
     if (!userId) {
       return res
         .status(400)
         .json({ message: "User ID is required.", success: false });
     }
+    
+    const offset = (page - 1) * limit;
 
     const { rows } = await turso.execute(
       `
         SELECT id, year, course, date, hour, subject, topics
         FROM worklogs
         WHERE teacherId = ?
-        ORDER BY date DESC, hour DESC
+        ORDER BY createdAt DESC LIMIT ? OFFSET ?
     `,
-      [userId]
+      [userId, limit, offset]
     );
+    
+    
+    const totalCountResult = await turso.execute(
+            "SELECT COUNT(*) as count FROM worklogs WHERE teacherId = ?",
+            [teacherId]
+        );
+        const totalCount = totalCountResult.rows[0].count;
+
+        const hasMore = page * limit < totalCount;
+
 
     return res
       .status(200)
-      .json({ worklogs: rows, success: true });
+      .json({ data: rows, hasMore, nextPage: page + 1, success: true });
   } catch (error) {
     console.error("Error fetching worklogs:", error);
 

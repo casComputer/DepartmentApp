@@ -93,21 +93,14 @@ router.post("/getAttandanceTakenByTeacher", async (req, res) => {
             [teacherId, limit, offset]
         );
 
-        console.log(attendance);
-
-        // extra data for infinite scrolling
-
         const totalCountResult = await turso.execute(
             "SELECT COUNT(*) as count FROM attendance WHERE teacherId = ?",
             [teacherId]
         );
         const totalCount = totalCountResult.rows[0].count;
 
-        console.log("total count");
-
         const hasMore = page * limit < totalCount;
 
-        console.log("hasmore ", hasMore);
 
         res.json({
             success: true,

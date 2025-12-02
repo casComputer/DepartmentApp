@@ -8,6 +8,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import classRoutes from "./routes/class.routes.js";
+import teacherRoutes from "./routes/teacher.routes.js";
 
 import data from  "./cron/attendance.js"
 
@@ -24,6 +25,7 @@ app.use(authenticateToken);
 app.use("/admin", adminRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);
+app.use("/teacher", teacherRoutes);
 app.use("/class", classRoutes);
 
 

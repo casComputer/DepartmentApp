@@ -1,8 +1,5 @@
-
-
-
 const createAllTables = () => {
-	turso.execute(`
+  turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
         fullname TEXT not null,
@@ -18,8 +15,8 @@ const createAllTables = () => {
     );
     `);
 
-	turso.execute(
-		`CREATE TABLE teachers ( 
+  turso.execute(
+    `CREATE TABLE teachers ( 
           teacherId TEXT PRIMARY Key, 
           fullname text not null, 
           password text not null,
@@ -27,21 +24,21 @@ const createAllTables = () => {
           in_charge_year text check (in_charge_year IN ('First', 'Second', 'Third', 'Fourth')) , 
           is_verified BOOLEAN DEFAULT FALSE,
           is_in_charge BOOLEAN DEFAULT FALSE)`
-	);
+  );
 
-	turso.execute(
-		"CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
-	);
+  turso.execute(
+    "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
+  );
 
-	turso.execute(
-		"CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
-	);
+  turso.execute(
+    "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
+  );
 
-	turso.execute(
-		"CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
-	);
+  turso.execute(
+    "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
+  );
 
-	turso.execute(`
+  turso.execute(`
         create table classes (
             course text check (course in ('Bca', 'Bsc')),
             year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
@@ -51,10 +48,7 @@ const createAllTables = () => {
         )
     `);
 
-	
-
-		
-	await turso.execute(`
+  turso.execute(`
 		CREATE TABLE IF NOT EXISTS attendance (
 			attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
 			course TEXT NOT NULL,
@@ -72,12 +66,9 @@ const createAllTables = () => {
 			UNIQUE (course, year, hour, date),
 			FOREIGN KEY (course, year) REFERENCES classes(course, year),
 			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId)
-		);`
-	)
+		);`);
 
-
-
-	turso.execute(`
+  turso.execute(`
 		CREATE TABLE IF NOT EXISTS attendance_details (
 			attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
 			attendanceId INTEGER NOT NULL,
@@ -87,23 +78,36 @@ const createAllTables = () => {
 			FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
 			FOREIGN KEY (studentId) REFERENCES students(studentId)
 		);
-	`)
+	`);
 
+  turso.execute(`
+		CREATE TABLE worklogs (
+			id INTEGER PRIMARY KEY AUTOINCREMENT, 
+			year TEXT NOT NULL, 
+			course TEXT NOT NULL, 
+			date TEXT NOT NULL, 
+			hour TEXT NOT NULL,
+			subject TEXT NOT NULL, 
+			topics TEXT NOT NULL,
+			teacherId TEXT NOT NULL,
+			createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+	
+			UNIQUE(teacherId, date, hour),
+			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ,
+			FOREIGN KEY (year, course) REFERENCES classes(year, course));
+		`);
 };
 
-
-
-
 const deleteAllTables = () => {
-	turso.execute("drop table if exists students");
-	turso.execute("drop table if exists teachers");
-	turso.execute("drop table if exists parents");
-	turso.execute("drop table if exists admins");
-	turso.execute("drop table if exists parent_child");
+  turso.execute("drop table if exists students");
+  turso.execute("drop table if exists teachers");
+  turso.execute("drop table if exists parents");
+  turso.execute("drop table if exists admins");
+  turso.execute("drop table if exists parent_child");
 };
 
 const insertDefaultValues = () => {
-	turso.execute(`
+  turso.execute(`
         insert into classes values 
             ('Bca', 'First', 0),
             ('Bca', 'Second', 0),
@@ -116,13 +120,3 @@ const insertDefaultValues = () => {
             ('Bsc', 'Fourth', 0),
     `);
 };
-
-
-
-
-
-
-
-
-
-

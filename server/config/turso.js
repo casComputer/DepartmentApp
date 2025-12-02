@@ -9,10 +9,3 @@ export const turso = createClient({
 
 
 
-
-
-
-
-// turso.execute("PRAGMA foreign_keys = ON;");
-// turso.execute("INSERT INTO classes (course, year, strength, in_charge) VALUES ('Bca', 'First', 0, NULL), ('Bca', 'Second', 0, NULL), ('Bca', 'Third', 0, 'femina123'), ('Bsc', 'First', 0, NULL), ('Bsc', 'Second', 0, NULL), ('Bsc', 'Third', 0, NULL);");
-

@@ -1,13 +1,25 @@
-import axios from "@utils/axios.js"
+import axios from "@utils/axios.js";
 
-import { useAppStore } from '@store/app.store.js';
+import { useAppStore } from "@store/app.store.js";
 import { ToastAndroid } from "react-native";
 
-
-export const saveWorklog = async ({ year, course, date, hour, subject, topics}) => {
+export const saveWorklog = async ({
+    year,
+    course,
+    date,
+    hour,
+    subject,
+    topics
+}) => {
     try {
-
-        if (!year || !course || !date || !hour || !subject || topics.length === 0) {
+        if (
+            !year ||
+            !course ||
+            !date ||
+            !hour ||
+            !subject ||
+            topics.length === 0
+        ) {
             throw new Error("All fields are required to save the worklog.");
         }
 
@@ -24,30 +36,39 @@ export const saveWorklog = async ({ year, course, date, hour, subject, topics}) 
         };
         const response = await axios.post("/teacher/saveWorklog", worklogData);
 
-        if(response.data.success) {
-            ToastAndroid.show("Worklog saved successfully.", ToastAndroid.SHORT);
+        if (response.data.success) {
+            ToastAndroid.show(
+                "Worklog saved successfully.",
+                ToastAndroid.SHORT
+            );
         }
-       
     } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
+        if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+        ) {
             ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
-        }
-        else{
-
+        } else {
             console.error("Error saving worklog:", error);
             throw error;
         }
     }
-}
+};
 
-export const fetchWorklogs = async () => {
+export const fetchWorklogs = async page => {
     try {
         const user = useAppStore.getState().user;
 
-        const response = await axios.post("/teacher/getWorklogs", { userId: user.userId});
+        const response = await axios.post("/teacher/getWorklogs", {
+            userId: user.userId,
+            page,
+            limit: 5
+        });
 
-        if(response.data.success) {
-            return response.data.worklogs;
+        if (response.data.success) {
+            console.log(response.data);
+            return response.data;
         } else {
             throw new Error("Failed to fetch worklogs.");
         }
@@ -55,4 +76,4 @@ export const fetchWorklogs = async () => {
         console.error("Error fetching worklogs:", error);
         throw error;
     }
-}
+};

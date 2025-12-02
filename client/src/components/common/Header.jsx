@@ -25,11 +25,13 @@ const Header = ({
                         style={{ fontWeight: "bold" }}
                     />
                 </TouchableOpacity>
-                <Text className="text-[10vw] font-bold dark:text-white">{title}</Text>
+                <Text className="text-[10vw] font-bold dark:text-white">
+                    {title}
+                </Text>
             </View>
             {extraButton && (
                 <TouchableOpacity onPress={handlePress}>
-                    <Text className="text-3xl text-blue-500 font-bold">
+                    <Text className="text-3xl text-blue-500 font-bold px-1">
                         {buttonTitle}
                     </Text>
                 </TouchableOpacity>

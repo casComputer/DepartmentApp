@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -6,51 +6,62 @@ import {
     Dimensions,
     ActivityIndicator
 } from "react-native";
+import { withUniwind } from "uniwind";
 
 import CheckBox from "@components/common/CheckBox.jsx";
 import CircularProgress from "@components/common/CircularProgress.jsx";
 
+const StyledActivityIndicator = withUniwind(ActivityIndicator);
 const { width: vw } = Dimensions.get("window");
 
-export const ITEM_SIZE = (vw - 6 * 10) / 5,
-    MARGIN_X = 6,
+const ITEM_SIZE = (vw - 6 * 12) / 5,
+    MARGIN_X = 4,
     MARGIN_Y = 10;
 
-
-export const AttendanceItem = ({ item, toggleAttendance, isSelecting }) => {
-    return (
-        <TouchableOpacity
-            style={{
-                width: ITEM_SIZE,
-                height: ITEM_SIZE,
-                marginHorizontal: MARGIN_X,
-                marginVertical: MARGIN_Y,
-                elevation: 4,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                borderRadius: ITEM_SIZE / 2,
-                backgroundColor: item.present ? "rgb(196, 181, 253)" : "white",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-            onPress={() => toggleAttendance(item.rollno)}>
-            <Text
-                numberOfLines={1}
-                adjustsFontSizeToFit
+export const AttendanceItem = React.memo(
+    ({ item, toggleAttendance, onItemLayout, onLongPress }) => {
+        return (
+            <TouchableOpacity
+                onLayout={onItemLayout}
                 style={{
-                    fontSize: 30,
-                    fontWeight: "900",
-                    textAlign: "center",
-                    width: "90%"
-
-                }}>
-                {item.rollno}
-            </Text>
-        </TouchableOpacity>
-    );
-};
+                    width: ITEM_SIZE,
+                    height: ITEM_SIZE,
+                    marginHorizontal: MARGIN_X,
+                    marginVertical: MARGIN_Y,
+                    boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)",
+                    borderRadius: ITEM_SIZE / 2,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+                onLongPress={onLongPress}
+                className={`${
+                    item.present
+                        ? "bg-violet-300 dark:bg-pink-500"
+                        : "bg-zinc-500"
+                }`}
+                onPress={() => toggleAttendance(item.rollno)}>
+                <Text
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    style={{
+                        fontSize: 30,
+                        fontWeight: "900",
+                        textAlign: "center",
+                        width: "90%"
+                    }}>
+                    {item.rollno}
+                </Text>
+            </TouchableOpacity>
+        );
+    },
+    (prevProps, nextProps) => {
+        // Custom comparison
+        return (
+            prevProps.item.rollno === nextProps.item.rollno &&
+            prevProps.item.present === nextProps.item.present
+        );
+    }
+);
 
 export const Options = ({ loading }) => {
     const [selectAll, setSelectAll] = useState(false);
@@ -59,13 +70,20 @@ export const Options = ({ loading }) => {
         <View className="flex-row justify-between items-center px-5 mt-5">
             {loading && (
                 <View className="flex-row justify-center items-center gap-1">
-                    <Text className="font-bold text-xl">syncing</Text>
-                    <ActivityIndicator size="16" color="#000" />
+                    <Text className="font-bold text-xl dark:text-white">
+                        syncing
+                    </Text>
+                    <StyledActivityIndicator
+                        size="16"
+                        className="text-black datk:text-white"
+                    />
                 </View>
             )}
 
             <View className="flex-row gap-1 justify-center items-center ml-auto">
-                <Text className="font-bold text-2xl">Mark All</Text>
+                <Text className="font-semibold text-xl dark:text-white ">
+                    Mark All
+                </Text>
                 <CheckBox
                     checked={selectAll}
                     onChange={setSelectAll}
@@ -98,13 +116,19 @@ const AttendanceHistoryExtra = ({
         <View className="flex-row items-center">
             {/* LEFT */}
             <View className="flex-1">
-                <Text numberOfLines={1} className="text-md font-semibold">
+                <Text
+                    numberOfLines={1}
+                    className="text-md font-semibold dark:text-white">
                     Present: {present}
                 </Text>
-                <Text numberOfLines={1} className="text-md font-semibold">
+                <Text
+                    numberOfLines={1}
+                    className="text-md font-semibold dark:text-white">
                     Absent: {absent}
                 </Text>
-                <Text numberOfLines={1} className="text-md font-semibold">
+                <Text
+                    numberOfLines={1}
+                    className="text-md font-semibold dark:text-white">
                     Late: {late_present}
                 </Text>
             </View>
@@ -118,7 +142,7 @@ const AttendanceHistoryExtra = ({
             <View className="flex-1">
                 <Text
                     numberOfLines={1}
-                    className="text-lg font-semibold text-right">
+                    className="text-lg font-semibold text-right dark:text-white">
                     Strength: {strength}
                 </Text>
             </View>
@@ -133,17 +157,16 @@ export const AttendanceHistoryRenderItem = ({ item }) => {
     const strength = item.strength;
 
     return (
-        <View
-            className="w-full px-4 my-2">
-            <TouchableOpacity
-                className="w-full bg-white rounded-3xl px-5 py-8"
-                style={{ elevation: 5, shadowColor: "black" }}>
+        <View className="w-full px-4 my-2">
+            <View
+                className="w-full bg-white rounded-3xl px-5 py-8 dark:bg-zinc-900"
+                style={{ boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)" }}>
                 <View className="flex-row justify-between items-center">
-                    <Text className="text-2xl font-bold">
+                    <Text className="text-2xl font-bold dark:text-white">
                         {item.year} {item.course} {"\n"}
                         {item.hour} Hour
                     </Text>
-                    <Text className="text-xl font-bold text-right">
+                    <Text className="text-xl font-bold text-right dark:text-white">
                         {item.timestamp.split(" ").join("\n")}
                     </Text>
                 </View>
@@ -154,7 +177,7 @@ export const AttendanceHistoryRenderItem = ({ item }) => {
                     late_present={late_present}
                     strength={strength}
                 />
-           </TouchableOpacity>
+            </View>
         </View>
     );
 };

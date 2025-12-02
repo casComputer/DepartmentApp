@@ -55,10 +55,9 @@ const ManageStudents = () => {
     };
 
     const safeData = Array.isArray(students) ? students : [];
-    // const safeStudents = useMemo(() => students, []);
 
     return (
-        <View className={" pt-12 flex-1 bg-white"}>
+        <View className={"flex-1 bg-white dark:bg-black"}>
             <Header title={"Manage Students"} />
 
             <FlashList

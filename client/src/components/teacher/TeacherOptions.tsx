@@ -37,6 +37,20 @@ const TeacherOptions = () => {
                     Attendance
                 </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={{ boxShadow: "0px 1px 5px rgba(0,0,0,0.5)" }}
+                onPress={() =>
+                    router.push(
+                        "/(teacher)/(others)/WorkLogSelection" as any
+                    )
+                }
+                className="bg-white px-6 py-7 rounded-3xl flex-row items-center gap-4 dark:bg-zinc-900">
+                <FontAwesome5 name="clipboard-list" size={ICONS_SIZE} />
+                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
+                    Work Log
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 };

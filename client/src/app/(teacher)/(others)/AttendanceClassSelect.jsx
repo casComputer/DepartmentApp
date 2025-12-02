@@ -27,7 +27,9 @@ const Attendance = () => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1, }}>
+            className="bg-white dark:bg-black"
+
+            contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}>
             <Header
                 title="Attendance"
                 extraButton={true}
@@ -61,7 +63,9 @@ const Attendance = () => {
             <TouchableOpacity
                 onPress={handleProceed}
                 className="mt-3 rounded-3xl p-6 justify-center items-center">
-                <Text className="text-[6vw] font-black">Proceed</Text>
+                <Text className="text-[6vw] font-black dark:text-white">
+                    Proceed
+                </Text>
             </TouchableOpacity>
         </ScrollView>
     );

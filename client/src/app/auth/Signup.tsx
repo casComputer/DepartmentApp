@@ -138,8 +138,8 @@ const Signup = () => {
         <LinearGradient colors={gradientColors} style={{ flexGrow: 1 }}>
             <KeyboardAwareScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
-                bounces
-                allowBounceVertically
+                showVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
                 className="dark:bg-black">
                 <Text
                     style={{ fontSize: vw * 0.2 }}
@@ -198,19 +198,12 @@ const Signup = () => {
                         />
                         <TouchableOpacity
                             onPress={() => setIsPassVisible(prev => !prev)}
-                            className="absolute top-1/2 -translate-y-1/2 right-5">            
+                            className="absolute top-1/2 -translate-y-1/2 right-5">
                             {isPassVisible ? (
-                            <Feather
-                                name="eye"
-                                size={20}
-                            />
-                        ) : (
-                            <AntDesign
-                                name="eye-invisible"
-                                size={20}
-                            />
-                        )}
-
+                                <Feather name="eye" size={20} />
+                            ) : (
+                                <AntDesign name="eye-invisible" size={20} />
+                            )}
                         </TouchableOpacity>
                     </View>
 

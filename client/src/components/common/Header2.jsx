@@ -3,10 +3,14 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
-const Header = ({ onSave, saving, disabled }) => (
-    <View className="flex-row items-center justify-between pl-2 pr-3">
+const Header = ({ onSave, saving, disabled }) => {
+    const insets = useSafeAreaInsets();
+    return(
+    <View
+        style={{ marginTop: insets.top }}
+        className="flex-row items-center justify-between pl-2 pr-3">
         <TouchableOpacity
             className="flex-row items-center gap-0"
             onPress={() => router.back()}>
@@ -30,7 +34,6 @@ const Header = ({ onSave, saving, disabled }) => (
                 </Text>
             </TouchableOpacity>
         )}
-    </View>
-);
-
+    </View>)
+};
 export default Header;

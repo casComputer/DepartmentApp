@@ -6,6 +6,7 @@ import {
     ScrollView,
     ActivityIndicator
 } from "react-native";
+import { withUniwind } from "uniwind";
 
 import Header from "@components/common/Header2.jsx";
 import Info from "@components/common/InfoBox.jsx";
@@ -15,6 +16,7 @@ import { assignRollAlphabetically } from "@controller/teacher/students.controlle
 import { useTeacherStore } from "@store/teacher.store.js";
 import confirm from "@utils/confirm.js";
 
+const StyledActivityIndicator = withUniwind(ActivityIndicator);
 const infoText = "Note: Auto-assigning will reset existing roll numbers.";
 
 const AssignRoleNumber = () => {
@@ -47,24 +49,29 @@ const AssignRoleNumber = () => {
             contentContainerStyle={{
                 paddingBottom: 70
             }}
-            className="pt-12 px-3 bg-white "
-        >
+            className="px-3 bg-white dark:bg-black">
             <Header />
 
-            {loading && <ActivityIndicator size="large" color="#000" />}
+            {loading && (
+                <StyledActivityIndicator
+                    size="large"
+                    className="text-black dark:text-white"
+                />
+            )}
 
             <Info text={infoText} />
 
             <TouchableOpacity
                 onPress={handleAlphebetic}
-                className="w-full justify-center items-center py-7 rounded-full bg-emerald-500  mt-3"
-            >
+                className="w-full justify-center items-center py-7 rounded-full bg-emerald-500  mt-3">
                 <Text className="text-white text-2xl font-bold">
                     Alphabetical Order
                 </Text>
             </TouchableOpacity>
 
-            <Text className="text-2xl font-semibold text-center my-8">OR</Text>
+            <Text className="text-2xl font-semibold text-center my-8 dark:text-white">
+                OR
+            </Text>
 
             <Grouping
                 students={students}

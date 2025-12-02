@@ -5,35 +5,31 @@ const Select = ({ title, options, select, selected }) => {
     return (
         <View
             style={styles.shadow}
-            className="mt-5 px-2 py-6 bg-white rounded-3xl">
-            <Text className=" text-[6vw] px-3 font-bold  mb-3">
+            className="mt-5 px-2 py-4 bg-white rounded-3xl dark:bg-zinc-900">
+            <Text className="text-[6vw] px-3 font-bold mb-3 dark:text-white">
                 Select the {title}:
             </Text>
             <View className="w-full flex-row flex-wrap">
-            {options.map(item => (
-                <TouchableOpacity
-                    onPress={() => select(item)}
-                    key={item.id}
-                    className={`w-[50%] px-4 py-6 rounded-full ${
-                        selected?.id === item.id ? "bg-violet-200" : ""
-                    }`}>
-                    <Text className="text-xl font-bold capitalize">
-                        {item.title}
-                    </Text>
-                </TouchableOpacity>
-            ))}
-        </View>
+                {options.map(item => (
+                    <TouchableOpacity
+                        onPress={() => select(item)}
+                        key={item.id}
+                        className={`w-[50%] px-4 py-5 rounded-full ${
+                            selected?.id === item.id ? "bg-violet-200 dark:bg-pink-500" : ""
+                        }`}>
+                        <Text className="text-xl font-bold capitalize dark:text-white">
+                            {item.title}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     shadow: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 10
+        boxShadow: "0px 1px 5px rgba(0,0,0,0.5)"
     }
 });
 

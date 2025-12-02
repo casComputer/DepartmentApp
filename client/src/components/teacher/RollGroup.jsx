@@ -19,7 +19,7 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
     // Compute available students for a specific group
     const getAvailableStudents = groupId => {
         const assigned = getAssignedMap();
-        
+
         return students.filter(
             s => !assigned[s.studentId] || assigned[s.studentId] === groupId
         );
@@ -47,8 +47,8 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
         ]);
     };
 
-    const handleSave = async() => {
-        setLoading(true)
+    const handleSave = async () => {
+        setLoading(true);
         let rollno = 1;
 
         const sortedGroups = groups.map(group => {
@@ -72,24 +72,32 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
             };
         });
 
-        await assignRollByGroup({ students: sortedGroups, course:inCharge.course, year: inCharge.year });
-        setLoading(false)
+        await assignRollByGroup({
+            students: sortedGroups,
+            course: inCharge.course,
+            year: inCharge.year
+        });
+        setLoading(false);
     };
 
     return (
         <View className="w-full px-3">
-            <Text className="text-3xl font-bold py-3">Create Groups</Text>
+            <Text className="text-3xl font-bold py-3 dark:text-white">
+                Create Groups
+            </Text>
 
             <TouchableOpacity
                 onPress={addGroup}
                 className="self-start rounded-full bg-fuchsia-500 px-5 py-3 flex-row justify-center items-center gap-2 mb-8 ">
-                <Text className="font-bold text-3xl">+</Text>
-                <Text className="font-bold text-lg">Create Group</Text>
+                <Text className="font-bold text-3xl dark:text-white">+</Text>
+                <Text className="font-bold text-lg dark:text-white">
+                    Create Group
+                </Text>
             </TouchableOpacity>
 
             {groups.length === 0 ? (
                 <>
-                    <Text className="font-bold text-lg text-center">
+                    <Text className="font-bold text-lg text-center dark:text-zinc-300">
                         Create groups to organize Students.{"\n"}Sorting follows
                         the order in which groups are created.
                     </Text>

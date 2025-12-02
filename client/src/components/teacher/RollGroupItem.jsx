@@ -25,13 +25,13 @@ const GroupItem = ({ group, onDelete, onUpdate, getAvailableStudents }) => {
 
     return (
         <View
-            className="w-full py-7 my-2 rounded-3xl bg-white"
-            style={{ elevation: 5 }}>
-            <Text className="font-bold text-3xl text-center">
+            className="w-full py-7 my-2 rounded-3xl bg-white dark:bg-zinc-900"
+            style={{ boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)" }}>
+            <Text className="font-bold text-3xl text-center dark:text-white">
                 Group {group.id}
             </Text>
 
-            <Text className="font-bold text-xl text-center mt-4">
+            <Text className="font-bold text-xl text-center mt-4 dark:text-white">
                 Selected Students: {group?.selectedStudents?.length}
             </Text>
 

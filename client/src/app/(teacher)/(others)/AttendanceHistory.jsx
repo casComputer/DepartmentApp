@@ -8,7 +8,6 @@ import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.
 import { FlashList } from "@shopify/flash-list";
 
 const AttendanceHistory = () => {
-
     const limit = 10;
     const {
         data,
@@ -32,7 +31,7 @@ const AttendanceHistory = () => {
     const allItems = data?.pages?.flatMap(page => page.data);
 
     return (
-        <View className="pt-12 flex-1 bg-white">
+        <View className="flex-1 bg-white dark:bg-black">
             <Header title="History" isAbsolute={true} />
             {isLoading && <ActivityIndicator size={"large"} />}
             <FlashList
@@ -54,7 +53,6 @@ const AttendanceHistory = () => {
             />
         </View>
     );
-
 };
 
 export default AttendanceHistory;

@@ -15,8 +15,10 @@ const UserItem = ({ item, handlePress, highlight }) => {
                 borderColor: highlight ? "red" : "transparent",
                 borderWidth: highlight ? 1 : 0
             }}
-            className="flex-row items-center justify-between bg-white rounded-3xl px-4 py-7 my-2 shadow-2xl">
-            <Text numberOfLines={1} className="text-2xl font-bold max-w-[80%]">
+            className="flex-row items-center justify-between bg-white rounded-3xl px-4 py-7 my-2 dark:bg-zinc-900">
+            <Text
+                numberOfLines={1}
+                className="text-2xl font-bold max-w-[80%] dark:text-white">
                 {item.fullname}
             </Text>
             <View className="flex-row gap-2 justify-center items-center">

@@ -17,48 +17,23 @@ import {
     saveStudentDetails
 } from "@controller/teacher/students.controller.js";
 
+import Header from "@components/common/Header2.jsx";
+
 import { useTeacherStore } from "@store/teacher.store.js";
-
-const Header = ({ onSave, saving }) => (
-    <View className="flex-row items-center justify-between px-2">
-        <TouchableOpacity
-            className="flex-row items-center gap-2"
-            onPress={() => router.back()}>
-            <MaterialIcons
-                name="arrow-back-ios-new"
-                size={RFValue(18)}
-                color="rgb(59, 130, 246)"
-            />
-            <Text
-                style={{ fontSize: RFPercentage(2.5) }}
-                className="text-blue-500 font-semibold">
-                Back
-            </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity disabled={saving} onPress={onSave}>
-            <Text
-                style={{ fontSize: RFPercentage(2.5) }}
-                className="text-blue-500 font-semibold">
-                {saving ? "Saving..." : "Save"}
-            </Text>
-        </TouchableOpacity>
-    </View>
-);
 
 const Avatar = ({ fullname, username }) => (
     <>
         <View className="w-[60vw] h-[60vw] rounded-full bg-green-400 self-center mt-10 justify-center items-center">
             <Text
                 style={{ fontSize: RFPercentage(18) }}
-                className="font-black text-center text-black">
+                className="font-black text-center dark:text-white">
                 {fullname?.slice(0, 1)}
             </Text>
         </View>
 
         <Text
             style={{ fontSize: RFPercentage(2.3) }}
-            className="text-center text-gray-900 mt-2">
+            className="text-center text-gray-900 mt-2 dark:text-gray-700">
             @{username}
         </Text>
     </>
@@ -67,10 +42,10 @@ const Avatar = ({ fullname, username }) => (
 const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
     return (
         <View>
-            <View className="w-full rounded-full border-black border mt-5">
+            <View className="w-full rounded-full border-black border mt-5 dark:border-white ">
                 <TextInput
                     style={{ fontSize: RFPercentage(2.4) }}
-                    className="text-black w-full font-bold px-5 py-5"
+                    className="text-black w-full font-bold px-5 py-5 dark:text-white"
                     value={fullname}
                     editable={false}
                 />
@@ -79,24 +54,30 @@ const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
             <View className="w-full mt-5 flex-row items-center gap-2">
                 <Text
                     style={{ fontSize: RFPercentage(3) }}
-                    className="font-bold ">
+                    className="font-bold dark:text-white ">
                     Roll No
                 </Text>
 
                 <TextInput
                     style={{
                         fontSize: RFPercentage(3),
-                        borderColor: !rollno ? "red" : "black",
                         borderWidth: !rollno ? 2 : 1
                     }}
-                    className="text-black flex-1 font-bold px-5 py-5 rounded-full"
+                    className={`text-black flex-1 font-bold px-5 py-5 rounded-full dark:text-white ${
+                        !rollno
+                            ? "border-red-500"
+                            : "border-black dark:border-white"
+                    }`}
                     value={`${rollno}`}
                     disabled={!is_verified}
                     keyboardType="number-pad"
-                    onChangeText={(rollno)=>{
-                        let cleaned = (rollno ?? "").toString().replace(/\D+/g, "")
-                        if (cleaned.length > 1) cleaned = cleaned.replace(/^0+/, "");
-                        setRoll(cleaned)
+                    onChangeText={rollno => {
+                        let cleaned = (rollno ?? "")
+                            .toString()
+                            .replace(/\D+/g, "");
+                        if (cleaned.length > 1)
+                            cleaned = cleaned.replace(/^0+/, "");
+                        setRoll(cleaned);
                     }}
                 />
             </View>
@@ -157,8 +138,8 @@ const VerifyStudent = () => {
 
     return (
         <ScrollView
-            className="flex-1 pt-12 px-3 bg-zinc-100"
-            contentContainerStyle={{ paddingBottom: 70, flex: 1 }}>
+            className="flex-1 px-3 dark:bg-black"
+            contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}>
             <Header onSave={handleSave} saving={saving} />
 
             <Avatar fullname={fullname} username={username} />

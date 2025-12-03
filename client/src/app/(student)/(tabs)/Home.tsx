@@ -9,24 +9,24 @@ import StudentOptions from "@components/student/home/StudentOptions";
 import { useThemeStore } from "@store/app.store.js";
 
 const Home = () => {
-    const gradientColors = useThemeStore(state => state.gradientColors);
+  const gradientColors = useThemeStore((state) => state.gradientColors);
 
-    return (
-        <LinearGradient colors={gradientColors} className="flex-1">
-            <ScrollView
-                contentContainerStyle={{
-                    paddingTop: 60,
-                    paddingBottom: 150,
-                    flexGrow: 1
-                }}
-                className="dark:bg-black">
-                <Header />
-                <TodaysMiniAttentdenceCard />
-                <MonthlyAttendenceMiniReport />
-                <StudentOptions />
-            </ScrollView>
-        </LinearGradient>
-    );
+  return (
+    <LinearGradient colors={gradientColors} className="flex-1">
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: 150,
+          flexGrow: 1,
+        }}
+        className="dark:bg-black"
+      >
+        <Header />
+        <TodaysMiniAttentdenceCard />
+        <MonthlyAttendenceMiniReport />
+        <StudentOptions />
+      </ScrollView>
+    </LinearGradient>
+  );
 };
 
 export default Home;

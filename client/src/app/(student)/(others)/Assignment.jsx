@@ -3,22 +3,27 @@ import { router } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
-import { Feather } from "@icons";
-
 import Header from "@components/common/Header.jsx";
 
-import { getAssignment } from "@controller/teacher/assignment.controller.js";
+import { getAssignment } from "@controller/student/assignment.controller.js";
 
 const RenderItem = ({ item }) => (
-  <View
-    className="p-5 rounded-3xl dark:bg-zinc-900 mt-2"
+  <TouchableOpacity
+    onPress={() =>
+      router.push({
+        pathname: "/(student)/(others)/AssignmentUpload",
+        params: {
+          assignmentId: item._id,
+          topic: item.topic,
+          description: item.description,
+        },
+      })
+    }
+    className="p-5 rounded-3xl dark:bg-zinc-900 my-2"
     style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
   >
     <Text className="text-xl font-black dark:text-white">{item.topic}</Text>
-    <Text
-      numberOfLines={2}
-      className="text-gray-600 font-bold text-lg pl-3 dark:text-white"
-    >
+    <Text className="text-gray-600 font-bold text-lg pl-3 dark:text-white">
       {item.description}
     </Text>
     <Text className="text-xl font-black mt-3 dark:text-white">
@@ -28,7 +33,7 @@ const RenderItem = ({ item }) => (
       Due Date:
       {new Date(item.dueDate).toLocaleDateString()}
     </Text>
-  </View>
+  </TouchableOpacity>
 );
 
 const Assignment = () => {
@@ -39,8 +44,6 @@ const Assignment = () => {
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.nextPage : undefined,
     });
-
-  console.log(data);
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
@@ -57,16 +60,10 @@ const Assignment = () => {
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingBottom: 100,
+          gap: 16,
           paddingTop: 16,
         }}
       />
-
-      <TouchableOpacity
-        className=" p-4 rounded-full bg-pink-500 absolute right-5 bottom-10 justify-center items-center"
-        onPress={() => router.push("/(teacher)/(others)/AssignmentCreation")}
-      >
-        <Feather name="plus" size={30} className="dark:text-white" />
-      </TouchableOpacity>
     </View>
   );
 };

@@ -31,7 +31,7 @@ const createAllTables = () => {
   );
 
   turso.execute(
-    "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId));"
+    "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE);"
   );
 
   turso.execute(
@@ -43,7 +43,7 @@ const createAllTables = () => {
             course text check (course in ('Bca', 'Bsc')),
             year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
             strength integer,
-            in_charge text REFERENCES teachers(teacherId),
+            in_charge text REFERENCES teachers(teacherId) ON DELETE SET NULL,
             primary key (course, year)
         )
     `);
@@ -65,7 +65,7 @@ const createAllTables = () => {
 			
 			UNIQUE (course, year, hour, date),
 			FOREIGN KEY (course, year) REFERENCES classes(course, year),
-			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId)
+			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL
 		);`);
 
   turso.execute(`
@@ -76,7 +76,7 @@ const createAllTables = () => {
 			status TEXT NOT NULL CHECK (status IN ('present','absent', 'late')),
 			
 			FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
-			FOREIGN KEY (studentId) REFERENCES students(studentId)
+			FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE
 		);
 	`);
 
@@ -93,7 +93,7 @@ const createAllTables = () => {
 			createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 	
 			UNIQUE(teacherId, date, hour),
-			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ,
+			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE,
 			FOREIGN KEY (year, course) REFERENCES classes(year, course));
 		`);
 };

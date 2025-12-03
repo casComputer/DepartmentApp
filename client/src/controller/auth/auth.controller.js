@@ -7,7 +7,8 @@ import { useAppStore } from "@store/app.store.js";
 let API_URL =
     process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
 
-// API_URL = "http://10.35.94.212:3000"
+API_URL = "https://dc-connect.onrender.com"
+
 console.log(API_URL);
 
 const authController = async data => {

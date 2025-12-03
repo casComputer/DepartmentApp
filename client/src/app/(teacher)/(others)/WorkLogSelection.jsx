@@ -18,6 +18,7 @@ import Animated, {
 import { router } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
+import Header2 from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 import { COURSES, YEAR, HOURS } from "@constants/ClassAndCourses.js";
 import generateDateOptions from "@utils/generateDateOptions.js";
@@ -26,26 +27,48 @@ import { saveWorklog } from "@controller/teacher/worklog.controller";
 const dateOptions = generateDateOptions(4);
 const { width: vw } = Dimensions.get("window");
 
-const Page2 = ({ subject, setSubject, topics, setTopics }) => (
-    <View style={{ width: vw }} className="grow bg-white dark:bg-black px-3 ">
-        <TextInput
-            className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2 mt-10"
-            placeholder="Subject"
-            placeholderTextColor={"rgba(119,119,119,0.7)"}
-            value={subject}
-            onChangeText={setSubject}
-        />
+const Page2 = ({ warning, handleSave }) => {
+    const [subject, setSubject] = useState("");
+    const [topics, setTopics] = useState("");
+    const [loading, setLoading] = useState(false);
 
-        <TextInput
-            className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2"
-            placeholder="Topics covered"
-            multiline
-            placeholderTextColor={"rgba(119,119,119,0.7)"}
-            value={topics}
-            onChangeText={setTopics}
-        />
-    </View>
-);
+    const handlePress = async () => {
+        setLoading(true);
+        await handleSave({ subject, topics });
+        setLoading(false);
+    };
+
+    return (
+        <View
+            style={{ width: vw }}
+            className="grow bg-white dark:bg-black px-3 ">
+            <Header2 onSave={handlePress} saving={loading} />
+
+            {warning !== "" && (
+                <Text className="text-red-500 text-center text-lg mt-2">
+                    {warning}
+                </Text>
+            )}
+
+            <TextInput
+                className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2 mt-10"
+                placeholder="Subject"
+                placeholderTextColor={"rgba(119,119,119,0.7)"}
+                value={subject}
+                onChangeText={setSubject}
+            />
+
+            <TextInput
+                className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2"
+                placeholder="Topics covered"
+                multiline
+                placeholderTextColor={"rgba(119,119,119,0.7)"}
+                value={topics}
+                onChangeText={setTopics}
+            />
+        </View>
+    );
+};
 
 const SelectBoxes = ({
     date,
@@ -83,9 +106,6 @@ const WorkLogSelection = () => {
     const [course, setCourse] = useState({});
     const [hour, setHour] = useState({});
 
-    const [subject, setSubject] = useState("");
-    const [topics, setTopics] = useState("");
-
     const [warning, setWarning] = useState("");
 
     const translateX = useSharedValue(0);
@@ -120,7 +140,6 @@ const WorkLogSelection = () => {
     }));
 
     const page1Valid = date.id && year.id && course.id && hour.id;
-    const page2Valid = subject.trim().length > 0 && topics.trim().length > 0;
 
     const handlePress = () => {
         setWarning("");
@@ -134,13 +153,29 @@ const WorkLogSelection = () => {
             translateX.value = withSpring(-vw);
             return;
         }
+    };
+
+    const handleSave = async ({ subject, topics }) => {
+        const page2Valid =
+            subject.trim().length > 0 && topics.trim().length > 0;
 
         if (!page2Valid) {
             setWarning("Please enter subject and topics.");
             return;
         }
+        if (
+            !date.id ||
+            !year.id ||
+            !course.id ||
+            !hour.id ||
+            !subject ||
+            !topics
+        )
+            return;
+            
+        setWarning("")
 
-        saveWorklog({
+        await saveWorklog({
             date: date.id,
             year: year.id,
             course: course.id,
@@ -150,65 +185,58 @@ const WorkLogSelection = () => {
         });
     };
 
-    const buttonDisabled = page === 0 ? !page1Valid : !page2Valid;
-
     return (
-        <ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}
-            className="bg-white dark:bg-black"
-            showsVerticalScrollIndicator={false}>
-            <Header
-                title={"Work Log"}
-                extraButton={true}
-                buttonTitle={page === 0 ? "Next" : "Save"}
-                handlePress={
-                    buttonDisabled
-                        ? () => setWarning("Complete all fields.")
-                        : handlePress
-                }
-                disabled={buttonDisabled}
-            />
-
+        <View className="grow bg-white dark:bg-black">
             {/* Sliding Pages */}
             <Animated.View style={[{ flexDirection: "row" }, animatedStyles]}>
                 {/* PAGE 1 */}
-                <View style={{ width: vw }} className="px-3 grow pt-5">
-                    <TouchableOpacity
-                        onPress={() =>
-                            router.push("/(teacher)/(others)/WorkLogHistory")
-                        }>
-                        <Text className="text-blue-500 font-bold text-xl p-2 self-end">
-                            History
-                        </Text>
-                    </TouchableOpacity>
-
-                    {warning !== "" && (
-                        <Text className="text-red-500 text-center text-lg mt-2">
-                            {warning}
-                        </Text>
-                    )}
-
-                    <SelectBoxes
-                        date={date}
-                        setDate={setDate}
-                        year={year}
-                        setYear={setYear}
-                        course={course}
-                        setCourse={setCourse}
-                        hour={hour}
-                        setHour={setHour}
+                <View style={{ width: vw }} className="px-3 grow">
+                    <Header
+                        title={"Work Log"}
+                        extraButton={true}
+                        buttonTitle={page === 0 ? "Next" : "Save"}
+                        handlePress={handlePress}
                     />
+                    <ScrollView
+                        contentContainerStyle={{
+                            flexGrow: 1,
+                            paddingBottom: 200
+                        }}
+                        showsVerticalScrollIndicator={false}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                router.push(
+                                    "/(teacher)/(others)/WorkLogHistory"
+                                )
+                            }>
+                            <Text className="text-blue-500 font-bold text-xl p-2 self-end">
+                                History
+                            </Text>
+                        </TouchableOpacity>
+
+                        {warning !== "" && (
+                            <Text className="text-red-500 text-center text-lg mt-2">
+                                {warning}
+                            </Text>
+                        )}
+
+                        <SelectBoxes
+                            date={date}
+                            setDate={setDate}
+                            year={year}
+                            setYear={setYear}
+                            course={course}
+                            setCourse={setCourse}
+                            hour={hour}
+                            setHour={setHour}
+                        />
+                    </ScrollView>
                 </View>
 
                 {/* PAGE 2 */}
-                <Page2
-                    subject={subject}
-                    setSubject={setSubject}
-                    topics={topics}
-                    setTopics={setTopics}
-                />
+                <Page2 warning={warning} handleSave={handleSave} />
             </Animated.View>
-        </ScrollView>
+        </View>
     );
 };
 

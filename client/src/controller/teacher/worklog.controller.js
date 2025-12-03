@@ -61,7 +61,7 @@ export const fetchWorklogs = async page => {
         const user = useAppStore.getState().user;
 
         const response = await axios.post("/teacher/getWorklogs", {
-            userId: user.userId,
+            teacherId: user.userId,
             page,
             limit: 5
         });

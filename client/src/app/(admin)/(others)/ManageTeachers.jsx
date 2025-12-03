@@ -1,41 +1,45 @@
-import { useState , useEffect} from "react";
-import { View, Text } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
 import { FlashList } from "@shopify/flash-list";
+import { router } from "expo-router";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 import { useAdminStore } from "@store/admin.store.js";
 
 import TeacherItem from "@components/common/UserItem.jsx";
-import Header from "@components/admin/Header.jsx";
+import Header from "@components/common/Header.jsx";
 
 const ManageTeachers = () => {
-    const teachers = useAdminStore((state) => state.teachers);
-    const [loading, setLoading] =useState(false)
+    const teachers = useAdminStore(state => state.teachers);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setLoading(true)
-        fetchTeachers()
-        .then(() => setLoading(false))
+        setLoading(true);
+        fetchTeachers().then(() => setLoading(false));
     }, []);
-    
-    if (loading && teachers.length == 0)
-        return (
-            <Text className="mt-12 w-full text-center font-black text-3xl text-black">
-                loading...
-            </Text>
-        );
 
     return (
-        <View className="flex-1 ">
+        <View className="flex-1 bg-white dark:bg-black">
+            <Header title={"Manage Teachers"} />
+            {loading && teachers.length == 0 && (
+                <ActivityIndicator size="large" />
+            )}
             <FlashList
                 data={teachers}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.teacherId.toString()}
                 className={"px-3"}
                 contentContainerStyle={{ paddingVertical: 60 }}
-                ListHeaderComponent={() => <Header title={"Manage Teachers"} />}
                 renderItem={({ item }) => (
-                    <TeacherItem item={item} />
+                    <TeacherItem
+                        item={item}
+                        handlePress={() =>
+                            router.push({
+                                pathname: "(admin)/(others)//VerifyTeacher",
+                                params: { teacherId: item.teacherId }
+                            })
+                        }
+                    />
                 )}
             />
         </View>

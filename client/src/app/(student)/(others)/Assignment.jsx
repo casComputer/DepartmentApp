@@ -16,6 +16,7 @@ const RenderItem = ({ item }) => (
           assignmentId: item._id,
           topic: item.topic,
           description: item.description,
+          dueDate: item.dueDate,
         },
       })
     }

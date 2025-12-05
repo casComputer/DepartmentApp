@@ -30,7 +30,7 @@ router.post("/create", createAssignment);
 
 router.post("/getAssignmentsCreatedByMe", getAssignmentsCreatedByMe);
 
-router.post("/getAssignmentForStudent");
+router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
 

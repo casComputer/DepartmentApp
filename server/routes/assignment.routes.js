@@ -1,88 +1,37 @@
 import express from "express";
+import crypto from "crypto";
 
 import Assignment from "../models/assignment.js";
 
+import {
+    createAssignment,
+    getAssignmentsCreatedByMe
+} from "../controllers/teacher/assignment.controller.js";
+import { getAssignmentForStudent } from "../controllers/student/assignment.controller.js";
+
 const router = express.Router();
 
-router.post("/create", async (req, res) => {
-  try {
-    const { topic, description, year, course, dueDate, teacherId } = req.body;
+export const getSignature = (req, res) => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
 
-    if (!topic || !description || !year || !course || !dueDate || !teacherId) {
-      return res.json({ message: "All fields are required", success: false });
-    }
+    const signature = crypto
+        .createHash("sha1")
+        .update(
+            `timestamp=${timestamp}&upload_preset=assignment_upload${process.env.CLOUDINARY_API_SECRET}`
+        )
+        .digest("hex");
 
-    await Assignment.create({
-      topic,
-      description,
-      year,
-      course,
-      dueDate,
-      teacherId,
-    });
+    const api_key = process.env.CLOUDINARY_API_KEY;
 
-    res
-      .status(200)
-      .json({ message: "Assignment created successfully", success: true });
-  } catch (error) {
-    console.error("Error creating assignment:", error);
-    res.status(500).json({ message: "Internal server error", success: false });
-  }
-});
+    res.json({ timestamp, signature, api_key });
+};
 
-router.post("/getAssignmentsCreatedByMe", async (req, res) => {
-  try {
-    const { teacherId, page = 1, limit = 10 } = req.body;
+router.post("/create", createAssignment);
 
-    if (!teacherId) {
-      return res.json({
-        message: "teacherId is required",
-        success: false,
-      });
-    }
+router.post("/getAssignmentsCreatedByMe", getAssignmentsCreatedByMe);
 
-    const assignments = await Assignment.find({ teacherId })
-      .sort({ timestamp: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+router.post("/getAssignmentForStudent");
 
-    const hasMore = assignments.length === limit;
-    const nextPage = hasMore ? page + 1 : null;
-
-    res.status(200).json({ assignments, success: true, hasMore, nextPage });
-  } catch (error) {
-    console.error("Error fetching assignments:", error);
-    res.status(500).json({ message: "Internal server error", success: false });
-  }
-});
-
-router.post("/getAssignmentForStudent", async (req, res) => {
-  try {
-    const { course, year_of_study, studentId, page = 1, limit = 10 } = req.body;
-
-    if (!course || !year_of_study || !studentId) {
-      return res.json({
-        message: "course, year_of_study and studentId are required",
-        success: false,
-      });
-    }
-
-    const assignments = await Assignment.find({
-      course,
-      year: year_of_study,
-    })
-      .sort({ timestamp: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    const hasMore = assignments.length === limit;
-    const nextPage = hasMore ? page + 1 : null;
-
-    res.status(200).json({ assignments, success: true, hasMore, nextPage });
-  } catch (error) {
-    console.error("Error fetching assignments:", error);
-    res.status(500).json({ message: "Internal server error", success: false });
-  }
-});
+router.get("/getSignature", getSignature);
 
 export default router;

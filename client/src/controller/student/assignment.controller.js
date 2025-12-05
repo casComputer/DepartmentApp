@@ -83,7 +83,16 @@ export const handleDocumentPick = async () => {
 
     const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
-    const formData = new FormData();
+    try {
+        
+        const { timestamp, signature, api_key } = await axios.get('/assignment/getSignature')
+        
+        if(!timestamp || !signature || !api_key){
+            // show suitable message 
+            return
+        }
+        
+        const formData = new FormData();
 
     formData.append("file", {
       uri: uri,
@@ -92,8 +101,11 @@ export const handleDocumentPick = async () => {
     });
 
     formData.append("upload_preset", "assignment_upload");
+    formData.append("timestamp", timestamp);
+    formData.append("signature", signature);
+    formData.append("api_key", api_key);
 
-    try {
+        
       const res = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });

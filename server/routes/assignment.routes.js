@@ -39,7 +39,7 @@ router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
 
-router.post("/saveAssignmentSubmissionDetails", getSignature);
+router.post("/saveAssignmentSubmissionDetails", saveAssignmentSubmissionDetails);
 
 
 export default router;

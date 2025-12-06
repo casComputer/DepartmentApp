@@ -31,9 +31,9 @@ app.use("/class", classRoutes);
 app.use("/assignment", assignmentRoutes);
 
 app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+    res.status(404).json({ message: "Route not found" });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

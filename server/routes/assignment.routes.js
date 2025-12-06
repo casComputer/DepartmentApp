@@ -13,12 +13,16 @@ import { getAssignmentForStudent } from "../controllers/student/assignment.contr
 const router = express.Router();
 
 export const getSignature = (req, res) => {
-    const timestamp = Math.round(Date.now() / 1000);
+    
+  const timestamp = Math.round((new Date).getTime()/1000);
+
+    console.log(timestamp, cloudinary.config().api_secret);
 
     const signature = cloudinary.utils.api_sign_request(
         {
             timestamp,
-            upload_preset: "assignment_upload"
+            // upload_preset: "assignment_upload",
+            folder: 'assignments'
         },
         cloudinary.config().api_secret
     );

@@ -12,19 +12,22 @@ import { getAssignmentForStudent } from "../controllers/student/assignment.contr
 const router = express.Router();
 
 export const getSignature = (req, res) => {
-    const timestamp = Math.round(new Date().getTime() / 1000);
+    const timestamp = Math.round(Date.now() / 1000);
+
+    const params = `timestamp=${timestamp}&upload_preset=assignment_upload`;
 
     const signature = crypto
         .createHash("sha1")
-        .update(
-            `timestamp=${timestamp}&upload_preset=assignment_upload${process.env.CLOUDINARY_API_SECRET}`
-        )
+        .update(params + process.env.CLOUDINARY_API_SECRET)
         .digest("hex");
 
-    const api_key = process.env.CLOUDINARY_API_KEY;
-
-    res.json({ timestamp, signature, api_key });
+    res.json({
+        timestamp,
+        signature,
+        api_key: process.env.CLOUDINARY_API_KEY,
+    });
 };
+
 
 router.post("/create", createAssignment);
 

@@ -20,14 +20,12 @@ export const getSignature = (req, res) => {
     const signature = cloudinary.utils.api_sign_request(
         {
             timestamp,
-            upload_preset: "assignment_upload",
+            upload_preset: "assignment_upload"
         },
         cloudinary.config().api_secret
     );
 
-    console.log(signature);
-    return;
-
+    
     res.json({
         timestamp,
         signature,
@@ -42,6 +40,5 @@ router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
 
-getSignature();
 
 export default router;

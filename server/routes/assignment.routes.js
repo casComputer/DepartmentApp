@@ -1,14 +1,13 @@
 import express from "express";
-import crypto from "crypto";
 
 import cloudinary from "../config/cloudinary.js";
-import Assignment from "../models/assignment.js";
 
 import {
     createAssignment,
-    getAssignmentsCreatedByMe
+    getAssignmentsCreatedByMe,
+    
 } from "../controllers/teacher/assignment.controller.js";
-import { getAssignmentForStudent } from "../controllers/student/assignment.controller.js";
+import { getAssignmentForStudent, saveAssignmentSubmissionDetails } from "../controllers/student/assignment.controller.js";
 
 const router = express.Router();
 
@@ -39,6 +38,8 @@ router.post("/getAssignmentsCreatedByMe", getAssignmentsCreatedByMe);
 router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
+
+router.post("/saveAssignmentSubmissionDetails", getSignature);
 
 
 export default router;

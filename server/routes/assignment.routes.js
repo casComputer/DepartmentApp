@@ -1,5 +1,6 @@
 import express from "express";
 import crypto from "crypto";
+import { v2 as cloudinary } from "cloudinary";
 
 import Assignment from "../models/assignment.js";
 
@@ -24,10 +25,9 @@ export const getSignature = (req, res) => {
     res.json({
         timestamp,
         signature,
-        api_key: process.env.CLOUDINARY_API_KEY,
+        api_key: process.env.CLOUDINARY_API_KEY
     });
 };
-
 
 router.post("/create", createAssignment);
 
@@ -36,5 +36,27 @@ router.post("/getAssignmentsCreatedByMe", getAssignmentsCreatedByMe);
 router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
+
+router.get("/signature", async (req, res) => {
+    const apiSecret = cloudinary.config().api_secret;
+
+    console.log(apiSecret);
+
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    const signature = cloudinary.utils.api_sign_request(
+        {
+            timestamp: timestamp,
+            folder: "files"
+        },
+        apiSecret
+    );
+
+    res.json({
+        timestamp,
+        signature,
+        api_key: process.env.CLOUDINARY_API_KEY
+    });
+});
 
 export default router;

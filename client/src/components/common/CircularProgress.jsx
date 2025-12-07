@@ -15,6 +15,7 @@ const CircularProgress = ({
     progress = 83,
     maxProgress = 100,
     showPercentage = true,
+    fraction = "",
     strokeFillColor = "#4F46E5",
     animated = true
 }) => {
@@ -75,10 +76,19 @@ const CircularProgress = ({
             </Svg>
 
             <View style={styles.textContainer}>
-                <Text style={styles.text} className="text-black dark:text-white">
-                    {normalizedProgress}
-                    {showPercentage && "%"}
-                </Text>
+                {fraction ? (
+                    <Text
+                        className="text-black dark:text-white">
+                        {fraction}
+                    </Text>
+                ) : (
+                    <Text
+                        style={styles.text}
+                        className="text-black dark:text-white">
+                        {normalizedProgress}
+                        {showPercentage && "%"}
+                    </Text>
+                )}
             </View>
         </View>
     );
@@ -95,7 +105,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 20,
-        fontWeight: "600",
+        fontWeight: "600"
     }
 });
 

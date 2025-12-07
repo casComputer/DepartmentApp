@@ -1,74 +1,70 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
-
 import { Feather } from "@icons";
 
 import Header from "@components/common/Header.jsx";
+import { AssignmentRenderItem } from "@components/teacher/Assignment.jsx";
 
 import { getAssignment } from "@controller/teacher/assignment.controller.js";
 
-const RenderItem = ({ item }) => (
-  <View
-    className="p-5 rounded-3xl dark:bg-zinc-900 mt-2"
-    style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
-  >
-    <Text className="text-xl font-black dark:text-white">{item.topic}</Text>
-    <Text
-      numberOfLines={2}
-      className="text-gray-600 font-bold text-lg pl-3 dark:text-white"
-    >
-      {item.description}
-    </Text>
-    <Text className="text-xl font-black mt-3 dark:text-white">
-      {item.year} {item.course}
-    </Text>
-    <Text className="font-black text-lg dark:text-white">
-      Due Date:
-      {new Date(item.dueDate).toLocaleDateString()}
-    </Text>
-  </View>
-);
+import { formatDate } from '@utils/date.js'
 
 const Assignment = () => {
-  const { data, fetchNextPage, isFetchNextPage, hasNextPage } =
-    useInfiniteQuery({
-      queryKey: ["assignments"],
-      queryFn: ({ pageParam = 1 }) => getAssignment({ pageParam }),
-      getNextPageParam: (lastPage) =>
-        lastPage.hasMore ? lastPage.nextPage : undefined,
-    });
+    const { data, fetchNextPage, isFetchNextPage, hasNextPage, isPending } =
+        useInfiniteQuery({
+            queryKey: ["assignments"],
+            queryFn: ({ pageParam = 1 }) => getAssignment({ pageParam }),
+            getNextPageParam: lastPage =>
+                lastPage.hasMore ? lastPage.nextPage : undefined
+        });
 
-  console.log(data);
+    const ItemSeparator = ({ trailingItem, leadingItem }) => {
+        const leadingDate = formatDate(leadingItem.timestamp)
+        const trailingDate = formatDate(trailingItem.timestamp)
 
-  return (
-    <View className="flex-1 bg-white dark:bg-black">
-      <Header title="Assignments" />
+        if (leadingDate === trailingDate) return null;
+        
+        return (
+            <Text className="my-6 text-xl font-bold px-3 dark:text-white">
+                {trailingDate}
+            </Text>
+        );
+    };
 
-      <FlashList
-        data={data?.pages.flatMap((page) => page.assignments) || []}
-        keyExtractor={(item) => item._id.toString()}
-        renderItem={({ item }) => <RenderItem item={item} />}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchNextPage) fetchNextPage();
-        }}
-        onEndReachedThreshold={0.5}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingBottom: 100,
-          paddingTop: 16,
-        }}
-      />
+    return (
+        <View className="flex-1 bg-white dark:bg-black">
+            <Header title="Assignments" />
 
-      <TouchableOpacity
-        className=" p-4 rounded-full bg-pink-500 absolute right-5 bottom-10 justify-center items-center"
-        onPress={() => router.push("/(teacher)/(others)/AssignmentCreation")}
-      >
-        <Feather name="plus" size={30} className="dark:text-white" />
-      </TouchableOpacity>
-    </View>
-  );
+            {isPending && <ActivityIndicator />}
+
+            <FlashList
+                data={data?.pages.flatMap(page => page.assignments) || []}
+                keyExtractor={item => item._id}
+                renderItem={({ item }) => <AssignmentRenderItem item={item} />}
+                onEndReached={() => {
+                    if (hasNextPage && !isFetchNextPage) fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+                maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+                contentContainerStyle={{
+                    paddingHorizontal: 16,
+                    paddingBottom: 100,
+                    paddingTop: 16
+                }}
+                ItemSeparatorComponent={ItemSeparator}
+            />
+
+            <TouchableOpacity
+                className=" p-4 rounded-full bg-pink-500 absolute right-5 bottom-10 justify-center items-center"
+                onPress={() =>
+                    router.push("/(teacher)/(others)/AssignmentCreation")
+                }>
+                <Feather name="plus" size={30} className="dark:text-white" />
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 export default Assignment;

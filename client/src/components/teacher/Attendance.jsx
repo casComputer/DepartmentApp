@@ -20,6 +20,9 @@ const ITEM_SIZE = (vw - 6 * 12) / 5,
 
 export const AttendanceItem = React.memo(
     ({ item, toggleAttendance, onItemLayout, onLongPress }) => {
+        
+        if(!item.rollno) return
+        
         return (
             <TouchableOpacity
                 onLayout={onItemLayout}

@@ -1,11 +1,25 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ActivityIndicator, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header";
 import { AttendanceHistoryRenderItem } from "@components/teacher/Attendance.jsx";
 
 import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.controller.js";
-import { FlashList } from "@shopify/flash-list";
+import {formatDate} from "@utils/date.js"
+
+    const ItemSeparator = ({ trailingItem, leadingItem }) => {
+        const leadingDate = formatDate(leadingItem.timestamp)
+        const trailingDate = formatDate(trailingItem.timestamp)
+
+        if (leadingDate === trailingDate) return null;
+        
+        return (
+            <Text className="my-6 text-xl font-bold px-3 dark:text-white">
+                {trailingDate}
+            </Text>
+        );
+    };
 
 const AttendanceHistory = () => {
     const limit = 20;
@@ -50,6 +64,7 @@ const AttendanceHistory = () => {
                 ListEmptyComponent={
                     isFetchingNextPage && <ActivityIndicator size="small" />
                 }
+                ItemSeparatorComponent={ItemSeparator}
             />
         </View>
     );

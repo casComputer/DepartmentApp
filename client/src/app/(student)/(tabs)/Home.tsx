@@ -18,6 +18,7 @@ const Home = () => {
           paddingBottom: 150,
           flexGrow: 1,
         }}
+        showVerticalIndicator={false}
         className="dark:bg-black"
       >
         <Header />

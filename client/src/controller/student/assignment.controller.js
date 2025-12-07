@@ -1,122 +1,206 @@
 import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import orgAxios from "axios";
 
 import { useAppStore } from "@store/app.store.js";
 
+import { getRandomSubmitMessage } from "@utils/displayMessages.js";
+
 export const getAssignment = async ({ pageParam }) => {
-  try {
-    const user = useAppStore.getState().user;
+    try {
+        const user = useAppStore.getState().user;
 
-    const limit = 10;
-    if (!user.userId || !user.course || !user.year_of_study) {
-      throw new Error("User not logged in");
+        const limit = 10;
+        if (!user.userId || !user.course || !user.year_of_study) {
+            throw new Error("User not logged in");
+        }
+
+        const { course, year_of_study, userId } = user;
+
+        console.log("requesting...");
+
+        const response = await axios.post(
+            "/assignment/getAssignmentForStudent",
+            {
+                course,
+                year_of_study,
+                studentId: userId,
+                page: pageParam,
+                limit
+            }
+        );
+
+        if (response.data.success) {
+            
+            return response.data;
+        }
+
+        return response.data;
+    } catch (error) {
+        ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
+        console.error("Error creating assignment:", error);
+        throw error;
     }
-
-    const { course, year_of_study, userId } = user;
-
-    const response = await axios.post("/assignment/getAssignmentForStudent", {
-      course,
-      year_of_study,
-      studentId: userId,
-      page: pageParam,
-      limit,
-    });
-
-    if (response.data.success) {
-      return response.data;
-    }
-
-    return response.data;
-  } catch (error) {
-    ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
-    console.error("Error creating assignment:", error);
-    throw error;
-  }
 };
 
-export const handleDocumentPick = async () => {
-  const result = await DocumentPicker.getDocumentAsync({
-    types: ["application/pdf", "image/*"],
-  });
-
-  if (result.canceled) {
-    return;
-  } else {
-    const { name, size, uri, mimeType } = result.assets[0];
-
-    if (!name || !uri || !mimeType || !size) {
-      ToastAndroid.show(
-        "Failed to retrieve file information. Please try again.",
-        ToastAndroid.LONG
-      );
-      return;
-    }
-
-    const MAX_MB = 10;
-    const sizeInMB = size / (1024 * 1024);
-
-    if (sizeInMB > MAX_MB) {
-      ToastAndroid.show(
-        "File size exceeds 10MB limit. Please select a smaller file.",
-        ToastAndroid.LONG
-      );
-      return;
-    }
-
-    const allowedExt = [
-      "application/pdf",
-      "image/jpg",
-      "image/jpeg",
-      "image/png",
-    ];
-
-    if (!allowedExt.includes(mimeType)) {
-      ToastAndroid.show(
-        "Invalid file type. Please select a PDF or image file.",
-        ToastAndroid.LONG
-      );
-
-      return;
-    }
-    const cloudName = process.env.EXPO_PUBLIC_PRIMARY_CLOUDINARY_CLOUD_NAME;
-
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
-    try {
-        
-        const { timestamp, signature, api_key } = await axios.get('/assignment/getSignature')
-        
-        if(!timestamp || !signature || !api_key){
-            // show suitable message 
-            return
-        }
-        
-        const formData = new FormData();
-
-    formData.append("file", {
-      uri: uri,
-      name: name,
-      type: mimeType,
+export const handleDocumentPick = async setFormData => {
+    const result = await DocumentPicker.getDocumentAsync({
+        types: ["application/pdf", "image/*"]
     });
 
-    formData.append("upload_preset", "assignment_upload");
-    formData.append("timestamp", timestamp);
-    formData.append("signature", signature);
-    formData.append("api_key", api_key);
+    if (result.canceled) {
+        return;
+    } else {
+        const { name, size, uri, mimeType } = result.assets[0];
 
-        
-      const res = await axios.post(url, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Cloudinary response:", res.data);
-      return res.data;
-    } catch (error) {
-      ToastAndroid.show(
-        "Failed to upload file. Please try again.",
-        ToastAndroid.LONG
-      );
-      console.error("Error uploading to Cloudinary:", error);
+        if (!name || !uri || !mimeType || !size) {
+            ToastAndroid.show(
+                "Failed to retrieve file information. Please try again.",
+                ToastAndroid.LONG
+            );
+            return;
+        }
+
+        const MAX_MB = 10;
+        const sizeInMB = size / (1024 * 1024);
+
+        if (sizeInMB > MAX_MB) {
+            ToastAndroid.show(
+                "File size exceeds 10MB limit. Please select a smaller file.",
+                ToastAndroid.LONG
+            );
+            return;
+        }
+
+        const allowedExt = [
+            "application/pdf",
+            "image/jpg",
+            "image/jpeg",
+            "image/png"
+        ];
+
+        if (!allowedExt.includes(mimeType)) {
+            ToastAndroid.show(
+                "Invalid file type. Please select a PDF or image file.",
+                ToastAndroid.LONG
+            );
+
+            return;
+        }
+
+        setFormData({ uri, name, size, mimeType });
     }
-  }
+};
+
+const saveAssignmentSubmissionDetails = async ({
+    secure_url,
+    format,
+    assignmentId
+}) => {
+    try {
+        const studentId = useAppStore.getState().user.userId;
+        if (!studentId) {
+            ToastAndroid.show("Missing login informations!", ToastAndroid.LONG);
+            return false;
+        }
+
+        ToastAndroid.show("Please wait...", ToastAndroid.SHORT);
+
+        const res = await axios.post(
+            "/assignment/saveAssignmentSubmissionDetails",
+            {
+                studentId,
+                secure_url,
+                format,
+                assignmentId
+            }
+        );
+
+        if (res?.data?.success) {
+            ToastAndroid.show(getRandomSubmitMessage(), ToastAndroid.SHORT);
+            return true;
+        } else {
+            ToastAndroid.show(
+                res.data?.message || "Failed to upload file. Please try again.",
+                ToastAndroid.LONG
+            );
+            return false;
+        }
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show(
+            "Failed to upload file. Please try again.",
+            ToastAndroid.LONG
+        );
+        return false;
+    }
+};
+
+export const handleAssignmentUpload = async (
+    file,
+    assignmentId,
+    setProgress
+) => {
+    const cloudName = process.env.EXPO_PUBLIC_PRIMARY_CLOUDINARY_CLOUD_NAME;
+
+    try {
+        if (!file) {
+            ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
+            return false;
+        }
+        const url = `https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload`;
+
+        const formData = new FormData();
+        formData.append("file", {
+            uri: file.uri,
+            name: file.name,
+            type: file.mimeType
+        });
+
+        const signatureRes = await axios.get("/assignment/getSignature");
+        const { timestamp, signature, api_key } = signatureRes.data;
+
+        if (!timestamp || !signature || !api_key) {
+            ToastAndroid.show(
+                "Unable to generate signature. Please try again.",
+                ToastAndroid.LONG
+            );
+            return false;
+        }
+
+        formData.append("timestamp", timestamp);
+        formData.append("upload_preset", "assignment_upload");
+        formData.append("signature", signature);
+        formData.append("api_key", api_key);
+
+        const res = await orgAxios.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+
+            onUploadProgress: pe => {
+                const total = pe.total || file.size * 1.35; // 35% extra for multipart
+                const percent = Math.min(
+                    Math.round((pe.loaded / total) * 100),
+                    100
+                );
+                setProgress(percent);
+                console.log("Progress:", percent + "%");
+            }
+        });
+
+        const { secure_url, format } = res.data;
+
+        return await saveAssignmentSubmissionDetails({
+            secure_url,
+            format,
+            assignmentId
+        });
+    } catch (error) {
+        ToastAndroid.show(
+            "Failed to upload file. Please try again.",
+            ToastAndroid.LONG
+        );
+        console.error("Error uploading to Cloudinary:", error);
+        return false;
+    }
 };

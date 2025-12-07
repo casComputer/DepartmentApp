@@ -25,7 +25,7 @@ export const createAssignment = async (req, res) => {
             [course, year]
         );
 
-        await Assignment.create({
+        const newDoc = await Assignment.create({
             topic,
             description,
             year,
@@ -37,7 +37,8 @@ export const createAssignment = async (req, res) => {
 
         res.status(200).json({
             message: "Assignment created successfully",
-            success: true
+            success: true,
+            assignment :newDoc
         });
     } catch (error) {
         console.error("Error creating assignment:", error);

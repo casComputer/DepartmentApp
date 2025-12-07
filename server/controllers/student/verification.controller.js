@@ -8,7 +8,8 @@ export const verifyStudent = async (req, res) => {
             "UPDATE students SET is_verified = true WHERE studentId = ?",
             [studentId]
         );
-
+        
+        
         res.json({ success: true, message: "Student verified" });
     } catch (error) {
         console.error(error);

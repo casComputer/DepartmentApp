@@ -48,7 +48,19 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
                 success: false
             });
         }
+        
+        const existAssignment = await Assignment.findById(assignmentId)
+        
+        if(!existAssignment) return res.json({
+            success: false, message: 'Assignment not found!'
+        })
+        
+        const isSubmitted = existAssignment?.submissions.some(submission => submission.studentId === studentId);
 
+        if(isSubmitted) return res.json({
+            success: false, message: 'Assignment already submitted!'
+        })
+        
         const submission = {
             studentId,
             url,

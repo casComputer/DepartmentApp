@@ -1,51 +1,107 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { router } from "expo-router";
+import * as Sharing from "expo-sharing";
+import { Directory, File, Paths } from "expo-file-system";
+
+import { formatDate } from "@utils/date.js";
+import getPdfPreviewUrl from "@utils/pdfPreview.js";
 
 import CircularProgress from "@components/common/CircularProgress.jsx";
 
 export const AssignmentRenderItem = ({ item }) => (
-    <Pressable
-        onPress={() =>
-            router.push({
-                params: {
-                    item: JSON.stringify(item)
-                },
-                pathname: "/(teacher)/(others)/AssignmentShow"
-            })
-        }
-        className="p-5 rounded-3xl dark:bg-zinc-900 mt-2"
-        style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}>
-        <Text className="text-xl font-black dark:text-white">{item.topic}</Text>
-        <Text
-            numberOfLines={2}
-            className="text-gray-600 font-bold text-lg pl-3 dark:text-white">
-            {item.description}
-        </Text>
+  <Pressable
+    onPress={() =>
+      router.push({
+        params: {
+          item: JSON.stringify(item),
+        },
+        pathname: "/(teacher)/(others)/AssignmentShow",
+      })
+    }
+    className="p-5 rounded-3xl dark:bg-zinc-900 mt-2"
+    style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
+  >
+    <Text className="text-xl font-black dark:text-white">{item.topic}</Text>
+    <Text
+      numberOfLines={2}
+      className="text-gray-600 font-bold text-lg pl-3 dark:text-white"
+    >
+      {item.description}
+    </Text>
 
-        <View className="flex-row justify-between items-center">
-            <View>
-                <Text className="text-xl font-black mt-3 dark:text-white">
-                    {item.year} {item.course}
-                </Text>
-                <Text className="font-black text-lg dark:text-white">
-                    Due Date:
-                    {new Date(item.dueDate).toLocaleDateString()}
-                </Text>
-            </View>
-            <View>
-                <CircularProgress
-                    size={60}
-                    strokeWidth={5}
-                    progress={
-                        item.strength < 1
-                            ? 0
-                            : (item.submissions?.length / item.strength) * 100
-                    }
-                    fraction={`${item.submissions?.length || 0} / ${
-                        item.strength || 0
-                    }`}
-                />
-            </View>
-        </View>
-    </Pressable>
+    <View className="flex-row justify-between items-center">
+      <View>
+        <Text className="text-xl font-black mt-3 dark:text-white">
+          {item.year} {item.course}
+        </Text>
+        <Text className="font-black text-lg dark:text-white">
+          Due Date:
+          {new Date(item.dueDate).toLocaleDateString()}
+        </Text>
+      </View>
+      <View>
+        <CircularProgress
+          size={60}
+          strokeWidth={5}
+          progress={
+            item.strength < 1
+              ? 0
+              : (item.submissions?.length / item.strength) * 100
+          }
+          fraction={`${item.submissions?.length || 0} / ${item.strength || 0}`}
+        />
+      </View>
+    </View>
+  </Pressable>
 );
+
+export const AssignmentShowRenderItem = ({ item }) => {
+  let url = item.url;
+
+  if (item.format === "pdf") {
+    url = getPdfPreviewUrl(url);
+  }
+
+  const downloadFile = async (url) => {
+    try {
+      const destination = new Directory(Paths.cache, "assignments");
+
+      console.log(destination);
+      try {
+        if (!destination.exists) {
+          destination.create();
+        }
+
+        const output = await File.downloadFileAsync(url, destination);
+        console.log(output.exists); // true
+        console.log(output.uri); // path to the downloaded file, e.g., '${cacheDirectory}/pdfs/sample.pdf'
+        console.log(output);
+        await Sharing.shareAsync(output.uri);
+      } catch (error) {
+        console.error(error);
+      }
+    } catch (error) {
+      console.error("Error sharing file:", error);
+    }
+  };
+
+  return (
+    <View className="justify-center rounded-lg dark:bg-zinc-900 p-4 gap-1">
+      <Text className="font-bold text-2xl dark:text-white ">
+        {item.studentId}
+      </Text>
+      <Text className="font-semibold text-md dark:text-white ">
+        Submitted on {formatDate(item.createdAt)}{" "}
+        {item.createdAt?.split("T")?.[1]?.split(".")?.[0]}
+      </Text>
+
+      <Pressable onPress={() => downloadFile(item.url)}>
+        <Image
+          source={{ uri: url }}
+          className="rounded-lg bg-zinc-950 self-center mt-2"
+          style={{ width: "90%", height: 300 }}
+        />
+      </Pressable>
+    </View>
+  );
+};

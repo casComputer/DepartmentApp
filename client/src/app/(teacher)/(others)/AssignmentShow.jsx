@@ -4,31 +4,39 @@ import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
 
 import Header from "@components/common/Header2.jsx";
+
 import { formatDate } from "@utils/date.js";
+import getPdfPreviewUrl from "@utils/pdfPreview.js";
 
 const { width: vw } = Dimensions.get("window");
 
-const uri =
-    "https://res.cloudinary.com/dqvgf5plc/image/upload/pg_1,f_jpg/g_center/v1765029571/oshqi1fjzvje4iz9i92c.pdf";
+// const uri =
+//     "https://res.cloudinary.com/dqvgf5plc/image/upload/pg_1,f_jpg/g_center/v1765029571/oshqi1fjzvje4iz9i92c.pdf";
 
 const RenderItem = ({ item }) => {
-    console.log(item);
+    let url = item.url
+    
+    if(item.format === "pdf") {
+         url = getPdfPreviewUrl(url)
+    }
+    
+    
     return (
-        <View className="justify-center items-center rounded-lg dark:bg-zinc-900 p-4 gap-2">
+        <View className="justify-center rounded-lg dark:bg-zinc-900 p-4 gap-1">
             <Text className="font-bold text-2xl dark:text-white ">
                 {item.studentId}
             </Text>
-
-            <Image
-                source={{ uri: uri }}
-                className="rounded-lg bg-zinc-950"
-                style={{ width: "90%", height: 300 }}
-            />
-
             <Text className="font-semibold text-md dark:text-white ">
                 Submitted on {formatDate(item.createdAt)}{" "}
                 {item.createdAt?.split("T")?.[1]?.split(".")?.[0]}
             </Text>
+
+            <Image
+                source={{ uri: url }}
+                className="rounded-lg bg-zinc-950 self-center mt-2"
+                style={{ width: "90%", height: 300 }}
+            />
+
         </View>
     );
 };

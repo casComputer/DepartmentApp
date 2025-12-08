@@ -1,73 +1,86 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header";
 import { AttendanceHistoryRenderItem } from "@components/teacher/Attendance.jsx";
 
 import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.controller.js";
-import {formatDate} from "@utils/date.js"
+import { formatDate } from "@utils/date.js";
 
-    const ItemSeparator = ({ trailingItem, leadingItem }) => {
-        const leadingDate = formatDate(leadingItem.timestamp)
-        const trailingDate = formatDate(trailingItem.timestamp)
-        
-        if (leadingDate === trailingDate) return null;
-        
-        return (
-            <Text className="my-6 text-xl font-bold px-3 dark:text-white">
-                {trailingDate}
-            </Text>
-        );
-    };
+const ItemSeparator = ({ trailingItem, leadingItem }) => {
+  const leadingDate = formatDate(leadingItem.timestamp);
+  const trailingDate = formatDate(trailingItem.timestamp);
+
+  if (leadingDate === trailingDate) return null;
+
+  return (
+    <Text className="my-3 text-xl font-bold px-3 dark:text-white">
+      {trailingDate}
+    </Text>
+  );
+};
+
+const ListHeaderComponent = ({ date }) => {
+  if (!date) return null;
+
+  const fdate = formatDate(date);
+
+  if (!fdate) return null;
+
+  return (
+    <Text className="my-3 text-xl font-bold px-3 dark:text-white">{fdate}</Text>
+  );
+};
 
 const AttendanceHistory = () => {
-    const limit = 20;
-    const {
-        data,
-        isLoading,
-        isError,
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage
-    } = useInfiniteQuery({
-        queryKey: ["attendance"],
-        queryFn: ({ pageParam = 1 }) =>
-            getAttendanceHistoryByTeacherId({ pageParam, limit }),
-        getNextPageParam: lastPage =>
-            lastPage.hasMore ? lastPage.nextPage : undefined,
-        refetchOnMount: "always"
-    });
+  const limit = 20;
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["attendance"],
+    queryFn: ({ pageParam = 1 }) =>
+      getAttendanceHistoryByTeacherId({ pageParam, limit }),
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.nextPage : undefined,
+    refetchOnMount: "always",
+  });
 
-    if (isError) return <div>Error: {error.message}</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
-    const allItems = data?.pages?.flatMap(page => page.data);
+  const allItems = data?.pages?.flatMap((page) => page.data);
 
-    return (
-        <View className="flex-1 bg-white dark:bg-black">
-            <Header title="History" isAbsolute={true} />
-            {isLoading && <ActivityIndicator size={"large"} />}
-            <FlashList
-                data={allItems}
-                renderItem={({ item }) => (
-                    <AttendanceHistoryRenderItem item={item} />
-                )}
-                onEndReached={() => {
-                    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-                }}
-                onEndReachedThreshold={0.5}
-                contentContainerStyle={{
-                    paddingTop: 40,
-                    paddingBottom: 60
-                }}
-                ListEmptyComponent={
-                    isFetchingNextPage && <ActivityIndicator size="small" />
-                }
-                ItemSeparatorComponent={ItemSeparator}
-            />
-        </View>
-    );
+  return (
+    <View className="flex-1 bg-white dark:bg-black">
+      <Header title="History" isAbsolute={true} />
+      {isLoading && <ActivityIndicator size={"large"} />}
+      <FlashList
+        data={allItems}
+        renderItem={({ item }) => <AttendanceHistoryRenderItem item={item} />}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={{
+          paddingTop: 40,
+          paddingBottom: 60,
+        }}
+        ListEmptyComponent={
+          isFetchingNextPage && <ActivityIndicator size="small" />
+        }
+        ItemSeparatorComponent={ItemSeparator}
+        ListHeaderComponent={
+          <ListHeaderComponent date={allItems?.[0]?.timestamp} />
+        }
+      />
+    </View>
+  );
 };
 
 export default AttendanceHistory;

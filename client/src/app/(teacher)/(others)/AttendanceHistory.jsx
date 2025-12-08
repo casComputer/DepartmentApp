@@ -11,7 +11,7 @@ import {formatDate} from "@utils/date.js"
     const ItemSeparator = ({ trailingItem, leadingItem }) => {
         const leadingDate = formatDate(leadingItem.timestamp)
         const trailingDate = formatDate(trailingItem.timestamp)
-
+        
         if (leadingDate === trailingDate) return null;
         
         return (

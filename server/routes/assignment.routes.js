@@ -1,5 +1,6 @@
 import express from "express";
 
+import Assignment from "../../models/assignment.js";
 import cloudinary from "../config/cloudinary.js";
 
 import {
@@ -40,6 +41,22 @@ router.post("/getAssignmentForStudent", getAssignmentForStudent);
 router.get("/getSignature", getSignature);
 
 router.post("/saveAssignmentSubmissionDetails", saveAssignmentSubmissionDetails);
+
+router.post("/reject", async(req, res) => {
+    try {
+        const { assignmentId, studentId } = req.body;
+
+        await Assignment.updateOne(
+            { _id: assignmentId },
+            { $pull: { submissions: { studentId: studentId } } }
+        );
+
+        res.status(200).json({ message: "Assignment submission rejected successfully.", success: true });
+    } catch (error) {
+        console.error("Error rejecting assignment submission:", error);
+        res.status(500).json({ message: "Internal server error.", success: false });
+    }
+});
 
 
 export default router;

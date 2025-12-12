@@ -21,6 +21,11 @@ const assignmentSchema = new mongoose.Schema({
                 required: true,
                 unique: true
             },
+            status: {
+                type: String,
+                default: 'pending',
+                enum: ["pending", "accepted", "rejected"]
+            },
             format: String,
             createdAt: {
                 type: Date,

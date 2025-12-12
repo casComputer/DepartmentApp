@@ -5,10 +5,12 @@ import cloudinary from "../config/cloudinary.js";
 
 import {
     createAssignment,
-    getAssignmentsCreatedByMe,
-    
+    getAssignmentsCreatedByMe
 } from "../controllers/teacher/assignment.controller.js";
-import { getAssignmentForStudent, saveAssignmentSubmissionDetails } from "../controllers/student/assignment.controller.js";
+import {
+    getAssignmentForStudent,
+    saveAssignmentSubmissionDetails
+} from "../controllers/student/assignment.controller.js";
 
 const router = express.Router();
 
@@ -25,7 +27,6 @@ export const getSignature = (req, res) => {
         cloudinary.config().api_secret
     );
 
-    
     res.json({
         timestamp,
         signature,
@@ -40,23 +41,65 @@ router.post("/getAssignmentForStudent", getAssignmentForStudent);
 
 router.get("/getSignature", getSignature);
 
-router.post("/saveAssignmentSubmissionDetails", saveAssignmentSubmissionDetails);
+router.post(
+    "/saveAssignmentSubmissionDetails",
+    saveAssignmentSubmissionDetails
+);
 
-router.post("/reject", async(req, res) => {
+router.post("/reject", async (req, res) => {
     try {
         const { assignmentId, studentId } = req.body;
 
         await Assignment.updateOne(
-            { _id: assignmentId },
-            { $pull: { submissions: { studentId: studentId } } }
+            {
+                _id: assignmentId,
+                "submissions.studentId": studentId
+            },
+            {
+                $set: {
+                    "submissions.$.status": "rejected"
+                }
+            }
         );
-
-        res.status(200).json({ message: "Assignment submission rejected successfully.", success: true });
+        res.status(200).json({
+            message: "Assignment submission rejected successfully.",
+            success: true
+        });
     } catch (error) {
         console.error("Error rejecting assignment submission:", error);
-        res.status(500).json({ message: "Internal server error.", success: false });
+        res.status(500).json({
+            message: "Internal server error.",
+            success: false
+        });
     }
 });
 
+router.post("/accept", async (req, res) => {
+    try {
+        const { assignmentId, studentId } = req.body;
+
+        await Assignment.updateOne(
+            {
+                _id: assignmentId,
+                "submissions.studentId": studentId
+            },
+            {
+                $set: {
+                    "submissions.$.status": "accepted"
+                }
+            }
+        );
+        res.status(200).json({
+            message: "Assignment accepted successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.error("Error accepting assignment submission:", error);
+        res.status(500).json({
+            message: "Internal server error.",
+            success: false
+        });
+    }
+});
 
 export default router;

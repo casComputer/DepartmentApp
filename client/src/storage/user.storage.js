@@ -53,3 +53,4 @@ export const clearUser = () => {
     storage.remove("course");
     storage.remove("year_of_study");
 };
+

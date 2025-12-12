@@ -9,22 +9,29 @@ const Header = ({
     title,
     extraButton = false,
     handlePress,
-    buttonTitle = ""
+    buttonTitle = "",
+    disableBackBtn = false
 }) => {
     const insets = useSafeAreaInsets();
 
     return (
         <View
             style={{ marginTop: insets.top }}
-            className="flex-row items-center px-2 w-full justify-between">
+            className="flex-row items-center px-2 w-full justify-between"
+        >
             <View className="flex-row justify-center items-center gap-0">
-                <TouchableOpacity className="p-1" onPress={() => router.back()}>
-                    <MaterialIcons
-                        name="arrow-back-ios-new"
-                        size={ICON_SIZE}
-                        style={{ fontWeight: "bold" }}
-                    />
-                </TouchableOpacity>
+                {!disableBackBtn && (
+                    <TouchableOpacity
+                        className="p-1"
+                        onPress={() => router.back()}
+                    >
+                        <MaterialIcons
+                            name="arrow-back-ios-new"
+                            size={ICON_SIZE}
+                            style={{ fontWeight: "bold" }}
+                        />
+                    </TouchableOpacity>
+                )}
                 <Text className="text-[10vw] font-bold dark:text-white">
                     {title}
                 </Text>

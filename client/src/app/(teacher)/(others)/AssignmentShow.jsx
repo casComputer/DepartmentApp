@@ -22,7 +22,9 @@ const AssignmentShow = () => {
 
       <FlashList
         data={assignment.submissions || []}
-        renderItem={({ item }) => <RenderItem item={item} />}
+        renderItem={({ item }) => (
+          <RenderItem item={item} assignmentId={assignment?._id} />
+        )}
         contentContainerStyle={{
           paddingHorizontal: 20,
         }}

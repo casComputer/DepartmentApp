@@ -2,6 +2,7 @@ import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
+import { compatibilityFlags } from "react-native-screens";
 
 export const createAssignment = async (assignmentData) => {
   try {
@@ -50,3 +51,25 @@ export const getAssignment = async ({ pageParam }) => {
     throw error;
   }
 };
+
+
+export const rejectAssignment = async (assignmentId, studentId) => {
+  try {
+
+    const response = await axios.post("/assignment/reject", {
+      assignmentId,
+      studentId,
+    });
+
+    if (response.data.success) {
+      ToastAndroid.show("Assignment submission rejected successfully.", ToastAndroid.SHORT);
+      return response.data;
+    } else {
+      ToastAndroid.show(response.data.message, ToastAndroid.LONG);
+    }
+  } catch (error) {
+    ToastAndroid.show("Internal server error.", ToastAndroid.LONG);
+    console.error("Error rejecting assignment submission:", error);
+    throw error;
+  }
+}

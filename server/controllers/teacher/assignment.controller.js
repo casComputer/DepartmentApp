@@ -77,3 +77,59 @@ export const getAssignmentsCreatedByMe = async (req, res) => {
         });
     }
 };
+
+export const reject = async (req, res) => {
+    try {
+        const { assignmentId, studentId } = req.body;
+
+        await Assignment.updateOne(
+            {
+                _id: assignmentId,
+                "submissions.studentId": studentId
+            },
+            {
+                $set: {
+                    "submissions.$.status": "rejected"
+                }
+            }
+        );
+        res.status(200).json({
+            message: "Assignment submission rejected successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.error("Error rejecting assignment submission:", error);
+        res.status(500).json({
+            message: "Internal server error.",
+            success: false
+        });
+    }
+}
+
+export const accept = async (req, res) => {
+    try {
+        const { assignmentId, studentId } = req.body;
+
+        await Assignment.updateOne(
+            {
+                _id: assignmentId,
+                "submissions.studentId": studentId
+            },
+            {
+                $set: {
+                    "submissions.$.status": "accepted"
+                }
+            }
+        );
+        res.status(200).json({
+            message: "Assignment accepted successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.error("Error accepting assignment submission:", error);
+        res.status(500).json({
+            message: "Internal server error.",
+            success: false
+        });
+    }
+}

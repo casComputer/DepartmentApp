@@ -1,11 +1,12 @@
 import express from "express";
 
-import Assignment from "../../models/assignment.js";
 import cloudinary from "../config/cloudinary.js";
 
 import {
     createAssignment,
-    getAssignmentsCreatedByMe
+    getAssignmentsCreatedByMe,
+    reject,
+    accept
 } from "../controllers/teacher/assignment.controller.js";
 import {
     getAssignmentForStudent,
@@ -46,60 +47,8 @@ router.post(
     saveAssignmentSubmissionDetails
 );
 
-router.post("/reject", async (req, res) => {
-    try {
-        const { assignmentId, studentId } = req.body;
+router.post("/reject", reject);
 
-        await Assignment.updateOne(
-            {
-                _id: assignmentId,
-                "submissions.studentId": studentId
-            },
-            {
-                $set: {
-                    "submissions.$.status": "rejected"
-                }
-            }
-        );
-        res.status(200).json({
-            message: "Assignment submission rejected successfully.",
-            success: true
-        });
-    } catch (error) {
-        console.error("Error rejecting assignment submission:", error);
-        res.status(500).json({
-            message: "Internal server error.",
-            success: false
-        });
-    }
-});
-
-router.post("/accept", async (req, res) => {
-    try {
-        const { assignmentId, studentId } = req.body;
-
-        await Assignment.updateOne(
-            {
-                _id: assignmentId,
-                "submissions.studentId": studentId
-            },
-            {
-                $set: {
-                    "submissions.$.status": "accepted"
-                }
-            }
-        );
-        res.status(200).json({
-            message: "Assignment accepted successfully.",
-            success: true
-        });
-    } catch (error) {
-        console.error("Error accepting assignment submission:", error);
-        res.status(500).json({
-            message: "Internal server error.",
-            success: false
-        });
-    }
-});
+router.post("/accept", accept);
 
 export default router;

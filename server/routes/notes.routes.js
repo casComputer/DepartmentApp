@@ -29,7 +29,7 @@ router.post("/fetchByTeacher", async (req, res) => {
     }
 });
 
-router.post("/create", async () => {
+router.post("/create", async (req, res) => {
     try {
         const { name, course, year, type, parentId, path, teacherId } =
             req.body;

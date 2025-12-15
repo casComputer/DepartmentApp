@@ -44,9 +44,9 @@ const Assignment = () => {
         fetchNextPage,
         isFetchNextPage,
         hasNextPage,
-        isPending,
         refetch,
-        isRefetching
+        isRefetching,
+        isPending
     } = useInfiniteQuery({
         queryKey: ["assignments"],
         queryFn: ({ pageParam = 1 }) => getAssignment({ pageParam }),
@@ -58,8 +58,10 @@ const Assignment = () => {
     return (
         <View className="flex-1 bg-white dark:bg-black">
             <Header title="Assignments" />
-
-            {isPending && <ActivityIndicator />}
+            
+            {
+                (isPending && !isFetchNextPage) && <ActivityIndicator style={{ marginTop: 8,}} />
+            }
 
             <FlashList
                 data={data?.pages.flatMap(page => page.assignments) || []}
@@ -80,9 +82,11 @@ const Assignment = () => {
                         date={data?.pages?.[0]?.assignments?.[0]?.timestamp}
                     />
                 }
+                ListFooterComponent={isFetchNextPage && <ActivityIndicator style={{ marginTop: 10,}} />}
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 ItemSeparatorComponent={ItemSeparator}
+                
             />
 
             <TouchableOpacity

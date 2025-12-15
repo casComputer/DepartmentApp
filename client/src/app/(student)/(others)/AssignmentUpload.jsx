@@ -20,13 +20,15 @@ const studentId = useAppStore.getState().user.userId;
 
 const AssignmentUpload = () => {
     const [file, setFile] = useState(null);
+    const [ uploading, setUploading] = useState(false)
     const [progress, setProgress] = useState(null);
 
     const { assignmentId, topic, description, dueDate } =
         useLocalSearchParams();
 
     const handleUpload = async () => {
-        if (progress) return;
+        if (uploading) return;
+        setUploading(true)
         const is_uploaded = await handleAssignmentUpload(
             file,
             assignmentId,
@@ -60,6 +62,7 @@ const AssignmentUpload = () => {
         }
 
         setProgress(null);
+        setUploading(false);
     };
 
     return (

@@ -1,36 +1,50 @@
+import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
+import { useQuery } from  "@tanstack/react-query";
 
 import Header from "@components/common/Header2.jsx";
 import { AssignmentShowRenderItem as RenderItem } from "@components/teacher/Assignment.jsx";
-
-// const uri =
-//     "https://res.cloudinary.com/dqvgf5plc/image/upload/pg_1,f_jpg/g_center/v1765029571/oshqi1fjzvje4iz9i92c.pdf";
+import queryClient from "@utils/queryClient.js";
 
 const AssignmentShow = () => {
-  const params = useLocalSearchParams();
+    const { assignmentId } = useLocalSearchParams();
+    const [assignment, setAssignment] = useState({})
 
-  const assignment = JSON.parse(params.item || {});
+    const infiniteData = queryClient.getQueryData(["assignments"]);
+    const data = infiniteData.pages
+        .flatMap(page => page.assignments)
+        ?.find(a => a._id === assignmentId);
+        
+    useEffect(()=>{
+        setAssignment(data)
+    }, [data])
 
-  return (
-    <View className="flex-1 dark:bg-black">
-      <Header />
-      <Text className="font-bold text-3xl dark:text-white px-3 my-3">
-        {assignment.topic}
-      </Text>
+    return (
+        <View className="flex-1 dark:bg-black">
+            <Header />
+            <Text className="font-bold text-3xl dark:text-white px-3 my-3">
+                {assignment.topic}
+            </Text>
 
-      <FlashList
-        data={assignment.submissions || []}
-        renderItem={({ item }) => (
-          <RenderItem item={item} assignmentId={assignment?._id} />
-        )}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />
-    </View>
-  );
+            <FlashList
+                data={assignment.submissions || []}
+                renderItem={({ item }) => (
+                    <RenderItem item={item} assignmentId={assignment?._id} setAssignment={setAssignment} />
+                )}
+                contentContainerStyle={{
+                    paddingHorizontal: 15
+                }}
+                ListEmptyComponent={
+                    <Text className="mt-5 text-center dark:text-white text-xl font-bold">
+                        No Submissions Yet.
+                    </Text>
+                }
+                showVerticalScrollIndicator={false}
+            />
+        </View>
+    );
 };
 
 export default AssignmentShow;

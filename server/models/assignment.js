@@ -26,6 +26,7 @@ const assignmentSchema = new mongoose.Schema({
                 default: 'pending',
                 enum: ["pending", "accepted", "rejected"]
             },
+            rejectionMessage: String,
             format: String,
             createdAt: {
                 type: Date,

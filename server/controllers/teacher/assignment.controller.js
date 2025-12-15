@@ -80,7 +80,11 @@ export const getAssignmentsCreatedByMe = async (req, res) => {
 
 export const reject = async (req, res) => {
     try {
-        const { assignmentId, studentId } = req.body;
+        const { assignmentId, studentId, message } = req.body;
+
+        if(!assignmentId || !studentId || !message){
+            return res.json({ success: false, message: 'missign required parameters!'})
+        }
 
         await Assignment.updateOne(
             {
@@ -89,7 +93,8 @@ export const reject = async (req, res) => {
             },
             {
                 $set: {
-                    "submissions.$.status": "rejected"
+                    "submissions.$.status": "rejected",
+                    "submissions.$.rejectionMessage": message
                 }
             }
         );

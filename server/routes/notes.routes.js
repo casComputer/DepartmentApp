@@ -111,7 +111,7 @@ router.post("/upload", async (req, res) => {
             year: parentDoc.year,
             course: parentDoc.course,
             teacherId,
-            fileUri: secure_url,
+            fileUrl: secure_url,
             format,
             size
         });

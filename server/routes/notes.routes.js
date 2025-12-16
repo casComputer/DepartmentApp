@@ -31,10 +31,11 @@ router.post("/fetchByTeacher", async (req, res) => {
 
 router.post("/create", async (req, res) => {
     try {
-        const { name, course, year, type, parentId, path, teacherId } =
-            req.body;
-
-        if (!name || !course || !year || !type || !path || !teacherId) {
+        const { name, course, year, type, parentId, teacherId } =
+            req.body
+            
+            
+        if (!name || !course || !year || !type || !teacherId) {
             return res.json({
                 success: false,
                 message: "Expected parameters were missing!"
@@ -42,7 +43,7 @@ router.post("/create", async (req, res) => {
         }
         
         const note = await Notes.create({ 
-            name, course, year, type, path, parentId, teacherId
+            name, course, year, type, parentId, teacherId
         })
         
         res.json({ success: true, note })

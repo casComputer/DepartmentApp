@@ -18,10 +18,10 @@ const notesSchema = new mongoose.Schema({
         default: null // root folder
     },
 
-    path: {
-        type: String,
-        index: true
-    },
+    // path: {
+    //     type: String,
+    //     index: true
+    // },
 
     year: {
         type: String,

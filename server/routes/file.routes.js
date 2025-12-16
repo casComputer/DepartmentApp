@@ -14,7 +14,7 @@ export const getSignature = (req, res) => {
 
     let preset = null;
 
-    if (preset_type === "notes") {
+    if (preset_type === "note") {
         preset = "notes_upload";
     } else if (preset_type === "assignment") preset = "assignment_upload";
 

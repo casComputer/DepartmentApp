@@ -31,23 +31,40 @@ router.post("/fetchByTeacher", async (req, res) => {
 
 router.post("/create", async (req, res) => {
     try {
-        const { name, course, year, type, parentId, teacherId } =
-            req.body
-            
-            
-        if (!name || !course || !year || !type || !teacherId) {
+        let { name, course, year, type, parentId, teacherId } = req.body;
+
+        if (!name || !type || !teacherId) {
             return res.json({
                 success: false,
                 message: "Expected parameters were missing!"
             });
         }
-        
-        const note = await Notes.create({ 
-            name, course, year, type, parentId, teacherId
-        })
-        
-        res.json({ success: true, note })
-        
+
+        if (!course || !year) {
+            if (!parentId)
+                return res.json({
+                    success: false,
+                    message: "Expected parameters were missing!"
+                });
+            
+            const exist = await Notes.findById(parentId)
+            
+            if(!exist) return res.json({ success: false, message: 'Unable to locate the parent folder!'})
+            
+            course = exist.course
+            year = exist.year
+        }
+
+        const note = await Notes.create({
+            name,
+            course,
+            year,
+            type,
+            parentId,
+            teacherId
+        });
+
+        res.json({ success: true, note });
     } catch (error) {
         console.error(error);
         res.send(500).json({

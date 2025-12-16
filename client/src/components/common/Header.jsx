@@ -19,7 +19,7 @@ const Header = ({
             style={{ marginTop: insets.top }}
             className="flex-row items-center px-2 w-full justify-between"
         >
-            <View className="flex-row justify-center items-center gap-0">
+            <View className="w-full flex-row items-center">
                 {!disableBackBtn && (
                     <TouchableOpacity
                         className="p-1"
@@ -32,7 +32,7 @@ const Header = ({
                         />
                     </TouchableOpacity>
                 )}
-                <Text className="text-[10vw] font-bold dark:text-white">
+                <Text className="text-[8vw] font-bold dark:text-white max-w-[85%]" numberOfLines={2} adjustsFontSizeToFit>
                     {title}
                 </Text>
             </View>

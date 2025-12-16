@@ -10,6 +10,8 @@ import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
 
+import ProgressBar from '@components/common/ProgressBar.jsx'
+
 useAppStore.getState().hydrateUser(getUser());
 
 const Layout = ({ userId, role }) => (
@@ -17,7 +19,8 @@ const Layout = ({ userId, role }) => (
         screenOptions={{
             headerShown: false,
             animation: "slide_from_right"
-        }}>
+        }}
+    >
         <Stack.Protected guard={!userId || role === "unknown"}>
             <Stack.Screen name="index" />
             <Stack.Screen name="auth/Signin" />
@@ -35,6 +38,7 @@ const Layout = ({ userId, role }) => (
             <Stack.Screen name="(teacher)/(tabs)" />
             <Stack.Screen name="(teacher)/(others)" />
         </Stack.Protected>
+
     </Stack>
 );
 
@@ -63,6 +67,7 @@ export default function RootLayout() {
                     <Layout userId={userId} role={role} />
                 </QueryClientProvider>
             </KeyboardProvider>
+            <ProgressBar progress={50} />
         </View>
     );
 }

@@ -32,7 +32,6 @@ export const getAssignment = async ({ pageParam }) => {
         );
 
         if (response.data.success) {
-            
             return response.data;
         }
 
@@ -142,8 +141,6 @@ export const handleAssignmentUpload = async (
     assignmentId,
     setProgress
 ) => {
-    const cloudName = process.env.EXPO_PUBLIC_PRIMARY_CLOUDINARY_CLOUD_NAME;
-
     try {
         if (!file) {
             ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
@@ -158,10 +155,18 @@ export const handleAssignmentUpload = async (
             type: file.mimeType
         });
 
-        const signatureRes = await axios.get("/assignment/getSignature");
-        const { timestamp, signature, api_key } = signatureRes.data;
+        const signatureRes = await axios.post("/file/getSignature", {
+            preset_type: "assignment"
+        });
 
-        if (!timestamp || !signature || !api_key) {
+        if (!signatureRes.data.success) {
+            ToastAndroid.show(signatureRes.data.message, ToastAndroid.SHORT);
+            return false;
+        }
+
+        const { timestamp, signature, api_key, preset} = signatureRes.data;
+
+        if (!timestamp || !signature || !api_key || !preset) {
             ToastAndroid.show(
                 "Unable to generate signature. Please try again.",
                 ToastAndroid.LONG
@@ -170,7 +175,7 @@ export const handleAssignmentUpload = async (
         }
 
         formData.append("timestamp", timestamp);
-        formData.append("upload_preset", "assignment_upload");
+        formData.append("upload_preset", preset);
         formData.append("signature", signature);
         formData.append("api_key", api_key);
 

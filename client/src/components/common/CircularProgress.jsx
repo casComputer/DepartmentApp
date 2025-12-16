@@ -17,7 +17,8 @@ const CircularProgress = ({
     showPercentage = true,
     fraction = "",
     strokeFillColor = "#4F46E5",
-    animated = true
+    animated = true,
+    extraText = ""
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
@@ -77,19 +78,27 @@ const CircularProgress = ({
 
             <View style={styles.textContainer}>
                 {fraction ? (
-                    <Text
-                        className="text-black dark:text-white">
+                    <Text className="text-black dark:text-white">
                         {fraction}
                     </Text>
                 ) : (
                     <Text
                         style={styles.text}
-                        className="text-black dark:text-white">
+                        className="text-black dark:text-white"
+                    >
                         {normalizedProgress}
                         {showPercentage && "%"}
                     </Text>
                 )}
             </View>
+            {extraText && (
+                <Text
+                    style={styles.text}
+                    className="mt-3 text-black dark:text-white"
+                >
+                    Extra text
+                </Text>
+            )}
         </View>
     );
 };

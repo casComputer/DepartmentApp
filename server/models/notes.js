@@ -38,7 +38,7 @@ const notesSchema = new mongoose.Schema({
 
     // only for files
     fileUrl: String,
-    mimeType: String,
+    format: String,
     size: Number,
 
     createdAt: {

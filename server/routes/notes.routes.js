@@ -41,11 +41,11 @@ router.post("/create", async (req, res) => {
             });
         }
         
-        await Notes.create({ 
+        const note = await Notes.create({ 
             name, course, year, type, path, parentId, teacherId
         })
         
-        res.json({ success: true })
+        res.json({ success: true, note })
         
     } catch (error) {
         console.error(error);

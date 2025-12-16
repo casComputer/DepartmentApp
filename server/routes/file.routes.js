@@ -32,7 +32,7 @@ export const getSignature = (req, res) => {
     res.json({
         timestamp,
         signature,
-        api_key: cloudinary.config().api_key
+        api_key: cloudinary.config().api_key, preset
     });
 };
 

@@ -32,8 +32,12 @@ export const getSignature = (req, res) => {
     res.json({
         timestamp,
         signature,
-        api_key: cloudinary.config().api_key, preset
+        api_key: cloudinary.config().api_key,
+        cloud_name: cloudinary.config().cloud_name,
+        preset
     });
 };
 
 router.post("/getSignature", getSignature);
+
+export default router

@@ -11,6 +11,7 @@ import classRoutes from "./routes/class.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
 import notesRoutes from "./routes/notes.routes.js";
+import fileRoutes from "./routes/file.routes.js";
 
 import data from "./cron/attendance.js";
 
@@ -31,6 +32,7 @@ app.use("/teacher", teacherRoutes);
 app.use("/class", classRoutes);
 app.use("/assignment", assignmentRoutes);
 app.use("/notes", notesRoutes);
+app.use("/file", fileRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });

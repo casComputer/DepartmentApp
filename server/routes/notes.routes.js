@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/fetchByTeacher", async (req, res) => {
     try {
-        const { teacherId } = req.body;
+        const { teacherId, parentId } = req.body;
 
         if (!teacherId)
             return res.json({
@@ -15,7 +15,7 @@ router.post("/fetchByTeacher", async (req, res) => {
             });
 
         const notes = await Notes.find({
-            parentId: null,
+            parentId,
             teacherId
         });
 

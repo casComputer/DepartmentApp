@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
-import { Feather } from "@icons";
 
 import Header from "@components/common/Header.jsx";
+import FloatingAddButton from "@components/common/FloatingAddButton.jsx";
 import { AssignmentRenderItem } from "@components/teacher/Assignment.jsx";
 
 import { getAssignment } from "@controller/teacher/assignment.controller.js";
@@ -24,8 +24,8 @@ const ItemSeparator = ({ trailingItem, leadingItem }) => {
     );
 };
 
-const ListHeaderComponent = ({ date}) => {
-    if(!date) return
+const ListHeaderComponent = ({ date }) => {
+    if (!date) return;
 
     const fdate = formatDate(date);
 
@@ -54,14 +54,14 @@ const Assignment = () => {
         getNextPageParam: lastPage =>
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
-    
+
     return (
         <View className="flex-1 bg-white dark:bg-black">
             <Header title="Assignments" />
-            
-            {
-                (isPending && !isFetchNextPage) && <ActivityIndicator style={{ marginTop: 8,}} />
-            }
+
+            {isPending && !isFetchNextPage && (
+                <ActivityIndicator style={{ marginTop: 8 }} />
+            )}
 
             <FlashList
                 data={data?.pages.flatMap(page => page.assignments) || []}
@@ -82,21 +82,21 @@ const Assignment = () => {
                         date={data?.pages?.[0]?.assignments?.[0]?.timestamp}
                     />
                 }
-                ListFooterComponent={isFetchNextPage && <ActivityIndicator style={{ marginTop: 10,}} />}
+                ListFooterComponent={
+                    isFetchNextPage && (
+                        <ActivityIndicator style={{ marginTop: 10 }} />
+                    )
+                }
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 ItemSeparatorComponent={ItemSeparator}
-                
             />
 
-            <TouchableOpacity
-                className=" p-4 rounded-full bg-pink-500 absolute right-5 bottom-10 justify-center items-center"
+            <FloatingAddButton
                 onPress={() =>
                     router.push("/(teacher)/(others)/AssignmentCreation")
                 }
-            >
-                <Feather name="plus" size={30} className="dark:text-white" />
-            </TouchableOpacity>
+            />
         </View>
     );
 };

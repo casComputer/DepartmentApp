@@ -14,6 +14,7 @@ export default function TabLayout() {
             shadowColor={"black"}
             backgroundColor={theme === "dark" ? "black" : "white"}>
             <NativeTabs.Trigger name="Home" />
+            <NativeTabs.Trigger name="Notes" />
             <NativeTabs.Trigger name="Profile" />
         </NativeTabs>
     );

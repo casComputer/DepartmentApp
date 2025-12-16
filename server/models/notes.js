@@ -15,13 +15,9 @@ const notesSchema = new mongoose.Schema({
     parentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "notes",
+        index: true,
         default: null // root folder
     },
-
-    // path: {
-    //     type: String,
-    //     index: true
-    // },
 
     year: {
         type: String,
@@ -33,11 +29,13 @@ const notesSchema = new mongoose.Schema({
     },
     teacherId: {
         type: String,
-        required: true
+        required: true,
+        index: true
     },
 
     // only for files
     fileUrl: String,
+    publicId: String,
     format: String,
     size: Number,
 

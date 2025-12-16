@@ -1,42 +1,32 @@
-import React from "react";
 import { View, StyleSheet } from "react-native";
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming
-} from "react-native-reanimated";
 
-export default function ProgressBar({ progress }) {
-    const animatedProgress = useSharedValue(0);
+import CircularProgress from "@components/common/CircularProgress.jsx";
 
-    React.useEffect(() => {
-        animatedProgress.value = withTiming(progress, { duration: 250 });
-    }, [progress]);
+import { useAppStore } from "@store/app.store.js";
 
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            width: `${animatedProgress.value * 100}%`
-        };
-    });
+const ProgressBar = () => {
+    const progress = useAppStore(state => state.globalProgress);
+
+    if (progress <= 0) return null;
 
     return (
         <View style={styles.container}>
-            <Animated.View style={[styles.bar, animatedStyle]} />
+            <CircularProgress progress={progress} size={200} strokeWidth={18} />
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        height: 8,
-        // backgroundColor: "#E0E0E0",
-        borderRadius: 4,
-        overflow: "hidden"
-    },
-    bar: {
         height: "100%",
-        backgroundColor: "#4CAF50",
-        borderRadius: 4
+        position: "absolute",
+        top: 0,
+        left: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)"
     }
 });
+
+export default ProgressBar;

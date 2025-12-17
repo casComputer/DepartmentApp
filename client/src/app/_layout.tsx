@@ -67,7 +67,7 @@ export default function RootLayout() {
                     <Layout userId={userId} role={role} />
                 </QueryClientProvider>
             </KeyboardProvider>
-            <ProgressBar progress={50} />
+            <ProgressBar />
         </View>
     );
 }

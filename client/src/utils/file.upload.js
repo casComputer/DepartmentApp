@@ -3,57 +3,52 @@ import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-export const handleDocumentPick = async types => {
+import { useAppStore } from "@store/app.store.js"
+
+const setProgressText = useAppStore.getState().setGlobalProgressText
+const setProgress = useAppStore.getState().setGlobalProgress
+
+export const handleDocumentPick = async (types = []) => {
     const result = await DocumentPicker.getDocumentAsync({
-        types: types
+        type: types
     });
 
-    if (result.canceled) {
+    if (result.canceled) return null;
+
+    const { name, size, uri, mimeType } = result.assets[0];
+
+    if (!name || !uri || !mimeType || !size) {
+        ToastAndroid.show(
+            "Failed to retrieve file information. Please try again.",
+            ToastAndroid.LONG
+        );
         return null;
-    } else {
-        const { name, size, uri, mimeType } = result.assets[0];
-
-        if (!name || !uri || !mimeType || !size) {
-            ToastAndroid.show(
-                "Failed to retrieve file information. Please try again.",
-                ToastAndroid.LONG
-            );
-            return null;
-        }
-
-        const MAX_MB = 10;
-        const sizeInMB = size / (1024 * 1024);
-
-        if (sizeInMB > MAX_MB) {
-            ToastAndroid.show(
-                "File size exceeds 10MB limit. Please select a smaller file.",
-                ToastAndroid.LONG
-            );
-            return null;
-        }
-
-        const allowedExt = [
-            "application/pdf",
-            "image/jpg",
-            "image/jpeg",
-            "image/png",
-            "application/vnd.ms-powerpoint", // .ppt
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation" // .pptx
-        ];
-
-        if (!allowedExt.includes(mimeType)) {
-            ToastAndroid.show(
-                "Invalid file type. Please select a PDF, image, or PowerPoint file.",
-                ToastAndroid.LONG
-            );
-            return null;
-        }
-
-        return { uri, name, size, mimeType };
     }
+
+    const MAX_MB = 10;
+    const sizeInMB = size / (1024 * 1024);
+
+    if (sizeInMB > MAX_MB) {
+        ToastAndroid.show(
+            "File size exceeds 10MB limit. Please select a smaller file.",
+            ToastAndroid.LONG
+        );
+        return null;
+    }
+
+    const isValid = types.some(type =>
+        new RegExp("^" + type.replace("*", ".*") + "$").test(mimeType)
+    );
+
+    if (!isValid) {
+        ToastAndroid.show("Invalid file type selected.", ToastAndroid.LONG);
+        return null;
+    }
+
+    return { uri, name, size, mimeType };
 };
 
-export const handleUpload = async (file, preset_type, setProgress) => {
+export const handleUpload = async (file, preset_type) => {
     try {
         if (!file) {
             ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
@@ -72,7 +67,9 @@ export const handleUpload = async (file, preset_type, setProgress) => {
             name: file.name,
             type: file.mimeType
         });
-
+        
+        setProgressText('generating signature...')
+        
         const signatureRes = await axios.post("/file/getSignature", {
             preset_type
         });
@@ -92,6 +89,8 @@ export const handleUpload = async (file, preset_type, setProgress) => {
         formData.append("signature", signature);
         formData.append("api_key", api_key);
 
+        setProgressText('uploading file...')
+        
         const res = await orgAxios.post(url, formData, {
             headers: { "Content-Type": "multipart/form-data" },
 
@@ -101,7 +100,7 @@ export const handleUpload = async (file, preset_type, setProgress) => {
                     Math.round((pe.loaded / total) * 100),
                     100
                 );
-                setProgress(percent);
+                if (percent > 1) setProgress(percent);
             }
         });
 
@@ -117,6 +116,7 @@ export const handleUpload = async (file, preset_type, setProgress) => {
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
         );
+        setProgress(0);
         console.error("Error uploading to Cloudinary:", error);
         return false;
     }

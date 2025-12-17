@@ -1,6 +1,7 @@
 import express from "express";
 
 import { turso } from "../config/turso.js";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
@@ -13,23 +14,32 @@ const tables = {
 
 router.post("/uploadDp", async (req, res) => {
     try {
-        const { role, userId, secure_url, public_id } = req.body;
+        const { role, userId, secure_url, public_id, current_dp_public_id } =
+            req.body;
 
         if (!role || !userId || !secure_url || !public_id) {
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "Missing required parameters!"
             });
         }
 
         if (!tables[role]) {
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "Invalid role!"
             });
         }
 
         const { table, id } = tables[role];
+
+        if (!current_dp_public_id) {
+            const { rows } = await turso.execute(
+                `SELECT dp_public_id FROM ${table} WHERE ${id} = ?`,
+                [userId]
+            );
+            current_dp_public_id = rows[0]?.dp_public_id;
+        }
 
         const query = `
             UPDATE ${table}
@@ -38,6 +48,10 @@ router.post("/uploadDp", async (req, res) => {
         `;
 
         await turso.execute(query, [secure_url, public_id, userId]);
+
+        await cloudinary.api.delete_resources([current_dp_public_id], {
+            resource_type: "image"
+        });
 
         return res.json({
             success: true,

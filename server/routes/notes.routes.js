@@ -189,7 +189,7 @@ router.post("/delete", async (req, res) => {
                 _id: { $in: [...idsToDelete] },
                 type: "file"
             },
-            { publicId: 1, fileUrl: 1, format }
+            { publicId: 1, fileUrl: 1, format: 1 }
         );
 
         const imageFormats = new Set(["jpg", "jpeg", "png", "webp"]);

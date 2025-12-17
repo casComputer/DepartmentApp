@@ -26,14 +26,16 @@ const Avatar = ({ fullname, username }) => (
         <View className="w-[60vw] h-[60vw] rounded-full bg-green-400 self-center mt-10 justify-center items-center">
             <Text
                 style={{ fontSize: RFPercentage(18) }}
-                className="font-black text-center dark:text-white">
+                className="font-black text-center text-text"
+            >
                 {fullname?.slice(0, 1)}
             </Text>
         </View>
 
         <Text
             style={{ fontSize: RFPercentage(2.3) }}
-            className="text-center text-gray-900 mt-2 dark:text-gray-700">
+            className="text-center text-text-secondary mt-2 "
+        >
             @{username}
         </Text>
     </>
@@ -45,7 +47,7 @@ const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
             <View className="w-full rounded-full border-black border mt-5 dark:border-white ">
                 <TextInput
                     style={{ fontSize: RFPercentage(2.4) }}
-                    className="text-black w-full font-bold px-5 py-5 dark:text-white"
+                    className="w-full font-bold px-5 py-5 text-text"
                     value={fullname}
                     editable={false}
                 />
@@ -54,7 +56,8 @@ const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
             <View className="w-full mt-5 flex-row items-center gap-2">
                 <Text
                     style={{ fontSize: RFPercentage(3) }}
-                    className="font-bold dark:text-white ">
+                    className="font-bold text-text "
+                >
                     Roll No
                 </Text>
 
@@ -63,7 +66,7 @@ const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
                         fontSize: RFPercentage(3),
                         borderWidth: !rollno ? 2 : 1
                     }}
-                    className={`text-black flex-1 font-bold px-5 py-5 rounded-full dark:text-white ${
+                    className={`flex-1 font-bold px-5 py-5 rounded-full text-text ${
                         !rollno
                             ? "border-red-500"
                             : "border-black dark:border-white"
@@ -128,8 +131,8 @@ const VerifyStudent = () => {
 
     if (!username) {
         return (
-            <View className="flex-1 pt-12 px-3 bg-zinc-100">
-                <Text className="text-center text-gray-900 text-xl mt-1">
+            <View className="flex-1 pt-12 px-3 bg-primary">
+                <Text className="text-center text-text text-xl mt-1">
                     Student not found
                 </Text>
             </View>
@@ -138,8 +141,9 @@ const VerifyStudent = () => {
 
     return (
         <ScrollView
-            className="flex-1 px-3 dark:bg-black"
-            contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}>
+            className="flex-1 px-3 bg-primary"
+            contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
+        >
             <Header onSave={handleSave} saving={saving} />
 
             <Avatar fullname={fullname} username={username} />
@@ -156,12 +160,14 @@ const VerifyStudent = () => {
                 <TouchableOpacity
                     disabled={loading}
                     onPress={handleCancelVerification}
-                    className="flex-1 bg-red-500 rounded-3xl py-5">
+                    className="flex-1 bg-red-500 rounded-3xl py-5"
+                >
                     <Text
                         style={{
                             fontSize: RFPercentage(2.8)
                         }}
-                        className="font-bold text-center leading-tight">
+                        className="font-bold text-center leading-tight text-text"
+                    >
                         Remove
                     </Text>
                 </TouchableOpacity>
@@ -172,10 +178,12 @@ const VerifyStudent = () => {
                         onPress={handleVerification}
                         className={`flex-1 w-[50%] rounded-3xl ${
                             loading ? "bg-green-400" : "bg-green-500"
-                        }`}>
+                        }`}
+                    >
                         <Text
                             style={{ fontSize: RFPercentage(2.8) }}
-                            className="font-bold text-center leading-tight py-5">
+                            className="font-bold text-center leading-tight py-5 text-text"
+                        >
                             Verify
                         </Text>
                     </TouchableOpacity>

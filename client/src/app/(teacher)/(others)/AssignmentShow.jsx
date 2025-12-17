@@ -22,9 +22,9 @@ const AssignmentShow = () => {
     }, [data])
 
     return (
-        <View className="flex-1 dark:bg-black">
+        <View className="flex-1 bg-primary">
             <Header />
-            <Text className="font-bold text-3xl dark:text-white px-3 my-3">
+            <Text className="font-bold text-3xl text-text px-3 my-3">
                 {assignment.topic}
             </Text>
 
@@ -37,7 +37,7 @@ const AssignmentShow = () => {
                     paddingHorizontal: 15
                 }}
                 ListEmptyComponent={
-                    <Text className="mt-5 text-center dark:text-white text-xl font-bold">
+                    <Text className="mt-5 text-center text-text text-xl font-bold">
                         No Submissions Yet.
                     </Text>
                 }

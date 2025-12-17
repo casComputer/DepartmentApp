@@ -18,11 +18,11 @@ export const ListHeaderComponent = ({
 
   return (
     <View className="flex-row justify-between items-center py-5">
-      <Text className="text-xl font-bold pl-3 dark:text-white">
+      <Text className="text-xl font-bold pl-3 text-text">
         {year} {course}
       </Text>
       {loading ? (
-        <Text className="text-md font-semibold py-2 dark:text-white">
+        <Text className="text-md font-semibold py-2 text-text">
           syncing..
         </Text>
       ) : (
@@ -30,16 +30,16 @@ export const ListHeaderComponent = ({
           <TouchableOpacity
             onPress={() => router.push("(teacher)/AssignRollNumber")}
             disabled={verifying}
-            className="px-4 py-2 rounded-3xl bg-emerald-500 justify-center items-center"
+            className="px-4 py-2 rounded-3xl bg-btn justify-center items-center"
           >
-            <Text className="text-md font-bold text-white">Roll Number</Text>
+            <Text className="text-md font-bold text-text">Roll Number</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handlePress}
             disabled={verifying}
-            className="px-4 py-2 rounded-3xl bg-emerald-500 justify-center items-center"
+            className="px-4 py-2 rounded-3xl bg-btn justify-center items-center"
           >
-            <Text className="text-md font-bold text-white">
+            <Text className="text-md font-bold text-text">
               {verifying ? "Verifying" : "Verify All"}
             </Text>
           </TouchableOpacity>
@@ -57,7 +57,7 @@ export const statusMessages = {
 };
 
 export const ListEmptyComponent = ({ status }) => (
-  <Text className="text-2xl font-black pt-14 text-center dark:text-white">
+  <Text className="text-2xl font-black pt-14 text-center text-text">
     {statusMessages[status] || ""}
   </Text>
 );

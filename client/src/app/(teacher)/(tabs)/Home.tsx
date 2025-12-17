@@ -7,7 +7,7 @@ import TeacherOptions from "../../../components/teacher/TeacherOptions";
 const Home = () => {
     return (
         <ScrollView
-            className="bg-white dark:bg-black"
+            className="bg-primary"
             contentContainerStyle={{
                 paddingBottom: 150,
                 flexGrow: 1

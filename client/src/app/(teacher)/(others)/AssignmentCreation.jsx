@@ -69,19 +69,19 @@ const AssignmentCreation = () => {
     return (
         <KeyboardAwareScrollView
             contentContainerStyle={{ paddingBottom: 70 }}
-            className="grow bg-white dark:bg-black">
+            className="grow bg-primary">
             <Header title="Assignments" onSave={handleSave} saving={saving} />
 
             <View className="px-2 mt-4">
                 <TextInput
-                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl text-black border dark:text-white dark:border-zinc-500"
+                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl border text-text dark:border-zinc-500"
                     placeholderTextColor="rgb(119,119,119)"
                     placeholder="Assignment Topic"
                     value={topic}
                     onChangeText={setTopic}
                 />
                 <TextInput
-                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl text-black border dark:text-white dark:border-zinc-500"
+                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl border text-text dark:border-zinc-500"
                     placeholderTextColor="rgb(119,119,119)"
                     placeholder="Description"
                     multiline={true}
@@ -119,7 +119,7 @@ const AssignmentCreation = () => {
 
                 {date && (
                     <View className="mt-5 py-4 px-5 rounded-3xl">
-                        <Text className="text-center text-black dark:text-white text-xl font-bold">
+                        <Text className="text-center text-text text-xl font-bold">
                             Due Date: {date.toDateString()}
                         </Text>
                     </View>

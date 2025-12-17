@@ -49,13 +49,13 @@ const AssignRoleNumber = () => {
             contentContainerStyle={{
                 paddingBottom: 70
             }}
-            className="px-3 bg-white dark:bg-black">
+            className="px-3 bg-primary">
             <Header />
 
             {loading && (
                 <StyledActivityIndicator
                     size="large"
-                    className="text-black dark:text-white"
+                    className="text-text"
                 />
             )}
 
@@ -63,13 +63,13 @@ const AssignRoleNumber = () => {
 
             <TouchableOpacity
                 onPress={handleAlphebetic}
-                className="w-full justify-center items-center py-7 rounded-full bg-emerald-500  mt-3">
-                <Text className="text-white text-2xl font-bold">
+                className="w-full justify-center items-center py-7 rounded-full bg-btn  mt-3">
+                <Text className="text-text text-2xl font-bold">
                     Alphabetical Order
                 </Text>
             </TouchableOpacity>
 
-            <Text className="text-2xl font-semibold text-center my-8 dark:text-white">
+            <Text className="text-2xl font-semibold text-center my-8 text-text">
                 OR
             </Text>
 

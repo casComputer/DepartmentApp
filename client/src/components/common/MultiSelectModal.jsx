@@ -26,11 +26,11 @@ const MultiSelectModal = ({
             return (
                 <TouchableOpacity
                     onPress={() => toggleSelect(item.studentId)}
-                    className={`bg-zinc-900 p-5 rounded-3xl my-1 ${
+                    className={`bg-card p-5 rounded-3xl my-1 ${
                         isSelected &&
-                        "bg-[#d1e7ff] border-[#3399ff] dark:bg-pink-500"
+                        "border-[#3399ff] bg-card-selected"
                     }`}>
-                    <Text className="dark:text-white">{item.fullname}</Text>
+                    <Text className="text-text">{item.fullname}</Text>
                 </TouchableOpacity>
             );
         }
@@ -38,8 +38,8 @@ const MultiSelectModal = ({
 
     return (
         <Modal visible={shouldShow} animationType="slide">
-            <View className="pt-10 dark:bg-black flex-1">
-                <Text className="text-2xl font-bold text-center dark:text-white">
+            <View className="pt-10 bg-primary flex-1">
+                <Text className="text-2xl font-bold text-center text-text">
                     {title}
                 </Text>
                 <FlashList
@@ -49,7 +49,7 @@ const MultiSelectModal = ({
                 />
                 <TouchableOpacity
                     onPress={() => onDone(selected)}
-                    className="bg-black py-4 mb-8 rounded-2xl">
+                    className="bg-btn py-4 mb-8 rounded-2xl">
                     <Text className="text-white text-center text-xl font-bold">
                         Done
                     </Text>

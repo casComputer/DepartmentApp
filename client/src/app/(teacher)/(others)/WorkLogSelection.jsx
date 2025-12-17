@@ -35,13 +35,14 @@ const Page2 = ({ warning, handleSave }) => {
     const handlePress = async () => {
         setLoading(true);
         await handleSave({ subject, topics });
+        router.back()
         setLoading(false);
     };
 
     return (
         <View
             style={{ width: vw }}
-            className="grow bg-white dark:bg-black px-3 ">
+            className="grow bg-primary px-3 ">
             <Header2 onSave={handlePress} saving={loading} />
 
             {warning !== "" && (
@@ -51,7 +52,7 @@ const Page2 = ({ warning, handleSave }) => {
             )}
 
             <TextInput
-                className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2 mt-10"
+                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2 mt-14"
                 placeholder="Subject"
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
                 value={subject}
@@ -59,7 +60,7 @@ const Page2 = ({ warning, handleSave }) => {
             />
 
             <TextInput
-                className="border py-6 px-5 text-xl font-bold rounded-3xl dark:text-white dark:border-zinc-600 my-2"
+                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2"
                 placeholder="Topics covered"
                 multiline
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
@@ -186,7 +187,7 @@ const WorkLogSelection = () => {
     };
 
     return (
-        <View className="grow bg-white dark:bg-black">
+        <View className="grow bg-primary">
             {/* Sliding Pages */}
             <Animated.View style={[{ flexDirection: "row" }, animatedStyles]}>
                 {/* PAGE 1 */}

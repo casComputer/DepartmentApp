@@ -39,19 +39,15 @@ export const AttendanceItem = React.memo(
                 onLongPress={onLongPress}
                 className={`${
                     item.present
-                        ? "bg-violet-300 dark:bg-pink-500"
-                        : "bg-zinc-500"
+                        ? "bg-card-selected"
+                        : "bg-card"
                 }`}
                 onPress={() => toggleAttendance(item.rollno)}>
                 <Text
                     numberOfLines={1}
                     adjustsFontSizeToFit
-                    style={{
-                        fontSize: 30,
-                        fontWeight: "900",
-                        textAlign: "center",
-                        width: "90%"
-                    }}>
+                    className="text-text text-[30px] font-semibold text-center w-[90%]"
+                    >
                     {item.rollno}
                 </Text>
             </TouchableOpacity>
@@ -73,7 +69,7 @@ export const Options = ({ loading }) => {
         <View className="flex-row justify-between items-center px-5 mt-5">
             {loading && (
                 <View className="flex-row justify-center items-center gap-1">
-                    <Text className="font-bold text-xl dark:text-white">
+                    <Text className="font-bold text-xl text-text">
                         syncing
                     </Text>
                     <StyledActivityIndicator
@@ -84,15 +80,11 @@ export const Options = ({ loading }) => {
             )}
 
             <View className="flex-row gap-1 justify-center items-center ml-auto">
-                <Text className="font-semibold text-xl dark:text-white ">
+                <TouchableOpacity>
+                <Text className="font-semibold text-xl text-blue-500 ">
                     Mark All
                 </Text>
-                <CheckBox
-                    checked={selectAll}
-                    onChange={setSelectAll}
-                    styles={{ padding: 20 }}
-                    size={22}
-                />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -121,17 +113,17 @@ const AttendanceHistoryExtra = ({
             <View className="flex-1">
                 <Text
                     numberOfLines={1}
-                    className="text-md font-semibold dark:text-white">
+                    className="text-md font-semibold text-text">
                     Present: {present}
                 </Text>
                 <Text
                     numberOfLines={1}
-                    className="text-md font-semibold dark:text-white">
+                    className="text-md font-semibold text-text">
                     Absent: {absent}
                 </Text>
                 <Text
                     numberOfLines={1}
-                    className="text-md font-semibold dark:text-white">
+                    className="text-md font-semibold text-text">
                     Late: {late_present}
                 </Text>
             </View>
@@ -145,7 +137,7 @@ const AttendanceHistoryExtra = ({
             <View className="flex-1">
                 <Text
                     numberOfLines={1}
-                    className="text-lg font-semibold text-right dark:text-white">
+                    className="text-lg font-semibold text-right text-text">
                     Strength: {strength}
                 </Text>
             </View>
@@ -162,14 +154,14 @@ export const AttendanceHistoryRenderItem = ({ item }) => {
     return (
         <View className="w-full px-4 my-2">
             <View
-                className="w-full bg-white rounded-3xl px-5 py-8 dark:bg-zinc-900"
+                className="w-full bg-card rounded-3xl px-5 py-8"
                 style={{ boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)" }}>
                 <View className="flex-row justify-between items-center">
-                    <Text className="text-2xl font-bold dark:text-white">
+                    <Text className="text-2xl font-bold text-text">
                         {item.year} {item.course} {"\n"}
                         {item.hour} Hour
                     </Text>
-                    <Text className="text-xl font-bold text-right dark:text-white">
+                    <Text className="text-xl font-bold text-right text-text">
                         {item.timestamp.split(" ").join("\n")}
                     </Text>
                 </View>

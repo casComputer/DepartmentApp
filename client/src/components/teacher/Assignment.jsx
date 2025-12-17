@@ -14,7 +14,7 @@ import Animated, {
     useAnimatedStyle
 } from "react-native-reanimated";
 
-import { formatDate } from "@utils/date.js";
+import { formatDate, isDatePassed } from "@utils/date.js";
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import {
     downloadFile,
@@ -41,23 +41,25 @@ export const AssignmentRenderItem = ({ item }) => (
                 pathname: "/(teacher)/(others)/AssignmentShow"
             })
         }
-        className="p-5 rounded-3xl dark:bg-zinc-900 mt-2"
+        className="p-5 rounded-3xl bg-card mt-2"
         style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
     >
-        <Text className="text-xl font-black dark:text-white">{item.topic}</Text>
+        <Text className="text-xl font-black text-text">{item.topic}</Text>
         <Text
             numberOfLines={2}
-            className="text-gray-600 font-bold text-lg pl-3 dark:text-white"
+            className="text-text-secondary font-bold text-lg pl-3"
         >
             {item.description}
         </Text>
 
         <View className="flex-row justify-between items-center">
             <View>
-                <Text className="text-xl font-black mt-3 dark:text-white">
+                <Text className="text-xl font-black mt-3 text-text">
                     {item.year} {item.course}
                 </Text>
-                <Text className="font-black text-lg dark:text-white">
+                <Text
+                    className={` font-bold text-sm ${ isDatePassed(item.dueDate) ? "text-red-500" : "text-text" } `}
+                >
                     Due Date:
                     {new Date(item.dueDate).toLocaleDateString()}
                 </Text>
@@ -81,46 +83,55 @@ export const AssignmentRenderItem = ({ item }) => (
 );
 
 const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
-    const [rejecting, setRejecting] = useState(false)
-    const [accepting, setAccepting] = useState(false)
-    
-    const handlePressRejection = async ()=>{
-        setRejecting(true)
-        await handleReject()
-        setRejecting(false)
-    }
-    
-    const handlePressAccept = async ()=>{
-        setAccepting(true)
-        await handleAccept()
-        setAccepting(false)
-    }
-    
-    return (
-    <View className="flex-row justify-around py-2">
-        <TouchableOpacity disabled={rejecting} onPress={handlePressRejection} className="self-center">
-            <Text className="px-3 rounded-full text-red-500 text-xl font-bold text-center">
-                {
-                    rejecting ? 'Rejecting..' : 'Reject'
-                }
-            </Text>
-        </TouchableOpacity>
-        <TouchableOpacity disabled={accepting} onPress={handleAccept} className="self-center">
-            <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">
-                {
-                    accepting ? 'Accepting' : 'Accept'
-                }
-            </Text>
-        </TouchableOpacity>
-    </View>
-)}
+    const [rejecting, setRejecting] = useState(false);
+    const [accepting, setAccepting] = useState(false);
 
-export const AssignmentShowRenderItem = ({ item, assignmentId, setAssignment }) => {
+    const handlePressRejection = async () => {
+        setRejecting(true);
+        await handleReject();
+        setRejecting(false);
+    };
+
+    const handlePressAccept = async () => {
+        setAccepting(true);
+        await handleAccept();
+        setAccepting(false);
+    };
+
+    return (
+        <View className="flex-row justify-around py-2">
+            <TouchableOpacity
+                disabled={rejecting}
+                onPress={handlePressRejection}
+                className="self-center"
+            >
+                <Text className="px-3 rounded-full text-red-500 text-xl font-bold text-center">
+                    {rejecting ? "Rejecting.." : "Reject"}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                disabled={accepting}
+                onPress={handleAccept}
+                className="self-center"
+            >
+                <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">
+                    {accepting ? "Accepting" : "Accept"}
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+export const AssignmentShowRenderItem = ({
+    item,
+    assignmentId,
+    setAssignment
+}) => {
     let url = item.url;
 
     const [isDownloaded, setIsDownloaded] = useState(false);
     const [rejectionMessage, setRejectionMessage] = useState("");
-    
+
     const height = useSharedValue(0);
 
     if (item.format === "pdf") {
@@ -135,48 +146,49 @@ export const AssignmentShowRenderItem = ({ item, assignmentId, setAssignment }) 
         };
         checkIfDownloaded();
     }, []);
-    
-    useEffect(()=>{
-        if(item.status === 'rejected') height.value = withTiming(150, 800);
-    }, [item.status])
+
+    useEffect(() => {
+        if (item.status === "rejected") height.value = withTiming(150, 800);
+    }, [item.status]);
 
     const handleReject = async () => {
         if (rejectionMessage.trim()?.length === 0) {
             height.value = withTiming(150, 500);
-        }
-        else
-        await rejectAssignment(assignmentId, item.studentId, rejectionMessage, setAssignment)
+        } else
+            await rejectAssignment(
+                assignmentId,
+                item.studentId,
+                rejectionMessage,
+                setAssignment
+            );
     };
-    
-    const handleAccept = async() => {
-        await acceptAssignment(assignmentId, item.studentId, setAssignment)
+
+    const handleAccept = async () => {
+        await acceptAssignment(assignmentId, item.studentId, setAssignment);
     };
 
     const animatedStyle = useAnimatedStyle(() => ({
         maxHeight: height.value,
         opacity: height.value === 0 ? 0 : 1,
-        transform: [{ scaleY: 
-        height.value === 0 ? 0.95 : 1 }]
+        transform: [{ scaleY: height.value === 0 ? 0.95 : 1 }]
     }));
 
     return (
-        <View className="justify-center rounded-xl dark:bg-zinc-900 px-4 py-2 gap-1">
-            <Text className="font-bold text-2xl dark:text-white ">
+        <View className="justify-center rounded-xl bg-card px-4 py-2 gap-1">
+            <Text className="font-bold text-2xl text-text ">
                 {item.studentId}
             </Text>
-            <Text className="font-semibold text-md dark:text-white ">
+            <Text className="font-semibold text-md text-text ">
                 Submitted on {formatDate(item.createdAt)}{" "}
                 {item.createdAt?.split("T")?.[1]?.split(".")?.[0]}
             </Text>
 
-            <View
-                className="w-[90%] self-center mt-2 rounded-lg bg-zinc-950 h-[250px] overflow-hidden mb-2"
-            >
+            <View className="w-[90%] self-center mt-2 rounded-lg bg-zinc-950 h-[250px] overflow-hidden mb-2">
                 <Image
                     source={{ uri: url }}
                     style={{ width: "100%", height: "100%" }}
                 />
-                <Text className="bg-zinc-700 w-full py-1 absolute bottom-0 left-0 text-center text-white text-lg">
+                <Text className="bg-card-selected w-full py-1 absolute bottom-0 left-0 text-center text-text text-lg">
                     {url.split("/")?.at(-1)}
                 </Text>
             </View>
@@ -197,16 +209,19 @@ export const AssignmentShowRenderItem = ({ item, assignmentId, setAssignment }) 
                     Open File In Browser
                 </Text>
             </TouchableOpacity>
-            
 
             <Animated.View style={animatedStyle} className="mt-1">
                 <TextInput
-                    className="bg-zinc-950 rounded-xl text-white overflow-hidden px-3 py-2"
+                    className="bg-card-selected rounded-xl text-text overflow-hidden px-3 py-2"
                     multiline
-                    value={item.status === 'rejected' ? item.rejectionMessage || "No reason specified!" : rejectionMessage}
+                    value={
+                        item.status === "rejected"
+                            ? item.rejectionMessage || "No reason specified!"
+                            : rejectionMessage
+                    }
                     onChangeText={setRejectionMessage}
                     placeholder={"Specify rejection reason..."}
-                    editable={item.status === 'pending'}
+                    editable={item.status === "pending"}
                 />
             </Animated.View>
 

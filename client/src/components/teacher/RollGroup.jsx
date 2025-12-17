@@ -82,15 +82,15 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
 
     return (
         <View className="w-full px-3">
-            <Text className="text-3xl font-bold py-3 dark:text-white">
+            <Text className="text-3xl font-bold py-3 text-text">
                 Create Groups
             </Text>
 
             <TouchableOpacity
                 onPress={addGroup}
-                className="self-start rounded-full bg-fuchsia-500 px-5 py-3 flex-row justify-center items-center gap-2 mb-8 ">
-                <Text className="font-bold text-3xl dark:text-white">+</Text>
-                <Text className="font-bold text-lg dark:text-white">
+                className="self-start rounded-full bg-btn px-5 py-3 flex-row justify-center items-center gap-2 mb-8 ">
+                <Text className="font-bold text-3xl text-text">+</Text>
+                <Text className="font-bold text-lg text-text">
                     Create Group
                 </Text>
             </TouchableOpacity>

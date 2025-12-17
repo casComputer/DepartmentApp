@@ -5,8 +5,8 @@ const Select = ({ title, options, select, selected }) => {
     return (
         <View
             style={styles.shadow}
-            className="mt-5 px-2 py-4 bg-white rounded-3xl dark:bg-zinc-900">
-            <Text className="text-[6vw] px-3 font-bold mb-3 dark:text-white">
+            className="mt-5 px-2 py-4 bg-card rounded-3xl">
+            <Text className="text-[6vw] px-3 font-bold mb-3 text-text">
                 Select the {title}:
             </Text>
             <View className="w-full flex-row flex-wrap">
@@ -15,9 +15,9 @@ const Select = ({ title, options, select, selected }) => {
                         onPress={() => select(item)}
                         key={item.id}
                         className={`w-[50%] px-4 py-5 rounded-full ${
-                            selected?.id === item.id ? "bg-violet-200 dark:bg-pink-500" : ""
+                            selected?.id === item.id ? "bg-card-selected" : "bg-transparent"
                         }`}>
-                        <Text className="text-xl font-bold capitalize dark:text-white">
+                        <Text className="text-xl font-bold capitalize text-text">
                             {item.title}
                         </Text>
                     </TouchableOpacity>

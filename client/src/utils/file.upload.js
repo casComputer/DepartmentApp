@@ -3,14 +3,9 @@ import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-export const handleDocumentPick = async setFormData => {
+export const handleDocumentPick = async types => {
     const result = await DocumentPicker.getDocumentAsync({
-        types: [
-            "application/pdf",
-            "image/*",
-            "application/vnd.ms-powerpoint", // .ppt
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation" // .pptx
-        ]
+        types: types
     });
 
     if (result.canceled) {
@@ -58,12 +53,17 @@ export const handleDocumentPick = async setFormData => {
     }
 };
 
-export const handleUpload = async (file, setProgress) => {
+export const handleUpload = async (file, preset_type, setProgress) => {
     try {
         if (!file) {
             ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
             return null;
         }
+        if (!preset_type) {
+            ToastAndroid.show("Invalid preset!", ToastAndroid.SHORT);
+            return null;
+        }
+
         const url = `https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload`;
 
         const formData = new FormData();
@@ -74,7 +74,7 @@ export const handleUpload = async (file, setProgress) => {
         });
 
         const signatureRes = await axios.post("/file/getSignature", {
-            preset_type: "note"
+            preset_type
         });
 
         const { timestamp, signature, api_key, preset } = signatureRes.data;

@@ -13,9 +13,11 @@ import {
 
 import { fetchNotes as fetchNotesForTeacher } from "@controller/teacher/notes.controller.js";
 import { fetchNotes as fetchNotesForStudent } from "@controller/student/notes.controller.js";
-import { getNotes } from "@storage/app.storage.js";
 
+import { getNotes } from "@storage/app.storage.js";
 import { useMultiSelectionList } from "@store/app.store.js";
+
+import { openFileInBrowser } from "@utils/file.js";
 
 const replaceMultiSelectionList = useMultiSelectionList.getState().replace;
 
@@ -35,19 +37,22 @@ const Notes = ({ role }) => {
     });
 
     const handleSelectAll = () => {
-        replaceMultiSelectionList(data.notes.map(item=> item._id));
+        replaceMultiSelectionList(data.notes.map(item => item._id));
     };
 
     return (
-        <View className="flex-1 bg-white dark:bg-black">
+        <View className={`flex-1 bg-primary `}>
             {folder && !isSelecting && <Header title={folder} />}
-            {isSelecting && <SelectingHeader handleSelectAll={handleSelectAll}  />}
+            {isSelecting && (
+                <SelectingHeader
+                    handleSelectAll={handleSelectAll}
+                    
+                />
+            )}
 
             <FlashList
                 data={data?.notes}
-                renderItem={({ item }) => (
-                    <FolderItem item={item} />
-                )}
+                renderItem={({ item }) => <FolderItem item={item} />}
                 ListHeaderComponent={isPending && <ActivityIndicator />}
                 ListEmptyComponent={
                     !isPending && (
@@ -61,7 +66,7 @@ const Notes = ({ role }) => {
                 numColumns={2}
                 contentContainerStyle={{
                     paddingHorizontal: 8,
-                    paddingBottom: 70,
+                    paddingBottom: 120,
                     paddingTop: folder || isSelecting ? 10 : 50
                 }}
             />

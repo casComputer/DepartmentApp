@@ -2,8 +2,9 @@ import { ToastAndroid } from "react-native";
 
 import axios from "@utils/axios.js";
 import queryClient from "@utils/queryClient.js";
+import { deleteIfExists, ensureDirectoryPermission } from "@utils/file.js";
 
-import { useAppStore } from "@store/app.store.js";
+import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
 import { setNotes } from "@storage/app.storage.js";
 
 export const fetchNotes = async ({ queryKey }) => {
@@ -44,31 +45,21 @@ export const create = async data => {
     try {
         const teacherId = useAppStore.getState().user.userId;
         if (!teacherId) return;
-
         data.teacherId = teacherId;
 
         const res = await axios.post("notes/create", data);
 
         if (res.data.success) {
-            if (data.parentId === null) {
-                queryClient.setQueryData(["notes"], prev => ({
-                    ...prev,
-                    notes: [...(prev?.notes ?? []), res.data.note]
-                }));
+            queryClient.setQueryData(["notes", data.parentId], prev => ({
+                ...prev,
+                notes: [...(prev?.notes ?? []), res.data.note]
+            }));
 
-                // mmkv storage
-                setNotes("root", queryClient.getQueryData(["notes"])); // root notes
-            } else {
-                queryClient.setQueryData(["notes", data.parentId], prev => ({
-                    ...prev,
-                    notes: [...(prev?.notes ?? []), res.data.note]
-                }));
-
-                setNotes(
-                    data.parentId,
-                    queryClient.getQueryData(["notes", data.parentId])
-                );
-            }
+            // mmkv storage
+            setNotes(
+                data.parentId ?? "root",
+                queryClient.getQueryData(["notes", data.parentId])
+            ); // root notes
         } else ToastAndroid.show(res.data.message, ToastAndroid.LONG);
     } catch (error) {
         if (error.message?.includes("Network Error")) {
@@ -105,6 +96,7 @@ export const uploadFileDetails = async data => {
                 data.parentId,
                 queryClient.getQueryData(["notes", file.parentId])
             );
+
         } else
             ToastAndroid.show(
                 res.data.message ?? "Failed to Uplaod file data!",
@@ -113,5 +105,53 @@ export const uploadFileDetails = async data => {
     } catch (error) {
         console.error(error);
         ToastAndroid.show("Failed to Uplaod file data!", ToastAndroid.SHORT);
+    }
+};
+
+export const deleteNotes = async () => {
+    try {
+        const teacherId = useAppStore.getState().user.userId;
+        if (!teacherId) return;
+
+        const noteIds = useMultiSelectionList.getState().list;
+        if (noteIds?.length <= 0) return;
+
+        ToastAndroid.show("please wait...", ToastAndroid.SHORT);
+
+        const res = await axios.post("/notes/delete", { noteIds, teacherId });
+
+        if (res.data.success) {
+            const { validRoots, fileNotes } = res.data;
+
+            validRoots.forEach(root => {
+                queryClient.setQueryData(["notes", root.parentId], prev => ({
+                    ...prev,
+                    notes: prev.notes.filter(note => note._id !== root._id)
+                }));
+
+                setNotes(
+                    root.parentId ?? "root",
+                    queryClient.getQueryData(["notes", root.parentId])
+                );
+            });
+
+            useMultiSelectionList.getState().clear();
+            
+            const dirUri = await ensureDirectoryPermission();
+            if (dirUri && fileNotes.length > 0) {
+                for (let file of fileNotes) {
+                    
+                    deleteIfExists(dirUri, file.name)
+                }
+            }
+
+        } else
+            ToastAndroid.show(
+                res.data.message ?? "Failed to delete file!",
+                ToastAndroid.LONG
+            );
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show("Failed to delete file!", ToastAndroid.LONG);
     }
 };

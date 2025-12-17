@@ -1,14 +1,16 @@
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Dimensions } from "react-native";
 import { Feather } from "@icons";
 
-const FloatingAddButton = ({ onPress, style }) => {
+const { height: vh } = Dimensions.get("window");
+
+const FloatingAddButton = ({ onPress }) => {
     return (
         <TouchableOpacity
-            style={style}
-            className=" p-4 rounded-full bg-pink-500 absolute right-5 bottom-10 justify-center items-center"
+            style={{ bottom: vh * 0.15 }}
+            className="bg-btn justify-center items-center absolute right-8 bottom-10 items-center px-7 py-6 rounded-xl"
             onPress={onPress}
         >
-            <Feather name="plus" size={30} className="dark:text-white" />
+            <Feather name="plus" size={35} className="dark:text-white" />
         </TouchableOpacity>
     );
 };

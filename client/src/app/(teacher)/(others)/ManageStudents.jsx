@@ -57,7 +57,7 @@ const ManageStudents = () => {
     const safeData = Array.isArray(students) ? students : [];
 
     return (
-        <View className={"flex-1 bg-white dark:bg-black"}>
+        <View className="flex-1 bg-primary">
             <Header title={"Manage Students"} />
 
             <FlashList

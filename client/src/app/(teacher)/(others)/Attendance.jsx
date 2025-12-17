@@ -142,7 +142,7 @@ const Attendance = () => {
     };
 
     return (
-        <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-1 bg-primary">
             <Header onSave={handleSave} saving={saving} disabled={loading} />
 
             <Options loading={loading} />

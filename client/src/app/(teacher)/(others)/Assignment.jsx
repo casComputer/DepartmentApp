@@ -6,37 +6,11 @@ import { FlashList } from "@shopify/flash-list";
 import Header from "@components/common/Header.jsx";
 import FloatingAddButton from "@components/common/FloatingAddButton.jsx";
 import { AssignmentRenderItem } from "@components/teacher/Assignment.jsx";
+import { ItemSeparator, ListHeaderComponent } from "@components/common/ItemSeperatorDateComponent.jsx"
 
 import { getAssignment } from "@controller/teacher/assignment.controller.js";
 
 import { formatDate } from "@utils/date.js";
-
-const ItemSeparator = ({ trailingItem, leadingItem }) => {
-    const leadingDate = formatDate(leadingItem.timestamp);
-    const trailingDate = formatDate(trailingItem.timestamp);
-
-    if (leadingDate === trailingDate) return null;
-
-    return (
-        <Text className="my-6 text-xl font-bold px-3 dark:text-white">
-            {trailingDate}
-        </Text>
-    );
-};
-
-const ListHeaderComponent = ({ date }) => {
-    if (!date) return;
-
-    const fdate = formatDate(date);
-
-    if (!fdate) return null;
-
-    return (
-        <Text className="my-6 text-xl font-bold px-3 dark:text-white">
-            {fdate}
-        </Text>
-    );
-};
 
 const Assignment = () => {
     const {
@@ -46,7 +20,7 @@ const Assignment = () => {
         hasNextPage,
         refetch,
         isRefetching,
-        isPending
+        isLoading
     } = useInfiniteQuery({
         queryKey: ["assignments"],
         queryFn: ({ pageParam = 1 }) => getAssignment({ pageParam }),
@@ -54,17 +28,19 @@ const Assignment = () => {
         getNextPageParam: lastPage =>
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
+    
+    const allItems = data?.pages.flatMap(page => page.assignments) ||[]
 
     return (
-        <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-1 bg-primary">
             <Header title="Assignments" />
 
-            {isPending && !isFetchNextPage && (
-                <ActivityIndicator style={{ marginTop: 8 }} />
+            {isLoading && !isFetchNextPage && (
+                <ActivityIndicator size={'large'} style={{ marginTop: 8 }} />
             )}
 
             <FlashList
-                data={data?.pages.flatMap(page => page.assignments) || []}
+                data={allItems || []}
                 keyExtractor={item => item._id}
                 renderItem={({ item }) => <AssignmentRenderItem item={item} />}
                 onEndReached={() => {
@@ -79,11 +55,11 @@ const Assignment = () => {
                 }}
                 ListHeaderComponent={
                     <ListHeaderComponent
-                        date={data?.pages?.[0]?.assignments?.[0]?.timestamp}
+                        date={allItems[0]?.timestamp}
                     />
                 }
                 ListFooterComponent={
-                    isFetchNextPage && (
+                    (isFetchNextPage && !isLoading )&& (
                         <ActivityIndicator style={{ marginTop: 10 }} />
                     )
                 }

@@ -164,7 +164,7 @@ export const handleAssignmentUpload = async (
             return false;
         }
 
-        const { timestamp, signature, api_key, preset} = signatureRes.data;
+        const { timestamp, signature, api_key, preset } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
             ToastAndroid.show(
@@ -188,8 +188,7 @@ export const handleAssignmentUpload = async (
                     Math.round((pe.loaded / total) * 100),
                     100
                 );
-                setProgress(percent);
-                console.log("Progress:", percent + "%");
+                if (progress > 1) setProgress(percent);
             }
         });
 

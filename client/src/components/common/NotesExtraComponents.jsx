@@ -30,7 +30,10 @@ import {
 import confirm from "@utils/confirm.js";
 import getMimeType from "@utils/getMimeType.js";
 
-import { uploadFileDetails } from "@controller/teacher/notes.controller.js";
+import {
+    uploadFileDetails,
+    deleteNotes
+} from "@controller/teacher/notes.controller.js";
 
 import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
 
@@ -88,11 +91,19 @@ export const FloatingAddButton = ({ parentId }) => {
     };
 
     const handleUploadPress = async () => {
-        const asset = await handleDocumentPick(); // uri, name, size, mimeType
+        const asset = await handleDocumentPick([
+            "application/pdf",
+            "image/*",
+            "application/vnd.ms-powerpoint", // .ppt
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" // .pptx
+        ]); 
+        if(!asset || !asset.uri ) return
+        
         setGlobalProgress(1);
 
         const { secure_url, format, public_id } = await handleUpload(
             asset,
+            "note",
             setGlobalProgress
         );
 
@@ -144,7 +155,7 @@ export const FloatingAddButton = ({ parentId }) => {
 
             <AnimatedTouchableOpacity
                 style={floatingAnim}
-                className="bg-amber-800 justify-center items-center"
+                className="bg-btn justify-center items-center "
                 onPress={handlePress}
             >
                 <AnimatedFeather
@@ -205,46 +216,51 @@ export const FolderItem = ({ item }) => {
     const onLongPress = () => {
         toggleMultiSelectionList(item._id);
     };
-
     return (
         <Pressable
             onLongPress={onLongPress}
             onPress={handlePress}
-            className="mx-2 my-2 flex-1 h-[160px] items-center rounded-xl gap-3 "
-            style={{
-                backgroundColor: isExistsInMultiSelectList
-                    ? "#394a56"
-                    : "rgb(24, 24, 27)"
-            }}
+            className={`mx-2 my-2 flex-1 h-[170px] rounded-xl ${
+                isExistsInMultiSelectList ? "bg-card-selected" : "bg-card"
+            }`}
         >
-            <View className="flex-row w-full bgzi90 px-2 pt-3 justify-between items-center ">
+            <View className="h-[40px] px-2 mt-3 flex-row justify-between items-start">
                 <View className="flex-row items-center gap-2">
                     {isFolder && (
                         <MaterialIcons name="folder" size={25} color={color} />
                     )}
                     <Text
-                        className="text-sm font-bold dark:text-white flex-1"
-                        numberOfLines={isFolder ? 2 : 1}
+                        allowFontScaling={false}
+                        // adjustsFontSizeToFit
+                        className="flex-1 text-[12px] font-bold text-black dark:text-white"
+                        numberOfLines={2}
                     >
                         {item.name}
                     </Text>
                 </View>
             </View>
 
-            {isFolder ? (
-                <MaterialIcons name="folder" size={110} color={color} />
-            ) : (
-                <Image
-                    source={{ uri: url }}
-                    style={{ width: "80%", height: 100, borderRadius: 8 }}
-                    className="bg-zinc-950"
-                />
-            )}
+            <View className="flex-1 w-full justify-center items-center">
+                {isFolder ? (
+                    <MaterialIcons name="folder" size={110} color={color} />
+                ) : (
+                    <Image
+                        source={{ uri: url }}
+                        style={{
+                            width: "90%",
+                            height: 110,
+                            marginTop: -5,
+                            borderRadius: 4,
+                            opacity: 0.8
+                        }}
+                    />
+                )}
+            </View>
         </Pressable>
     );
 };
 
-export const SelectingHeader = ({ handleSelectAll }) => {
+export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
     const count = useMultiSelectionList(state => state.list.length);
 
     const translateY = useSharedValue(-100);
@@ -265,14 +281,14 @@ export const SelectingHeader = ({ handleSelectAll }) => {
 
     const handleDelete = () => {
         confirm("Are you sure? You won’t be able to recover this later", () => {
-            console.log(useMultiSelectionList.getState().list);
+            deleteNotes();
         });
     };
 
     return (
         <Animated.View
             style={animatedStyle}
-            className="w-full mt-6 flex-row items-center justify-between border-b-zinc-800 border py-4 px-4"
+            className="w-full mt-6 flex-row items-center justify-between py-4 px-4"
         >
             <View className="flex-row gap-3 items-center">
                 <TouchableOpacity onPress={handlePressDismiss}>

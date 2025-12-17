@@ -189,31 +189,53 @@ router.post("/delete", async (req, res) => {
                 _id: { $in: [...idsToDelete] },
                 type: "file"
             },
-            { publicId: 1, fileUrl: 1 }
+            { publicId: 1, fileUrl: 1, format }
         );
 
-        // 4️⃣ Collect publicIds (with fallback)
-        const publicIds = [];
+        const imageFormats = new Set(["jpg", "jpeg", "png", "webp"]);
+        const rawFormats = new Set([
+            "pdf",
+            "ppt",
+            "pptx",
+            "doc",
+            "docx",
+            "xls",
+            "xlsx"
+        ]);
+
+        const imagePublicIds = [];
+        const rawPublicIds = [];
 
         for (const file of fileNotes) {
-            if (file.publicId) {
-                publicIds.push(file.publicId);
-            } else {
-                const extracted = extractPublicIdFromUrl(file.fileUrl);
-                if (extracted) {
-                    publicIds.push(extracted);
-                }
+            const publicId =
+                file.publicId || extractPublicIdFromUrl(file.fileUrl);
+
+            if (!publicId || !file.format) continue;
+
+            const format = file.format.toLowerCase();
+
+            if (imageFormats.has(format)) {
+                imagePublicIds.push(publicId);
+            } else if (rawFormats.has(format)) {
+                rawPublicIds.push(publicId);
             }
         }
 
-        // 5️⃣ Delete from Cloudinary
-        if (publicIds.length > 0) {
-            await cloudinary.api.delete_resources(publicIds, {
-                resource_type: "auto"
+        // Delete images
+        if (imagePublicIds.length) {
+            await cloudinary.api.delete_resources(imagePublicIds, {
+                resource_type: "image"
             });
         }
 
-        // 5️⃣ Delete DB records
+        // Delete pdf/ppt/etc
+        if (rawPublicIds.length) {
+            await cloudinary.api.delete_resources(rawPublicIds, {
+                resource_type: "raw"
+            });
+        }
+
+        // Delete DB records
         await Notes.deleteMany({
             _id: { $in: [...idsToDelete] }
         });

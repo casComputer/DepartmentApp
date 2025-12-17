@@ -240,7 +240,7 @@ router.post("/delete", async (req, res) => {
             _id: { $in: [...idsToDelete] }
         });
 
-        res.json({ success: true, validRoots });
+        res.json({ success: true, validRoots, fileNotes });
     } catch (error) {
         console.error("Delete error:", error);
         res.status(500).json({ success: false });

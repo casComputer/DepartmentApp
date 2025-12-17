@@ -166,7 +166,7 @@ router.post("/delete", async (req, res) => {
 
         const validRoots = await Notes.find(
             { _id: { $in: noteIds }, teacherId },
-            { _id: 1 }
+            { _id: 1, parentId: 1 }
         );
 
         if (validRoots.length === 0) {
@@ -218,7 +218,7 @@ router.post("/delete", async (req, res) => {
             _id: { $in: [...idsToDelete] }
         });
 
-        res.json({ success: true });
+        res.json({ success: true, validRoots });
     } catch (error) {
         console.error("Delete error:", error);
         res.status(500).json({ success: false });

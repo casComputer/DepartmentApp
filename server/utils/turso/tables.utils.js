@@ -2,6 +2,8 @@ const createAllTables = () => {
   turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
+        dp TEXT, 
+        dp_public_id TEXT, 
         fullname TEXT not null,
         password TEXT not null,
         course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
@@ -18,6 +20,8 @@ const createAllTables = () => {
   turso.execute(
     `CREATE TABLE teachers ( 
           teacherId TEXT PRIMARY Key, 
+          dp TEXT, 
+          dp_public_id TEXT, 
           fullname text not null, 
           password text not null,
           in_charge_class text check (in_charge_class IN ('Bca', 'Bsc')) ,
@@ -27,7 +31,7 @@ const createAllTables = () => {
   );
 
   turso.execute(
-    "CREATE TABLE parents ( parentId TEXT PRIMARY Key, fullname text not null, password text not null, phone text)"
+    "CREATE TABLE parents ( parentId TEXT PRIMARY Key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null, phone text)"
   );
 
   turso.execute(
@@ -35,7 +39,7 @@ const createAllTables = () => {
   );
 
   turso.execute(
-    "CREATE TABLE admins (adminId TEXT primary key, fullname text not null, password text not null);"
+    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null);"
   );
 
   turso.execute(`

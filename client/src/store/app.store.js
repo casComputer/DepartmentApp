@@ -13,6 +13,7 @@ export const useAppStore = create(set => ({
     },
 
     globalProgress: 0,
+    globalProgressText: "",
 
     setUser: payload =>
         set(() => {
@@ -27,9 +28,14 @@ export const useAppStore = create(set => ({
         })),
 
     updateUser: userData =>
-        set(state => ({
-            user: { ...state.user, ...userData }
-        })),
+        set(state => {
+            const user = { ...state.user, ...userData };
+
+            saveUserToStorage(user);
+            return {
+                user: user
+            };
+        }),
 
     hydrateUser: user => set({ user }),
 
@@ -41,7 +47,8 @@ export const useAppStore = create(set => ({
             };
         }),
 
-    setGlobalProgress: globalProgress => set({ globalProgress })
+    setGlobalProgress: globalProgress => set({ globalProgress }),
+    setGlobalProgressText: globalProgressText => set({ globalProgressText })
 }));
 
 export const useMultiSelectionList = create((set, get) => ({
@@ -57,16 +64,13 @@ export const useMultiSelectionList = create((set, get) => ({
                     : [...state.list, id]
             };
         }),
-    
+
     replace: list => set({ list }),
 
-    isExists: id =>
-        get().list.some(
-            item => item === id
-        ),
+    isExists: id => get().list.some(item => item === id),
 
     isSelecting: () => get().list?.length > 0,
-    
+
     count: () => get().list?.length,
 
     clear: () => set({ list: [] })

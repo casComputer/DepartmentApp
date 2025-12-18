@@ -49,9 +49,10 @@ router.post("/uploadDp", async (req, res) => {
 
         await turso.execute(query, [secure_url, public_id, userId]);
 
-        await cloudinary.api.delete_resources([current_dp_public_id], {
-            resource_type: "image"
-        });
+        if (current_dp_public_id)
+            await cloudinary.api.delete_resources([current_dp_public_id], {
+                resource_type: "image"
+            });
 
         return res.json({
             success: true,

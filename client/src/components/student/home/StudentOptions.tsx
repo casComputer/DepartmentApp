@@ -1,142 +1,113 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import {
-  AntDesign,
-  Entypo,
-  Feather,
-  FontAwesome,
-  FontAwesome6,
-  MaterialCommunityIcons,
-  SimpleLineIcons,
+    AntDesign,
+    Entypo,
+    Feather,
+    FontAwesome,
+    FontAwesome6,
+    MaterialCommunityIcons,
+    SimpleLineIcons,
 } from "@icons";
+import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
 const ICONS_SIZE = 40;
 
+const optionsData = [
+    {
+        Icon: SimpleLineIcons,
+        iconName: "note",
+        text: "Attendance",
+        locaton: "/(student)/(others)/MonthlyReport",
+    },
+    {
+        Icon: SimpleLineIcons,
+        iconName: "notebook",
+        text: "Assignment",
+        locaton: "/(student)/(others)/Assignment",
+    },
+    {
+        Icon: FontAwesome6,
+        iconName: "hand-holding-dollar",
+        text: "Fees",
+        locaton: "",
+    },
+    {
+        Icon: AntDesign,
+        iconName: "file-search",
+        text: "Exam Results",
+        locaton: "",
+    },
+    {
+        Icon: AntDesign,
+        iconName: "message",
+        text: "Chat",
+        locaton: "",
+    },
+    {
+        Icon: Entypo,
+        iconName: "book",
+        text: "Notes",
+        locaton: "",
+    },
+    {
+        Icon: Feather,
+        iconName: "check-circle",
+        text: "Internal Marks",
+        locaton: "",
+    },
+    {
+        Icon: FontAwesome,
+        iconName: "graduation-cap",
+        text: "Course",
+        locaton: "",
+    },
+];
+
+const Option = ({ Icon, iconName, text = "", locaton }) => {
+    const handlePress = () => {
+        router.push(locaton);
+    };
+
+    return (
+        <TouchableOpacity
+            onPress={handlePress}
+            className="justify-center items-center gap-2 my-5"
+        >
+            <Icon name={iconName} size={ICONS_SIZE} />
+
+            <Text
+                allowFontScaling={false}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                className="text-sm font-semibold text-center dark:text-white"
+            >
+                {text}
+            </Text>
+        </TouchableOpacity>
+    );
+};
+
 const StudentOptions = () => {
-  return (
-    <View className="px-6 mt-12 flex-1">
-      <View
-        style={{ elevation: 3, shadowColor: "black" }}
-        className=" bg-white w-full rounded-3xl gap-3 overflow-hidden py-3 dark:bg-zinc-900"
-      >
-        {/* First Row of Options */}
-        <View className="flex-row justify-between">
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1 ">
-            <MaterialCommunityIcons name="chat-question" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Ask Leave
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push("/(student)/(others)/MonthlyReport")}
-            className="p-4 justify-center items-center gap-2 flex-1 "
-          >
-            <SimpleLineIcons name="note" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Attendence
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push("/(student)/(others)/Assignment")}
-            className="p-4 justify-center items-center gap-2 flex-1 "
-          >
-            <SimpleLineIcons name="notebook" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Assignment
-            </Text>
-          </TouchableOpacity>
+    return (
+        <View className="px-3 mt-5">
+            <View className="bg-card rounded-3xl py-5">
+                <FlashList
+                    data={optionsData}
+                    renderItem={({ item }) => (
+                        <Option
+                            Icon={item.Icon}
+                            iconName={item.iconName}
+                            text={item.text}
+                            locaton={item.locaton}
+                        />
+                    )}
+                    numColumns={3}
+                    style={{ paddingHorizontal: 12 }}
+                />
+            </View>
         </View>
-
-        {/* Second Row of Options */}
-
-        <View className="flex-row justify-between">
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <FontAwesome6 name="hand-holding-dollar" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Fees
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <AntDesign name="file-search" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Exam Results
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <AntDesign name="message" size={ICONS_SIZE} />
-
-            <Text className="text-lg font-semibold dark:text-white">Chat</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Third Row of Options */}
-        <View className="flex-row justify-between">
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <Entypo name="book" size={ICONS_SIZE} />
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Notes
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <Feather name="check-circle" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Internal Marks
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="p-4 justify-center items-center gap-2 flex-1">
-            <FontAwesome name="graduation-cap" size={ICONS_SIZE} />
-
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              className="text-lg font-semibold dark:text-white"
-            >
-              Course
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+    );
 };
 
 export default StudentOptions;

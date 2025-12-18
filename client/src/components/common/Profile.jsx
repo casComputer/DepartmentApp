@@ -1,42 +1,21 @@
+import { useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
+import Animated, {
+    useSharedValue,
+    withSpring,
+    useAnimatedStyle
+} from "react-native-reanimated";
 import { MaterialIcons } from "@icons";
 
-import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import { useAppStore } from "@store/app.store.js";
 
-import { uploadDp } from "@controller/common/profile.controller.js";
-
-const setGlobalProgress = useAppStore.getState().setGlobalProgress;
-const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
-
-const { width: vw } = Dimensions.get("window");
+const { width: vw, height: vh } = Dimensions.get("window");
 const AVATAR_SIZE = vw * 0.7;
 
-export const Avatar = () => {
+export const Avatar = ({ handleEdit, handleChangePic }) => {
     const username = useAppStore(state => state.user?.userId || "");
     const dp = useAppStore(state => state.user?.dp || "");
-
-    const handleChangePic = async () => {
-        try {
-            const asset = await handleDocumentPick(["image/*"]);
-            if (!asset || !asset.uri) return;
-
-            setGlobalProgress(1);
-
-            const { secure_url, public_id } = await handleUpload(asset, "dp");
-            if (!secure_url || !public_id) {
-                setGlobalProgress(0);
-                return null;
-            }
-
-            setGlobalProgressText("Updating profile picture...");
-
-            await uploadDp({ secure_url, public_id });
-        } finally {
-            setGlobalProgress(0);
-        }
-    };
-
+    console.log(dp);
     return (
         <View className="my-10 justify-center items-center">
             <View className="w-full justify-center items-center">
@@ -70,7 +49,7 @@ export const Avatar = () => {
                         </Text>
                     )}
                     <TouchableOpacity
-                        onPress={handleChangePic}
+                        onPress={dp ? handleEdit : handleChangePic}
                         className="p-4 rounded-full bg-btn absolute z-10 -right-2 bottom-[15%]"
                     >
                         <MaterialIcons name="edit" size={30} />
@@ -89,5 +68,45 @@ export const Avatar = () => {
                 </Text>
             </View>
         </View>
+    );
+};
+
+export const EditDpOptions = ({ show, handleChangePic }) => {
+    const SHEET_HEIGHT = vh * 0.3;
+    const translateY = useSharedValue(SHEET_HEIGHT);
+
+    useEffect(() => {
+        translateY.value = withSpring(show ? 0 : SHEET_HEIGHT, {
+            damping: 25,
+            stiffness: 200,
+            mass: 0.8,
+            overshootClamping: true
+        });
+    }, [show]);
+
+    const animatedStyles = useAnimatedStyle(() => ({
+        transform: [{ translateY: translateY.value }]
+    }));
+
+    return (
+        <Animated.View
+            style={[
+                animatedStyles,
+                {
+                    height: SHEET_HEIGHT,
+                    bottom: 0
+                }
+            ]}
+            className="absolute w-full bg-card-selected rounded-t-3xl z-50"
+        >
+            <TouchableOpacity
+                onPress={handleChangePic}
+                className="w-full h-[25%] justify-center items-center "
+            >
+                <Text className="text-text text-2xl font-bold">
+                    Change Profile
+                </Text>
+            </TouchableOpacity>
+        </Animated.View>
     );
 };

@@ -1,112 +1,73 @@
-import { useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
-import Animated, {
-    useSharedValue,
-    withSpring,
-    useAnimatedStyle
-} from "react-native-reanimated";
+import { useState } from "react";
+import { View, Button, ScrollView } from "react-native";
 import { MaterialIcons } from "@icons";
+
+import Header from "@components/common/Header.jsx";
+import {
+	Avatar,
+	EditDpOptions,
+} from "@components/common/ProfileComponents.jsx";
+
+import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
+import { uploadDp } from "@controller/common/profile.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
-const { width: vw, height: vh } = Dimensions.get("window");
-const AVATAR_SIZE = vw * 0.7;
+const removeUser = useAppStore.getState().removeUser;
+const setGlobalProgress = useAppStore.getState().setGlobalProgress;
+const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
-export const Avatar = ({ handleEdit, handleChangePic }) => {
-    const username = useAppStore(state => state.user?.userId || "");
-    const dp = useAppStore(state => state.user?.dp || "");
-    console.log(dp);
-    return (
-        <View className="my-10 justify-center items-center">
-            <View className="w-full justify-center items-center">
-                <View
-                    style={{
-                        height: AVATAR_SIZE,
-                        width: AVATAR_SIZE,
-                        borderRadius: AVATAR_SIZE / 2
-                    }}
-                    className="bg-card justify-center items-center"
-                >
-                    {dp ? (
-                        <Image
-                            source={{ uri: dp }}
-                            resizeMode="cover"
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: AVATAR_SIZE / 2
-                            }}
-                        />
-                    ) : (
-                        <Text
-                            allowFontScale={false}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            style={{ fontSize: vw * 0.4 }}
-                            className="w-full text-center px-4 text-text-secondary font-black"
-                        >
-                            {username[0]}
-                        </Text>
-                    )}
-                    <TouchableOpacity
-                        onPress={dp ? handleEdit : handleChangePic}
-                        className="p-4 rounded-full bg-btn absolute z-10 -right-2 bottom-[15%]"
-                    >
-                        <MaterialIcons name="edit" size={30} />
-                    </TouchableOpacity>
-                </View>
-                <Text
-                    numberOfLines={1}
-                    minimumFontScale={0.3}
-                    adjustsFontSizeToFit
-                    style={{
-                        marginTop: -vw * 0.1
-                    }}
-                    className="w-[85%] text-text-secondary font-bold text-7xl text-center"
-                >
-                    @{username}
-                </Text>
-            </View>
-        </View>
-    );
+const Profile = () => {
+	const [showDpOptions, setDpOptions] = useState(false);
+	const fullname = useAppStore((state) => state.user?.fullname || "");
+
+	const handleChangePic = async () => {
+		try {
+			setDpOptions(false);
+			const asset = await handleDocumentPick(["image/*"]);
+			if (!asset || !asset.uri) return;
+
+			setGlobalProgress(1);
+
+			const { secure_url, public_id } = await handleUpload(asset, "dp");
+			if (!secure_url || !public_id) {
+				setGlobalProgress(0);
+				return null;
+			}
+
+			setGlobalProgressText("Updating profile picture...");
+
+			await uploadDp({ secure_url, public_id });
+		} finally {
+			setGlobalProgress(0);
+		}
+	};
+
+	return (
+		<View className="flex-1 bg-primary">
+			<ScrollView
+				alwaysBounceVertical
+				showsVerticalScrollIndicator={false}
+				overScrollMode="always"
+				contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+			>
+				<View className="px-4">
+					<Header disableBackBtn={true} title={fullname} />
+				</View>
+
+				<Avatar
+					handleChangePic={handleChangePic}
+					handleEdit={() => setDpOptions((prev) => !prev)}
+				/>
+
+				<View className="flex-1 items-center justify-end">
+					<Button title="logout" onPress={() => removeUser()} />
+				</View>
+			</ScrollView>
+
+			<EditDpOptions handleChangePic={handleChangePic} show={showDpOptions} />
+		</View>
+	);
 };
 
-export const EditDpOptions = ({ show, handleChangePic }) => {
-    const SHEET_HEIGHT = vh * 0.3;
-    const translateY = useSharedValue(SHEET_HEIGHT);
-
-    useEffect(() => {
-        translateY.value = withSpring(show ? 0 : SHEET_HEIGHT, {
-            damping: 25,
-            stiffness: 200,
-            mass: 0.8,
-            overshootClamping: true
-        });
-    }, [show]);
-
-    const animatedStyles = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }]
-    }));
-
-    return (
-        <Animated.View
-            style={[
-                animatedStyles,
-                {
-                    height: SHEET_HEIGHT,
-                    bottom: 0
-                }
-            ]}
-            className="absolute w-full bg-card-selected rounded-t-3xl z-50"
-        >
-            <TouchableOpacity
-                onPress={handleChangePic}
-                className="w-full h-[25%] justify-center items-center "
-            >
-                <Text className="text-text text-2xl font-bold">
-                    Change Profile
-                </Text>
-            </TouchableOpacity>
-        </Animated.View>
-    );
-};
+export default Profile;

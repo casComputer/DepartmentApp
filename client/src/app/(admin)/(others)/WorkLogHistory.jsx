@@ -10,33 +10,34 @@ import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 import { router } from "expo-router";
 
 const WorkLogHistory = () => {
-  const { data: teachers } = useQuery({
-    queryKey: ["teachers"],
-    queryFn: () => fetchTeachers(),
-  });
+	const { data: teachers } = useQuery({
+		queryKey: ["teachers"],
+		queryFn: () => fetchTeachers(),
+	});
 
-  return (
-    <View className="flex-1 bg-white dark:bg-black">
-      <Header title={"History"} />
+	return (
+		<View className="flex-1 bg-primary">
+			<Header title={"History"} />
 
-      <FlashList
-        data={teachers}
-        renderItem={({ item }) => (
-          <UserItem
-            item={item}
-            showVerification={false}
-            handlePress={() =>
-              router.push({
-                pathname: "/(admin)/(others)/WorkLogDetails",
-                params: { teacherId: item.teacherId },
-              })
-            }
-          />
-        )}
-        contentContainerStyle={{ padding: 10 }}
-      />
-    </View>
-  );
+			<FlashList
+				data={teachers}
+				renderItem={({ item }) => (
+					<UserItem
+						item={item}
+						showVerification={false}
+						handlePress={() =>
+							router.push({
+								pathname: "/(admin)/(others)/WorkLogDetails",
+								params: { teacherId: item.teacherId },
+							})
+						}
+					/>
+				)}
+				contentContainerStyle={{ padding: 10, paddingBottom: 70 }}
+				showsVerticalScrollIndicator={false}
+			/>
+		</View>
+	);
 };
 
 export default WorkLogHistory;

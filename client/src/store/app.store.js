@@ -77,7 +77,7 @@ export const useMultiSelectionList = create((set, get) => ({
 }));
 
 export const useThemeStore = create(set => ({
-    gradientColors: [Color["orange"][100], "#ffffff", Color["orange"][100]],
+    gradientColors: [Color["orange"][100], 'transparent',  'transparent'],
     secondaryGradientColors: [
         Color["orange"][200],
         "#ffffff",

@@ -4,7 +4,7 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,18 +22,18 @@ const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
 export default function MonthlyAttendenceMiniReport() {
     const { data: report, status } = useQuery({
         queryKey: ["MonthlyAttendenceMiniReport"],
-        queryFn: getMonthlyAttendenceMiniReport
+        queryFn: getMonthlyAttendenceMiniReport,
     });
 
     return (
-        <TouchableOpacity
+        <View
             style={{
-                elevation: 3,
-                shadowColor: "black",
+                boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)",
                 width: containerWidth,
-                gap: gap
+                gap: gap,
             }}
-            className="bg-white mx-auto mt-12 rounded-3xl overflow-hidden p-5 flex-row justify-between items-center dark:bg-zinc-900">
+            className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 flex-row justify-between items-center bg-card"
+        >
             <View className="flex-1">
                 <CircularProgress
                     progress={report?.percentage || 0}
@@ -43,7 +43,8 @@ export default function MonthlyAttendenceMiniReport() {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white"
+                >
                     Attendance
                 </Text>
             </View>
@@ -58,7 +59,8 @@ export default function MonthlyAttendenceMiniReport() {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white"
+                >
                     Leave Taken
                 </Text>
             </View>
@@ -73,10 +75,11 @@ export default function MonthlyAttendenceMiniReport() {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white">
+                    className="text-center text-lg font-semibold mt-4 dark:text-white"
+                >
                     Ongoing Days
                 </Text>
             </View>
-        </TouchableOpacity>
+        </View>
     );
 }

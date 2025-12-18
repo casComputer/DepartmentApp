@@ -1,21 +1,38 @@
-import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
+import { Icon, NativeTabs, VectorIcon } from "expo-router/unstable-native-tabs";
 import { useColorScheme } from "react-native";
 
-export default function TabLayout() {
-    const theme = useColorScheme();
 
-    return (
-        <NativeTabs
-            labelStyle={{
-                color: theme === "dark" ? "black" : "white",
-                fontWeight: "900",
-                fontSize: 14
-            }}
-            shadowColor={"black"}
-            backgroundColor={theme === "dark" ? "black" : "white"}>
-            <NativeTabs.Trigger name="Home" />
-            <NativeTabs.Trigger name="Notes" />
-            <NativeTabs.Trigger name="Profile" />
-        </NativeTabs>
-    );
+export default function TabLayout() {
+  const theme = useColorScheme();
+
+  return (
+    <NativeTabs
+      labelStyle={{
+        color: theme === "dark" ? "white" : "black",
+        fontWeight: "900",
+        fontSize: 14,
+      }}
+      shadowColor={"black"}
+      backgroundColor={theme === "dark" ? "#1a120d" : "#ffece6"}
+    >
+      <NativeTabs.Trigger name="Home">
+        <Icon sf="house.fill" drawable="home" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="Notes">
+        <Icon
+          src={
+            <VectorIcon
+              family={MaterialCommunityIcons}
+              name="notebook-outline"
+            />
+          }
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="Profile">
+        <Icon src={<VectorIcon family={Octicons} name="person" />} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
 }

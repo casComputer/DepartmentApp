@@ -51,4 +51,45 @@ router.post("/create", async (req, res) => {
     }
 });
 
+router.post("/fetchByTeacher", async (req, res) => {
+    try {
+        const { role, userId } = req.body;
+
+        if (!role || !userId)
+            return res.json({
+                success: false,
+                message: "missing required parameters!"
+            });
+
+        let fees = null;
+
+        if (role === "teacher") {
+            const { rows } = await turso.execute(
+                `
+                SELECT * FROM fees WHERE teacherId = ?
+            `,
+                [userId]
+            );
+            fees = rows;
+        } else if (role === "admin") {
+            const { rows } = await turso.execute(
+                `SELECT * FROM fees WHERE adminId = ?
+            `[userId]
+            );
+
+            fees = rows;
+        } else return res.json({ message: "invalid role", success: false });
+
+        if (!fees)
+            return res.json({
+                success: false,
+                message: "No fees history found for you!"
+            });
+
+        res.json({ success: true, fees });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 export default router;

@@ -107,6 +107,8 @@ const createAllTables = () => {
         year TEXT NOT NULL, 
         course TEXT NOT NULL, 
         dueDate TEXT NOT NULL, 
+        details TEXT NOT NULL, 
+        amount TEXT NOT NULL, 
         
         teacherId TEXT,
         adminId TEXT,

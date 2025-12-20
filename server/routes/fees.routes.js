@@ -6,9 +6,18 @@ const router = express.Router();
 
 router.post("/create", async (req, res) => {
     try {
-        const { role, userId, dueDate, details, year, course } = req.body;
+        const { role, userId, dueDate, details, year, course, amount } =
+            req.body;
 
-        if (!role || !userId || !dueDate || !details || !year || !course)
+        if (
+            !role ||
+            !userId ||
+            !dueDate ||
+            !details ||
+            !year ||
+            !course ||
+            !amount
+        )
             return res.json({
                 success: false,
                 message: "missing required parameters!"
@@ -18,21 +27,21 @@ router.post("/create", async (req, res) => {
             await turso.execute(
                 `
                 INSERT INTO fees 
-                    (year, course, details, dueDate, teacherId)
+                    (year, course, details, dueDate, teacherId, amount)
                     VALUES
-                    (?, ?, ?, ?, ?);
+                    (?, ?, ?, ?, ?, ?);
             `,
-                [year, course, details, dueDate, userId]
+                [year, course, details, dueDate, userId, amount]
             );
         } else if (role === "admin") {
             await turso.execute(
                 `
                 INSERT INTO fees 
-                    (year, course, details, dueDate, adminId)
+                    (year, course, details, dueDate, adminId, amount)
                     VALUES
-                    (?, ?, ?, ?, ?);
+                    (?, ?, ?, ?, ?, ?);
             `,
-                [year, course, details, dueDate, userId]
+                [year, course, details, dueDate, userId, amount]
             );
         } else return res.json({ message: "invalid role", success: false });
 

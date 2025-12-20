@@ -53,42 +53,67 @@ router.post("/create", async (req, res) => {
 
 router.post("/fetchByTeacher", async (req, res) => {
     try {
-        const { role, userId } = req.body;
+        const { role, userId, page = 1, limit = 10 } = req.body;
 
-        if (!role || !userId)
+        if (!role || !userId) {
             return res.json({
                 success: false,
-                message: "missing required parameters!"
+                message: "Missing required parameters!"
             });
+        }
 
-        let fees = null;
+        const ids = {
+            teacher: "teacherId",
+            admin: "adminId"
+        };
 
-        if (role === "teacher") {
-            const { rows } = await turso.execute(
-                `
-                SELECT * FROM fees WHERE teacherId = ?
-            `,
-                [userId]
-            );
-            fees = rows;
-        } else if (role === "admin") {
-            const { rows } = await turso.execute(
-                `SELECT * FROM fees WHERE adminId = ?
-            `[userId]
-            );
+        const column = ids[role];
 
-            fees = rows;
-        } else return res.json({ message: "invalid role", success: false });
-
-        if (!fees)
+        if (!column)
             return res.json({
                 success: false,
-                message: "No fees history found for you!"
+                message: "Invalid role"
             });
 
-        res.json({ success: true, fees });
+        const offset = (page - 1) * limit;
+
+        const feesQuery = `
+            SELECT *
+            FROM fees
+            WHERE ${column} = ?
+            ORDER BY createdAt DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const countQuery = `
+            SELECT COUNT(*) as count
+            FROM fees
+            WHERE ${column} = ?
+        `;
+
+        const { rows: fees } = await turso.execute(feesQuery, [
+            userId,
+            limit,
+            offset
+        ]);
+
+        const { rows: countRows } = await turso.execute(countQuery, [userId]);
+
+        const totalCount = countRows[0]?.count || 0;
+        const hasMore = page * limit < totalCount;
+
+        return res.json({
+            success: true,
+            fees,
+            nextPage: hasMore ? page + 1 : null,
+            hasMore
+        });
     } catch (error) {
-        console.error(error);
+        console.error("fetchByTeacher error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 });
 

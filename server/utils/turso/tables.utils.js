@@ -112,7 +112,7 @@ const createAllTables = () => {
         
         teacherId TEXT,
         adminId TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     
         FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL,
         FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE SET NULL,

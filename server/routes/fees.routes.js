@@ -81,7 +81,7 @@ router.post("/fetchByTeacher", async (req, res) => {
             SELECT *
             FROM fees
             WHERE ${column} = ?
-            ORDER BY createdAt DESC
+            ORDER BY timestamp DESC
             LIMIT ? OFFSET ?
         `;
 

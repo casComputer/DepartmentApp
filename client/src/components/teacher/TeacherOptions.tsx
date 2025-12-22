@@ -3,7 +3,7 @@ import {
     MaterialCommunityIcons,
     Octicons,
     SimpleLineIcons,
-    MaterialIcons
+    MaterialIcons,
 } from "@icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -11,9 +11,10 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useAppStore } from "@store/app.store.js";
 
 const handleRouteToAttendance = () => {
-    const is_in_charge = useAppStore.getState().user.is_in_charge;
+    const { in_charge_year, in_charge_course } = useAppStore.getState().user;
 
-    if (is_in_charge) router.push("/(teacher)/(others)/AttendanceManage");
+    if (in_charge_course && in_charge_year)
+        router.push("/(teacher)/(others)/AttendanceManage");
     else router.push("/common/attendance/AttendanceClassSelect" as any);
 };
 

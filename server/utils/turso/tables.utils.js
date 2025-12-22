@@ -24,10 +24,8 @@ const createAllTables = () => {
           dp_public_id TEXT, 
           fullname text not null, 
           password text not null,
-          in_charge_class text check (in_charge_class IN ('Bca', 'Bsc')) ,
-          in_charge_year text check (in_charge_year IN ('First', 'Second', 'Third', 'Fourth')) , 
           is_verified BOOLEAN DEFAULT FALSE,
-          is_in_charge BOOLEAN DEFAULT FALSE)`
+        );`
     );
 
     turso.execute(
@@ -47,7 +45,7 @@ const createAllTables = () => {
             course text check (course in ('Bca', 'Bsc')),
             year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
             strength integer,
-            in_charge text REFERENCES teachers(teacherId) ON DELETE SET NULL,
+            in_charge text UNIQUE REFERENCES teachers(teacherId) ON DELETE SET NULL,
             primary key (course, year)
         )
     `);

@@ -1,23 +1,19 @@
 import { turso } from "../../config/turso.js";
 import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
-import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js"
+import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
 
 export const getTeachers = async (req, res) => {
     try {
         const result = await turso.execute(
-            "SELECT teacherId, fullname, is_verified, is_in_charge, in_charge_class, in_charge_year FROM teachers"
+            "SELECT t.teacherId, t.fullname, t.is_verified, c.course as in_charge_course, c.year AS in_charge_year FROM teachers t LEFT JOIN classes c ON c.in_charge = t.teacherId"
         );
-        
-        
-        
-        // todo: fetch in_charge details from classes table insted of teachers table
-        
+
         res.json(result.rows);
     } catch (error) {
-        console.error("Error fetching teachers:", error);
+        console.error("Error fetching teachers:", error, error.message);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false
+            success: false,
         });
     }
 };
@@ -31,24 +27,43 @@ export const assignClass = async (req, res) => {
                 .status(405)
                 .json({ message: "invalid course or year", success: false });
 
-        await turso.execute(`
+        const { rows: isExists } = await turso.execute(
+            `
+            select count(*) as count from classes where year = ? and course = ? and in_charge IS NOT NULL   
+        `,
+            [year, course]
+        );
+
+        if (isExists[0].count > 0)
+            return res.json({
+                message: "Class already assigned",
+                success: false,
+            });
+
+        const { rows: teacherExists } = await turso.execute(
+            `
+            select * from classes where in_charge = ?   
+        `,
+            [teacherId]
+        );
+
+        console.log(teacherExists);
+
+        return;
+
+        await turso.execute(
+            `
         	update classes set in_charge = ? where year = ? and course = ?
-        `, 
-        [teacherId, year, course]
-        )
-        
-        await turso.execute(`
-        	update teachers set in_charge_class = ? where in_charge_year = ? and is_in_charge = ?
-        `, 
-        [course, year, true]
-        )
+        `,
+            [teacherId, year, course]
+        );
 
         res.json({ message: "Class assigned successfully", success: true });
     } catch (error) {
         console.error("Error fetching teachers:", error);
         res.status(500).json({
             message: "Internal Server Error",
-            success: false
+            success: false,
         });
     }
 };
@@ -66,7 +81,7 @@ export const verifyTeacher = async (req, res) => {
         console.error("Error verifying teacher:", error);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false
+            success: false,
         });
     }
 };

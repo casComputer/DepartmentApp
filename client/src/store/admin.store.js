@@ -16,7 +16,7 @@ export const useAdminStore = create((set) => ({
         set((state) => ({
             teachers: state.teachers.map((teacher) =>
                 teacher.teacherId === teacherId
-                    ? { ...teacher, is_in_charge: true, in_charge_year: year, in_charge_class: classCharge }
+                    ? { ...teacher, in_charge_year: year, in_charge_course: classCharge }
                     : teacher
             ),
         }));

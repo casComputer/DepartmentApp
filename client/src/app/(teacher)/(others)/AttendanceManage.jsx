@@ -30,7 +30,7 @@ const AttendanceManage = () => {
                     router.push({
                         pathname: "/common/attendance/AttendanceClassSelect",
                         params: {
-                            course: in_charge_class,
+                            course: in_charge_course,
                             year: in_charge_year
                         }
                     })

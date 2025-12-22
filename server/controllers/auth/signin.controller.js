@@ -17,11 +17,32 @@ const signinController = async (req, res) => {
         };
 
         const table = tableMap[userRole];
-        const existUser = await turso.execute(
-            `SELECT * FROM ${table} WHERE ${table.slice(0, -1)}Id = ?`,
-            [username]
-        );
 
+        if (!table) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid user role"
+            });
+        }
+
+        let existUser = null
+
+        if(table === "teachers") {
+            existUser = await turso.execute(
+               `SELECT t.*, c.course as in_charge_course, c.year as in_charge_year FROM ${table} t LEFT JOIN classes c ON c.in_charge = t.teacherId WHERE ${table.slice(0, -1)}Id = ? `,
+               [username] 
+           );
+           
+        }else{
+            
+            existUser = await turso.execute(
+               `SELECT * FROM ${table} t WHERE ${table.slice(0, -1)}Id = ?`,
+               [username] 
+           );
+        }
+
+        console.log(existUser);
+        
         if (!existUser.rows.length) {
             return res.status(400).json({
                 success: false,
@@ -53,7 +74,7 @@ const signinController = async (req, res) => {
         const tokens = generateTokens(user.userId, user.role);
         await storeRefreshToken(user.userId, tokens.refreshToken);
         
-        console.log(user)
+        
 
         res.json({
             success: true,

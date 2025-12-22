@@ -1,6 +1,6 @@
-import { turso } from "../config/turso.js"
+import { turso } from "../config/turso.js";
 
-export const createAllTables = async() => {
+export const createAllTables = async () => {
     await turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
@@ -21,10 +21,8 @@ export const createAllTables = async() => {
           teacherId TEXT PRIMARY Key, 
           fullname text not null, 
           password text not null,
-          in_charge_class text check (in_charge_class IN ('Bca', 'Bsc')) ,
-          in_charge_year text check (in_charge_year IN ('First', 'Second', 'Third', 'Fourth')) , 
           is_verified BOOLEAN DEFAULT FALSE,
-          is_in_charge BOOLEAN DEFAULT FALSE)`
+        );`
     );
 
     await turso.execute(
@@ -59,7 +57,6 @@ export const deleteAllTables = () => {
     turso.execute("drop table if exists classes");
 };
 
-
 export const insertDefaultValues = () => {
     turso.execute(`
         insert into classes values 
@@ -74,5 +71,3 @@ export const insertDefaultValues = () => {
             ('Bsc', 'Fourth', 0),
     `);
 };
-
-

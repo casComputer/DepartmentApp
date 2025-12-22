@@ -1,40 +1,17 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header.jsx";
 import { AssignmentRenderItem } from "@components/student/Assignment.jsx";
+import {
+    ItemSeparator,
+    ListHeaderComponent
+} from "@components/common/ItemSeperatorDateComponent.jsx";
 
 import { getAssignment } from "@controller/student/assignment.controller.js";
 import { formatDate } from "@utils/date.js";
-
-const ItemSeparator = ({ trailingItem, leadingItem }) => {
-    const leadingDate = formatDate(leadingItem.timestamp);
-    const trailingDate = formatDate(trailingItem.timestamp);
-
-    if (leadingDate === trailingDate) return null;
-
-    return (
-        <Text className="my-6 text-xl font-bold px-3 dark:text-white">
-            {trailingDate}
-        </Text>
-    );
-};
-
-const ListHeaderComponent = ({ date}) => {
-    if(!date) return
-
-    const fdate = formatDate(date);
-
-    if (!fdate) return null;
-
-    return (
-        <Text className="my-6 text-xl font-bold px-3 dark:text-white">
-            {fdate}
-        </Text>
-    );
-};
 
 const Assignment = () => {
     const {
@@ -43,7 +20,8 @@ const Assignment = () => {
         isFetchNextPage,
         hasNextPage,
         refetch,
-        isRefetching
+        isRefetching,
+        isLoading
     } = useInfiniteQuery({
         queryKey: ["assignments"],
         queryFn: ({ pageParam = 1 }) => getAssignment({ pageParam }),
@@ -68,14 +46,16 @@ const Assignment = () => {
                 onEndReachedThreshold={0.5}
                 contentContainerStyle={{
                     paddingHorizontal: 16,
-                    paddingBottom: 100,
-                    gap: 16,
-                    paddingTop: 16
+                    paddingBottom: 100
                 }}
                 ListHeaderComponent={
-                    <ListHeaderComponent
-                        date={data?.pages?.[0]?.assignments?.[0]?.timestamp}
-                    />
+                    isLoading && !isRefetching ? (
+                        <ActivityIndicator size="large" />
+                    ) : (
+                        <ListHeaderComponent
+                            date={data?.pages?.[0]?.assignments?.[0]?.timestamp}
+                        />
+                    )
                 }
                 ListFooterComponent={
                     isFetchNextPage && (

@@ -1,6 +1,6 @@
 import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
-import { router } from 'expo-router'
+import { router } from "expo-router";
 
 import { useAppStore } from "@store/app.store.js";
 import { saveStudentsCount } from "@utils/storage.js";
@@ -24,7 +24,7 @@ export const saveAttendance = async ({ students, course, year, hour }) => {
                 "Attendance saved successfully",
                 ToastAndroid.SHORT
             );
-            router.back()
+            router.back();
         } else {
             ToastAndroid.show("Failed to save attendance", ToastAndroid.LONG);
             return false;
@@ -42,27 +42,35 @@ export const saveAttendance = async ({ students, course, year, hour }) => {
     }
 };
 
-export const getAttendanceHistoryByTeacherId = async ({ pageParam, limit }) => {
+export const getAttendanceHistoryByTeacherId = async ({
+    pageParam,
+    limit,
+    course,
+    year
+}) => {
     try {
         const teacherId = useAppStore.getState().user?.userId;
 
-        const { data } = await axios.post(
-            "/attendance/getAttandanceTakenByTeacher",
-            { teacherId, page: pageParam, limit }
-        );
+        if (course && year) {
+        } else {
+            const { data } = await axios.post(
+                "/attendance/getAttandanceTakenByTeacher",
+                { teacherId, page: pageParam, limit }
+            );
 
-        if (data.success && data.attendance) {
-            return {
-                data: data.attendance,
-                nextPage: data.nextPage,
-                hasMore: data.hasMore
-            };
-        } else
-            return {
-                data: [],
-                nextPage: null,
-                hasMore: false
-            };
+            if (data.success && data.attendance)
+                return {
+                    data: data.attendance,
+                    nextPage: data.nextPage,
+                    hasMore: data.hasMore
+                };
+            else
+                return {
+                    data: [],
+                    nextPage: null,
+                    hasMore: false
+                };
+        }
     } catch (error) {
         console.log("Error while getting attendance history: ", error);
         ToastAndroid.show(

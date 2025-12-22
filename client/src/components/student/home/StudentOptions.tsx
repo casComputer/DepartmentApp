@@ -30,7 +30,7 @@ const optionsData = [
         Icon: FontAwesome6,
         iconName: "hand-holding-dollar",
         text: "Fees",
-        locaton: "",
+        locaton: "/(student)/(others)/Fees",
     },
     {
         Icon: AntDesign,

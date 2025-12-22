@@ -32,7 +32,6 @@ const handlePress = item => {
 
 const ManageStudents = () => {
     const [status, setStatus] = useState("LOADING");
-    const [show, setShow] = useState(false);
     const teacherId = useAppStore(state => state.user?.userId);
     const students = useTeacherStore(state => state.students);
     const inChargeCourse = useTeacherStore(state => state.inCharge.course);
@@ -41,30 +40,27 @@ const ManageStudents = () => {
     useEffect(() => {
         if (teacherId) fetchStudentsByClassTeacher({ teacherId, setStatus });
     }, [teacherId]);
-
-    useEffect(() => {
-        const t = setTimeout(function () {
-            setShow(true);
-        }, 50);
-
-        return () => clearTimeout(t);
-    }, []);
-
+    
     const handleVerifyAll = async () => {
         await verifyMultipleStudents(students);
     };
-
-    const safeData = Array.isArray(students) ? students : [];
 
     return (
         <View className="flex-1 bg-primary">
             <Header title={"Manage Students"} />
 
+            <ListHeaderComponent
+                loading={status === "LOADING"}
+                year={inChargeYear}
+                course={inChargeCourse}
+                handleVerifyAll={handleVerifyAll}
+            />
+
             <FlashList
-                data={show ? safeData : []}
+                data={students ?? []}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.studentId.toString()}
-                className={"px-3 py-8"}
+                className={"px-3"}
                 contentContainerStyle={{ paddingBottom: 60 }}
                 renderItem={({ item }) => (
                     <StudentItem
@@ -73,14 +69,6 @@ const ManageStudents = () => {
                         highlight={!item.rollno || item.rollno == 0}
                     />
                 )}
-                ListHeaderComponent={
-                    <ListHeaderComponent
-                        loading={status === "LOADING"}
-                        year={inChargeYear}
-                        course={inChargeCourse}
-                        handleVerifyAll={handleVerifyAll}
-                    />
-                }
                 ListEmptyComponent={<ListEmptyComponent status={status} />}
             />
         </View>

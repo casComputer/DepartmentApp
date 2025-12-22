@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
-import { Feather, Ionicons } from "@icons";
-import { withUniwind } from "uniwind";
+import { Ionicons } from "@icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Header = () => {
@@ -9,19 +8,13 @@ const Header = () => {
     return (
         <View
             style={{ paddingTop: insets.top + 20 }}
-            className="flex-row items-center justify-between px-6">
-            <Text className="text-5xl font-black dark:text-white">
+            className="flex-row items-center justify-between px-4"
+        >
+            <Text className="text-5xl font-black text-text-secondary">
                 DC-Connect
             </Text>
             <View className="flex-row items-center gap-4 text-white">
-                <Ionicons
-                    name="notifications"
-                    size={24}
-                />
-                <Feather
-                    name="settings"
-                    size={24}
-                />
+                <Ionicons name="notifications" size={24} />
             </View>
         </View>
     );

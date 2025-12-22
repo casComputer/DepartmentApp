@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { router } from "expo-router";
 
 import {
     setUser as saveUserToStorage,
@@ -42,6 +43,7 @@ export const useAppStore = create(set => ({
     removeUser: () =>
         set(() => {
             clearUser();
+            router.replace('auth/Signin')
             return {
                 user: "unknown"
             };

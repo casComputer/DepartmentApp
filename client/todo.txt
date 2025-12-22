@@ -14,3 +14,8 @@ dont fetch submission details on assignment page,
     only fetch at assignment fetch page.    
     teachers assignment show page currently uses
     static data
+    
+🟥 shared pages like attendance, assignment.. 
+    currently requires a teacherId, modify it to use 
+    (teacherId or adminId). otherwise admin's functionality
+    might breaks.

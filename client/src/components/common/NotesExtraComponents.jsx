@@ -54,6 +54,13 @@ export const FloatingAddButton = ({ parentId }) => {
     const size = useSharedValue(80);
 
     const handlePress = () => {
+        if (!parentId) {
+            return router.push({
+                pathname: "common/CreateNoteFolder",
+                params: { parentId }
+            });
+        }
+
         if (isOpened?.current) {
             height.value = withTiming(0);
             rounded.value = withSpring(18);
@@ -96,9 +103,9 @@ export const FloatingAddButton = ({ parentId }) => {
             "image/*",
             "application/vnd.ms-powerpoint", // .ppt
             "application/vnd.openxmlformats-officedocument.presentationml.presentation" // .pptx
-        ]); 
-        if(!asset || !asset.uri ) return
-        
+        ]);
+        if (!asset || !asset.uri) return;
+
         setGlobalProgress(1);
 
         const { secure_url, format, public_id } = await handleUpload(

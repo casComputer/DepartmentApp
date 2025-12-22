@@ -13,7 +13,7 @@ const Attendance = () => {
 	const [selectedHour, setSelectedHour] = useState(null);
 
 	const handleProceed = () => {
-		if (selectedClass && selectedCourse && selectedHour) {
+		if (selectedClass?.id && selectedCourse?.id && selectedHour?.id) {
 			router.push({
 				pathname: "/common/attendance/Attendance",
 				params: {
@@ -37,7 +37,7 @@ const Attendance = () => {
 				handlePress={() => router.push("/common/attendance/AttendanceHistory")}
 			/>
 
-			<View className="px-5 mt-5">
+			<View className="px-2 mt-5">
 				<Select
 					title="Year"
 					options={YEAR}

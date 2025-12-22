@@ -83,7 +83,7 @@ const Signin = () => {
 
     return (
         <KeyboardAwareScrollView
-            showVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             style={{ paddingBottom: 100 }}
             className=" flex-1 pt-20 dark:bg-black">

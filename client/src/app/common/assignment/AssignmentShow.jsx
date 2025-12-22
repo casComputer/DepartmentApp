@@ -41,7 +41,7 @@ const AssignmentShow = () => {
                         No Submissions Yet.
                     </Text>
                 }
-                showVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
             />
         </View>
     );

@@ -12,6 +12,7 @@ import { router } from "expo-router";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
+import DueDate from "@components/common/DueDate.jsx";
 
 import queryClient from "@utils/queryClient";
 
@@ -25,8 +26,6 @@ const AssignmentCreation = () => {
     const [year, setYear] = useState({});
     const [course, setCourse] = useState({});
     const [date, setDate] = useState();
-
-    const [showDatePicker, setShowDatePicker] = useState(false);
 
     const [saving, setSaving] = useState(false);
 
@@ -102,41 +101,11 @@ const AssignmentCreation = () => {
                     selected={course}
                 />
 
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={new Date()}
-                        mode="date"
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                            setShowDatePicker(false);
-                            if (selectedDate) {
-                                setDate(selectedDate);
-                                console.log(selectedDate);
-                            }
-                        }}
-                    />
-                )}
-
-                {date && (
-                    <View className="mt-5 py-4 px-5 rounded-3xl">
-                        <Text className="text-center text-text text-xl font-bold">
-                            Due Date: {date.toDateString()}
-                        </Text>
-                    </View>
-                )}
-
-                {!showDatePicker && (
-                    <TouchableOpacity
-                        className="mt-5 py-4 px-5"
-                        onPress={() => setShowDatePicker(true)}>
-                        <Text className="text-center text-blue-500 text-2xl font-bold">
-                            Select Due Date
-                        </Text>
-                    </TouchableOpacity>
-                )}
+                <DueDate date={date} onChange={setDate} />
             </View>
         </KeyboardAwareScrollView>
     );
 };
 
 export default AssignmentCreation;
+ 

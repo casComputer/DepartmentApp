@@ -1,5 +1,4 @@
 import { ScrollView, View } from "react-native";
-import React from "react";
 
 import Header from "../../../components/common/HomeHeader";
 import TeacherOptions from "../../../components/teacher/TeacherOptions";
@@ -11,7 +10,9 @@ const Home = () => {
             contentContainerStyle={{
                 paddingBottom: 150,
                 flexGrow: 1
-            }}>
+            }}
+            showsVerticalScrollIndicator={false}
+        >
             <Header />
             <TeacherOptions />
         </ScrollView>

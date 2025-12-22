@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Button, ScrollView } from "react-native";
 import { MaterialIcons } from "@icons";
 
-import Header from "@components/common/Header.jsx";
+import Header from "@components/common/ProfileHeader.jsx";
 import {
 	Avatar,
 	EditDpOptions,
@@ -13,7 +13,6 @@ import { uploadDp } from "@controller/common/profile.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
-const removeUser = useAppStore.getState().removeUser;
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
@@ -60,9 +59,7 @@ const Profile = () => {
 					handleEdit={() => setDpOptions((prev) => !prev)}
 				/>
 
-				<View className="flex-1 items-center justify-end">
-					<Button title="logout" onPress={() => removeUser()} />
-				</View>
+
 			</ScrollView>
 
 			<EditDpOptions handleChangePic={handleChangePic} show={showDpOptions} />

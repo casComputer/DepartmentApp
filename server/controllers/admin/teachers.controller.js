@@ -36,6 +36,12 @@ export const assignClass = async (req, res) => {
         `, 
         [teacherId, year, course]
         )
+        
+        await turso.execute(`
+        	update teachers set in_charge_class = ? where in_charge_year = ? and is_in_charge = ?
+        `, 
+        [course, year, true]
+        )
 
         res.json({ message: "Class assigned successfully", success: true });
     } catch (error) {

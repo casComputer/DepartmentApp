@@ -6,8 +6,6 @@ const PRIMARY_DATABASE_URL = process.env.PRIMARY_DATABASE_URL;
 const PRIMARY_DATABASE_TOKEN = process.env.PRIMARY_DATABASE_TOKEN;
 
 export const turso = createClient({
-    url: PRIMARY_DATABASE_URL,
-    authToken: PRIMARY_DATABASE_TOKEN,
+	url: PRIMARY_DATABASE_URL,
+	authToken: PRIMARY_DATABASE_TOKEN,
 });
-
-turso.execute("drop table classes")

@@ -7,7 +7,7 @@ router.post("/save", async (req, res) => {
     const tx = await turso.transaction("write");
 
     try {
-        const { attendance, course, year, teacherId, hour } = req.body;
+        const { attendance, course, year, hour, userId, role } = req.body;
 
         const date = new Date().toISOString().slice(0, 10);
         const timestamp = new Date()
@@ -21,8 +21,20 @@ router.post("/save", async (req, res) => {
         const pCount = present?.length || 0,
             aCount = absent?.length || 0;
 
+        const Ids = {
+            teacher: "teacherId",
+            admin: "adminId"
+        };
+
+        const userIdKey = Ids[role];
+
+        if(!userIdKey) return res.json({
+            message: "Invalid role provided",
+            success: false
+        });
+
         // Insert into main attendance table
-        const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
+        const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, ${userIdKey}, present_count, absent_count)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const result = await tx.execute({
@@ -33,7 +45,7 @@ router.post("/save", async (req, res) => {
                 hour,
                 date,
                 timestamp,
-                teacherId,
+                userId,
                 pCount,
                 aCount
             ]
@@ -43,7 +55,7 @@ router.post("/save", async (req, res) => {
 
         // Insert student status rows into attendance_details
         const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, status)
-             VALUES (?, ?, ?)`;
+            VALUES (?, ?, ?)`;
 
         for (const s of present) {
             await tx.execute({
@@ -85,22 +97,31 @@ router.post("/save", async (req, res) => {
 
 router.post("/getAttandanceTakenByTeacher", async (req, res) => {
     try {
-        const { teacherId, page = 1, limit = 10 } = req.body;
+        const { userId, role, page = 1, limit = 10 } = req.body;
         const offset = (page - 1) * limit;
 
+        const Ids = {
+            teacher: "teacherId",
+            admin: "adminId"
+        };
+        const userIdKey = Ids[role];
+
+        if(!userIdKey) return res.json({
+            message: "Invalid role provided",
+            success: false
+        });
+
         const { rows: attendance } = await turso.execute(
-            "SELECT * FROM attendance WHERE teacherId = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?",
-            [teacherId, limit, offset]
+            `SELECT * FROM attendance WHERE ${userIdKey} = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
+            [userId, limit, offset]
         );
 
         const totalCountResult = await turso.execute(
-            "SELECT COUNT(*) as count FROM attendance WHERE teacherId = ?",
-            [teacherId]
+            `SELECT COUNT(*) as count FROM attendance WHERE ${userIdKey} = ?`,
+            [userId]
         );
         const totalCount = totalCountResult.rows[0].count;
-
         const hasMore = page * limit < totalCount;
-
 
         res.json({
             success: true,

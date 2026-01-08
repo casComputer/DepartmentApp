@@ -3,7 +3,7 @@ import Assignment from "../../models/assignment.js";
 
 export const createAssignment = async (req, res) => {
     try {
-        const { topic, description, year, course, dueDate, teacherId } =
+        const { topic, description, year, course, dueDate, userId, role } =
             req.body;
 
         if (
@@ -12,7 +12,8 @@ export const createAssignment = async (req, res) => {
             !year ||
             !course ||
             !dueDate ||
-            !teacherId
+            !userId ||
+            !role
         ) {
             return res.json({
                 message: "All fields are required",

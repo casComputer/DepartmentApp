@@ -7,16 +7,17 @@ import { saveStudentsCount } from "@utils/storage.js";
 
 export const saveAttendance = async ({ students, course, year, hour }) => {
     try {
-        const teacherId = useAppStore.getState().user?.userId;
+        const { userId, role } = useAppStore.getState().user;
 
-        if (!teacherId) return;
+        if (!userId) return;
 
         const response = await axios.post("/attendance/save", {
             attendance: students,
             course,
             year,
-            teacherId,
-            hour
+            userId,
+            hour,
+            role,
         });
 
         if (response.data.success) {
@@ -46,29 +47,29 @@ export const getAttendanceHistoryByTeacherId = async ({
     pageParam,
     limit,
     course,
-    year
+    year,
 }) => {
     try {
-        const teacherId = useAppStore.getState().user?.userId;
+        const {userId ,role} = useAppStore.getState().user;
 
         if (course && year) {
         } else {
             const { data } = await axios.post(
                 "/attendance/getAttandanceTakenByTeacher",
-                { teacherId, page: pageParam, limit }
+                { userId, role, page: pageParam, limit }
             );
 
             if (data.success && data.attendance)
                 return {
                     data: data.attendance,
                     nextPage: data.nextPage,
-                    hasMore: data.hasMore
+                    hasMore: data.hasMore,
                 };
             else
                 return {
                     data: [],
                     nextPage: null,
-                    hasMore: false
+                    hasMore: false,
                 };
         }
     } catch (error) {
@@ -80,7 +81,7 @@ export const getAttendanceHistoryByTeacherId = async ({
         return {
             data: [],
             nextPage: null,
-            hasMore: false
+            hasMore: false,
         };
     }
 };
@@ -89,7 +90,7 @@ export const fetchStudentsForAttendance = async ({ course, year }) => {
     try {
         const res = await axios.post("/attendance/fetchStudentsForAttendance", {
             course,
-            year
+            year,
         });
 
         const numberOfStudents = res.data?.numberOfStudents;

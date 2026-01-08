@@ -6,12 +6,12 @@ import queryClient from "@utils/queryClient";
 
 export const createAssignment = async assignmentData => {
     try {
-        const userId = useAppStore.getState().user.userId;
-        if (!userId) {
+        const {userId, role} = useAppStore.getState().user;
+        if (!userId || role) 
             throw new Error("User not logged in");
-        }
-
-        assignmentData.teacherId = userId;
+        
+        assignmentData.userId = userId;
+        assignmentData.role = role;
 
         const response = await axios.post("/assignment/create", assignmentData);
 

@@ -140,36 +140,38 @@ export const fetchStudentsForAttendance = async (req, res) => {
     }
 };
 
-export const getAttendanceForClassTeacher = async (req, res) => {
+export const getClassAttendance = async (req, res) => {
     try {
-        const { teacherId, page = 1, limit = 10 } = req.body;
+        const { userId, course, year, role, page = 1, limit = 10 } = req.body;
 
-        if (!teacherId)
+        if (!userId || !role || !course || !year)
             return res.json({
                 success: false,
-                message: "teacherId in missing"
+                message: "missing required parameters!"
             });
 
-        const { rows: inChargeDets } = await turso.execute(
-            `
-            SELECT in_charge_course, in_charge_year FROM teachers WHERE teacherId = ?
-        `,
-            [teacherId]
-        );
+        let query = "";
+        let param = userId;
 
-        if (!inChargeDets || inChargeDets?.length < 1)
+        if (role === "teacher") {
+            query = `SELECT 1 FROM teachers WHERE teacherId = ? LIMIT 1`;
+        } else if (role === "admin") {
+            query = `SELECT 1 FROM admins WHERE adminId = ? LIMIT 1`;
+        } else {
             return res.json({
                 success: false,
-                message: "user details not found!"
+                message: "Invalid role"
             });
+        }
 
-        const { in_charge_year, in_charge_course } = inChargeDets[0];
+        const { rows: existUser } = await turso.execute(query, [param]);
 
-        if (!in_charge_course || !in_charge_year)
+        if (existUser.length === 0) {
             return res.json({
                 success: false,
-                message: "you are not assigned to any class!"
+                message: "User does not exist"
             });
+        }
 
         const offset = (page - 1) * limit;
 

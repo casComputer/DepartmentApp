@@ -144,8 +144,8 @@ export const getClassAttendance = async (req, res) => {
     try {
         let { userId, course, year, role, page = 1, limit = 10 } = req.body;
 
-        page = Number(page);
-        limit = Number(limit);
+        page = Math.max(1, page);
+        limit = Math.min(50, Math.max(1, limit));
 
         if (!userId || !role) {
             return res.json({
@@ -200,7 +200,7 @@ export const getClassAttendance = async (req, res) => {
                     success: false,
                     message: "You are not assigned to any class!"
                 });
-                
+
             course = existUser[0].course;
             year = existUser[0].year;
         }
@@ -218,9 +218,19 @@ export const getClassAttendance = async (req, res) => {
             [course, year, limit, offset]
         );
 
+        const totalCountResult = await turso.execute(
+            "SELECT COUNT(*) as count FROM attendance WHERE course = ? AND year = ?",
+            [course, year]
+        );
+        const totalCount = totalCountResult.rows[0].count;
+
+        const hasMore = page * limit < totalCount;
+
         return res.json({
             success: true,
-            attendance
+            attendance,
+            hasMore,
+            nextPage: hasMore ? page + 1 : null
         });
     } catch (error) {
         console.error(error);

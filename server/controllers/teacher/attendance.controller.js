@@ -166,10 +166,10 @@ export const getClassAttendance = async (req, res) => {
 
         if (role === "teacher") {
             query = `
-                SELECT c.in_charge_course, c.in_charge_year
-                FROM teachers t
-                JOIN classes c ON c.in_charge = t.teacherId
-                WHERE t.teacherId = ?
+                SELECT c.course, c.year
+                    FROM teachers t
+                        JOIN classes c ON c.in_charge = t.teacherId
+                    WHERE t.teacherId = ?
             `;
         } else if (role === "admin") {
             query = `
@@ -194,10 +194,15 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-        // If teacher, override course/year from DB
         if (role === "teacher") {
-            course = existUser[0].in_charge_course;
-            year = existUser[0].in_charge_year;
+            if (!existUser[0].course || !existUser[0].year)
+                return res.json({
+                    success: false,
+                    message: "You are not assigned to any class!"
+                });
+                
+            course = existUser[0].course;
+            year = existUser[0].year;
         }
 
         const offset = (page - 1) * limit;

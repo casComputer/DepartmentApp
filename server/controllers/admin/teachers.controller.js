@@ -13,7 +13,7 @@ export const getTeachers = async (req, res) => {
         console.error("Error fetching teachers:", error, error.message);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };
@@ -29,15 +29,15 @@ export const assignClass = async (req, res) => {
 
         const { rows: isExists } = await turso.execute(
             `
-            select count(*) as count from classes where year = ? and course = ? and in_charge IS NOT NULL   
+            select teacherId from classes where year = ? and course = ? and in_charge IS NOT NULL   
         `,
             [year, course]
         );
 
-        if (isExists[0].count > 0)
+        if (isExists[0]?.length > 0)
             return res.json({
-                message: "Class already assigned",
-                success: false,
+                message: `Class already assigned to ${isExists[0].teacherId}`,
+                success: false
             });
 
         const { rows: teacherExists } = await turso.execute(
@@ -63,7 +63,7 @@ export const assignClass = async (req, res) => {
         console.error("Error fetching teachers:", error);
         res.status(500).json({
             message: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };
@@ -81,7 +81,7 @@ export const verifyTeacher = async (req, res) => {
         console.error("Error verifying teacher:", error);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };

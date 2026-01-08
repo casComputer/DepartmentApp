@@ -13,7 +13,7 @@ const createAllTables = () => {
         
         UNIQUE (course, year_of_study, rollno),
         CHECK (is_verified = 1 OR rollno IS NULL),
-        foreign key (course, year_of_study) references classes(course, year)
+        foreign key (course, year_of_study) references classes(course, year) ON DELETE SET NULL
     );
     `);
 
@@ -58,7 +58,9 @@ const createAllTables = () => {
 			hour TEXT NOT NULL,
 			date DATE NOT NULL,
 			timestamp TEXT NOT NULL,
-			teacherId TEXT NOT NULL,
+			adminId TEXT,
+			teacherId TEXT,
+
 			present_count int not null default 0,
 			absent_count int not null default 0,
 			late_count int not null default 0,
@@ -66,8 +68,14 @@ const createAllTables = () => {
       			GENERATED ALWAYS AS (present_count + absent_count + late_count) STORED,
 			
 			UNIQUE (course, year, hour, date),
-			FOREIGN KEY (course, year) REFERENCES classes(course, year),
+			FOREIGN KEY (course, year) REFERENCES classes(course, year) ON DELETE SET NULL,
 			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL
+
+      CHECK (
+          (teacherId IS NOT NULL AND adminId IS NULL)
+          OR
+          (teacherId IS NULL AND adminId IS NOT NULL)
+        )
 		);`);
 
     turso.execute(`
@@ -96,7 +104,7 @@ const createAllTables = () => {
 	
 			UNIQUE(teacherId, date, hour),
 			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE,
-			FOREIGN KEY (year, course) REFERENCES classes(year, course));
+			FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL);
 		`);
 
     turso.execute(`
@@ -114,7 +122,7 @@ const createAllTables = () => {
     
         FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL,
         FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE SET NULL,
-        FOREIGN KEY (year, course) REFERENCES classes(year, course),
+        FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
     
         CHECK (
           (teacherId IS NOT NULL AND adminId IS NULL)

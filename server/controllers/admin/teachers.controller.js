@@ -48,9 +48,7 @@ export const assignClass = async (req, res) => {
         );
 
         console.log(teacherExists);
-
-        return;
-
+        
         await turso.execute(
             `
         	update classes set in_charge = ? where year = ? and course = ?

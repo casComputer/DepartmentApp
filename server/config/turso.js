@@ -9,5 +9,3 @@ export const turso = createClient({
     url: PRIMARY_DATABASE_URL,
     authToken: PRIMARY_DATABASE_TOKEN,
 });
-
-turso.execute("drop table classes")

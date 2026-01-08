@@ -10,8 +10,12 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
 
+console.log(useAppStore.getState().user);
+
 const handleRouteToAttendance = () => {
     const { in_charge_year, in_charge_course } = useAppStore.getState().user;
+
+    console.log(in_charge_course, in_charge_year);
 
     if (in_charge_course && in_charge_year)
         router.push("/(teacher)/(others)/AttendanceManage");

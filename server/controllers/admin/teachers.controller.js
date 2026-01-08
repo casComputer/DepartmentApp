@@ -23,9 +23,10 @@ export const assignClass = async (req, res) => {
         const { course, year, teacherId } = req.body;
 
         if (!validateCourseAndYear(course, year))
-            return res
-                .status(405)
-                .json({ message: "invalid course or year", success: false });
+            return res.json({
+                message: "invalid course or year",
+                success: false
+            });
 
         const { rows: isExists } = await turso.execute(
             `
@@ -34,15 +35,18 @@ export const assignClass = async (req, res) => {
             [year, course]
         );
 
-        if (isExists[0]?.length > 0)
+        if (isExists?.length > 0)
             return res.json({
-                message: `Class already assigned to ${isExists[0].teacherId}`,
+                message: `Class already assigned to ${isExists[0].in_charge}`,
                 success: false
             });
-        
-        await turso.execute(`
-            UPDATE CLASSES set in_charge = NULL WHERE year = ? AND course = ?
-        `, [year, course])
+
+        await turso.execute(
+            `
+            UPDATE CLASSES set in_charge = NULL WHERE in_charge = ?
+        `,
+            [teacherId]
+        );
 
         await turso.execute(
             `

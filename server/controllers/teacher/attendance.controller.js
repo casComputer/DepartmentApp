@@ -126,15 +126,18 @@ export const fetchStudentsForAttendance = async (req, res) => {
             [course, year]
         );
         const numberOfStudents = rows?.length || 0;
+        
+        
+        const date = new Date().toISOString().slice(0, 10);
 
         const { rows: attendance } = await turso.execute(
             `
             SELECT * FROM attendance a
                 JOIN attendance_details ad
                     ON a.attendanceId = ad.attendanceId
-                WHERE course = ? AND hour = ? AND year = ?
+                WHERE course = ? AND hour = ? AND year = ? AND date = ?
         `,
-            [course, hour, year]
+            [course, hour, year, date]
         );
 
         res.json({

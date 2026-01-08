@@ -29,7 +29,7 @@ export const assignClass = async (req, res) => {
 
         const { rows: isExists } = await turso.execute(
             `
-            select teacherId from classes where year = ? and course = ? and in_charge IS NOT NULL   
+            select in_charge from classes where year = ? and course = ? and in_charge IS NOT NULL   
         `,
             [year, course]
         );

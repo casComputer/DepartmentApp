@@ -112,22 +112,37 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
 
 export const fetchStudentsForAttendance = async (req, res) => {
     try {
-        const { course, year } = req.body;
+        const { course, year, hour } = req.body;
 
-        if (!course || !year)
+        if (!course || !year || !hour)
             return res.json({
                 success: false,
                 message: "course or year is miising"
             });
 
+        // get students
         const { rows } = await turso.execute(
             "SELECT studentId, rollno from students where course = ? and year_of_study = ? and is_verified = true and rollno > 0 ORDER BY rollno;",
             [course, year]
         );
-
         const numberOfStudents = rows?.length || 0;
 
-        res.json({ success: true, numberOfStudents, students: rows });
+        const { rows: attendance } = await turso.execute(
+            `
+            SELECT * FROM attendance a
+                JOIN attendance_details ad
+                    ON a.attendanceId = ad.attendanceId
+                WHERE course = ? AND hour = ? AND year = ?
+        `,
+            [course, hour, year]
+        );
+
+        res.json({
+            success: true,
+            numberOfStudents,
+            students: rows,
+            attendance
+        });
     } catch (err) {
         res.status(500).json({
             message: "insternal server error",

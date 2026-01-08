@@ -7,7 +7,7 @@ import {
     save,
     getAttandanceTakenByTeacher,
     fetchStudentsForAttendance,
-    getAttendanceForClassTeacher
+    getClassAttendance
 } from "../controllers/teacher/attendance.controller.js";
 
 router.post("/save", save);
@@ -16,6 +16,6 @@ router.post("/getAttandanceTakenByTeacher", getAttandanceTakenByTeacher);
 
 router.post("/fetchStudentsForAttendance", fetchStudentsForAttendance);
 
-router.post("/getAttendanceForClassTeacher", getAttendanceForClassTeacher);
+router.post("/getClassAttendance", getClassAttendance);
 
 export default router;

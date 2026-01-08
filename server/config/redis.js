@@ -1,12 +1,12 @@
-import "dotenv/config";
-import { Redis } from '@upstash/redis'
+// import "dotenv/config";
+// import { Redis } from '@upstash/redis'
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-})
+// const redis = new Redis({
+//   url: process.env.UPSTASH_REDIS_REST_URL,
+//   token: process.env.UPSTASH_REDIS_REST_TOKEN,
+// })
 
-export default redis
+// export default redis
 
 // await redis.set("foo", "bar");
 // await redis.get("foo");

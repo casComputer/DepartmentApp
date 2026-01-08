@@ -2,13 +2,14 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 
-import { storage, clearUser } from "./storage";
+import { storage } from "./storage";
+import { clearUser } from "@storage/user.storage.js";
 
 // const url = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 // const url = "http://192.168.20.62:3000";
-const url = "http://192.168.20.90:3000";
-// const url = "https://dc-connect.onrender.com";
+// const url = "http://192.168.20.90:3000";
+const url = "https://dc-connect.onrender.com";
 
 console.log(url);
 

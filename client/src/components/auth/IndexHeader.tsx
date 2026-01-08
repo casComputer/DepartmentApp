@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Text, TouchableOpacity, Animated } from "react-native";
 
-import { getRandomQuote } from "../../utils/quotes";
+import { getRandomQuote } from "@utils/quotes";
 
 const quote = getRandomQuote();
 

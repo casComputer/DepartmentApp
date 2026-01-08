@@ -4,7 +4,14 @@ export const save = async (req, res) => {
     const tx = await turso.transaction("write");
 
     try {
-        const { attendance, course, year, teacherId, hour } = req.body;
+        const {
+            attendance,
+            course,
+            year,
+            teacherId,
+            hour,
+            attendanceId: existAttendanceId
+        } = req.body;
 
         const date = new Date().toISOString().slice(0, 10);
         const timestamp = new Date();
@@ -15,45 +22,73 @@ export const save = async (req, res) => {
         const pCount = present?.length || 0,
             aCount = absent?.length || 0;
 
-        // Insert into main attendance table
-        const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
+        if (!attendanceId) {
+            // Insert into main attendance table
+            const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        const result = await tx.execute({
-            sql: insertAttendance,
-            args: [
-                course,
-                year,
-                hour,
-                date,
-                timestamp,
-                teacherId,
-                pCount,
-                aCount
-            ]
-        });
+            const result = await tx.execute({
+                sql: insertAttendance,
+                args: [
+                    course,
+                    year,
+                    hour,
+                    date,
+                    timestamp,
+                    teacherId,
+                    pCount,
+                    aCount
+                ]
+            });
+            const attendanceId = result.lastInsertRowid;
 
-        const attendanceId = result.lastInsertRowid;
-
-        // Insert student status rows into attendance_details
-        const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, rollno, status)
+            // Insert student status rows into attendance_details
+            const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, rollno, status)
              VALUES (?, ?, ?, ?)`;
 
-        for (const s of present) {
-            await tx.execute({
-                sql: insertDetail,
-                args: [attendanceId, s.studentId, s.rollno, "present"]
-            });
-        }
+            for (const s of present) {
+                await tx.execute({
+                    sql: insertDetail,
+                    args: [attendanceId, s.studentId, s.rollno, "present"]
+                });
+            }
+            for (const s of absent) {
+                await tx.execute({
+                    sql: insertDetail,
+                    args: [attendanceId, s.studentId, s.rollno, "absent"]
+                });
+            }
+            await tx.commit();
+        } else {
+            const updateAttendance = `
+                UPDATE attendance
+                    SET present_count = ?,
+                        absent_count = ?,
+                        updated_timestamp = ?
+                    WHERE attendanceId = ?
+            `;
 
-        for (const s of absent) {
-            await tx.execute({
-                sql: insertDetail,
-                args: [attendanceId, s.studentId, s.rollno, "absent"]
+            const result = await tx.execute({
+                sql: updateAttendance,
+                args: [pCount, aCount, new Date(), existAttendanceId]
             });
-        }
 
-        await tx.commit();
+            const updateDetail = `UPDATE attendance_details SET status = ? WHERE attendanceId = ? AND studentId = ?`;
+
+            for (const s of present)
+                await tx.execute({
+                    sql: updateDetail,
+                    args: ["present", existAttendanceId, s.studentId]
+                });
+
+            for (const s of absent)
+                await tx.execute({
+                    sql: updateDetail,
+                    args: ["absent", existAttendanceId, s.studentId]
+                });
+
+            await tx.commit();
+        }
 
         res.status(200).json({
             message: "Attendance saved successfully",
@@ -126,12 +161,12 @@ export const fetchStudentsForAttendance = async (req, res) => {
             [course, year]
         );
         const numberOfStudents = rows?.length || 0;
-        
-        // get attendance 
+
+        // get attendance
         const date = new Date().toISOString().slice(0, 10);
         const { rows: attendance } = await turso.execute(
             `
-            SELECT * FROM attendance a
+            SELECT ad.rollno, ad.status, a.attendanceId FROM attendance a
                 JOIN attendance_details ad
                     ON a.attendanceId = ad.attendanceId
                 WHERE course = ? AND hour = ? AND year = ? AND date = ?

@@ -59,6 +59,7 @@ const createAllTables = () => {
             hour TEXT NOT NULL,
             date DATE NOT NULL,
             timestamp TEXT NOT NULL,
+            updated_timestamp TEXT NOT NULL,
         
             teacherId TEXT,
             adminId TEXT,

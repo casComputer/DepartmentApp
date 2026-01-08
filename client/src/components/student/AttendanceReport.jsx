@@ -9,7 +9,7 @@ import { yearlyData } from "@constants/SampleData.js";
 
 export const Chart = () => {
     const [selectedIndex, setSelectedIndex] = useState(-1);
-    const data = yearlyData.map((item, i) => {
+    const data = yearlyData?.map((item, i) => {
         return {
             ...item,
             topLabelComponent: () =>

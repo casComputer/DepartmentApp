@@ -98,6 +98,7 @@ const createAllTables = () => {
 			attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
 			attendanceId INTEGER NOT NULL,
 			studentId TEXT NOT NULL,
+			rollno INTEGER NOT NULL,
 			status TEXT NOT NULL CHECK (status IN ('present','absent', 'late')),
 			
 			FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,

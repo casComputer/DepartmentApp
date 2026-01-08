@@ -11,6 +11,8 @@ import { Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useTeacherStore } from "@store/teacher.store.js";
 
+import { syncUser } from "@controller/teacher/teacher.controller.js";
+
 export default function TabLayout() {
 	const loadStudents = useTeacherStore(
 		(state) => state.loadStudentsFromStorage
@@ -22,7 +24,8 @@ export default function TabLayout() {
 	useEffect(() => {
 		loadStudents();
 		loadInCharge();
-	}, [loadInCharge, loadStudents]);
+		syncUser();
+	}, [loadInCharge, loadStudents, syncUser]);
 
 	const theme = useColorScheme();
 

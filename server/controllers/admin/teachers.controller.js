@@ -39,17 +39,10 @@ export const assignClass = async (req, res) => {
                 message: `Class already assigned to ${isExists[0].teacherId}`,
                 success: false
             });
-
-        const { rows: teacherExists } = await turso.execute(
-            `
-            select * from classes where in_charge = ?   
-        `,
-            [teacherId]
-        );
-
-        console.log(teacherExists);
-
-        return;
+        
+        await turso.execute(`
+            UPDATE CLASSES set in_charge = NULL WHERE year = ? AND course = ?
+        `, [year, course])
 
         await turso.execute(
             `

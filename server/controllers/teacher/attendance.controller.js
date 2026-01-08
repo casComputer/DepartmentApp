@@ -36,20 +36,20 @@ export const save = async (req, res) => {
         const attendanceId = result.lastInsertRowid;
 
         // Insert student status rows into attendance_details
-        const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, status)
-             VALUES (?, ?, ?)`;
+        const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, rollno, status)
+             VALUES (?, ?, ?, ?)`;
 
         for (const s of present) {
             await tx.execute({
                 sql: insertDetail,
-                args: [attendanceId, s.studentId, "present"]
+                args: [attendanceId, s.studentId, s.rollno, "present"]
             });
         }
 
         for (const s of absent) {
             await tx.execute({
                 sql: insertDetail,
-                args: [attendanceId, s.studentId, "absent"]
+                args: [attendanceId, s.studentId, s.rollno, "absent"]
             });
         }
 
@@ -127,9 +127,8 @@ export const fetchStudentsForAttendance = async (req, res) => {
         );
         const numberOfStudents = rows?.length || 0;
         
-        
+        // get attendance 
         const date = new Date().toISOString().slice(0, 10);
-
         const { rows: attendance } = await turso.execute(
             `
             SELECT * FROM attendance a

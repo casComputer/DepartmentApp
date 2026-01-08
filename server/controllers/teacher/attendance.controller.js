@@ -144,25 +144,40 @@ export const getClassAttendance = async (req, res) => {
     try {
         let { userId, course, year, role, page = 1, limit = 10 } = req.body;
 
-        if (!userId || !role)
+        page = Number(page);
+        limit = Number(limit);
+
+        if (!userId || !role) {
             return res.json({
                 success: false,
-                message: "missing required parameters!"
+                message: "Missing required parameters!"
             });
+        }
 
-        if (role === "admin" && (!course || !year))
+        if (role === "admin" && (!course || !year)) {
             return res.json({
                 success: false,
-                message: "missing required parameters!"
+                message: "Missing required parameters!"
             });
+        }
 
-        let query = "";
-        let param = userId;
+        let query;
+        let params = [userId];
 
         if (role === "teacher") {
-            query = `SELECT in_charge_course, in_charge_year FROM teachers WHERE teacherId = ?`;
+            query = `
+                SELECT c.in_charge_course, c.in_charge_year
+                FROM teachers t
+                JOIN classes c ON c.in_charge = t.teacherId
+                WHERE t.teacherId = ?
+            `;
         } else if (role === "admin") {
-            query = `SELECT 1 FROM admins WHERE adminId = ? LIMIT 1`;
+            query = `
+                SELECT 1
+                FROM admins
+                WHERE adminId = ?
+                LIMIT 1
+            `;
         } else {
             return res.json({
                 success: false,
@@ -170,7 +185,7 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-        const { rows: existUser } = await turso.execute(query, [param]);
+        const { rows: existUser } = await turso.execute(query, params);
 
         if (existUser.length === 0) {
             return res.json({
@@ -179,22 +194,34 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-        const offset = (page - 1) * limit;
-        
-        if(role === 'teacher'){
-            course = in_charge_course
-            year = in_charge_year
+        // If teacher, override course/year from DB
+        if (role === "teacher") {
+            course = existUser[0].in_charge_course;
+            year = existUser[0].in_charge_year;
         }
+
+        const offset = (page - 1) * limit;
 
         const { rows: attendance } = await turso.execute(
             `
-            SELECT * FROM attendance WHERE course = ? and year = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?
-        `,
+            SELECT *
+            FROM attendance
+            WHERE course = ? AND year = ?
+            ORDER BY timestamp DESC
+            LIMIT ? OFFSET ?
+            `,
             [course, year, limit, offset]
         );
 
-        res.json({ success: true, attendance: attendance?.[0] ?? [] });
+        return res.json({
+            success: true,
+            attendance
+        });
     } catch (error) {
         console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 };

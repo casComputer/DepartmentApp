@@ -142,9 +142,15 @@ export const fetchStudentsForAttendance = async (req, res) => {
 
 export const getClassAttendance = async (req, res) => {
     try {
-        const { userId, course, year, role, page = 1, limit = 10 } = req.body;
+        let { userId, course, year, role, page = 1, limit = 10 } = req.body;
 
-        if (!userId || !role || !course || !year)
+        if (!userId || !role)
+            return res.json({
+                success: false,
+                message: "missing required parameters!"
+            });
+
+        if (role === "admin" && (!course || !year))
             return res.json({
                 success: false,
                 message: "missing required parameters!"
@@ -154,7 +160,7 @@ export const getClassAttendance = async (req, res) => {
         let param = userId;
 
         if (role === "teacher") {
-            query = `SELECT 1 FROM teachers WHERE teacherId = ? LIMIT 1`;
+            query = `SELECT in_charge_course, in_charge_year FROM teachers WHERE teacherId = ?`;
         } else if (role === "admin") {
             query = `SELECT 1 FROM admins WHERE adminId = ? LIMIT 1`;
         } else {
@@ -174,12 +180,17 @@ export const getClassAttendance = async (req, res) => {
         }
 
         const offset = (page - 1) * limit;
+        
+        if(role === 'teacher'){
+            course = in_charge_course
+            year = in_charge_year
+        }
 
         const { rows: attendance } = await turso.execute(
             `
             SELECT * FROM attendance WHERE course = ? and year = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?
         `,
-            [in_charge_course, in_charge_year, limit, offset]
+            [course, year, limit, offset]
         );
 
         res.json({ success: true, attendance: attendance?.[0] ?? [] });

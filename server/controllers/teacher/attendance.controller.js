@@ -150,7 +150,7 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
 
 export const fetchStudentsForAttendance = async (req, res) => {
     try {
-        const { course, year, hour } = req.body;
+        const { course, year, hour, date } = req.body;
 
         if (!course || !year || !hour)
             return res.json({
@@ -166,7 +166,6 @@ export const fetchStudentsForAttendance = async (req, res) => {
         const numberOfStudents = rows?.length || 0;
 
         // get attendance
-        const date = new Date().toISOString().slice(0, 10);
         const { rows: attendance } = await turso.execute(
             `
             SELECT ad.rollno, ad.status, a.attendanceId FROM attendance a

@@ -1,5 +1,43 @@
 import { turso } from "../../config/turso.js";
 
+const UPDATE_LIMIT_MINUTES = 20;
+
+const buildDetailRows = (attendanceId, attendance) =>
+    attendance.map(s => ({
+        attendanceId,
+        studentId: s.studentId,
+        rollno: s.rollno,
+        status: s.present ? "present" : "absent"
+    }));
+
+const insertAttendanceDetails = async (tx, rows) => {
+    if (!rows.length) return;
+
+    const placeholders = rows.map(() => "(?, ?, ?, ?)").join(", ");
+    const values = rows.flatMap(r => [
+        r.attendanceId,
+        r.studentId,
+        r.rollno,
+        r.status
+    ]);
+
+    await tx.execute({
+        sql: `
+            INSERT INTO attendance_details
+            (attendanceId, studentId, rollno, status)
+            VALUES ${placeholders}
+        `,
+        args: values
+    });
+};
+
+const isUpdateAllowed = ({ createdAt, adminId, isClassTeacher }) => {
+    if (adminId || isClassTeacher) return true;
+
+    const diffMinutes = (Date.now() - new Date(createdAt).getTime()) / 60000;
+    return diffMinutes <= UPDATE_LIMIT_MINUTES;
+};
+
 export const save = async (req, res) => {
     const tx = await turso.transaction("write");
 
@@ -8,109 +46,145 @@ export const save = async (req, res) => {
             attendance,
             course,
             year,
-            teacherId,
             hour,
-            attendanceId: existAttendanceId
+            teacherId,
+            adminId = null,
+            attendanceId
         } = req.body;
 
-        const date = new Date().toISOString().slice(0, 10);
-        const timestamp = new Date();
+        if (!attendance?.length || !course || !year || !hour)
+            return res.json({
+                success: false,
+                message: "missing required fields!"
+            });
 
-        const present = attendance.filter(r => r.present);
-        const absent = attendance.filter(r => !r.present);
+        if (!teacherId && !adminId)
+            return res.json({
+                success: false,
+                message: "missing required fields!"
+            });
 
-        const pCount = present?.length || 0,
-            aCount = absent?.length || 0;
+        const presentCount = attendance.filter(s => s.present).length;
+        const absentCount = attendance.length - presentCount;
 
-        if (!existAttendanceId) {
-            // Insert into main attendance table
-            const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const now = new Date();
+        const date = now.toISOString().slice(0, 10);
 
+        let finalAttendanceId = attendanceId;
+
+        // ================= CREATE =================
+        if (!attendanceId) {
             const result = await tx.execute({
-                sql: insertAttendance,
+                sql: `
+                    INSERT INTO attendance
+                    (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                `,
                 args: [
                     course,
                     year,
                     hour,
                     date,
-                    timestamp,
+                    now.toISOString(),
                     teacherId,
-                    pCount,
-                    aCount
+                    presentCount,
+                    absentCount
                 ]
             });
-            const attendanceId = result.lastInsertRowid;
 
-            // Insert student status rows into attendance_details
-            const insertDetail = `INSERT INTO attendance_details (attendanceId, studentId, rollno, status)
-             VALUES (?, ?, ?, ?)`;
+            finalAttendanceId = result.lastInsertRowid;
+        }
 
-            for (const s of present) {
-                await tx.execute({
-                    sql: insertDetail,
-                    args: [attendanceId, s.studentId, s.rollno, "present"]
-                });
-            }
-            for (const s of absent) {
-                await tx.execute({
-                    sql: insertDetail,
-                    args: [attendanceId, s.studentId, s.rollno, "absent"]
-                });
-            }
-            await tx.commit();
-            res.status(200).json({
-                message: "Attendance saved successfully",
-                success: true
+        // ================= UPDATE =================
+        else {
+            const { rows } = await tx.execute({
+                sql: `
+                    SELECT timestamp
+                    FROM attendance
+                    WHERE attendanceId = ?
+                `,
+                args: [attendanceId]
             });
-        } else {
-            const updateAttendance = `
-                UPDATE attendance
+
+            if (!rows.length)
+                return res.status(404).json({
+                    success: false,
+                    message: "Attendance not found"
+                });
+
+            const { rows: inCharge } = await turso.execute(
+                `SELECT in_charge FROM classes WHERE course = ? AND year = ?`,
+                [course, year]
+            );
+
+            let isClassTeacher = false;
+
+            if (
+                !adminId &&
+                inCharge.length &&
+                inCharge[0].in_charge === teacherId
+            )
+                isClassTeacher = true;
+
+            if (
+                !isUpdateAllowed({
+                    createdAt: rows[0].timestamp,
+                    adminId,
+                    isClassTeacher
+                })
+            )
+                return res.json({
+                    success: false,
+                    message: `Updates allowed only within ${UPDATE_LIMIT_MINUTES} minutes`
+                });
+
+            await tx.execute({
+                sql: `
+                    UPDATE attendance
                     SET present_count = ?,
                         absent_count = ?,
                         updated_timestamp = ?
                     WHERE attendanceId = ?
-            `;
-
-            const result = await tx.execute({
-                sql: updateAttendance,
-                args: [pCount, aCount, new Date(), existAttendanceId]
+                `,
+                args: [
+                    presentCount,
+                    absentCount,
+                    now.toISOString(),
+                    attendanceId
+                ]
             });
 
-            const updateDetail = `UPDATE attendance_details SET status = ? WHERE attendanceId = ? AND studentId = ?`;
-
-            for (const s of present)
-                await tx.execute({
-                    sql: updateDetail,
-                    args: ["present", existAttendanceId, s.studentId]
-                });
-
-            for (const s of absent)
-                await tx.execute({
-                    sql: updateDetail,
-                    args: ["absent", existAttendanceId, s.studentId]
-                });
-
-            await tx.commit();
-            res.status(200).json({
-                message: "Attendance updated successfully",
-                success: true
+            await tx.execute({
+                sql: `DELETE FROM attendance_details WHERE attendanceId = ?`,
+                args: [attendanceId]
             });
         }
+
+        // ================= DETAILS =================
+        const detailRows = buildDetailRows(finalAttendanceId, attendance);
+        await insertAttendanceDetails(tx, detailRows);
+        await tx.commit();
+
+        return res.json({
+            success: true,
+            message: attendanceId
+                ? "Attendance updated successfully"
+                : "Attendance saved successfully"
+        });
     } catch (err) {
         await tx.rollback();
 
-        if (err.message.includes("UNIQUE constraint")) {
-            return res.status(500).json({
-                message: "Attendance already taken for this hour",
-                success: false
+        if (err.message?.includes("UNIQUE constraint")) {
+            return res.status(409).json({
+                success: false,
+                message: "Attendance already taken for this hour"
             });
         }
 
-        console.error("Error while saving attendance:", err);
-        res.status(500).json({
-            message: "Internal server error",
-            success: false
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
         });
     }
 };

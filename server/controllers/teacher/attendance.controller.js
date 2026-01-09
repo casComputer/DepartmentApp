@@ -38,6 +38,11 @@ const isUpdateAllowed = ({ createdAt, isAdmin, isClassTeacher }) => {
     return diffMinutes <= UPDATE_LIMIT_MINUTES;
 };
 
+const abort = async (tx, res, payload, status = 200) => {
+    await tx.rollback();
+    return res.status(status).json(payload);
+};
+
 export const save = async (req, res) => {
     const tx = await turso.transaction("write");
 
@@ -53,7 +58,7 @@ export const save = async (req, res) => {
             !userId ||
             !role
         )
-            return res.json({
+            return abort(tx, res, {
                 success: false,
                 message: "missing required fields!"
             });
@@ -103,7 +108,7 @@ export const save = async (req, res) => {
             });
 
             if (!rows.length)
-                return res.json({
+                return abort(tx, res, {
                     success: false,
                     message: "Attendance not found"
                 });
@@ -128,7 +133,7 @@ export const save = async (req, res) => {
                     isClassTeacher
                 })
             )
-                return res.json({
+                return abort(tx, res, {
                     success: false,
                     message: `Updates allowed only within ${UPDATE_LIMIT_MINUTES} minutes`
                 });

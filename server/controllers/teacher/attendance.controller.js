@@ -31,8 +31,8 @@ const insertAttendanceDetails = async (tx, rows) => {
     });
 };
 
-const isUpdateAllowed = ({ createdAt, adminId, isClassTeacher }) => {
-    if (adminId || isClassTeacher) return true;
+const isUpdateAllowed = ({ createdAt, isAdmin, isClassTeacher }) => {
+    if (isAdmin || isClassTeacher) return true;
 
     const diffMinutes = (Date.now() - new Date(createdAt).getTime()) / 60000;
     return diffMinutes <= UPDATE_LIMIT_MINUTES;
@@ -42,23 +42,17 @@ export const save = async (req, res) => {
     const tx = await turso.transaction("write");
 
     try {
-        const {
-            attendance,
-            course,
-            year,
-            hour,
-            teacherId,
-            adminId = null,
-            attendanceId
-        } = req.body;
+        const { attendance, course, year, hour, userId, role, attendanceId } =
+            req.body;
 
-        if (!attendance?.length || !course || !year || !hour)
-            return res.json({
-                success: false,
-                message: "missing required fields!"
-            });
-
-        if (!teacherId && !adminId)
+        if (
+            !attendance?.length ||
+            !course ||
+            !year ||
+            !hour ||
+            !userId ||
+            !role
+        )
             return res.json({
                 success: false,
                 message: "missing required fields!"
@@ -74,10 +68,12 @@ export const save = async (req, res) => {
 
         // ================= CREATE =================
         if (!attendanceId) {
+            const idColumn = role === "teacher" ? "teacherId" : "adminId";
+
             const result = await tx.execute({
                 sql: `
                     INSERT INTO attendance
-                    (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
+                    (course, year, hour, date, timestamp, ${idColumn}, present_count, absent_count)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 args: [
@@ -86,7 +82,7 @@ export const save = async (req, res) => {
                     hour,
                     date,
                     now.toISOString(),
-                    teacherId,
+                    userId,
                     presentCount,
                     absentCount
                 ]
@@ -107,29 +103,28 @@ export const save = async (req, res) => {
             });
 
             if (!rows.length)
-                return res.status(404).json({
+                return res.json({
                     success: false,
                     message: "Attendance not found"
                 });
 
             const { rows: inCharge } = await turso.execute(
-                `SELECT in_charge FROM classes WHERE course = ? AND year = ?`,
+                `SELECT in_charge FROM classes c WHERE course = ? AND year = ?`,
                 [course, year]
             );
 
             let isClassTeacher = false;
-
             if (
-                !adminId &&
-                inCharge.length &&
-                inCharge[0].in_charge === teacherId
+                role !== "admin" &&
+                inCharge?.length &&
+                inCharge[0].in_charge === userId
             )
                 isClassTeacher = true;
 
             if (
                 !isUpdateAllowed({
                     createdAt: rows[0].timestamp,
-                    adminId,
+                    isAdmin: role === "admin",
                     isClassTeacher
                 })
             )

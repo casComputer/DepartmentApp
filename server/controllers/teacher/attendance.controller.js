@@ -22,7 +22,7 @@ export const save = async (req, res) => {
         const pCount = present?.length || 0,
             aCount = absent?.length || 0;
 
-        if (!attendanceId) {
+        if (!existAttendanceId) {
             // Insert into main attendance table
             const insertAttendance = `INSERT INTO attendance (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;

@@ -143,13 +143,15 @@ export const save = async (req, res) => {
                     UPDATE attendance
                     SET present_count = ?,
                         absent_count = ?,
-                        updated_timestamp = ?
+                        updated_timestamp = ?,
+                        updated_by = ?
                     WHERE attendanceId = ?
                 `,
                 args: [
                     presentCount,
                     absentCount,
                     now.toISOString(),
+                    userId,
                     attendanceId
                 ]
             });

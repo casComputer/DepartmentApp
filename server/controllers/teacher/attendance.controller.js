@@ -59,6 +59,10 @@ export const save = async (req, res) => {
                 });
             }
             await tx.commit();
+            res.status(200).json({
+                message: "Attendance saved successfully",
+                success: true
+            });
         } else {
             const updateAttendance = `
                 UPDATE attendance
@@ -88,12 +92,11 @@ export const save = async (req, res) => {
                 });
 
             await tx.commit();
+            res.status(200).json({
+                message: "Attendance updated successfully",
+                success: true
+            });
         }
-
-        res.status(200).json({
-            message: "Attendance saved successfully",
-            success: true
-        });
     } catch (err) {
         await tx.rollback();
 

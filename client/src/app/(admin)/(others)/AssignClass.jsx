@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { MaterialIcons } from "@icons";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { YEAR, COURSES } from "@constants/ClassAndCourses";
@@ -13,19 +12,24 @@ import Header from "@components/common/Header";
 const AssignClass = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedClass, setSelectedClass] = useState(null);
+    const [saving, setSaving] = useState(false);
+
     let { userId } = useLocalSearchParams();
 
     const user = useAdminStore((state) =>
         state.teachers.find((t) => t.teacherId === userId)
     );
 
-    const handleAssignClass = () => {
+    const handleAssignClass = async () => {
         if (selectedClass && selectedCourse && user && user.teacherId) {
-            assignClass({
+            setSaving(true);
+            await assignClass({
                 year: selectedClass,
                 course: selectedCourse,
                 teacherId: user.teacherId,
             });
+            setSaving(false);
+            router.back();
         }
     };
 
@@ -52,7 +56,7 @@ const AssignClass = () => {
                     className="w-full bg-btn p-6 justify-center items-center rounded-3xl mt-5"
                 >
                     <Text className="text-[6vw] font-black text-text">
-                        Assign
+                        {saving ? "Assigning..." : "Assign Class"}
                     </Text>
                 </TouchableOpacity>
             </View>

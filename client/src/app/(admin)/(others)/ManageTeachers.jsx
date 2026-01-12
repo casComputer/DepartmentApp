@@ -27,9 +27,11 @@ const ManageTeachers = () => {
             <FlashList
                 data={teachers}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.teacherId}
-                className={"px-3"}
-                contentContainerStyle={{ paddingBottom: 70, paddingTop: 30 }}
+                keyExtractor={(item, index) =>
+                    item.teacherId.toString() ?? index
+                }
+                className={"px-2"}
+                contentContainerStyle={{ paddingBottom: 60 }}
                 renderItem={({ item }) => (
                     <TeacherItem
                         item={item}

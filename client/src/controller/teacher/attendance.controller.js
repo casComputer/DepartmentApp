@@ -57,13 +57,13 @@ export const getAttendanceHistoryByTeacherId = async ({
     year
 }) => {
     try {
-        const teacherId = useAppStore.getState().user?.userId;
+        const { userId, role } = useAppStore.getState().user;
 
         if (course && year) {
         } else {
             const { data } = await axios.post(
                 "/attendance/getAttandanceTakenByTeacher",
-                { teacherId, page: pageParam, limit }
+                { userId, role, page: pageParam, limit }
             );
 
             if (data.success && data.attendance)

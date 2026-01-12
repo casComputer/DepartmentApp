@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
 
 import {
     verifyTeacher,
@@ -9,40 +8,21 @@ import {
 } from "@controller/admin/teachers.controller";
 
 import { useAdminStore } from "@store/admin.store.js";
-
-const Header = () => (
-    <TouchableOpacity
-        className="flex-row items-center"
-        onPress={() => router.back()}
-    >
-        <MaterialIcons
-            name="arrow-back-ios-new"
-            size={22}
-            color="rgb(59, 130, 246)"
-        />
-        <Text className="text-blue-500 font-semibold text-[7vw] justify-center">
-            Back
-        </Text>
-    </TouchableOpacity>
-);
+import Header from "@components/common/Header2.jsx";
 
 const ClassInChargeInfo = ({ year = "", classCharge = "" }) => {
     if (!year || !classCharge) return null;
 
     return (
-        <View className="mt-10 px-6 py-6 bg-card rounded-3xl">
-            <Text className="text-[6vw] text-text font-bold mb-3">
-                In Charge:
-            </Text>
-            <Text className="text-xl font-bold capitalize text-text">
-                {year} {classCharge}
+        <View className="mt-5 px-6 py-2 rounded-3xl">
+            <Text className="text-xl text-text text-center font-bold">
+                In Charge: {year} {classCharge}
             </Text>
         </View>
     );
 };
 
 const AssignClass = ({ user }) => {
-
     return (
         <View>
             <ClassInChargeInfo
@@ -59,8 +39,9 @@ const AssignClass = ({ user }) => {
                 }
             >
                 <Text className="text-center bg-btn text-text font-bold text-xl mt-10 py-6 rounded-3xl">
-                   {
-                    user?.in_charge_course && user?.in_charge_year ? "Reassign Class" : "Assign class" }
+                    {user?.in_charge_course && user?.in_charge_year
+                        ? "Reassign Class"
+                        : "Assign class"}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -94,7 +75,7 @@ const VerifyTeacher = () => {
     }
 
     return (
-        <View className="flex-1 pt-12 px-3 bg-primary">
+        <View className="flex-1 bg-primary">
             <Header />
 
             {/* Image */}

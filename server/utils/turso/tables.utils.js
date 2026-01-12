@@ -179,11 +179,6 @@ const createAllTables = () => {
                 (teacherId IS NULL AND adminId IS NOT NULL)
             ),
             
-            UNIQUE(
-                year, course, teacherId, adminId, course_name
-            ),
-            
-            
             FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE CASCADE,
             FOREIGN KEY (year, course) REFERENCES classes(year, course),
             FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE

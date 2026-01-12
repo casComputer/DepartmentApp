@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { View, ToastAndroid, ScrollView } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header2";

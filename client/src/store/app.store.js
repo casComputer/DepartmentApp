@@ -43,7 +43,7 @@ export const useAppStore = create(set => ({
     removeUser: () =>
         set(() => {
             clearUser();
-            router.replace('auth/Signin')
+            router.replace("auth/Signin");
             return {
                 user: "unknown"
             };
@@ -79,7 +79,7 @@ export const useMultiSelectionList = create((set, get) => ({
 }));
 
 export const useThemeStore = create(set => ({
-    gradientColors: [Color["orange"][100], 'transparent',  'transparent'],
+    gradientColors: [Color["orange"][100], "transparent", "transparent"],
     secondaryGradientColors: [
         Color["orange"][200],
         "#ffffff",

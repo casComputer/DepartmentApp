@@ -2,8 +2,8 @@ import { Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
-import Header from "../components/auth/IndexHeader";
-import Middle from "../components/auth/IndexMiddle.jsx";
+import Header from "@components/auth/IndexHeader";
+import Middle from "@components/auth/IndexMiddle.jsx";
 
 import { useThemeStore } from "@store/app.store.js";
 

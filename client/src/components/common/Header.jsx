@@ -38,7 +38,7 @@ const Header = ({
             </View>
             {extraButton && (
                 <TouchableOpacity onPress={handlePress}>
-                    <Text className="text-3xl text-blue-500 font-bold px-1">
+                    <Text className="text-2xl text-blue-500 font-black px-1">
                         {buttonTitle}
                     </Text>
                 </TouchableOpacity>

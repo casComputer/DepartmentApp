@@ -51,34 +51,6 @@ const createAllTables = () => {
     `);
 
     turso.execute(`
-<<<<<<< HEAD
-		CREATE TABLE IF NOT EXISTS attendance (
-			attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
-			course TEXT NOT NULL,
-			year TEXT NOT NULL,
-			hour TEXT NOT NULL,
-			date DATE NOT NULL,
-			timestamp TEXT NOT NULL,
-			adminId TEXT,
-			teacherId TEXT,
-
-			present_count int not null default 0,
-			absent_count int not null default 0,
-			late_count int not null default 0,
-			strength INTEGER
-      			GENERATED ALWAYS AS (present_count + absent_count + late_count) STORED,
-			
-			UNIQUE (course, year, hour, date),
-			FOREIGN KEY (course, year) REFERENCES classes(course, year) ON DELETE SET NULL,
-			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL
-
-      CHECK (
-          (teacherId IS NOT NULL AND adminId IS NULL)
-          OR
-          (teacherId IS NULL AND adminId IS NOT NULL)
-        )
-		);`);
-=======
         CREATE TABLE IF NOT EXISTS attendance (
             attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
         
@@ -87,6 +59,8 @@ const createAllTables = () => {
             hour TEXT NOT NULL,
             date DATE NOT NULL,
             timestamp TEXT NOT NULL,
+            updated_timestamp TEXT,
+            updated_by TEXT,
         
             teacherId TEXT,
             adminId TEXT,
@@ -120,13 +94,13 @@ const createAllTables = () => {
                 ON DELETE SET NULL
         );
     `);
->>>>>>> 9fc9ae3eeb73f2c346785576142fcfc3ce825101
 
     turso.execute(`
 		CREATE TABLE IF NOT EXISTS attendance_details (
 			attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
 			attendanceId INTEGER NOT NULL,
 			studentId TEXT NOT NULL,
+			rollno INTEGER NOT NULL,
 			status TEXT NOT NULL CHECK (status IN ('present','absent', 'late')),
 			
 			FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
@@ -157,14 +131,9 @@ const createAllTables = () => {
             ),
     
 			UNIQUE(teacherId, date, hour),
-<<<<<<< HEAD
-			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE,
-			FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL);
-=======
 			FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE SET NULL,
 			FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE SET NULL,
 			FOREIGN KEY (year, course) REFERENCES classes(year, course));
->>>>>>> 9fc9ae3eeb73f2c346785576142fcfc3ce825101
 		`);
 
     turso.execute(`

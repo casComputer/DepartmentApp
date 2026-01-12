@@ -13,7 +13,7 @@ export const getTeachers = async (req, res) => {
         console.error("Error fetching teachers:", error, error.message);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };
@@ -23,32 +23,31 @@ export const assignClass = async (req, res) => {
         const { course, year, teacherId } = req.body;
 
         if (!validateCourseAndYear(course, year))
-            return res
-                .status(405)
-                .json({ message: "invalid course or year", success: false });
+            return res.json({
+                message: "invalid course or year",
+                success: false
+            });
 
         const { rows: isExists } = await turso.execute(
             `
-            select count(*) as count from classes where year = ? and course = ? and in_charge IS NOT NULL   
+            select in_charge from classes where year = ? and course = ? and in_charge IS NOT NULL   
         `,
             [year, course]
         );
 
-        if (isExists[0].count > 0)
+        if (isExists?.length > 0)
             return res.json({
-                message: "Class already assigned",
-                success: false,
+                message: `Class already assigned to ${isExists[0].in_charge}`,
+                success: false
             });
 
-        const { rows: teacherExists } = await turso.execute(
+        await turso.execute(
             `
-            select * from classes where in_charge = ?   
+            UPDATE CLASSES set in_charge = NULL WHERE in_charge = ?
         `,
             [teacherId]
         );
 
-        console.log(teacherExists);
-        
         await turso.execute(
             `
         	update classes set in_charge = ? where year = ? and course = ?
@@ -61,7 +60,7 @@ export const assignClass = async (req, res) => {
         console.error("Error fetching teachers:", error);
         res.status(500).json({
             message: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };
@@ -79,7 +78,7 @@ export const verifyTeacher = async (req, res) => {
         console.error("Error verifying teacher:", error);
         res.status(500).json({
             error: "Internal Server Error",
-            success: false,
+            success: false
         });
     }
 };

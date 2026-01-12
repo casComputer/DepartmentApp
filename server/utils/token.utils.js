@@ -1,4 +1,4 @@
-import redis from "../config/redis.js";
+// import redis from "../config/redis.js";
 import jwt from "jsonwebtoken";
 
 export const storeRefreshToken = async (userId, refreshToken) => {
@@ -20,18 +20,18 @@ export const storeRefreshToken = async (userId, refreshToken) => {
         }
     }
 
-    await redis.set(`refresh:${userId}`, refreshToken, {
-        ex: expiresInSeconds
-    });
+    // await redis.set(`refresh:${userId}`, refreshToken, {
+    //     ex: expiresInSeconds
+    // });
 };
 
 export const verifyRefreshToken = async (userId, token) => {
-    const stored = await redis.get(`refresh:${userId}`);
-    return stored === token;
+    // const stored = await redis.get(`refresh:${userId}`);
+    // return stored === token;
 };
 
 export const revokeRefreshToken = async userId => {
-    await redis.del(`refresh:${userId}`);
+    // await redis.del(`refresh:${userId}`);
 };
 
 export const generateTokens = (userId, role) => {

@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { turso } from "../../config/turso.js";
 import { comparePassword } from "../../utils/auth.utils.js";
-import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
+import { generateTokens } from "../../utils/token.utils.js";
 
 const signinController = async (req, res) => {
     try {
@@ -34,15 +34,12 @@ const signinController = async (req, res) => {
            );
            
         }else{
-            
             existUser = await turso.execute(
-               `SELECT * FROM ${table} t WHERE ${table.slice(0, -1)}Id = ?`,
+               `SELECT * FROM ${table} WHERE ${table.slice(0, -1)}Id = ?`,
                [username] 
            );
         }
 
-        console.log(existUser);
-        
         if (!existUser.rows.length) {
             return res.status(400).json({
                 success: false,
@@ -72,7 +69,7 @@ const signinController = async (req, res) => {
         user.role = userRole;
 
         const tokens = generateTokens(user.userId, user.role);
-        await storeRefreshToken(user.userId, tokens.refreshToken);
+        // await storeRefreshToken(user.userId, tokens.refreshToken);
         
         
 

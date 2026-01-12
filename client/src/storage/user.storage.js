@@ -63,6 +63,10 @@ export const getUser = () => {
     };
 };
 
+export const updateIncharge = (incharge)=>{
+    storage.set('in_charge', JSON.stringify(incharge ?? {}))
+}
+
 export const clearUser = () => {
     storage.remove("userId");
     storage.remove("fullname");

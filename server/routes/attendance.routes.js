@@ -11,9 +11,6 @@ router.post("/save", async (req, res) => {
 
         const date = new Date().toISOString().slice(0, 10);
         const timestamp = new Date()
-            .toISOString()
-            .replace("T", " ")
-            .slice(0, 19);
 
         const present = attendance.filter(r => r.present);
         const absent = attendance.filter(r => !r.present);

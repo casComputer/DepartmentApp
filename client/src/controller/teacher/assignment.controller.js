@@ -24,7 +24,7 @@ export const createAssignment = async assignmentData => {
         }
     } catch (error) {
         ToastAndroid.show("Failed to create assignment", ToastAndroid.LONG);
-        console.error("Error creating assignment:", error);
+        console.error("Error creating assignment:", error.message);
         throw error;
     }
 };
@@ -52,8 +52,8 @@ export const getAssignment = async ({ pageParam }) => {
 
         return response.data;
     } catch (error) {
-        ToastAndroid.show("Failed to create assignment", ToastAndroid.LONG);
-        console.error("Error creating assignment:", error);
+        ToastAndroid.show("Failed to fetch assignment", ToastAndroid.LONG);
+        console.error("Error fetching assignment:", error.message);
         throw error;
     }
 };

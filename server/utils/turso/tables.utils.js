@@ -160,6 +160,35 @@ const createAllTables = () => {
         )
       );
     `);
+    
+    turso.execute(`
+        CREATE TABLE teacher_courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            teacherId TEXT,
+            adminId TEXT,
+        
+            year TEXT NOT NULL,
+            course TEXT NOT NULL,
+            course_name TEXT NOT NULL,
+        
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        
+            CHECK (
+                (teacherId IS NOT NULL AND adminId IS NULL)
+                OR
+                (teacherId IS NULL AND adminId IS NOT NULL)
+            ),
+            
+            UNIQUE(
+                year, course, teacherId, adminId, course_name
+            ),
+            
+            
+            FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE CASCADE,
+            FOREIGN KEY (year, course) REFERENCES classes(year, course),
+            FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE
+        );
+    `)
 };
 
 const deleteAllTables = () => {

@@ -10,38 +10,40 @@ import TeacherItem from "@components/common/UserItem.jsx";
 import Header from "@components/common/Header.jsx";
 
 const ManageTeachers = () => {
-	const teachers = useAdminStore((state) => state.teachers);
-	const [loading, setLoading] = useState(false);
+    const teachers = useAdminStore(state => state.teachers);
+    const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		setLoading(true);
-		fetchTeachers().then(() => setLoading(false));
-	}, []);
+    useEffect(() => {
+        setLoading(true);
+        fetchTeachers().then(() => setLoading(false));
+    }, []);
 
-	return (
-		<View className="flex-1 bg-primary">
-			<Header title={"Manage Teachers"} />
-			{loading && teachers.length == 0 && <ActivityIndicator size="large" />}
-			<FlashList
-				data={teachers}
-				showsVerticalScrollIndicator={false}
-				keyExtractor={(item) => item.teacherId.toString()}
-				className={"px-3"}
-				contentContainerStyle={{ paddingVertical: 60 }}
-				renderItem={({ item }) => (
-					<TeacherItem
-						item={item}
-						handlePress={() =>
-							router.push({
-								pathname: "(admin)/(others)//VerifyTeacher",
-								params: { teacherId: item.teacherId },
-							})
-						}
-					/>
-				)}
-			/>
-		</View>
-	);
+    return (
+        <View className="flex-1 bg-primary">
+            <Header title={"Manage Teachers"} />
+            {loading && teachers.length == 0 && (
+                <ActivityIndicator size="large" />
+            )}
+            <FlashList
+                data={teachers}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item.teacherId}
+                className={"px-3"}
+                contentContainerStyle={{ paddingBottom: 70, paddingTop: 30 }}
+                renderItem={({ item }) => (
+                    <TeacherItem
+                        item={item}
+                        handlePress={() =>
+                            router.push({
+                                pathname: "(admin)/(others)//VerifyTeacher",
+                                params: { teacherId: item.teacherId }
+                            })
+                        }
+                    />
+                )}
+            />
+        </View>
+    );
 };
 
 export default ManageTeachers;

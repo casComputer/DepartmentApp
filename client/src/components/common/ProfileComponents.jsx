@@ -97,19 +97,19 @@ export const EditDpOptions = ({ show, handleChangePic }) => {
 					bottom: 0,
 				},
 			]}
-			className="absolute w-full bg-card-selected rounded-t-3xl z-50 overflow-hidden py-2"
+			className="absolute w-full bg-card rounded-t-3xl z-50 overflow-hidden py-2"
 		>
 			<TouchableOpacity
 				onPress={handleChangePic}
-				className="w-full h-[25%] justify-center items-center "
+				className="w-full py-3 justify-center items-center "
 			>
-				<Text className="text-text text-2xl font-bold">Change Profile</Text>
+				<Text className="text-text text-xl font-bold">Change Profile</Text>
 			</TouchableOpacity>
 			<TouchableOpacity
 				onPress={handleChangePic}
-				className="w-full h-[25%] justify-center items-center "
+				className="w-full py-3 justify-center items-center "
 			>
-				<Text className="text-text text-2xl font-bold">Remove Profile</Text>
+				<Text className="text-text text-xl font-bold">Remove Profile</Text>
 			</TouchableOpacity>
 		</Animated.View>
 	);

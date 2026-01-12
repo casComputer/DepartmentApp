@@ -28,6 +28,8 @@ const WorkLogHistory = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
+    const allItems = data?.pages?.flatMap(page => page?.data);
+
     return (
         <View className="flex-1 bg-primary">
             <Header title={"History"} />
@@ -37,22 +39,30 @@ const WorkLogHistory = () => {
             )}
 
             <FlashList
-                data={data?.pages?.flatMap(page => page?.data)}
+                data={allItems}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => <HistoryRenderItem item={item} />}
                 endReachedThreshold={0.5}
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingBottom: 60,
-                    paddingTop: 40,
+                    paddingTop: 10,
                     paddingHorizontal: 5
                 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (
                         <ActivityIndicator size="large" />
-                    ) : null
+                    ) : (
+                        !hasNextPage &&
+                        allItems?.length > 8 && (
+                            <Text className="text-lg font-bold text-text text-center py-3">
+                                Nothing else down here 👋
+                            </Text>
+                        )
+                    )
                 }
                 ItemSeparatorComponent={ItemSeparator}
                 ListHeaderComponent={

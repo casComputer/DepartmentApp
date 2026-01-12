@@ -66,7 +66,17 @@ const AttendanceHistory = () => {
                     <ListHeaderComponent date={allItems?.[0]?.timestamp} />
                 }
                 ListFooterComponent={
-                    isFetchingNextPage && <ActivityIndicator size={"large"} />
+                    isFetchingNextPage ? (
+                        <ActivityIndicator size={"large"} />
+                    ) : (
+                        !hasNextPage &&
+                        !isLoading &&
+                        allItems?.length > 8 && (
+                            <Text className="text-lg font-bold text-text text-center py-3">
+                                Nothing else down here 👋
+                            </Text>
+                        )
+                    )
                 }
                 onRefresh={refetch}
                 refreshing={isRefetching}

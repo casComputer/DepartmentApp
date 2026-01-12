@@ -7,10 +7,16 @@ import Select from "@/components/common/Select";
 
 import { YEAR, COURSES, HOURS } from "@constants/ClassAndCourses";
 
+import { useAppStore } from "@store/app.store.js";
+
 const Attendance = () => {
     const [selectedClass, setSelectedClass] = useState(null);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedHour, setSelectedHour] = useState(null);
+
+    const isClassTeacher = useAppStore(
+        state => !!(state.user.in_charge_year && state.user.in_charge_course)
+    );
 
     const handleProceed = () => {
         if (selectedClass?.id && selectedCourse?.id && selectedHour?.id) {
@@ -28,26 +34,42 @@ const Attendance = () => {
     return (
         <ScrollView
             className="bg-primary"
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
         >
-            <Header title="Attendance" />
+            <Header
+                title="Attendance"
+                extraButton={!isClassTeacher}
+                buttonTitle="History"
+                handlePress={() =>
+                    router.push("/common/attendance/AttendanceHistory")
+                }
+            />
 
-            <View className="flex-row justify-between items-center px-4 mt-2">
-                <TouchableOpacity>
-                    <Text className="text-2xl text-blue-500 font-black">
-                        Class History
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() =>
-                        router.push("/common/attendance/AttendanceHistory")
-                    }
-                >
-                    <Text className="text-2xl text-blue-500 font-black">
-                        My History
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            {isClassTeacher && (
+                <View className="flex-row justify-between items-center px-4 mt-2">
+                    <TouchableOpacity
+                        onPress={() =>
+                            router.push(
+                                "/common/attendance/AttendanceClassHistory"
+                            )
+                        }
+                    >
+                        <Text className="text-2xl text-blue-500 font-black">
+                            Class History
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() =>
+                            router.push("/common/attendance/AttendanceHistory")
+                        }
+                    >
+                        <Text className="text-2xl text-blue-500 font-black">
+                            My History
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <View className="px-2 mt-2">
                 <Select

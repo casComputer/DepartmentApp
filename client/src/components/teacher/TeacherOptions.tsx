@@ -3,20 +3,12 @@ import {
     MaterialCommunityIcons,
     Octicons,
     SimpleLineIcons,
-    MaterialIcons,
+    MaterialIcons
 } from "@icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
-
-const handleRouteToAttendance = () => {
-    const { in_charge_year, in_charge_course } = useAppStore.getState().user;
-
-    if (in_charge_course && in_charge_year)
-        router.push("/(teacher)/(others)/AttendanceManage");
-    else router.push("/common/attendance/AttendanceClassSelect" as any);
-};
 
 const ICONS_SIZE = 35;
 
@@ -42,7 +34,11 @@ const TeacherOptions = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={handleRouteToAttendance}
+                onPress={() =>
+                    router.push(
+                        "/common/attendance/AttendanceClassSelect" as any
+                    )
+                }
                 className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4"
             >
                 <FontAwesome5 name="clipboard-list" size={ICONS_SIZE} />

@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View, Button, ScrollView, Text } from "react-native";
 import { MaterialIcons } from "@icons";
 
 import Header from "@components/common/ProfileHeader.jsx";
 import {
-	Avatar,
-	EditDpOptions,
+    Avatar,
+    EditDpOptions
 } from "@components/common/ProfileComponents.jsx";
+import {
+    TeacherOptions,
+    CoursePrompt
+} from "@components/profile/TeacherOptions.jsx";
 
 import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import { uploadDp } from "@controller/common/profile.controller.js";
@@ -17,54 +21,62 @@ const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
 const Profile = () => {
-	const [showDpOptions, setDpOptions] = useState(false);
-	const fullname = useAppStore((state) => state.user?.fullname || "");
+    const [showDpOptions, setDpOptions] = useState(false);
+    const [showCoursePrompt, setShowCoursePrompt] = useState(false);
 
-	const handleChangePic = async () => {
-		try {
-			setDpOptions(false);
-			const asset = await handleDocumentPick(["image/*"]);
-			if (!asset || !asset.uri) return;
+    const fullname = useAppStore(state => state.user?.fullname || "");
 
-			setGlobalProgress(1);
+    const handleChangePic = async () => {
+        try {
+            setDpOptions(false);
+            const asset = await handleDocumentPick(["image/*"]);
+            if (!asset || !asset.uri) return;
 
-			const { secure_url, public_id } = await handleUpload(asset, "dp");
-			if (!secure_url || !public_id) {
-				setGlobalProgress(0);
-				return null;
-			}
+            setGlobalProgress(1);
 
-			setGlobalProgressText("Updating profile picture...");
+            const { secure_url, public_id } = await handleUpload(asset, "dp");
+            if (!secure_url || !public_id) {
+                setGlobalProgress(0);
+                return null;
+            }
 
-			await uploadDp({ secure_url, public_id });
-		} finally {
-			setGlobalProgress(0);
-		}
-	};
+            setGlobalProgressText("Updating profile picture...");
 
-	return (
-		<View className="flex-1 bg-primary">
-			<ScrollView
-				alwaysBounceVertical
-				showsVerticalScrollIndicator={false}
-				overScrollMode="always"
-				contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
-			>
-				<View className="px-4">
-					<Header disableBackBtn={true} title={fullname} />
-				</View>
+            await uploadDp({ secure_url, public_id });
+        } finally {
+            setGlobalProgress(0);
+        }
+    };
 
-				<Avatar
-					handleChangePic={handleChangePic}
-					handleEdit={() => setDpOptions((prev) => !prev)}
-				/>
+    return (
+        <View className="flex-1 bg-primary relative">
+            <ScrollView
+                alwaysBounceVertical
+                showsVerticalScrollIndicator={false}
+                overScrollMode="always"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+            >
+                <View className="px-4">
+                    <Header disableBackBtn={true} title={fullname} />
+                </View>
 
+                <Avatar
+                    handleChangePic={handleChangePic}
+                    handleEdit={() => setDpOptions(prev => !prev)}
+                />
 
-			</ScrollView>
+                <TeacherOptions setShowCoursePrompt={setShowCoursePrompt} />
+                {showCoursePrompt && (
+                    <CoursePrompt setShowCoursePrompt={setShowCoursePrompt} />
+                )}
+            </ScrollView>
 
-			<EditDpOptions handleChangePic={handleChangePic} show={showDpOptions} />
-		</View>
-	);
+            <EditDpOptions
+                handleChangePic={handleChangePic}
+                show={showDpOptions}
+            />
+        </View>
+    );
 };
 
 export default Profile;

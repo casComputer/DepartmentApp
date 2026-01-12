@@ -27,6 +27,8 @@ import { saveWorklog } from "@controller/teacher/worklog.controller";
 const dateOptions = generateDateOptions(4);
 const { width: vw } = Dimensions.get("window");
 
+/* ----------------------------- PAGE 2 ----------------------------- */
+
 const Page2 = ({ warning, handleSave }) => {
     const [subject, setSubject] = useState("");
     const [topics, setTopics] = useState("");
@@ -34,15 +36,16 @@ const Page2 = ({ warning, handleSave }) => {
 
     const handlePress = async () => {
         setLoading(true);
-        await handleSave({ subject, topics });
-        router.back()
+        const success = await handleSave({ subject, topics });
         setLoading(false);
+
+        if (success) {
+            router.back();
+        }
     };
 
     return (
-        <View
-            style={{ width: vw }}
-            className="grow bg-primary px-3 ">
+        <View style={{ width: vw }} className="grow bg-primary px-3">
             <Header2 onSave={handlePress} saving={loading} />
 
             {warning !== "" && (
@@ -70,6 +73,8 @@ const Page2 = ({ warning, handleSave }) => {
         </View>
     );
 };
+
+/* -------------------------- SELECT BOXES --------------------------- */
 
 const SelectBoxes = ({
     date,
@@ -99,27 +104,34 @@ const SelectBoxes = ({
     </>
 );
 
+/* --------------------------- MAIN PAGE ----------------------------- */
+
 const WorkLogSelection = () => {
     const [page, setPage] = useState(0);
 
     const [date, setDate] = useState(dateOptions[0]);
-    const [year, setYear] = useState({});
-    const [course, setCourse] = useState({});
-    const [hour, setHour] = useState({});
+    const [year, setYear] = useState(null);
+    const [course, setCourse] = useState(null);
+    const [hour, setHour] = useState(null);
 
-    const [warning, setWarning] = useState("");
+    const [page1Warning, setPage1Warning] = useState("");
+    const [page2Warning, setPage2Warning] = useState("");
 
     const translateX = useSharedValue(0);
 
+    /* -------- Detect current page safely -------- */
     useAnimatedReaction(
         () => translateX.value,
         value => {
-            if (value === 0) runOnJS(setPage)(0);
-            else if (value === -vw) runOnJS(setPage)(1);
+            if (Math.abs(value) < 5) {
+                runOnJS(setPage)(0);
+            } else if (Math.abs(value + vw) < 5) {
+                runOnJS(setPage)(1);
+            }
         }
     );
 
-    // Back navigation
+    /* -------- Hardware Back Button -------- */
     useEffect(() => {
         const backAction = () => {
             if (page === 1) {
@@ -133,48 +145,36 @@ const WorkLogSelection = () => {
             "hardwareBackPress",
             backAction
         );
+
         return () => handler.remove();
-    }, [page]);
+    }, [page, translateX]);
 
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }]
     }));
 
-    const page1Valid = date.id && year.id && course.id && hour.id;
+    const page1Valid = date?.id && year?.id && course?.id && hour?.id;
 
-    const handlePress = () => {
-        setWarning("");
+    /* ------------------ NEXT BUTTON ------------------ */
+    const handleNext = () => {
+        setPage1Warning("");
 
-        if (page === 0) {
-            if (!page1Valid) {
-                setWarning("Please fill all fields before continuing.");
-                return;
-            }
-
-            translateX.value = withSpring(-vw);
+        if (!page1Valid) {
+            setPage1Warning("Please fill all fields before continuing.");
             return;
         }
+
+        translateX.value = withSpring(-vw);
     };
 
+    /* ------------------ SAVE WORKLOG ------------------ */
     const handleSave = async ({ subject, topics }) => {
-        const page2Valid =
-            subject.trim().length > 0 && topics.trim().length > 0;
-
-        if (!page2Valid) {
-            setWarning("Please enter subject and topics.");
-            return;
+        if (!subject.trim() || !topics.trim()) {
+            setPage2Warning("Please enter subject and topics.");
+            return false;
         }
-        if (
-            !date.id ||
-            !year.id ||
-            !course.id ||
-            !hour.id ||
-            !subject ||
-            !topics
-        )
-            return;
-            
-        setWarning("")
+
+        setPage2Warning("");
 
         await saveWorklog({
             date: date.id,
@@ -184,40 +184,44 @@ const WorkLogSelection = () => {
             subject,
             topics
         });
+
+        return true;
     };
 
     return (
         <View className="grow bg-primary">
-            {/* Sliding Pages */}
             <Animated.View style={[{ flexDirection: "row" }, animatedStyles]}>
-                {/* PAGE 1 */}
+                {/* ---------------- PAGE 1 ---------------- */}
                 <View style={{ width: vw }} className="px-3 grow">
                     <Header
-                        title={"Work Log"}
-                        extraButton={true}
-                        buttonTitle={page === 0 ? "Next" : "Save"}
-                        handlePress={handlePress}
+                        title="Work Log"
+                        extraButton
+                        buttonTitle="Next"
+                        handlePress={handleNext}
                     />
+
                     <ScrollView
                         contentContainerStyle={{
                             flexGrow: 1,
-                            paddingBottom: 200
+                            paddingBottom: 250
                         }}
-                        showsVerticalScrollIndicator={false}>
+                        showsVerticalScrollIndicator={false}
+                    >
                         <TouchableOpacity
                             onPress={() =>
                                 router.push(
                                     "/(teacher)/(others)/WorkLogHistory"
                                 )
-                            }>
+                            }
+                        >
                             <Text className="text-blue-500 font-bold text-xl p-2 self-end">
                                 History
                             </Text>
                         </TouchableOpacity>
 
-                        {warning !== "" && (
+                        {page1Warning !== "" && (
                             <Text className="text-red-500 text-center text-lg mt-2">
-                                {warning}
+                                {page1Warning}
                             </Text>
                         )}
 
@@ -234,8 +238,8 @@ const WorkLogSelection = () => {
                     </ScrollView>
                 </View>
 
-                {/* PAGE 2 */}
-                <Page2 warning={warning} handleSave={handleSave} />
+                {/* ---------------- PAGE 2 ---------------- */}
+                <Page2 warning={page2Warning} handleSave={handleSave} />
             </Animated.View>
         </View>
     );

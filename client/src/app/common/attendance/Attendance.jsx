@@ -18,10 +18,17 @@ import {
 import { getStudentCount } from "@utils/storage";
 
 const Attendance = () => {
-    const { course, year, hour } = useLocalSearchParams();
+    const {
+        course,
+        year,
+        hour,
+        isEditable = true,
+        date = new Date().toISOString().slice(0, 10)
+    } = useLocalSearchParams();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const attendanceId = useRef(null);
 
     const storedCount = getStudentCount({ course, year }) || 0;
 
@@ -52,6 +59,8 @@ const Attendance = () => {
     };
 
     const handleTouch = event => {
+        if (isEditable !== true) return;
+
         const { pageY, pageX } = event;
 
         const localY = convertPageToLocalY(pageY);
@@ -77,23 +86,44 @@ const Attendance = () => {
     };
 
     useEffect(() => {
-        if (!course || !year) return;
+        if (!course || !year || !hour) return;
 
         const loadStudents = async () => {
             try {
                 setLoading(true);
-                const { students: newStudents } =
-                    await fetchStudentsForAttendance({
-                        course,
-                        year
-                    });
+                const {
+                    students: newStudents = [],
+                    attendance: existAttendance = []
+                } = await fetchStudentsForAttendance({
+                    course,
+                    year,
+                    hour,
+                    date
+                });
+
+                attendanceId.current = existAttendance[0]?.attendanceId ?? null;
+
+                const newStudentMap = new Map(
+                    newStudents.map(s => [s.rollno, s])
+                );
+
+                const attendanceMap = new Map(
+                    existAttendance.map(a => [a.rollno, a])
+                );
 
                 setStudents(prev =>
-                    prev.map((student, i) => ({
-                        ...student,
-                        rollno: newStudents[i]?.rollno,
-                        studentId: newStudents[i]?.studentId
-                    }))
+                    prev.map(student => {
+                        const newStudent = newStudentMap.get(student.rollno);
+                        const attendance = attendanceMap.get(student.rollno);
+
+                        return {
+                            ...student,
+                            studentId:
+                                newStudent?.studentId ?? student.studentId,
+                            present:
+                                attendance?.status === "present" ? true : false
+                        };
+                    })
                 );
 
                 if (storedCount !== newStudents?.length)
@@ -101,17 +131,17 @@ const Attendance = () => {
                         `Change in student strength found!`,
                         ToastAndroid.LONG
                     );
-            } catch (err) {
-                console.error("Failed to fetch students:", err);
             } finally {
                 setLoading(false);
             }
         };
 
         loadStudents();
-    }, [course, year, storedCount]);
+    }, [course, year, hour, storedCount]);
 
     const toggleAttendance = rollno => {
+        if (isEditable !== true) return;
+
         setStudents(prev =>
             prev.map(s =>
                 s.rollno === rollno ? { ...s, present: !s.present } : s
@@ -121,31 +151,37 @@ const Attendance = () => {
 
     const handleSave = async () => {
         try {
-            setSaving(true);
+            if (isEditable !== true) return;
 
+            setSaving(true);
             await saveAttendance({
                 students,
                 course,
                 year,
-                hour
+                hour,
+                attendanceId: attendanceId?.current ?? null
             });
-        } catch (err) {
-            console.error("Failed to save attendance:", err);
         } finally {
             setSaving(false);
         }
     };
 
     const longPressHandler = () => {
+        if (isEditable !== true) return;
+
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         isDragMode.current = true;
     };
 
     return (
         <View className="flex-1 bg-primary">
-            <Header onSave={handleSave} saving={saving} disabled={loading} />
+            <Header
+                onSave={isEditable === true ? handleSave : undefined}
+                saving={saving}
+                disabled={loading}
+            />
 
-            <Options loading={loading} />
+            <Options loading={loading} isEditable={isEditable} />
 
             <ScrollView
                 ref={scrollViewRef}
@@ -186,20 +222,22 @@ const Attendance = () => {
                     flexWrap: "wrap",
                     justifyContent: "center",
                     flexGrow: 1
-                }}>
-                {
-                    students?.length === 0 ? 
+                }}
+            >
+                {students?.length === 0 ? (
                     <ListEmptyComponent />
-                    :
+                ) : (
                     students.map(item => (
-                    <AttendanceItem
-                        key={item.rollno}
-                        item={item}
-                        toggleAttendance={toggleAttendance}
-                        onItemLayout={onItemLayout(item.rollno)}
-                        onLongPress={longPressHandler}
-                    />
-                ))}
+                        <AttendanceItem
+                            key={item.rollno}
+                            item={item}
+                            toggleAttendance={toggleAttendance}
+                            onItemLayout={onItemLayout(item.rollno)}
+                            onLongPress={longPressHandler}
+                            isEditable={isEditable === true}
+                        />
+                    ))
+                )}
             </ScrollView>
         </View>
     );

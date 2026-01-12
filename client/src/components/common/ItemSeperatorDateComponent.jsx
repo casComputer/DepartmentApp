@@ -2,7 +2,10 @@ import { Text } from "react-native";
 
 import { formatDate } from "@utils/date.js";
 
-export const ItemSeparator = ({ trailingItem, leadingItem }) => {
+export const ItemSeparator = ({
+    trailingItem,
+    leadingItem
+}) => {
     let leadingDate = null,
         trailingDate = null;
 
@@ -15,11 +18,13 @@ export const ItemSeparator = ({ trailingItem, leadingItem }) => {
     }
 
     if (!leadingDate || !trailingDate) return null;
+    
+    console.log(leadingDate, trailingDate);
 
     if (leadingDate === trailingDate) return null;
 
     return (
-        <Text className="my-5 text-xl font-bold px-3 dark:text-white">
+        <Text className="my-5 text-xl font-bold px-5 dark:text-white">
             {trailingDate}
         </Text>
     );
@@ -33,7 +38,7 @@ export const ListHeaderComponent = ({ date }) => {
     if (!fdate) return null;
 
     return (
-        <Text className="my-3 text-xl font-bold px-3 dark:text-white">
+        <Text className="my-3 text-xl font-bold px-5 dark:text-white">
             {fdate}
         </Text>
     );

@@ -4,8 +4,10 @@ export const setUser = ({
 	userId,
 	fullname,
 	role,
-	course = "",
-	year_of_study = "",
+	
+	in_charge_year = "",
+	in_charge_course = "",
+	
 	is_verified = false,
 	rollno = "",
 	dp = "",
@@ -17,9 +19,11 @@ export const setUser = ({
 	storage.set("role", role);
 	storage.set("dp", dp || "");
 	storage.set("dp_public_id", dp_public_id || "");
+	storage.set("in_charge_course", in_charge_course || "");
+	storage.set("in_charge_year", in_charge_year || "");
 
-	if (course) storage.set("course", course);
-	if (year_of_study) storage.set("year_of_study", year_of_study);
+	
+	
 	if (
 		typeof is_verified === "boolean" ||
 		is_verified === 0 ||
@@ -34,8 +38,8 @@ export const getUser = () => {
 	const userId = storage.getString("userId") || "";
 	const fullname = storage.getString("fullname") || "";
 	const role = storage.getString("role") || "unknown";
-	const course = storage.getString("course") || "";
-	const year_of_study = storage.getString("year_of_study") || "";
+	const in_charge_course = storage.getString("in_charge_course") || "";
+	const in_charge_year = storage.getString("in_charge_year") || "";
 	const is_verified = storage.getBoolean("is_verified");
 	const rollno = storage.getString("rollno") || "";
 	const dp = storage.getString("dp") || "";
@@ -45,8 +49,8 @@ export const getUser = () => {
 		userId,
 		fullname,
 		role,
-		course,
-		year_of_study,
+		in_charge_course,
+		in_charge_year,
 		is_verified,
 		rollno,
 		dp_public_id,
@@ -55,15 +59,16 @@ export const getUser = () => {
 };
 
 export const updateIncharge = (incharge)=>{
-    storage.set('in_charge', JSON.stringify(incharge ?? {}))
+    alert('🚨')
+    // storage.set('in_charge', JSON.stringify(incharge ?? {}))
 }
 
 export const clearUser = () => {
 	storage.remove("userId");
 	storage.remove("fullname");
 	storage.remove("role");
-	storage.remove("course");
-	storage.remove("year_of_study");
+	storage.remove("in_charge_course");
+	storage.remove("in_charge_year");
 	storage.remove("is_verified");
 	storage.remove("rollno");
 	storage.remove("dp");

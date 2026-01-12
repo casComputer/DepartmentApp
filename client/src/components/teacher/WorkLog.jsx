@@ -23,25 +23,24 @@ export const HistoryRenderItem = ({ item }) => {
             <View className="flex-row justify-between items-center mb-2">
                 <Text
                     numberOfLines={2}
-                    className="text-lg font-black text-text"
+                    className="flex-1 text-xl font-black text-text"
                 >
-                    Subject: {"\n\t"}
                     {item.subject}
                 </Text>
-                <View className="items-end">
-                    <Text className="text-lg font-black text-text">
+                <View className="items-end px-4">
+                    <Text className="text-sm font-bold opacity-80 text-text">
                         {showDate(item.date)}
                     </Text>
-                    <Text className="text-lg font-black text-text">
+                    <Text className="text-lg font-bold text-text">
                         {item.year} {item.course}
                     </Text>
-                    <Text className="text-lg font-black text-text">
+                    <Text className="text-lg font-bold text-text">
                         {item.hour} Hour
                     </Text>
                 </View>
             </View>
 
-            <Text className="text-xl font-black mt-5 text-text">
+            <Text className="text-md font-bold mt-5 text-text">
                 Topics:
             </Text>
 
@@ -49,10 +48,10 @@ export const HistoryRenderItem = ({ item }) => {
                 numberOfLines={showFullTopics ? undefined : 1}
                 className="text-xl pl-3 text-text max-w-[90%]"
             >
-                {item.topics}
+                {item.topics} 
             </Text>
             <Pressable onPress={() => setShowFullTopics(prev => !prev)}>
-                <Text className="text-sm pl-3 font-bold text-blue-400">
+                <Text className="text-sm pl-3 font-bold text-blue-400 opacity-70">
                     {showFullTopics ? "less" : "more"}
                 </Text>
             </Pressable>

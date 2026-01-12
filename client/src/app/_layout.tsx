@@ -20,7 +20,7 @@ const Layout = ({ userId, role }) => (
     <Stack
         screenOptions={{
             headerShown: false,
-            animation: "slide_from_right",
+            animation: "slide_from_right"
         }}
     >
         <Stack.Protected guard={!userId || role === "unknown"}>
@@ -46,8 +46,8 @@ const Layout = ({ userId, role }) => (
 export default function RootLayout() {
     const theme = useColorScheme();
     const [mounted, setMounted] = React.useState(false);
-    let userId = useAppStore((state) => state.user.userId);
-    let role = useAppStore((state) => state.user.role);
+    let userId = useAppStore(state => state.user.userId);
+    let role = useAppStore(state => state.user.role);
 
     // (userId = ""), (role = "unknown");
 

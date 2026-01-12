@@ -1,5 +1,19 @@
 export const formatDate = timestamp => {
-    const date = new Date(timestamp);
+    let date;
+
+    // Handle epoch milliseconds (number or numeric string)
+    if (
+        typeof timestamp === "number" ||
+        (typeof timestamp === "string" && /^\d+(\.\d+)?$/.test(timestamp))
+    ) {
+        date = new Date(Number(timestamp));
+    }
+    // Handle ISO date strings
+    else {
+        date = new Date(timestamp);
+    }
+
+    if (isNaN(date.getTime())) return "Invalid date";
 
     // Get LOCAL yyyy-mm-dd
     const getLocalDate = d =>

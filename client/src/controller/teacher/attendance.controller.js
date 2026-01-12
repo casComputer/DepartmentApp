@@ -5,39 +5,47 @@ import { router } from "expo-router";
 import { useAppStore } from "@store/app.store.js";
 import { saveStudentsCount } from "@utils/storage.js";
 
-export const saveAttendance = async ({ students, course, year, hour }) => {
+export const saveAttendance = async ({
+    students,
+    course,
+    year,
+    hour,
+    attendanceId = null
+}) => {
     try {
-        const teacherId = useAppStore.getState().user?.userId;
-
-        if (!teacherId) return;
+        const { userId, role } = useAppStore.getState().user;
 
         const response = await axios.post("/attendance/save", {
             attendance: students,
             course,
             year,
-            teacherId,
+            userId,
+            role,
+            attendanceId,
             hour
         });
 
         if (response.data.success) {
             ToastAndroid.show(
-                "Attendance saved successfully",
+                response.data.message ?? "Attendance saved successfully",
                 ToastAndroid.SHORT
             );
             router.back();
         } else {
-            ToastAndroid.show("Failed to save attendance", ToastAndroid.LONG);
+            ToastAndroid.show(
+                response.data.message ?? "Failed to save attendance",
+                ToastAndroid.LONG
+            );
             return false;
         }
-
         return true;
     } catch (err) {
-        if (err?.response?.data?.message) {
-            ToastAndroid.show(err?.response?.data?.message, ToastAndroid.LONG);
-        } else {
-            console.error("Error saving attendance:", err);
-            ToastAndroid.show("Failed to save attendance", ToastAndroid.LONG);
-        }
+        ToastAndroid.show(
+            err?.response?.data?.message ?? "Failed to save attendance",
+            ToastAndroid.LONG
+        );
+        router.back();
+
         return false;
     }
 };
@@ -85,11 +93,18 @@ export const getAttendanceHistoryByTeacherId = async ({
     }
 };
 
-export const fetchStudentsForAttendance = async ({ course, year }) => {
+export const fetchStudentsForAttendance = async ({
+    course,
+    year,
+    hour,
+    date
+}) => {
     try {
         const res = await axios.post("/attendance/fetchStudentsForAttendance", {
             course,
-            year
+            year,
+            hour,
+            date
         });
 
         const numberOfStudents = res.data?.numberOfStudents;
@@ -100,5 +115,41 @@ export const fetchStudentsForAttendance = async ({ course, year }) => {
         console.error(error);
         ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
         return 0;
+    }
+};
+
+export const getClassAttendance = async ({
+    course,
+    year,
+    pageParam,
+    limit
+}) => {
+    try {
+        const { userId, role, in_charge_course, in_charge_year } =
+            useAppStore.getState().user;
+
+        if (role === "teacher") {
+            course = in_charge_course;
+            year = in_charge_year;
+        }
+
+        const { data } = await axios.post("/attendance/getClassAttendance", {
+            userId,
+            role,
+            course,
+            year,
+            pageParam,
+            limit
+        });
+
+        if (data.success) return data;
+        else
+            ToastAndroid.show(
+                data.message ?? "Failed to fetch attendance",
+                ToastAndroid.LONG
+            );
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show("Failed to fetch attendance", ToastAndroid.LONG);
     }
 };

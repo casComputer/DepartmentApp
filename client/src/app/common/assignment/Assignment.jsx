@@ -38,7 +38,7 @@ const Assignment = () => {
         <View className="flex-1 bg-primary">
             <Header title="Assignments" />
 
-            {isLoading && !isFetchNextPage && (
+            {isLoading && !isFetchingNextPage && (
                 <ActivityIndicator size={"large"} style={{ marginTop: 8 }} />
             )}
 
@@ -47,7 +47,7 @@ const Assignment = () => {
                 keyExtractor={item => item._id}
                 renderItem={({ item }) => <AssignmentRenderItem item={item} />}
                 onEndReached={() => {
-                    if (hasNextPage && !isFetchNextPage) fetchNextPage();
+                    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
                 maintainVisibleContentPosition={{ minIndexForVisible: 0 }}

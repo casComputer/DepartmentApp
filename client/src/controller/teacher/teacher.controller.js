@@ -1,27 +1,6 @@
 import axios from "@utils/axios.js";
 
 import { useAppStore } from "@store/app.store.js";
-<<<<<<< HEAD
-
-export const syncUser = async () => {
-    try {
-        const userId = useAppStore.getState().user.userId;
-        if (!userId) return;
-
-        const response = await axios.post("/teacher/getTeacherInfo", {
-            userId,
-        });
-
-        if (response.data.success) {
-            useAppStore.getState().updateUser(response.data.info);
-        }
-
-        return response.data;
-    } catch (error) {
-        console.error("Error syncing user:", error);
-        throw error;
-    }
-=======
 import { useTeacherStore } from "@store/teacher.store.js";
 import { updateInCharge } from "@storage/teacher.storage.js";
 
@@ -48,5 +27,4 @@ export const syncUser = async () => {
 			console.log(data);
 		}
 	} catch (error) {}
->>>>>>> 9fc9ae3eeb73f2c346785576142fcfc3ce825101
 };

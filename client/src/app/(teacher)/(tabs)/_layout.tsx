@@ -21,19 +21,11 @@ export default function TabLayout() {
         (state) => state.loadInChargeFromStorage
     );
 
-<<<<<<< HEAD
-    useEffect(() => {
-        loadStudents();
-        loadInCharge();
-    }, [loadInCharge, loadStudents, syncUser]);
-    syncUser();
-=======
 	useEffect(() => {
 		loadStudents();
 		loadInCharge();
 		syncUser();
 	}, [loadInCharge, loadStudents, syncUser]);
->>>>>>> 9fc9ae3eeb73f2c346785576142fcfc3ce825101
 
     const theme = useColorScheme();
 

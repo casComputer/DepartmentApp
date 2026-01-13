@@ -20,7 +20,8 @@ export const fetchStudentsByClass = async (req, res) => {
         res.json({
             students,
             numberOfStudents: students?.length || 0,
-            success: true
+            success: true,
+            course, year
         });
     } catch (err) {
         console.error("Error while fetching student details: ", err);

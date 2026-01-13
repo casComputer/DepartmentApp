@@ -5,8 +5,8 @@ import { router } from "expo-router";
 import { storage } from "./storage";
 import { clearUser } from "@storage/user.storage.js";
 
-// const url = "https://dc-connect.onrender.com";
-const url = "http://10.118.225.11:3000";
+let url = "https://dc-connect.onrender.com";
+//  url = "http://10.118.225.11:3000";
 
 console.log(url);
 

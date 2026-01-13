@@ -5,8 +5,8 @@ export const setUser = ({
     fullname,
     role,
 
-    in_charge_year = "",
-    in_charge_course = "",
+    // in_charge_year = "",
+    // in_charge_course = "",
 
     is_verified = false,
     rollno = "",
@@ -19,8 +19,8 @@ export const setUser = ({
     storage.set("role", role);
     storage.set("dp", dp || "");
     storage.set("dp_public_id", dp_public_id || "");
-    storage.set("in_charge_course", in_charge_course || "");
-    storage.set("in_charge_year", in_charge_year || "");
+    // storage.set("in_charge_course", in_charge_course || "");
+    // storage.set("in_charge_year", in_charge_year || "");
 
     if (
         typeof is_verified === "boolean" ||

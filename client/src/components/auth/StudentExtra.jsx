@@ -35,7 +35,7 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
             <Text className="text-black font-bold text-xl dark:text-white">
                 Course:
             </Text>
-            <View className="flex-row justify-center items-center py-5 px-3 gap-5">
+            <View className="flex-row justify-center items-center pt-5 px-3 gap-5">
                 {["Bca", "Bsc"].map(c => (
                     <Chip
                         key={c}

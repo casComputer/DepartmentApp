@@ -15,6 +15,7 @@ import ProgressBar from "@components/common/ProgressBar.jsx";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
+// useAppStore.getState().removeUser();
 
 const Layout = ({ userId, role }) => (
     <Stack

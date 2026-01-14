@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import * as Haptics from "expo-haptics";
 import Header from "@components/common/Header.jsx";
 import Select from "@components/common/Select.jsx";
 
+import { useAppStore } from "@store/app.store.js";
+
 import { save } from "@controller/teacher/course.controller.js";
 
 import { COURSES, YEAR } from "@constants/ClassAndCourses.js";
@@ -21,7 +23,15 @@ const AddCourse = () => {
   const [year, setYear] = useState(null);
   const [course, setCourse] = useState(null);
   const [courseName, setCourseName] = useState(null);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(
+    useAppStore
+      .getState()
+      .user?.courses.map((item, index) => ({
+        ...item,
+        id: index + 1,
+        courseName: item.course_name,
+      })) || []
+  );
 
   const inputRef = useRef(null);
 
@@ -39,8 +49,6 @@ const AddCourse = () => {
   const handleSave = () => {
     if (!list || !list.length)
       return ToastAndroid.show("No course added!", ToastAndroid.SHORT);
-
-    // save
 
     save({ list });
   };
@@ -93,15 +101,14 @@ const AddCourse = () => {
           ref={inputRef}
           className="mt-4 px-4 py-5 rounded-3xl text-text font-bold border border-text-secondary"
           value={courseName}
-          autoFocus
           placeholder={"enter course name"}
           onSubmitEditing={handleAdd}
           onChangeText={setCourseName}
         />
         <View className="flex-wrap flex-row items-center gap-2 mt-5">
-          {list?.map((item, index) => (
+          {list?.map((item) => (
             <View
-              key={`${item.course}-${item.id}-${item.year}-${item.courseName}`}
+              key={`${item.id}-${item.courseName}`}
               className="px-2 py-2 bg-pink-600 rounded-full flex-row justify-between max-w-full items-center gap-1 overflow-hidden"
             >
               <TouchableOpacity onPress={() => handleRemove(item.id)}>
@@ -112,7 +119,8 @@ const AddCourse = () => {
                 numberOfLines={1}
                 className="max-w-full text-text font-bold text-sm text-center"
               >
-                {item.year.id} {item.course.id} {item.courseName}
+                {item.year.id ?? item.year} {item.course.id ?? item.course}{" "}
+                {item.courseName}
               </Text>
             </View>
           ))}

@@ -18,6 +18,11 @@ const Attendance = () => {
         state => !!(state.user.in_charge_year && state.user.in_charge_course)
     );
 
+    const user = useAppStore(
+        state => (state.user)
+    );
+
+
     const handleProceed = () => {
         if (selectedClass?.id && selectedCourse?.id && selectedHour?.id) {
             router.push({
@@ -30,6 +35,8 @@ const Attendance = () => {
             });
         }
     };
+
+    console.log(user)
 
     return (
         <ScrollView

@@ -31,7 +31,7 @@ export const useAppStore = create(set => ({
     updateUser: userData =>
         set(state => {
             const user = { ...state.user, ...userData };
-
+            
             saveUserToStorage(user);
             return {
                 user: user

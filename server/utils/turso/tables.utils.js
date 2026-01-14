@@ -24,16 +24,30 @@ const createAllTables = () => {
           dp_public_id TEXT, 
           fullname text not null, 
           password text not null,
-          is_verified BOOLEAN DEFAULT FALSE,
+          is_verified BOOLEAN DEFAULT FALSE
         );`
     );
 
     turso.execute(
-        "CREATE TABLE parents ( parentId TEXT PRIMARY Key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null, phone text)"
+        `CREATE TABLE parents(
+            parentId TEXT PRIMARY Key,
+            dp TEXT,
+            dp_public_id TEXT, 
+            fullname text not null,
+            password text not null,
+            phone text,
+            is_verified BOOLEAN DEFAULT FALSE
+        )`
     );
 
     turso.execute(
-        "CREATE TABLE parent_child (parentId INT NOT NULL, studentId INT NOT NULL, PRIMARY KEY (parentId, studentId), FOREIGN KEY (parentId) REFERENCES parents(parentId), FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE);"
+        `CREATE TABLE parent_child (
+            parentId TEXT NOT NULL,
+            studentId TEXT NOT NULL, 
+            PRIMARY KEY (parentId, studentId), 
+            FOREIGN KEY (parentId) REFERENCES parents(parentId) ON DELETE CASCADE,
+            FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE
+        );`
     );
 
     turso.execute(
@@ -160,7 +174,7 @@ const createAllTables = () => {
         )
       );
     `);
-    
+
     turso.execute(`
         CREATE TABLE teacher_courses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,7 +197,8 @@ const createAllTables = () => {
             FOREIGN KEY (year, course) REFERENCES classes(year, course),
             FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE
         );
-    `)
+    `);
+
 };
 
 const deleteAllTables = () => {

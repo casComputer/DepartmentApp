@@ -6,7 +6,8 @@ import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
 
 const signupController = async (req, res) => {
     try {
-        const { username, password, fullName, course, year } = req.body;
+        const { username, password, fullName, course, year, students } =
+            req.body;
         const userRole = req.body.userRole.toLowerCase();
         validateSignupFields(req.body);
 
@@ -29,6 +30,12 @@ const signupController = async (req, res) => {
                 .json({ success: false, error: "Username already exists" });
         }
 
+        if (userRole === "parent" && students?.length <= 0)
+            return res.json({
+                success: false,
+                message: "Please select your students to register as parent"
+            });
+
         const hashedPassword = await hashPassword(password);
 
         if (userRole === "student") {
@@ -42,10 +49,23 @@ const signupController = async (req, res) => {
                 [username, fullName, hashedPassword]
             );
         } else if (userRole === "teacher") {
+            console.log(username, students);
+
             await turso.execute(
                 `INSERT INTO teachers (teacherId, fullname, password) VALUES (?, ?, ?)`,
                 [username, fullName, hashedPassword]
             );
+
+            for (const student of students) {
+                await turso.execute(
+                    `
+                    INSERT INTO parent_child(
+                        parentId, studentId
+                    ) VALUES (?, ?)
+                `,
+                    [username, student]
+                );
+            }
         }
 
         const tokens = generateTokens(username, userRole);

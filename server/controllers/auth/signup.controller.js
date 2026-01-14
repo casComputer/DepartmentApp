@@ -5,14 +5,13 @@ import { hashPassword, validateSignupFields } from "../../utils/auth.utils.js";
 import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
 
 const signupController = async (req, res) => {
-    try {
-        const { username, password, fullName, course, year, students } =
-            req.body;
-        const userRole = req.body.userRole.toLowerCase();
-        validateSignupFields(req.body);
+  try {
+    const { username, password, fullName, course, year, students } = req.body;
+    const userRole = req.body.userRole.toLowerCase();
+    validateSignupFields(req.body);
 
-        const existUser = await turso.execute(
-            `
+    const existUser = await turso.execute(
+      `
         SELECT studentId as id FROM students WHERE studentId = ?
         UNION
         SELECT teacherId as id FROM teachers WHERE teacherId = ?
@@ -21,72 +20,72 @@ const signupController = async (req, res) => {
         UNION
         SELECT adminId as id FROM admins WHERE adminId = ?
         `,
-            [username, username, username, username]
-        );
+      [username, username, username, username]
+    );
 
-        if (existUser.rows.length > 0) {
-            return res
-                .status(400)
-                .json({ success: false, error: "Username already exists" });
-        }
+    if (existUser.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Username already exists" });
+    }
 
-        if (userRole === "parent" && students?.length <= 0)
-            return res.json({
-                success: false,
-                message: "Please select your students to register as parent"
-            });
+    if (userRole === "parent" && students?.length <= 0)
+      return res.json({
+        success: false,
+        message: "Please select your students to register as parent",
+      });
 
-        const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(password);
 
-        if (userRole === "student") {
-            await turso.execute(
-                `INSERT INTO students (studentId, fullname, password, course, year_of_study) VALUES (?, ?, ?, ?, ?)`,
-                [username, fullName, hashedPassword, course, year]
-            );
-        } else if (userRole === "parent") {
-            await turso.execute(
-                `INSERT INTO parents (parentId, fullname, password) VALUES (?, ?, ?)`,
-                [username, fullName, hashedPassword]
-            );
-        } else if (userRole === "teacher") {
-            console.log(username, students);
+    if (userRole === "student") {
+      await turso.execute(
+        `INSERT INTO students (studentId, fullname, password, course, year_of_study) VALUES (?, ?, ?, ?, ?)`,
+        [username, fullName, hashedPassword, course, year]
+      );
+    } else if (userRole === "parent") {
 
-            await turso.execute(
-                `INSERT INTO teachers (teacherId, fullname, password) VALUES (?, ?, ?)`,
-                [username, fullName, hashedPassword]
-            );
+      await turso.execute(
+        `INSERT INTO parents (parentId, fullname, password) VALUES (?, ?, ?)`,
+        [username, fullName, hashedPassword]
+      );
 
-            for (const student of students) {
-                await turso.execute(
-                    `
+      for (const student of students) {
+        await turso.execute(
+          `
                     INSERT INTO parent_child(
                         parentId, studentId
                     ) VALUES (?, ?)
                 `,
-                    [username, student]
-                );
-            }
-        }
+          [username, student]
+        );
+      }
 
-        const tokens = generateTokens(username, userRole);
-        await storeRefreshToken(username, tokens.refreshToken);
-
-        let user = {
-            fullname: fullName,
-            course: course || "",
-            year_of_study: year || "",
-            userId: username,
-            role: userRole
-        };
-
-        res.json({ success: true, ...tokens, user });
-    } catch (err) {
-        console.error(err);
-        res.status(400).json({
-            success: false,
-            error: err.message || "Server error"
-        });
+    } else if (userRole === "teacher") {
+      await turso.execute(
+        `INSERT INTO teachers (teacherId, fullname, password) VALUES (?, ?, ?)`,
+        [username, fullName, hashedPassword]
+      );
     }
+
+    const tokens = generateTokens(username, userRole);
+    await storeRefreshToken(username, tokens.refreshToken);
+
+    let user = {
+      fullname: fullName,
+      course: course || "",
+      year_of_study: year || "",
+      userId: username,
+      role: userRole,
+    };
+
+    res.json({ success: true, ...tokens, user });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({
+      success: false,
+      error: err.message || "Server error",
+    });
+  }
 };
 
 export default signupController;

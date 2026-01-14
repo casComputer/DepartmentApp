@@ -1,5 +1,5 @@
 const createAllTables = () => {
-    turso.execute(`
+  turso.execute(`
     CREATE TABLE students (
         studentId TEXT primary key,
         dp TEXT, 
@@ -17,8 +17,8 @@ const createAllTables = () => {
     );
     `);
 
-    turso.execute(
-        `CREATE TABLE teachers ( 
+  turso.execute(
+    `CREATE TABLE teachers ( 
           teacherId TEXT PRIMARY Key, 
           dp TEXT, 
           dp_public_id TEXT, 
@@ -26,10 +26,10 @@ const createAllTables = () => {
           password text not null,
           is_verified BOOLEAN DEFAULT FALSE
         );`
-    );
+  );
 
-    turso.execute(
-        `CREATE TABLE parents(
+  turso.execute(
+    `CREATE TABLE parents(
             parentId TEXT PRIMARY Key,
             dp TEXT,
             dp_public_id TEXT, 
@@ -38,23 +38,23 @@ const createAllTables = () => {
             phone text,
             is_verified BOOLEAN DEFAULT FALSE
         )`
-    );
+  );
 
-    turso.execute(
-        `CREATE TABLE parent_child (
+  turso.execute(
+    `CREATE TABLE parent_child (
             parentId TEXT NOT NULL,
             studentId TEXT NOT NULL, 
             PRIMARY KEY (parentId, studentId), 
             FOREIGN KEY (parentId) REFERENCES parents(parentId) ON DELETE CASCADE,
             FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE
         );`
-    );
+  );
 
-    turso.execute(
-        "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null);"
-    );
+  turso.execute(
+    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null);"
+  );
 
-    turso.execute(`
+  turso.execute(`
         create table classes (
             course text check (course in ('Bca', 'Bsc')),
             year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
@@ -64,7 +64,7 @@ const createAllTables = () => {
         )
     `);
 
-    turso.execute(`
+  turso.execute(`
         CREATE TABLE IF NOT EXISTS attendance (
             attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
         
@@ -109,7 +109,7 @@ const createAllTables = () => {
         );
     `);
 
-    turso.execute(`
+  turso.execute(`
 		CREATE TABLE IF NOT EXISTS attendance_details (
 			attendanceDetailsId INTEGER PRIMARY KEY AUTOINCREMENT,
 			attendanceId INTEGER NOT NULL,
@@ -122,7 +122,7 @@ const createAllTables = () => {
 		);
 	`);
 
-    turso.execute(`
+  turso.execute(`
 		CREATE TABLE worklogs (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, 
 			
@@ -150,7 +150,7 @@ const createAllTables = () => {
 			FOREIGN KEY (year, course) REFERENCES classes(year, course));
 		`);
 
-    turso.execute(`
+  turso.execute(`
       CREATE TABLE fees (
         id INTEGER PRIMARY KEY AUTOINCREMENT, 
         year TEXT NOT NULL, 
@@ -175,7 +175,7 @@ const createAllTables = () => {
       );
     `);
 
-    turso.execute(`
+  turso.execute(`
         CREATE TABLE teacher_courses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             teacherId TEXT,
@@ -192,25 +192,26 @@ const createAllTables = () => {
                 OR
                 (teacherId IS NULL AND adminId IS NOT NULL)
             ),
+
+            UNIQUE (course_name, year, course),
             
             FOREIGN KEY (adminId) REFERENCES admins(adminId) ON DELETE CASCADE,
-            FOREIGN KEY (year, course) REFERENCES classes(year, course),
+            FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
             FOREIGN KEY (teacherId) REFERENCES teachers(teacherId) ON DELETE CASCADE
         );
     `);
-
 };
 
 const deleteAllTables = () => {
-    turso.execute("drop table if exists students");
-    turso.execute("drop table if exists teachers");
-    turso.execute("drop table if exists parents");
-    turso.execute("drop table if exists admins");
-    turso.execute("drop table if exists parent_child");
+  turso.execute("drop table if exists students");
+  turso.execute("drop table if exists teachers");
+  turso.execute("drop table if exists parents");
+  turso.execute("drop table if exists admins");
+  turso.execute("drop table if exists parent_child");
 };
 
 const insertDefaultValues = () => {
-    turso.execute(`
+  turso.execute(`
         insert into classes values 
             ('Bca', 'First', 0),
             ('Bca', 'Second', 0),

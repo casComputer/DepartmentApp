@@ -5,13 +5,15 @@ export const setUser = ({
     fullname,
     role,
 
-    // in_charge_year = "",
-    // in_charge_course = "",
+    in_charge_year = "",
+    in_charge_course = "",
 
     is_verified = false,
     rollno = "",
     dp = "",
-    dp_public_id = ""
+    dp_public_id = "",
+
+    courses = []
 }) => {
     if (!role || !userId || !fullname) return;
     storage.set("userId", userId);
@@ -19,8 +21,9 @@ export const setUser = ({
     storage.set("role", role);
     storage.set("dp", dp || "");
     storage.set("dp_public_id", dp_public_id || "");
-    // storage.set("in_charge_course", in_charge_course || "");
-    // storage.set("in_charge_year", in_charge_year || "");
+    storage.set("in_charge_course", in_charge_course || "");
+    storage.set("in_charge_year", in_charge_year || "");
+    storage.set("courses", JSON.stringify(courses || []));
 
     if (
         typeof is_verified === "boolean" ||
@@ -42,6 +45,7 @@ export const getUser = () => {
     const rollno = storage.getString("rollno") || "";
     const dp = storage.getString("dp") || "";
     const dp_public_id = storage.getString("dp_public_id") || "";
+    const courses = JSON.parse(storage.getString("courses") || "[]");
 
     return {
         userId,
@@ -52,7 +56,8 @@ export const getUser = () => {
         is_verified,
         rollno,
         dp_public_id,
-        dp
+        dp,
+        courses
     };
 };
 
@@ -71,4 +76,6 @@ export const clearUser = () => {
     storage.remove("rollno");
     storage.remove("dp");
     storage.remove("dp_public_id");
+    storage.remove("courses");
+    
 };

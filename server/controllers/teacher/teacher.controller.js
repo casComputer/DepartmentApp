@@ -9,14 +9,32 @@ export const syncUser = async (req, res) => {
         .status(400)
         .json({ message: "User ID is required.", success: false });
 
-    const { rows: user } = await turso.execute(
-      "SELECT c.year as in_charge_year, c.course as in_charge_course FROM classes c RIGHT JOIN teacher_courses tc ON c.in_charge = tc.teacherId WHERE in_charge = ?",
+    const { rows } = await turso.execute(
+      `SELECT 
+        c.year as in_charge_year, 
+        c.course as in_charge_course,
+        tc.year, tc.course, tc.course_name
+
+        FROM classes c RIGHT JOIN teacher_courses tc
+          ON c.in_charge = tc.teacherId 
+        WHERE in_charge = ?`,
       [userId]
     );
 
-    console.log(user);
+    const inCharge = {
+      year: rows[0]?.in_charge_year || null,
+      course: rows[0]?.in_charge_course || null,
+    };
 
-    return res.json({ success: true, user: user[0] });
+    return res.json({
+      success: true,
+      inCharge,
+      courses: rows.map((row) => ({
+        year: row.year,
+        course: row.course,
+        course_name: row.course_name,
+      })),
+    });
   } catch (error) {
     console.error("Error syncing teacher:", error);
 

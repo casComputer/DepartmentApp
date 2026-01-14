@@ -1,16 +1,12 @@
 import { useState } from "react";
-import { View, Button, ScrollView, Text } from "react-native";
-import { MaterialIcons } from "@icons";
+import { View, ScrollView } from "react-native";
 
 import Header from "@components/common/ProfileHeader.jsx";
 import {
-    Avatar,
-    EditDpOptions
+  Avatar,
+  EditDpOptions,
 } from "@components/common/ProfileComponents.jsx";
-import {
-    TeacherOptions,
-    CoursePrompt
-} from "@components/profile/TeacherOptions.jsx";
+import { TeacherOptions } from "@components/profile/TeacherOptions.jsx";
 
 import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import { uploadDp } from "@controller/common/profile.controller.js";
@@ -21,62 +17,55 @@ const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
 const Profile = () => {
-    const [showDpOptions, setDpOptions] = useState(false);
-    const [showCoursePrompt, setShowCoursePrompt] = useState(false);
+  const [showDpOptions, setDpOptions] = useState(false);
 
-    const fullname = useAppStore(state => state.user?.fullname || "");
+  const fullname = useAppStore((state) => state.user?.fullname || "");
 
-    const handleChangePic = async () => {
-        try {
-            setDpOptions(false);
-            const asset = await handleDocumentPick(["image/*"]);
-            if (!asset || !asset.uri) return;
+  const handleChangePic = async () => {
+    try {
+      setDpOptions(false);
+      const asset = await handleDocumentPick(["image/*"]);
+      if (!asset || !asset.uri) return;
 
-            setGlobalProgress(1);
+      setGlobalProgress(1);
 
-            const { secure_url, public_id } = await handleUpload(asset, "dp");
-            if (!secure_url || !public_id) {
-                setGlobalProgress(0);
-                return null;
-            }
+      const { secure_url, public_id } = await handleUpload(asset, "dp");
+      if (!secure_url || !public_id) {
+        setGlobalProgress(0);
+        return null;
+      }
 
-            setGlobalProgressText("Updating profile picture...");
+      setGlobalProgressText("Updating profile picture...");
 
-            await uploadDp({ secure_url, public_id });
-        } finally {
-            setGlobalProgress(0);
-        }
-    };
+      await uploadDp({ secure_url, public_id });
+    } finally {
+      setGlobalProgress(0);
+    }
+  };
 
-    return (
-        <View className="flex-1 bg-primary relative">
-            <ScrollView
-                alwaysBounceVertical
-                showsVerticalScrollIndicator={false}
-                overScrollMode="always"
-                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
-            >
-                <View className="px-4">
-                    <Header disableBackBtn={true} title={fullname} />
-                </View>
-
-                <Avatar
-                    handleChangePic={handleChangePic}
-                    handleEdit={() => setDpOptions(prev => !prev)}
-                />
-
-                <TeacherOptions setShowCoursePrompt={setShowCoursePrompt} />
-                {showCoursePrompt && (
-                    <CoursePrompt setShowCoursePrompt={setShowCoursePrompt} />
-                )}
-            </ScrollView>
-
-            <EditDpOptions
-                handleChangePic={handleChangePic}
-                show={showDpOptions}
-            />
+  return (
+    <View className="flex-1 bg-primary relative">
+      <ScrollView
+        alwaysBounceVertical
+        showsVerticalScrollIndicator={false}
+        overScrollMode="always"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+      >
+        <View className="px-4">
+          <Header disableBackBtn={true} title={fullname} />
         </View>
-    );
+
+        <Avatar
+          handleChangePic={handleChangePic}
+          handleEdit={() => setDpOptions((prev) => !prev)}
+        />
+
+        <TeacherOptions />
+      </ScrollView>
+
+      <EditDpOptions handleChangePic={handleChangePic} show={showDpOptions} />
+    </View>
+  );
 };
 
 export default Profile;

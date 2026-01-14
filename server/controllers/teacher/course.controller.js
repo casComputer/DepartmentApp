@@ -50,7 +50,8 @@ export const fetchCourses = async (req, res) => {
       SELECT year, course, course_name 
       FROM teacher_courses 
       WHERE ${userField} = ?
-    `;        
+    `;
+
     const courses = await turso.execute(query, [userId]);
 
     res.json({ success: true, courses });

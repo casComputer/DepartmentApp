@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ActivityIndicator } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 
 const MultiSelectModal = ({
@@ -7,6 +7,7 @@ const MultiSelectModal = ({
   onDone,
   title = "",
   shouldShow = false,
+  isLoading= false
 }) => {
   const [selected, setSelected] = useState([]);
 
@@ -49,6 +50,10 @@ const MultiSelectModal = ({
           data={list}
           renderItem={renderItem}
           contentContainerStyle={{ gap: 50, paddingBottom: 70 }}
+          ListHeaderComponent={
+              isLoading &&
+                    <ActivityIndicator size={'large'} />
+                }
         />
         <TouchableOpacity
           onPress={handleDone}

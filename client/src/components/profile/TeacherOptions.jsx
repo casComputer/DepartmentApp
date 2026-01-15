@@ -26,6 +26,7 @@ const CourseList = ({ courses }) => {
                 ))}
                 <TouchableOpacity
                     onPress={routeToAddCourse}
+                    activeOpacity={0.8}
                     className="px-4 py-3 rounded-3xl bg-card flex-row justify-center items-center gap-1"
                 >
                     <Feather name="edit" size={16} color="rgb(59, 130, 246)" />

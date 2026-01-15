@@ -22,7 +22,7 @@ import { COURSES, YEAR } from "@constants/ClassAndCourses.js";
 const AddCourse = () => {
     const [year, setYear] = useState(null);
     const [course, setCourse] = useState(null);
-    const [courseName, setCourseName] = useState(null);
+    const [courseName, setCourseName] = useState('');
     const [saving, setSaving] = useState(false);
 
     const [list, setList] = useState(
@@ -83,10 +83,9 @@ const AddCourse = () => {
             setYear(null);
         }
 
-        if (!finalList.length) {
-            ToastAndroid.show("No course added!", ToastAndroid.SHORT);
-            return;
-        }
+        if (!finalList.length) 
+            ToastAndroid.show("Setting your courses list empty.", ToastAndroid.SHORT);
+        
 
         setSaving(true);
         await save({ list: finalList });
@@ -99,7 +98,7 @@ const AddCourse = () => {
     };
 
     useEffect(() => {
-        if (course && year && course?.id && year?.id && !courseName.trim())
+        if (course && year && course?.id && year?.id && !courseName?.trim())
             inputRef?.current?.focus();
     }, [course, year, inputRef]);
 
@@ -137,7 +136,7 @@ const AddCourse = () => {
                     {list?.map(item => (
                         <View
                             key={`${item.id}-${item.courseName}`}
-                            className="px-2 py-2 bg-pink-600 rounded-full flex-row justify-between max-w-full items-center gap-1 overflow-hidden"
+                            className="px-2 py-2 bg-card rounded-full flex-row justify-between max-w-full items-center gap-1 overflow-hidden"
                         >
                             <TouchableOpacity
                                 onPress={() => handleRemove(item.id)}
@@ -158,12 +157,12 @@ const AddCourse = () => {
                 </View>
             </View>
             <View className="flex-1 justify-end py-8">
-                <TouchableOpacity onPress={handleAdd}>
+                <TouchableOpacity l onPress={handleAdd}>
                     <Text className="mt-8 text-2xl font-bold text-blue-500 text-center my-3">
                         Add Another
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSave}>
+                <TouchableOpacity disabled={saving} onPress={handleSave}>
                     <Text className="text-2xl font-bold text-green-500 text-center my-3">
                         {saving ? "Saving.." : "Save"}
                     </Text>

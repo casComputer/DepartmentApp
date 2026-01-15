@@ -28,7 +28,7 @@ export const addCourse = async (req, res) => {
             userId,
             item.year,
             item.course,
-            item.courseName
+            item.course_name
         ]);
 
         const query = `

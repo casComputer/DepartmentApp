@@ -28,15 +28,14 @@ const AddCourse = () => {
     const [list, setList] = useState(
         useAppStore.getState().user?.courses.map((item, index) => ({
             ...item,
-            id: index + 1,
-            courseName: item.course_name
+            id: `-${index + 1}`
         })) || []
     );
 
     const inputRef = useRef(null);
 
     const checkFields = () => {
-        if (!year || !course || !courseName) {
+        if (!year || !course || !courseName.trim()) {
             ToastAndroid.show(
                 "Please fill all the field before continuing...",
                 ToastAndroid.SHORT
@@ -55,7 +54,7 @@ const AddCourse = () => {
             {
                 course: course?.id ?? course,
                 year: year?.id ?? year,
-                courseName: courseName?.trim().toUpperCase(),
+                course_name: courseName?.trim().toUpperCase(),
                 id: prev?.length
             }
         ]);
@@ -73,7 +72,7 @@ const AddCourse = () => {
                 {
                     course: course?.id ?? course,
                     year: year?.id ?? year,
-                    courseName: courseName.trim().toUpperCase(),
+                    course_name: courseName.trim().toUpperCase(),
                     id: list.length
                 }
             ];
@@ -100,7 +99,7 @@ const AddCourse = () => {
     };
 
     useEffect(() => {
-        if (course && year && course?.id && year?.id)
+        if (course && year && course?.id && year?.id && !courseName.trim())
             inputRef?.current?.focus();
     }, [course, year, inputRef]);
 
@@ -152,7 +151,7 @@ const AddCourse = () => {
                             >
                                 {item.year?.id ?? item.year}{" "}
                                 {item.course?.id ?? item.course}{" "}
-                                {item.courseName}
+                                {item.course_name}
                             </Text>
                         </View>
                     ))}

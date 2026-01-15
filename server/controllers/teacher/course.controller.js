@@ -7,12 +7,6 @@ export const addCourse = async (req, res) => {
 
         const userField = role === "teacher" ? "teacherId" : "adminId";
 
-        if (!list?.length)
-            return res.json({
-                success: false,
-                message: "Courses list is empty!"
-            });
-
         await turso.execute(
             `
         DELETE FROM teacher_courses WHERE ${userField} = ?
@@ -20,10 +14,14 @@ export const addCourse = async (req, res) => {
             [userId]
         );
 
-        // Build placeholders
+        if (!list?.length)
+            return res.json({
+                success: true,
+                message: "Courses list set to empty"
+            });
+
         const placeholders = list.map(() => "(?, ?, ?, ?)").join(", ");
 
-        // Flatten values
         const values = list.flatMap(item => [
             userId,
             item.year,

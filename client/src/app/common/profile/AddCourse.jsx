@@ -22,21 +22,20 @@ import { COURSES, YEAR } from "@constants/ClassAndCourses.js";
 const AddCourse = () => {
   const [year, setYear] = useState(null);
   const [course, setCourse] = useState(null);
-  const [courseName, setCourseName] = useState(null);
+  const [courseName, setCourseName] = useState("");
+  const [saving, setSaving] = useState(false);
+  
   const [list, setList] = useState(
-    useAppStore
-      .getState()
-      .user?.courses.map((item, index) => ({
-        ...item,
-        id: index + 1,
-        courseName: item.course_name,
-      })) || []
+    useAppStore.getState().user?.courses.map((item, index) => ({
+      ...item,
+      id: `-${index + 1}`,
+    })) || []
   );
 
   const inputRef = useRef(null);
 
   const checkFields = () => {
-    if (!year || !course || !courseName) {
+    if (!year || !course || !courseName.trim()) {
       ToastAndroid.show(
         "Please fill all the field before continuing...",
         ToastAndroid.SHORT
@@ -46,23 +45,16 @@ const AddCourse = () => {
     return true;
   };
 
-  const handleSave = () => {
-    if (!list || !list.length)
-      return ToastAndroid.show("No course added!", ToastAndroid.SHORT);
-
-    save({ list });
-  };
-
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!checkFields()) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     setList((prev) => [
       ...prev,
       {
-        course,
-        year,
-        courseName: courseName?.trim().toUpperCase(),
+        course: course?.id ?? course,
+        year: year?.id ?? year,
+        course_name: courseName?.trim().toUpperCase(),
         id: prev?.length,
       },
     ]);
@@ -71,13 +63,42 @@ const AddCourse = () => {
     setYear(null);
   };
 
+  const handleSave = async () => {
+    let finalList = list;
+
+    if (year && course && courseName) {
+      finalList = [
+        ...list,
+        {
+          course: course?.id ?? course,
+          year: year?.id ?? year,
+          course_name: courseName.trim().toUpperCase(),
+          id: list.length,
+        },
+      ];
+
+      setList(finalList);
+      setCourseName("");
+      setCourse(null);
+      setYear(null);
+    }
+
+    if (!finalList.length)
+      ToastAndroid.show("Setting your courses list empty.", ToastAndroid.SHORT);
+
+    setSaving(true);
+    await save({ list: finalList });
+    setSaving(false);
+  };
+
   const handleRemove = (id) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setList((prev) => [...prev.filter((item) => item.id !== id)]);
   };
 
   useEffect(() => {
-    if (course && year && course?.id && year?.id) inputRef?.current?.focus();
+    if (course && year && course?.id && year?.id && !courseName?.trim())
+      inputRef?.current?.focus();
   }, [course, year, inputRef]);
 
   return (
@@ -105,11 +126,12 @@ const AddCourse = () => {
           onSubmitEditing={handleAdd}
           onChangeText={setCourseName}
         />
+
         <View className="flex-wrap flex-row items-center gap-2 mt-5">
           {list?.map((item) => (
             <View
               key={`${item.id}-${item.courseName}`}
-              className="px-2 py-2 bg-pink-600 rounded-full flex-row justify-between max-w-full items-center gap-1 overflow-hidden"
+              className="px-2 py-2 bg-card rounded-full flex-row justify-between max-w-full items-center gap-1 overflow-hidden"
             >
               <TouchableOpacity onPress={() => handleRemove(item.id)}>
                 <Entypo name="cross" size={22} />
@@ -119,8 +141,8 @@ const AddCourse = () => {
                 numberOfLines={1}
                 className="max-w-full text-text font-bold text-sm text-center"
               >
-                {item.year.id ?? item.year} {item.course.id ?? item.course}{" "}
-                {item.courseName}
+                {item.year?.id ?? item.year} {item.course?.id ?? item.course}{" "}
+                {item.course_name}
               </Text>
             </View>
           ))}
@@ -132,9 +154,9 @@ const AddCourse = () => {
             Add Another
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleSave}>
+        <TouchableOpacity disabled={saving} onPress={handleSave}>
           <Text className="text-2xl font-bold text-green-500 text-center my-3">
-            Save
+            {saving ? "Saving.." : "Save"}
           </Text>
         </TouchableOpacity>
       </View>

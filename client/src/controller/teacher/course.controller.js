@@ -14,10 +14,11 @@ export const save = async ({ list }) => {
                 ToastAndroid.SHORT
             );
             useAppStore.getState().updateUser({ courses: list });
+
             router.back()
         } else
             ToastAndroid.show(
-                data?.message ?? "Courses updation failed!",
+                data?.message ?? "Courses updated failed",
                 ToastAndroid.LONG
             );
     } catch (error) {

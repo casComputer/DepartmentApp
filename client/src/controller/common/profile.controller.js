@@ -28,8 +28,6 @@ export const uploadDp = async data => {
                 dp_public_id: public_id
             };
 
-            console.log(updateData);
-
             useAppStore.getState().updateUser(updateData);
         } else
             ToastAndroid.show(

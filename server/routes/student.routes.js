@@ -3,22 +3,33 @@ import { Worker } from "worker_threads";
 
 import { turso } from "../config/turso.js";
 import AttendanceModel from "../models/monthlyAttendanceReport.js";
-import { getFirstAndLastDate, getRemainingWorkSummary } from '../utils/workHour.js'
+import {
+  getFirstAndLastDate,
+  getRemainingWorkSummary,
+} from "../utils/workHour.js";
 
 import {
-    fetchStudentsByClass,
-    fetchStudentsByClassTeacher,
-    saveStudentDetails
+  fetchStudentsByClass,
+  fetchStudentsByClassTeacher,
+  saveStudentDetails,
 } from "../controllers/student/students.controller.js";
+
 import {
-    autoAssignRollNoAlphabetically,
-    assignGroupedRollNo
+  autoAssignRollNoAlphabetically,
+  assignGroupedRollNo,
 } from "../controllers/student/rollno.controller.js";
+
 import {
-    verifyStudent,
-    verifyMultipleStudents,
-    cancelStudentVerification
+  verifyStudent,
+  verifyMultipleStudents,
+  cancelStudentVerification,
 } from "../controllers/student/verification.controller.js";
+
+import {
+  generateAttendanceCalendarReport,
+  getTodaysAttendanceReport,
+  getMonthlyAttendanceMiniReport,
+} from "../controllers/student/attendance.controller.js";
 
 const router = express.Router();
 
@@ -40,116 +51,56 @@ router.post("/assignGroupedRollNo", assignGroupedRollNo);
 
 // actual student routes that are accessed by students
 
-router.post("/getTodaysAttendanceReport", async (req, res) => {
-    try {
-        const { userId } = req.body;
+router.post("/getTodaysAttendanceReport", getTodaysAttendanceReport);
 
-        const today = new Date();
+router.post("/getMonthlyAttendanceMiniReport", getMonthlyAttendanceMiniReport);
 
-        const date = today.toISOString().slice(0, 10);
+router.post(
+  "/generateAttendanceCalendarReport",
+  generateAttendanceCalendarReport
+);
 
-        const { rows } = await turso.execute(
-            `
-			SELECT *
-				FROM attendance a
-				JOIN students s
-					ON s.year_of_study = a.year
-					AND s.course = a.course
-				
-				JOIN attendance_details ad
-					ON ad.attendanceId = a.attendanceId
-					AND ad.studentId = s.studentId
+router.post("/getYearlyAttendanceReport", async (req, res) => {
 
+  try {
+    const { year } = req.body;
+    const { userId } = req.user;
 
-			WHERE s.studentId = ?
-			AND a.date = ?
-		`,
-            [userId, date]
-        );
-
-        let attendance = rows.reduce((acc, item) => {
-            acc[item.hour] = item.status;
-            return acc;
-        }, {});
-
-        res.json({
-            attendance,
-            success: true
-        });
-    } catch (err) {
-        console.error("Error while getting daily attendance report: ", err);
-        res.json({ mesage: "internal server error", success: false });
-    }
-});
-
-router.post("/getMonthlyAttendanceMiniReport", async (req, res) => {
-    try {
-        const { userId } = req.body;
-        
-        const {first, last} = getFirstAndLastDate()
-
-        const { rows } = await turso.execute(
-            `
-            SELECT
-                COUNT(CASE WHEN ad.status = 'present' THEN 1 END) AS total_present,
-                COUNT(DISTINCT a.date) AS workedDays,
+    const { rows } = await turso.execute(
+      `
+            SELECT *
+                FROM attendance a
+                JOIN students s
+                    ON s.year_of_study = a.year
+                    AND s.course = a.course
                 
-                (COUNT(CASE WHEN ad.status = 'present' THEN 1 END) * 100.0) 
-                    / (COUNT(DISTINCT a.date) * 5) AS percentage
-            
-            FROM attendance_details ad
-            
-            JOIN attendance a
-                ON a.attendanceId = ad.attendanceId
-            
-            WHERE ad.studentId = ?
-                AND a.date BETWEEN ? AND ?
-                
-            GROUP BY ad.studentId;`,
-            [userId, first, last]
-        );
-        
-        
-        const { remainingDays, remainingHours } = getRemainingWorkSummary();
-        if (rows.length > 0) {
-            const workedDays = rows[0].workedDays || 0;
+                JOIN attendance_details ad
+                    ON ad.attendanceId = a.attendanceId
+                    AND ad.studentId = s.studentId  
+            WHERE s.studentId = ?
+            AND strftime('%Y', a.date) = ?
+        `,
+      [userId, year]
+    );
 
-            return res.json({
-                success: true,
-                report: { ...rows[0], workedDays, remainingHours, remainingDays}
-            });
-        }
+    let report = rows.map((item) => ({
+      date: item.date,
+      status: item.status,
+    }));
 
-        res.json({
-            success: false,
-            message: "No data available, try again later!",
-            report: {
-                remainingDays, remainingHours
-            }
-        });
-    } catch (err) {
-        console.error("Error while fetching monthly attendance report: ", err);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error!"
-        });
-    }
+
+    res.json({
+      success: true,
+      report,
+    });
+  } catch (err) {
+    console.error("Error while fetching yearly attendance report: ", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error!",
+    });
+  }
 });
 
-router.post("/getAttendanceReport", async (req, res) => {
-    try {
-        const { userId, year } = req.body;
-        
-        const first = `${year}-01-01`;
-        const last = `${year}-12-31`;
-
-    } catch (err) {
-        console.error("Error while fetching attendance report: ", err);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error!"
-        });
-    }
-});
 
 export default router;

@@ -11,9 +11,11 @@ import {
 
 import { fetch as fetchFees } from "@controller/student/fees.controller.js";
 
-import { formatDate, isDatePassed } from "@utils/date.js";
+import { formatDate, isDatePassed, getRemainingDays } from "@utils/date.js";
 
 const RenderItem = ({ item }) => {
+    const remainingDays = getRemainingDays(item?.dueDate);
+
     return (
         <View
             style={{ boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.5)" }}
@@ -21,17 +23,34 @@ const RenderItem = ({ item }) => {
         >
             <Text className="text-text text-lg font-bold">{item?.details}</Text>
             <Text className="text-text text-xl font-bold">
-                Amount: {item?.amount}
+                {new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR"
+                }).format(item.amount)}
             </Text>
-            <Text
-                className={`${
-                    isDatePassed(item.dueDate) ? "text-red-500" : "text-text"
-                } text-md font-bold mt-2`}
-            >
-                Due date: {formatDate(item?.dueDate)}
-            </Text>
+            <View className="flex-row justify-between items-center">
+                <Text
+                    className={`${
+                        isDatePassed(item.dueDate)
+                            ? "text-red-500"
+                            : "text-text"
+                    } text-md font-bold mt-2`}
+                >
+                    Due date: {formatDate(item?.dueDate)}
+                </Text>
+                {remainingDays >= 0 ? (
+                    <Text className="text-text text-sm font-bold">
+                        {remainingDays} days remaining.
+                    </Text>
+                ) : (
+                    <Text className="text-red-500 text-sm font-bold">
+                        Overdue by {Math.abs(remainingDays)} day
+                        {Math.abs(remainingDays) !== 1 && "s"}
+                    </Text>
+                )}
+            </View>
             <Text className="text-text text-sm font-bold">
-                Created on {formatDate(item?.timestamp ?? item.createdAt)}
+                Created on {formatDate(item?.timestamp)}
             </Text>
         </View>
     );
@@ -80,9 +99,7 @@ const History = () => {
                     isLoading && !isRefetching ? (
                         <ActivityIndicator size="large" />
                     ) : (
-                        <ListHeaderComponent
-                            date={fees?.[0]?.timestamp}
-                        />
+                        <ListHeaderComponent date={fees?.[0]?.timestamp} />
                     )
                 }
                 ItemSeparatorComponent={ItemSeparator}

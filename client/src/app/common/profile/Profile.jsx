@@ -17,6 +17,8 @@ import { useAppStore } from "@store/app.store.js";
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
+const role = useAppStore.getState().user.role;
+
 const Profile = () => {
     const [showDpOptions, setDpOptions] = useState(false);
 
@@ -51,7 +53,7 @@ const Profile = () => {
                 showsVerticalScrollIndicator={false}
                 overScrollMode="always"
                 contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
-                onTouchStart={()=> setDpOptions(false)}
+                onTouchStart={() => setDpOptions(false)}
             >
                 <View className="px-4">
                     <Header disableBackBtn={true} title={fullname} />
@@ -61,13 +63,15 @@ const Profile = () => {
                     handleChangePic={handleChangePic}
                     handleEdit={() =>
                         setDpOptions(prev => {
-                            if(!prev) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            if (!prev)
+                                Haptics.impactAsync(
+                                    Haptics.ImpactFeedbackStyle.Light
+                                );
                             return !prev;
                         })
                     }
                 />
-
-                <TeacherOptions />
+                {role === "teacher" && <TeacherOptions />}
             </ScrollView>
 
             <EditDpOptions

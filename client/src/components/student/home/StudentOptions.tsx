@@ -11,7 +11,7 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
-const ICONS_SIZE = 40;
+const ICONS_SIZE = 35;
 
 const optionsData = [
     {
@@ -36,18 +36,6 @@ const optionsData = [
         Icon: AntDesign,
         iconName: "file-search",
         text: "Exam Results",
-        locaton: "",
-    },
-    {
-        Icon: AntDesign,
-        iconName: "message",
-        text: "Chat",
-        locaton: "",
-    },
-    {
-        Icon: Entypo,
-        iconName: "book",
-        text: "Notes",
         locaton: "",
     },
     {

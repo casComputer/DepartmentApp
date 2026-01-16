@@ -12,7 +12,7 @@ const Home = () => {
         paddingBottom: 150,
         flexGrow: 1,
       }}
-      showVerticalIndicator={false}
+      showsVerticalScrollIndicator={false}
       className="bg-primary"
     >
       <Header />

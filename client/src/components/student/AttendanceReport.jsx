@@ -57,7 +57,7 @@ export const SelectYear = () => {
     };
 
     return (
-        <View className="w-full mt-12 h-16 flex-row items-center justify-between px-20 mb-3">
+        <View className="w-full h-16 flex-row items-center justify-between px-20 mb-3">
             <TouchableOpacity onPress={() => handleChangeYear(-1)}>
                 <Feather
                     name="chevron-left"

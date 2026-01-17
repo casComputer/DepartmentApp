@@ -1,5 +1,10 @@
 import { turso } from "../../config/turso.js";
 
+import {
+  getFirstAndLastDate,
+  getRemainingWorkSummary,
+} from "../utils/workHour.js";
+
 export const generateAttendanceCalendarReport = async (req, res) => {
   try {
     const { month, year } = req.body;

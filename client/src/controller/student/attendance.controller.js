@@ -50,6 +50,26 @@ export const getMonthlyAttendenceMiniReport = async () => {
   }
 };
 
+export const getYearlyAttendenceReport = async (year) => {
+  try {
+    const res = await axios.post("/student/getYearlyAttendanceReport", {
+      year
+    });
+
+    if (res.data.success) return res.data;
+    else {
+      return res.data.report;
+    }
+  } catch (error) {
+    console.error(error);
+    ToastAndroid.show(
+      `Failed to fetching yearly attendance report!`,
+      ToastAndroid.LONG
+    );
+    throw new Error(error.message);
+  }
+};
+
 export const generateAttendanceCalendarReport = async (month, year) => {
   try {
     const userId = useAppStore.getState().user?.userId;

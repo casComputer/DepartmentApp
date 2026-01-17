@@ -49,7 +49,7 @@ export const Chart = () => {
         enabled: year !== null || year != undefined
     });
 
-    console.log(d);
+    console.log(year, d);
 
     return (
         <View>

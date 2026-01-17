@@ -59,31 +59,31 @@ router.post("/getYearlyAttendanceReport", async (req, res) => {
         const { year } = req.body;
         const { userId } = req.user;
 
+        if (!year)
+            return res.json({ success: false, message: "year is missing!" });
+
         const { rows } = await turso.execute(
             `
-            SELECT *
-                FROM attendance a
-                JOIN students s
-                    ON s.year_of_study = a.year
-                    AND s.course = a.course
-                
-                JOIN attendance_details ad
-                    ON ad.attendanceId = a.attendanceId
-                    AND ad.studentId = s.studentId  
+            SELECT
+                strftime('%m', a.date) AS month,
+                COUNT(ad.attendanceId) AS value
+            FROM attendance a
+            JOIN students s
+                ON s.year_of_study = a.year
+                AND s.course = a.course
+            JOIN attendance_details ad
+                ON ad.attendanceId = a.attendanceId
+                AND ad.studentId = s.studentId
             WHERE s.studentId = ?
-            AND strftime('%Y', a.date) = ?
-        `,
+                AND strftime('%Y', a.date) = ?
+                GROUP BY month
+                ORDER BY month
+              `,
             [userId, year]
         );
 
-        let report = rows.map(item => ({
-            date: item.date,
-            status: item.status
-        }));
-
         res.json({
             success: true,
-            report,
             rows
         });
     } catch (err) {

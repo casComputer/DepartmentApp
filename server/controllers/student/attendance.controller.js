@@ -63,8 +63,6 @@ export const generateAttendanceCalendarReport = async (req, res) => {
       };
     }
 
-    console.log(report);
-
     res.json({
       success: true,
       report,

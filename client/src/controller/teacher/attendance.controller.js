@@ -50,35 +50,25 @@ export const saveAttendance = async ({
     }
 };
 
-export const getAttendanceHistoryByTeacherId = async ({
-    pageParam,
-    limit,
-    course,
-    year
-}) => {
+export const getAttendanceHistoryByTeacherId = async ({ pageParam, limit }) => {
     try {
-        const { userId, role } = useAppStore.getState().user;
+        const { data } = await axios.post(
+            "/attendance/getAttandanceTakenByTeacher",
+            { page: pageParam, limit }
+        );
 
-        if (course && year) {
-        } else {
-            const { data } = await axios.post(
-                "/attendance/getAttandanceTakenByTeacher",
-                { userId, role, page: pageParam, limit }
-            );
-
-            if (data.success && data.attendance)
-                return {
-                    data: data.attendance,
-                    nextPage: data.nextPage,
-                    hasMore: data.hasMore
-                };
-            else
-                return {
-                    data: [],
-                    nextPage: null,
-                    hasMore: false
-                };
-        }
+        if (data.success && data.attendance)
+            return {
+                data: data.attendance,
+                nextPage: data.nextPage,
+                hasMore: data.hasMore
+            };
+        else
+            return {
+                data: [],
+                nextPage: null,
+                hasMore: false
+            };
     } catch (error) {
         console.log("Error while getting attendance history: ", error);
         ToastAndroid.show(

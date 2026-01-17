@@ -1,7 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ActivityIndicator, View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { useLocalSearchParams } from "expo-router";
 
 import Header from "@components/common/Header";
 import { AttendanceHistoryRenderItem } from "@components/teacher/Attendance.jsx";
@@ -15,8 +14,6 @@ import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.
 const AttendanceHistory = () => {
     const limit = 20;
 
-    const { year, course } = useLocalSearchParams();
-
     const {
         data,
         isLoading,
@@ -28,9 +25,9 @@ const AttendanceHistory = () => {
         refetch,
         isRefetching
     } = useInfiniteQuery({
-        queryKey: ["attendance", course, year],
+        queryKey: ["attendanceHistory"],
         queryFn: ({ pageParam = 1 }) =>
-            getAttendanceHistoryByTeacherId({ pageParam, limit, course, year }),
+            getAttendanceHistoryByTeacherId({ pageParam, limit }),
         getNextPageParam: lastPage =>
             lastPage.hasMore ? lastPage.nextPage : undefined
     });

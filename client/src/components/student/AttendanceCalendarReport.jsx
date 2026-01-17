@@ -11,7 +11,7 @@ const CalendarItem = ({ day, status }) => {
         present: "text-green-500",
         absent: "text-red-500"
     };
-    
+
     if (!day) {
         return <View className="h-12 w-[14.28%]" />;
     }
@@ -31,8 +31,7 @@ const CalendarItem = ({ day, status }) => {
     );
 };
 
-const CalendarDatePicker = ({ date, setDate }) => {
-
+const CalendarDatePicker = ({ loading, date, setDate }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const month = date.toLocaleString("default", { month: "long" });
@@ -63,6 +62,8 @@ const CalendarDatePicker = ({ date, setDate }) => {
             <TouchableOpacity onPress={handleMonthUp}>
                 <Feather name="chevron-right" size={24} />
             </TouchableOpacity>
+            {loading && <ActivityIndicator size="small" style={{ position: 'absolute', right : '4.5%'}} />}
+
             {showDatePicker && (
                 <DateTimePickerAndroid
                     mode="date"
@@ -149,6 +150,7 @@ export const AttendanceCalendar = () => {
                 date={date}
                 setDate={setDate}
                 setReport={setReport}
+                loading={loading}
             />
 
             {/* Weekday header */}
@@ -159,8 +161,6 @@ export const AttendanceCalendar = () => {
                     </View>
                 ))}
             </View>
-
-            {loading && <ActivityIndicator size="small" />}
 
             <FlashList
                 data={report}

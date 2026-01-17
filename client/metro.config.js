@@ -23,4 +23,5 @@ if (isTermux) {
     process.env.CHOKIDAR_USEPOLLING = "true";
 }
 
+
 module.exports = withUniwindConfig(config, { cssEntryFile: "./global.css" });

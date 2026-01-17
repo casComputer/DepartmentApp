@@ -1,34 +1,28 @@
 import express from "express";
-import { Worker } from "worker_threads";
 
 import { turso } from "../config/turso.js";
-import AttendanceModel from "../models/monthlyAttendanceReport.js";
-import {
-  getFirstAndLastDate,
-  getRemainingWorkSummary,
-} from "../utils/workHour.js";
 
 import {
-  fetchStudentsByClass,
-  fetchStudentsByClassTeacher,
-  saveStudentDetails,
+    fetchStudentsByClass,
+    fetchStudentsByClassTeacher,
+    saveStudentDetails
 } from "../controllers/student/students.controller.js";
 
 import {
-  autoAssignRollNoAlphabetically,
-  assignGroupedRollNo,
+    autoAssignRollNoAlphabetically,
+    assignGroupedRollNo
 } from "../controllers/student/rollno.controller.js";
 
 import {
-  verifyStudent,
-  verifyMultipleStudents,
-  cancelStudentVerification,
+    verifyStudent,
+    verifyMultipleStudents,
+    cancelStudentVerification
 } from "../controllers/student/verification.controller.js";
 
 import {
-  generateAttendanceCalendarReport,
-  getTodaysAttendanceReport,
-  getMonthlyAttendanceMiniReport,
+    generateAttendanceCalendarReport,
+    getTodaysAttendanceReport,
+    getMonthlyAttendanceMiniReport
 } from "../controllers/student/attendance.controller.js";
 
 const router = express.Router();
@@ -56,18 +50,17 @@ router.post("/getTodaysAttendanceReport", getTodaysAttendanceReport);
 router.post("/getMonthlyAttendanceMiniReport", getMonthlyAttendanceMiniReport);
 
 router.post(
-  "/generateAttendanceCalendarReport",
-  generateAttendanceCalendarReport
+    "/generateAttendanceCalendarReport",
+    generateAttendanceCalendarReport
 );
 
 router.post("/getYearlyAttendanceReport", async (req, res) => {
+    try {
+        const { year } = req.body;
+        const { userId } = req.user;
 
-  try {
-    const { year } = req.body;
-    const { userId } = req.user;
-
-    const { rows } = await turso.execute(
-      `
+        const { rows } = await turso.execute(
+            `
             SELECT *
                 FROM attendance a
                 JOIN students s
@@ -80,27 +73,26 @@ router.post("/getYearlyAttendanceReport", async (req, res) => {
             WHERE s.studentId = ?
             AND strftime('%Y', a.date) = ?
         `,
-      [userId, year]
-    );
+            [userId, year]
+        );
 
-    let report = rows.map((item) => ({
-      date: item.date,
-      status: item.status,
-    }));
+        let report = rows.map(item => ({
+            date: item.date,
+            status: item.status
+        }));
 
-
-    res.json({
-      success: true,
-      report,
-    });
-  } catch (err) {
-    console.error("Error while fetching yearly attendance report: ", err);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error!",
-    });
-  }
+        res.json({
+            success: true,
+            report,
+            rows
+        });
+    } catch (err) {
+        console.error("Error while fetching yearly attendance report: ", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+    }
 });
-
 
 export default router;

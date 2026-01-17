@@ -43,7 +43,7 @@ const MiniAttentdenceCard = () => {
 
     return (
         <View className="px-3 mt-12">
-            <TouchableOpacity
+            <View
                 style={{ boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
                 className="w-full rounded-3xl overflow-hidden p-8 gap-8 bg-card"
             >
@@ -90,7 +90,7 @@ const MiniAttentdenceCard = () => {
                         )}
                     </View>
                 </View>
-            </TouchableOpacity>
+            </View>
         </View>
     );
 };

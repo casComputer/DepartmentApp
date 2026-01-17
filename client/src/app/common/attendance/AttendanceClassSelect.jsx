@@ -36,8 +36,6 @@ const Attendance = () => {
         }
     };
 
-    console.log(user)
-
     return (
         <ScrollView
             className="bg-primary"

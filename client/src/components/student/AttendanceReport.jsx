@@ -39,11 +39,14 @@ export const Chart = () => {
 
     return (
         <View>
-            <Text className="text-text font-bold text-2xl text-center mt-8"> Yearly Report</Text>
+            <Text className="text-text font-bold text-2xl text-center mt-8">
+                Yearly Report
+            </Text>
             <SelectYear setYear={setYear} year={year} />
             {isLoading && <ActivityIndicator />}
             {data?.length && (
                 <BarChart
+                    key={year}
                     data={data ?? []}
                     noOfSections={4}
                     barBorderRadius={4}

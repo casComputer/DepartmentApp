@@ -193,16 +193,19 @@ export const save = async (req, res) => {
 
 export const getAttandanceTakenByTeacher = async (req, res) => {
     try {
-        const { teacherId, page = 1, limit = 10 } = req.body;
+        const { page = 1, limit = 10 } = req.body;
+        const { userId: teacherId, role } = req.user;
+
         const offset = (page - 1) * limit;
+        const userField = role === "teacher" ? "teacherId" : "adminId";
 
         const { rows: attendance } = await turso.execute(
-            "SELECT * FROM attendance WHERE teacherId = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?",
+            `SELECT * FROM attendance WHERE ${userField} = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
             [teacherId, limit, offset]
         );
 
         const totalCountResult = await turso.execute(
-            "SELECT COUNT(*) as count FROM attendance WHERE teacherId = ?",
+            `SELECT COUNT(*) as count FROM attendance WHERE ${userField} = ?`,
             [teacherId]
         );
         const totalCount = totalCountResult.rows[0].count;

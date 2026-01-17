@@ -79,7 +79,7 @@ router.post("/getYearlyAttendanceReport", async (req, res) => {
                 GROUP BY month
                 ORDER BY month
               `,
-            [userId, year]
+            [userId, year?.toString()]
         );
         
         console.log(userId, year, rows);

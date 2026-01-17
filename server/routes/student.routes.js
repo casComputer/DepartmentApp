@@ -81,6 +81,8 @@ router.post("/getYearlyAttendanceReport", async (req, res) => {
               `,
             [userId, year]
         );
+        
+        console.log(userId, year, rows);
 
         res.json({
             success: true,

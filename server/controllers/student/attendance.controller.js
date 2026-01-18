@@ -185,7 +185,6 @@ export const overallAttendenceReport = async (req, res) => {
       SELECT
       COUNT(*) AS total_classes,
       SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END) AS total_present,
-      SUM(CASE WHEN ad.status IN ('late') THEN 1 ELSE 0 END) AS total_late,
       SUM(CASE WHEN ad.status = 'absent' THEN 1 ELSE 0 END) AS total_absent,
       COUNT(DISTINCT a.date) AS workedDays,
       a.course,
@@ -314,7 +313,6 @@ export const overallAttendenceReport = async (req, res) => {
           currentPercentage,
           classesAttended: total_present,
           totalClassesSoFar: total_classes,
-          total_late
         },
         time_analysis: {
           passedWorkingDays: Number(workedDays || 0),

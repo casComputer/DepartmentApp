@@ -4,12 +4,13 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Dimensions,
+    Dimensions
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 
 import CircularProgress from "@components/common/CircularProgress";
-import { getMonthlyAttendenceMiniReport } from "@controller/student/attendance.controller.js";
+import { getOverallAttendenceReport } from "@controller/student/attendance.controller.js";
 
 const { width: vw } = Dimensions.get("window");
 
@@ -21,16 +22,18 @@ const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
 
 export default function MonthlyAttendenceMiniReport() {
     const { data: report, status } = useQuery({
-        queryKey: ["MonthlyAttendenceMiniReport"],
-        queryFn: getMonthlyAttendenceMiniReport,
+        queryKey: ["OverallAttendenceReport"],
+        queryFn: getOverallAttendenceReport
     });
 
     return (
-        <View
+        <TouchableOpacity
+        onPress={()=> router.push("(student)/(others)/AttendanceSummary")}
+            activeOpacity={0.75}
             style={{
                 boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)",
                 width: containerWidth,
-                gap: gap,
+                gap: gap
             }}
             className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 flex-row justify-between items-center bg-card"
         >
@@ -80,6 +83,6 @@ export default function MonthlyAttendenceMiniReport() {
                     Ongoing Days
                 </Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }

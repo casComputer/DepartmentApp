@@ -10,6 +10,13 @@ import {
     getClassAttendance
 } from "../controllers/teacher/attendance.controller.js";
 
+import {
+    generateAttendanceCalendarReport,
+    getTodaysAttendanceReport,
+    getMonthlyAttendanceMiniReport,
+    getYearlyAttendanceReport
+} from "../controllers/student/attendance.controller.js";
+
 router.post("/save", save);
 
 router.post("/getAttandanceTakenByTeacher", getAttandanceTakenByTeacher);
@@ -17,5 +24,16 @@ router.post("/getAttandanceTakenByTeacher", getAttandanceTakenByTeacher);
 router.post("/fetchStudentsForAttendance", fetchStudentsForAttendance);
 
 router.post("/getClassAttendance", getClassAttendance);
+
+router.post("/getTodaysAttendanceReport", getTodaysAttendanceReport);
+
+router.post("/getMonthlyAttendanceMiniReport", getMonthlyAttendanceMiniReport);
+
+router.post(
+    "/generateAttendanceCalendarReport",
+    generateAttendanceCalendarReport
+);
+
+router.post("/getYearlyAttendanceReport", getYearlyAttendanceReport);
 
 export default router;

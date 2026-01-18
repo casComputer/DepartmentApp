@@ -171,3 +171,48 @@ export const getMonthlyAttendanceMiniReport = async (req, res) => {
     });
   }
 };
+
+export const getYearlyAttendanceReport = async (req, res) => {
+    try {
+        const { year } = req.body;
+        const { userId } = req.user;
+
+        if (!year)
+            return res.json({ success: false, message: "year is missing!" });
+
+        const { rows } = await turso.execute(
+            `
+            SELECT
+                strftime('%m', a.date) AS month,
+                COUNT(ad.attendanceId) AS value,
+                
+                (COUNT(CASE WHEN ad.status = 'present' THEN 1 END) * 100.0) 
+                    / (COUNT(DISTINCT a.date) * 5) AS percentage
+            
+            FROM attendance a
+            JOIN students s
+                ON s.year_of_study = a.year
+                AND s.course = a.course
+            JOIN attendance_details ad
+                ON ad.attendanceId = a.attendanceId
+                AND ad.studentId = s.studentId
+            WHERE s.studentId = ?
+                AND strftime('%Y', a.date) = ?
+                GROUP BY month
+                ORDER BY month
+              `,
+            [userId, year?.toString()]
+        );
+
+        res.json({
+            success: true,
+            rows
+        });
+    } catch (err) {
+        console.error("Error while fetching yearly attendance report: ", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+    }
+}

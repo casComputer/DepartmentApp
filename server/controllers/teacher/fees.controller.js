@@ -107,7 +107,7 @@ export const fetch = async (req, res) => {
     }
 };
 
-export const deleteFee = async () => {
+export const deleteFee = async (req, res) => {
     try {
         const { feeId } = req.body;
         if (!feeId)

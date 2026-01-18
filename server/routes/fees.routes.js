@@ -7,8 +7,8 @@ import {
     fetch as fetchByTeacher,
     deleteFee
 } from "../controllers/teacher/fees.controller.js";
-import { fetch as fetchByStudent } from "../controllers/teacher/fees.controller.js";
-student;
+import { fetch as fetchByStudent } from "../controllers/student/fees.controller.js";
+
 const router = express.Router();
 
 router.post("/create", create);

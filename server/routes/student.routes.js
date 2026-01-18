@@ -19,12 +19,6 @@ import {
     cancelStudentVerification
 } from "../controllers/student/verification.controller.js";
 
-import {
-    generateAttendanceCalendarReport,
-    getTodaysAttendanceReport,
-    getMonthlyAttendanceMiniReport
-} from "../controllers/student/attendance.controller.js";
-
 const router = express.Router();
 
 router.post("/fetchStudentsByClass", fetchStudentsByClass);

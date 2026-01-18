@@ -152,7 +152,7 @@ const createAllTables = () => {
 
   turso.execute(`
       CREATE TABLE fees (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        feeId INTEGER PRIMARY KEY AUTOINCREMENT, 
         year TEXT NOT NULL, 
         course TEXT NOT NULL, 
         dueDate TEXT NOT NULL, 

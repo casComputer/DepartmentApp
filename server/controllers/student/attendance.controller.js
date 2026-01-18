@@ -185,6 +185,7 @@ export const overallAttendenceReport = async (req, res) => {
       SELECT
       COUNT(*) AS total_classes,
       SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END) AS total_present,
+      SUM(CASE WHEN ad.status IN ('late') THEN 1 ELSE 0 END) AS total_late,
       SUM(CASE WHEN ad.status = 'absent' THEN 1 ELSE 0 END) AS total_absent,
       COUNT(DISTINCT a.date) AS workedDays,
       a.course,
@@ -206,7 +207,7 @@ export const overallAttendenceReport = async (req, res) => {
             status: "No Data",
             currentPercentage: 0,
             classesAttended: 0,
-            totalClassesSoFar: 0
+            totalClassesSoFar: 0,
           },
           time_analysis: {
             passedWorkingDays: 0,
@@ -312,7 +313,8 @@ export const overallAttendenceReport = async (req, res) => {
           status: projections.isCritical ? "Critical": "Good",
           currentPercentage,
           classesAttended: total_present,
-          totalClassesSoFar: total_classes
+          totalClassesSoFar: total_classes,
+          total_late
         },
         time_analysis: {
           passedWorkingDays: Number(workedDays || 0),
@@ -332,7 +334,7 @@ export const overallAttendenceReport = async (req, res) => {
           expectedMaxPercentage: projections.maxPossiblePercent,
           safetyMarginClasses: projections.safetyMarginClasses,
           message: projections.isCritical
-          ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: `You can afford to miss ${projections.safetyMarginClasses} more classes and still maintain ${75}%.`
+          ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: `You can afford to miss ${projections.safetyMarginClasses} more individual periods and still maintain ${75}%.`
         }
       }
     });

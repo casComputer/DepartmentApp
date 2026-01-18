@@ -7,6 +7,7 @@ import {
     FontAwesome6,
     MaterialCommunityIcons,
     SimpleLineIcons,
+    Octicons
 } from "@icons";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
@@ -44,10 +45,11 @@ const optionsData = [
         text: "Internal Marks",
         locaton: "",
     },
+
     {
-        Icon: FontAwesome,
-        iconName: "graduation-cap",
-        text: "Course",
+        Icon: Octicons,
+        iconName: "person",
+        text: "Teacher",
         locaton: "",
     },
 ];

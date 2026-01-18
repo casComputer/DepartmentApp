@@ -25,6 +25,11 @@ export default function MonthlyAttendenceMiniReport() {
         queryKey: ["OverallAttendenceReport"],
         queryFn: getOverallAttendenceReport
     });
+    
+    const percentage = report?.summary?.currentPercentage ?? 0
+    const classesAttended = report?.summary?.classesAttended ?? 0
+    const totalClassesSoFar = report?.summary?.totalClassesSoFar ?? 0
+    const remainingDays = report?.time_analysis?.remainingDays ?? 0
 
     return (
         <TouchableOpacity
@@ -39,7 +44,7 @@ export default function MonthlyAttendenceMiniReport() {
         >
             <View className="flex-1">
                 <CircularProgress
-                    progress={report?.percentage || 0}
+                    progress={percentage || 0}
                     size={size}
                     strokeFillColor={"rgb(247,55,159)"}
                 />
@@ -53,10 +58,9 @@ export default function MonthlyAttendenceMiniReport() {
             </View>
             <View className="flex-1">
                 <CircularProgress
-                    progress={0}
-                    maxProgress={30}
+                    progress={totalClassesSoFar > 0 && classesAttended / totalClassesSoFar *100}
                     size={size}
-                    showPercentage={false}
+                    fraction={`${classesAttended}/${totalClassesSoFar}`}
                     strokeFillColor={"rgb(247,55,159)"}
                 />
                 <Text
@@ -64,12 +68,12 @@ export default function MonthlyAttendenceMiniReport() {
                     numberOfLines={1}
                     className="text-center text-lg font-semibold mt-4 dark:text-white"
                 >
-                    Leave Taken
+                    On Time
                 </Text>
             </View>
             <View className="flex-1">
                 <CircularProgress
-                    progress={report?.remainingDays || 0}
+                    progress={remainingDays || 0}
                     size={size}
                     showPercentage={false}
                     maxProgress={31}

@@ -246,15 +246,22 @@ export const overallAttendenceReport = async (req, res) => {
     const leaderboardQuery = `
     SELECT
     ad.studentId,
+    s.dp,
+    
     CAST(
     SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END)
     AS FLOAT
     ) / COUNT(*) * 100 AS pct
+    
     FROM attendance_details ad
+    
     JOIN attendance a ON a.attendanceId = ad.attendanceId
+    JOIN students s ON s.studentId = ad.studentId 
+    
     WHERE a.course = ?
     AND a.year = ?
     AND a.date BETWEEN ? AND ?
+    
     GROUP BY ad.studentId
     ORDER BY pct DESC
     `;
@@ -285,7 +292,9 @@ export const overallAttendenceReport = async (req, res) => {
     const top3 = classRows.slice(0, 3).map((row, index) => ({
       rank: index + 1,
       percentage: Number(row.pct.toFixed(2)),
-      isMe: row.studentId === userId
+      isMe: row.studentId === userId,
+      studentId: row.studentId,
+      dp: row.dp
     }));
 
     // -------- Projections --------

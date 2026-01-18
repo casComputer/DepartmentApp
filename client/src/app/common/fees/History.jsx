@@ -1,21 +1,62 @@
 import React from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import {
+    View,
+    Text,
+    ActivityIndicator,
+    Alert,
+    TouchableOpacity
+} from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { MaterialIcons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header.jsx";
 
-import { fetch as fetchFees } from "@controller/teacher/fees.controller.js";
+import {
+    fetch as fetchFees,
+    deleteFee
+} from "@controller/teacher/fees.controller.js";
 
 import { formatDate, isDatePassed } from "@utils/date.js";
 
 const RenderItem = ({ item }) => {
+    const handleDelete = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+
+        Alert.alert(
+            "Confirm Delete",
+            "Are you sure you want to delete this item?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    onPress: () => {
+                        deleteFee(item.feeId);
+                    },
+                    style: "destructive"
+                }
+            ],
+            { cancelable: true }
+        );
+    };
+
     return (
         <View
             style={{ boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.5)" }}
             className="px-3 py-6 mt-2 bg-card rounded-3xl gap-2"
         >
-            <Text className="text-text text-lg font-bold">{item?.details}</Text>
+            <View className="w-full flex-row items-start justify-between">
+                <Text className="text-text text-lg font-bold w-[80%]">
+                    {item?.details}
+                </Text>
+                <TouchableOpacity onPress={handleDelete}>
+                    <MaterialIcons name="delete" size={24} color="#f95151" />
+                </TouchableOpacity>
+            </View>
             <Text className="text-text text-xl font-bold">
                 Amount: {item?.amount}
             </Text>

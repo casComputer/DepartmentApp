@@ -5,7 +5,7 @@ import * as Linking from "expo-linking";
 import { Platform, ToastAndroid } from "react-native";
 
 import getMimeType from "@utils/getMimeType.js";
-import { getSystemStorageUri } from "@storage/app.storage.js";
+import { getSystemStorageUri, saveSystemStorageUri } from "@storage/app.storage.js";
 
 /*
     calling downloadFile will automatically download,
@@ -16,6 +16,9 @@ import { getSystemStorageUri } from "@storage/app.storage.js";
 export const checkFileExists = async filename => {
     try {
         let dirUri = getSystemStorageUri();
+        
+        if(!dirUri) return { exists: false };
+        
         const files =
             await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
 

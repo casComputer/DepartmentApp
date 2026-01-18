@@ -1,20 +1,20 @@
 import { turso } from "../../config/turso.js";
 
 import {
-  getFirstAndLastDate,
-  getRemainingWorkSummary,
+    getFirstAndLastDate,
+    getRemainingWorkSummary
 } from "../../utils/workHour.js";
 
 export const generateAttendanceCalendarReport = async (req, res) => {
-  try {
-    const { month, year } = req.body;
-    const { userId } = req.user;
+    try {
+        const { month, year } = req.body;
+        const { userId } = req.user;
 
-    const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
-    const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);
+        const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
+        const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);
 
-    const { rows } = await turso.execute(
-      `
+        const { rows } = await turso.execute(
+            `
             SELECT
         a.date,
         a.timestamp,
@@ -48,44 +48,44 @@ export const generateAttendanceCalendarReport = async (req, res) => {
       ORDER BY a.date;
       
             `,
-      [userId, firstDay, lastDay]
-    );
+            [userId, firstDay, lastDay]
+        );
 
-    const report = {};
+        const report = {};
 
-    for (const row of rows) {
-      report[row.date] = {
-        status: row.day_status,
-        total_hours: row.total_hours,
-        present_hours: row.present_hours,
-        late_hours: row.late_hours,
-        absent_hours: row.absent_hours,
-      };
+        for (const row of rows) {
+            report[row.date] = {
+                status: row.day_status,
+                total_hours: row.total_hours,
+                present_hours: row.present_hours,
+                late_hours: row.late_hours,
+                absent_hours: row.absent_hours
+            };
+        }
+
+        res.json({
+            success: true,
+            report
+        });
+    } catch (err) {
+        console.error("Error while generating attendance calendar: ", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
     }
-
-    res.json({
-      success: true,
-      report,
-    });
-  } catch (err) {
-    console.error("Error while generating attendance calendar: ", err);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error!",
-    });
-  }
 };
 
 export const getTodaysAttendanceReport = async (req, res) => {
-  try {
-    const { userId } = req.body;
+    try {
+        const { userId } = req.body;
 
-    const today = new Date();
+        const today = new Date();
 
-    const date = today.toISOString().slice(0, 10);
+        const date = today.toISOString().slice(0, 10);
 
-    const { rows } = await turso.execute(
-      `
+        const { rows } = await turso.execute(
+            `
             SELECT *
                 FROM attendance a
                 JOIN students s
@@ -100,76 +100,79 @@ export const getTodaysAttendanceReport = async (req, res) => {
             WHERE s.studentId = ?
             AND a.date = ?
         `,
-      [userId, date]
-    );
+            [userId, date]
+        );
 
-    let attendance = rows.reduce((acc, item) => {
-      acc[item.hour] = item.status;
-      return acc;
-    }, {});
+        let attendance = rows.reduce((acc, item) => {
+            acc[item.hour] = item.status;
+            return acc;
+        }, {});
 
-    res.json({
-      attendance,
-      success: true,
-    });
-  } catch (err) {
-    console.error("Error while getting daily attendance report: ", err);
-    res.json({ mesage: "internal server error", success: false });
-  }
+        res.json({
+            attendance,
+            success: true
+        });
+    } catch (err) {
+        console.error("Error while getting daily attendance report: ", err);
+        res.json({ mesage: "internal server error", success: false });
+    }
 };
 
 export const getMonthlyAttendanceMiniReport = async (req, res) => {
-  try {
-    const { userId } = req.body;
+    try {
+        const { userId } = req.user;
+        const { first, last } = getFirstAndLastDate();
+        const { remainingDays, remainingHours } = getRemainingWorkSummary();
 
-    const { first, last } = getFirstAndLastDate();
+        const { rows } = await turso.execute(
+            `
+        SELECT
+            COUNT(*) AS total_classes,
+            SUM(CASE WHEN ad.status = 'present' THEN 1 ELSE 0 END) AS total_present,
+            COUNT(DISTINCT a.date) AS workedDays
+        FROM attendance_details ad
+        JOIN attendance a
+            ON a.attendanceId = ad.attendanceId
+        WHERE ad.studentId = ?
+          AND a.date BETWEEN ? AND ?;
+      `,
+            [userId, first, last]
+        );
 
-    const { rows } = await turso.execute(
-      `
-            SELECT
-                COUNT(CASE WHEN ad.status = 'present' THEN 1 END) AS total_present,
-                COUNT(DISTINCT a.date) AS workedDays,
-                
-                (COUNT(CASE WHEN ad.status = 'present' THEN 1 END) * 100.0) 
-                    / (COUNT(DISTINCT a.date) * 5) AS percentage
-            
-            FROM attendance_details ad
-            
-            JOIN attendance a
-                ON a.attendanceId = ad.attendanceId
-            
-            WHERE ad.studentId = ?
-                AND a.date BETWEEN ? AND ?
-                
-            GROUP BY ad.studentId;`,
-      [userId, first, last]
-    );
+        if (rows.length === 0 || rows[0].total_classes === 0) {
+            return res.json({
+                success: true,
+                report: {
+                    percentage: 0,
+                    workedDays: 0,
+                    remainingDays,
+                    remainingHours
+                }
+            });
+        }
 
-    const { remainingDays, remainingHours } = getRemainingWorkSummary();
-    if (rows.length > 0) {
-      const workedDays = rows[0].workedDays || 0;
+        const { total_classes, total_present, workedDays } = rows[0];
 
-      return res.json({
-        success: true,
-        report: { ...rows[0], workedDays, remainingHours, remainingDays },
-      });
+        const percentage = Number(
+            ((total_present / total_classes) * 100).toFixed(2)
+        );
+
+        return res.json({
+            success: true,
+            report: {
+                percentage,
+                workedDays,
+                remainingDays,
+                remainingHours
+            }
+        });
+    } catch (err) {
+        console.error("Error while fetching monthly attendance report:", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
     }
-
-    res.json({
-      success: false,
-      message: "No data available, try again later!",
-      report: {
-        remainingDays,
-        remainingHours,
-      },
-    });
-  } catch (err) {
-    console.error("Error while fetching monthly attendance report: ", err);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error!",
-    });
-  }
 };
 
 export const getYearlyAttendanceReport = async (req, res) => {
@@ -215,4 +218,4 @@ export const getYearlyAttendanceReport = async (req, res) => {
             message: "Internal Server Error!"
         });
     }
-}
+};

@@ -19,3 +19,12 @@ dont fetch submission details on assignment page,
     currently requires a teacherId, modify it to use 
     (teacherId or adminId). otherwise admin's functionality
     might breaks.
+    
+    
+    
+unused packages:
+    - @gorhom/bottom-sheet
+    - expo-blur (only in indexMiddel.jsx)
+    - expo-font
+    - expo-image
+    - expo-media-library

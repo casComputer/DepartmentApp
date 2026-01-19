@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { View, ScrollView } from "react-native";
+import {
+    useState
+} from "react";
+import {
+    View,
+    ScrollView
+} from "react-native";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/ProfileHeader.jsx";
@@ -7,12 +12,21 @@ import {
     Avatar,
     EditDpOptions
 } from "@components/common/ProfileComponents.jsx";
-import { TeacherOptions } from "@components/profile/TeacherOptions.jsx";
+import {
+    TeacherOptions
+} from "@components/profile/TeacherOptions.jsx";
 
-import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
-import { uploadDp } from "@controller/common/profile.controller.js";
+import {
+    handleDocumentPick,
+    handleUpload
+} from "@utils/file.upload.js";
+import {
+    uploadDp
+} from "@controller/common/profile.controller.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore
+} from "@store/app.store.js";
 
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
@@ -20,7 +34,8 @@ const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 const role = useAppStore.getState().user.role;
 
 const Profile = () => {
-    const [showDpOptions, setDpOptions] = useState(false);
+    const [showDpOptions,
+        setDpOptions] = useState(false);
 
     const fullname = useAppStore(state => state.user?.fullname || "");
 
@@ -32,7 +47,10 @@ const Profile = () => {
 
             setGlobalProgress(1);
 
-            const { secure_url, public_id } = await handleUpload(asset, "dp");
+            const {
+                secure_url,
+                public_id
+            } = await handleUpload(asset, "dp");
             if (!secure_url || !public_id) {
                 setGlobalProgress(0);
                 return null;
@@ -40,11 +58,15 @@ const Profile = () => {
 
             setGlobalProgressText("Updating profile picture...");
 
-            await uploadDp({ secure_url, public_id });
+            await uploadDp( {
+                secure_url, public_id
+            });
         } finally {
             setGlobalProgress(0);
         }
     };
+
+    // alert(role)
 
     return (
         <View className="flex-1 bg-primary relative">
@@ -52,9 +74,9 @@ const Profile = () => {
                 alwaysBounceVertical
                 showsVerticalScrollIndicator={false}
                 overScrollMode="always"
-                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+                contentContainerStyle={ { flexGrow: 1, paddingBottom: 120 }}
                 onTouchStart={() => setDpOptions(false)}
-            >
+                >
                 <View className="px-4">
                     <Header disableBackBtn={true} title={fullname} />
                 </View>
@@ -62,22 +84,22 @@ const Profile = () => {
                 <Avatar
                     handleChangePic={handleChangePic}
                     handleEdit={() =>
-                        setDpOptions(prev => {
-                            if (!prev)
-                                Haptics.impactAsync(
-                                    Haptics.ImpactFeedbackStyle.Light
-                                );
-                            return !prev;
-                        })
+                    setDpOptions(prev => {
+                        if (!prev)
+                            Haptics.impactAsync(
+                            Haptics.ImpactFeedbackStyle.Light
+                        );
+                        return !prev;
+                    })
                     }
-                />
+                    />
                 {role === "teacher" && <TeacherOptions />}
             </ScrollView>
 
             <EditDpOptions
                 handleChangePic={handleChangePic}
                 show={showDpOptions}
-            />
+                />
         </View>
     );
 };

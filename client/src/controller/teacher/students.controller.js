@@ -169,7 +169,7 @@ export const cancelStudentVerification = async ({ studentId }) => {
     }
 };
 
-// note: use this as current user as class teacher
+// note: use this when current user is a class teacher
 export const fetchStudentsByClassTeacher = async ({ teacherId, setStatus }) => {
     try {
         const { data } = await axios.post(

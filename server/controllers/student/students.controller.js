@@ -13,7 +13,7 @@ export const fetchStudentsByClass = async (req, res) => {
         .json({ message: "invalid course or year", success: false });
 
     const result = await turso.execute(
-      "SELECT studentId, fullname, rollno, is_verified from students where course = ? and year_of_study = ? and is_verified = true",
+      "SELECT studentId, fullname, rollno, is_verified, dp from students where course = ? and year_of_study = ? and is_verified = true",
       [course, year]
     );
 
@@ -36,7 +36,7 @@ export const fetchStudentsByClass = async (req, res) => {
 };
 
 export const fetchStudentsByClassTeacher = async (req, res) => {
-  const { teacherId } = req.body;
+  const { userId: teacherId } = req.user;
 
   try {
     const classResult = await turso.execute(
@@ -59,7 +59,7 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
 
     const studentResult = await turso.execute(
       `
-            SELECT studentId, fullname , is_verified, rollno 
+            SELECT studentId, fullname , is_verified, dp, rollno 
             FROM students
             WHERE course = ? AND year_of_study = ?
             `,

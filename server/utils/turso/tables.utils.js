@@ -20,10 +20,12 @@ const createAllTables = () => {
   turso.execute(
     `CREATE TABLE teachers ( 
           teacherId TEXT PRIMARY Key, 
-          dp TEXT, 
-          dp_public_id TEXT, 
           fullname text not null, 
           password text not null,
+          dp TEXT, 
+          dp_public_id TEXT,
+          phone DECIMAL(10),
+          
           is_verified BOOLEAN DEFAULT FALSE
         );`
   );

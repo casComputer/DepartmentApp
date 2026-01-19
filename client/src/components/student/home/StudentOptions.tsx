@@ -49,8 +49,8 @@ const optionsData = [
     {
         Icon: Octicons,
         iconName: "person",
-        text: "Teacher",
-        locaton: "",
+        text: "Teachers",
+        locaton: "/(student)/(others)/TeachersList",
     },
 ];
 

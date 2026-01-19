@@ -21,7 +21,7 @@ const gap = vw * 0.1;
 const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
 
 export default function MonthlyAttendenceMiniReport() {
-    const { data: report, status } = useQuery({
+    const { data: report } = useQuery({
         queryKey: ["OverallAttendenceReport"],
         queryFn: getOverallAttendenceReport
     });

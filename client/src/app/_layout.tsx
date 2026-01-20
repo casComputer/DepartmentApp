@@ -1,5 +1,5 @@
 import "../../global.css";
-import React from "react";
+import React, { use } from "react";
 import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
@@ -62,8 +62,6 @@ export default function RootLayout() {
     if (!userId || !role || role == "unknown") router.replace("Auth/SignIn");
     setMounted(true);
   }, [userId, role]);
-
-  console.log("Current User:", userId, role);
 
   return (
     <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">

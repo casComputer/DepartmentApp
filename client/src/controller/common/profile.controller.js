@@ -1,44 +1,75 @@
 import { ToastAndroid } from "react-native";
+import { router } from "expo-router";
 
 import axios from "@utils/axios.js";
 
 import { useAppStore } from "@store/app.store.js";
 
-export const uploadDp = async data => {
-    const user = useAppStore.getState().user;
-    const { userId, role } = user;
-    const { secure_url, public_id } = data;
+export const uploadDp = async (data) => {
+  const user = useAppStore.getState().user;
+  const { userId, role } = user;
+  const { secure_url, public_id } = data;
 
-    if (!userId || !role || !secure_url || !public_id) return;
+  if (!userId || !role || !secure_url || !public_id) return;
 
-    const current_dp_public_id = useAppStore.getState().user.dp_public_id
+  const current_dp_public_id = useAppStore.getState().user.dp_public_id;
 
-    try {
-        const { data } = await axios.post("/profile/uploadDp", {
-            userId,
-            role,
-            secure_url,
-            public_id,
-            current_dp_public_id
-        });
+  try {
+    const { data } = await axios.post("/profile/uploadDp", {
+      userId,
+      role,
+      secure_url,
+      public_id,
+      current_dp_public_id,
+    });
 
-        if (data.success) {
-            const updateData = {
-                dp: secure_url,
-                dp_public_id: public_id
-            };
+    if (data.success) {
+      const updateData = {
+        dp: secure_url,
+        dp_public_id: public_id,
+      };
 
-            useAppStore.getState().updateUser(updateData);
-        } else
-            ToastAndroid.show(
-                data.message ?? "Failed to update profile picture",
-                ToastAndroid.LONG
-            );
-    } catch (error) {
-        console.error(error);
-        ToastAndroid.show(
-            "Failed to update profile picture",
-            ToastAndroid.LONG
-        );
+      useAppStore.getState().updateUser(updateData);
+    } else
+      ToastAndroid.show(
+        data.message ?? "Failed to update profile picture",
+        ToastAndroid.LONG,
+      );
+  } catch (error) {
+    console.error(error);
+    ToastAndroid.show("Failed to update profile picture", ToastAndroid.LONG);
+  }
+};
+
+export const editProfile = async (profileData) => {
+  try {
+    const { data } = await axios.post("/profile/editProfile", {
+      ...profileData,
+    });
+
+    if (data.success) {
+
+      profileData = {
+        fullname: profileData.fullname,
+        userId: profileData.username,
+        phone: profileData.phone,
+        email: profileData.email,
+        about: profileData.about,
+      };
+
+      useAppStore.getState().updateUser(profileData);
+      
+      ToastAndroid.show("Profile updated successfully", ToastAndroid.SHORT);
+
+      router.back()
+    } else {
+      ToastAndroid.show(
+        data.message ?? "Failed to update profile",
+        ToastAndroid.LONG,
+      );
     }
+
+  } catch (error) {
+    ToastAndroid.show("Failed to update profile", ToastAndroid.LONG);
+  }
 };

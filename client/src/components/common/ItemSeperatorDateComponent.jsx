@@ -19,8 +19,6 @@ export const ItemSeparator = ({
 
     if (!leadingDate || !trailingDate) return null;
     
-    console.log(leadingDate, trailingDate);
-
     if (leadingDate === trailingDate) return null;
 
     return (

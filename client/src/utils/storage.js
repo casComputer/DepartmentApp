@@ -25,7 +25,6 @@ export const bulkAssignRollNumbers = ({ assignedList, key }) => {
 export const saveStudentsCount = ({ count, course, year }) => {
     if (!course || !year) return;
     storage.set(`${year}-${course}-count`, count.toString());
-    console.log(`[save] ${year}-${course}: ${count}`);
 };
 
 export const getStudentCount = ({ course, year }) => {

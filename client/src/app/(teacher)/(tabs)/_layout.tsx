@@ -14,19 +14,7 @@ import { useTeacherStore } from "@store/teacher.store.js";
 import { syncUser } from "@controller/teacher/teacher.controller.js";
 
 export default function TabLayout() {
-    const loadStudents = useTeacherStore(
-        (state) => state.loadStudentsFromStorage
-    );
-    const loadInCharge = useTeacherStore(
-        (state) => state.loadInChargeFromStorage
-    );
-
-	useEffect(() => {
-		loadStudents();
-		loadInCharge();
-		syncUser();
-	}, [loadInCharge, loadStudents, syncUser]);
-
+    
     const theme = useColorScheme();
 
     return (

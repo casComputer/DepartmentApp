@@ -49,8 +49,8 @@ const ManageStudents = () => {
         setStatus] = useState("LOADING");
     const teacherId = useAppStore(state => state.user?.userId);
     const students = useTeacherStore(state => state.students);
-    const inChargeCourse = useTeacherStore(state => state.inCharge.course);
-    const inChargeYear = useTeacherStore(state => state.inCharge.year);
+    const inChargeCourse = useAppStore(state => state.user.in_charge_course);
+    const inChargeYear = useAppStore(state => state.user.in_charge_year);
 
     useEffect(() => {
         if (teacherId) fetchStudentsByClassTeacher( {

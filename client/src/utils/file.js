@@ -30,7 +30,7 @@ export const checkFileExists = async filename => {
         if (foundUri) return { exists: true, foundUri };
         else return { exists: false };
     } catch (error) {
-        console.error(error);
+        
         return { exists: false };
     }
 };
@@ -43,7 +43,7 @@ export const openFileWithDefaultApp = async (uri, mimeType) => {
             type: mimeType
         });
     } catch (err) {
-        console.log("Error opening file:", err);
+        ToastAndroid.show("Error opening file:", ToastAndroid.LONG)
     }
 };
 
@@ -76,6 +76,7 @@ export const saveFile = async (localUri, filename, format) => {
 
         openFileWithDefaultApp(fileUri, mimetype);
     } catch (err) {
+        ToastAndroid.show("Failed to save file!", ToastAndroid.LONG)
         console.log("SAVE ERROR:", err);
     }
 };

@@ -4,18 +4,11 @@ import { storage } from "@utils/storage.js";
 const STUDENT_KEY = "students";
 
 export const useTeacherStore = create((set, get) => ({
-    classDetails: [],
     students: [],
     inCharge: {
         course: "",
         year: ""
     },
-
-    // classDetails
-
-    setClassDetails: classDetails => set({ classDetails }),
-
-    // students
 
     setStudents: students => {
         set({ students });
@@ -54,6 +47,7 @@ export const useTeacherStore = create((set, get) => ({
             storage.set(STUDENT_KEY, JSON.stringify(updated));
             return { students: updated };
         }),
+
     resetAllRollNo: () =>
         set(state => {
             const updated = state.students.map(s => ({ ...s, rollno: null }));
@@ -82,29 +76,10 @@ export const useTeacherStore = create((set, get) => ({
 
             return { students: updated };
         }),
+
     getVerifiedStudents: () => {
         const { students } = get();
         return students.filter(s => Boolean(s.is_verified));
     },
-
-    // incharge
-
-    setInCharge: (course, year) =>
-        set(state => {
-            const updated = { course, year };
-
-            storage.set("in_charge", JSON.stringify(updated)); // auto-save
-
-            return { inCharge: updated };
-        }),
-    loadInChargeFromStorage: () => {
-        const raw = storage.getString("in_charge");
-        if (!raw) return;
-
-        try {
-            set({ inCharge: JSON.parse(raw) });
-        } catch (e) {
-            console.error("Failed to parse in_charge", e);
-        }
-    }
+    
 }));

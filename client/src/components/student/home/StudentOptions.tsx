@@ -37,7 +37,7 @@ const optionsData = [
         Icon: AntDesign,
         iconName: "file-search",
         text: "Exam Results",
-        locaton: "",
+        locaton: "/(student)/(others)/ExamResult",
     },
     {
         Icon: Feather,

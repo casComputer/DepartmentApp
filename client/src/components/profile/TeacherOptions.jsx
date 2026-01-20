@@ -44,7 +44,7 @@ export const TeacherOptions = () => {
 
     return (
         <View className="px-2">
-            {courses.length > 0 ? (
+            {!!courses.length ? (
                 <CourseList courses={courses} />
             ) : (
                 <TouchableOpacity

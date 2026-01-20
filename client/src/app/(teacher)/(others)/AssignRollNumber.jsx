@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-    View,
     Text,
     TouchableOpacity,
     ScrollView,
@@ -13,14 +12,19 @@ import Info from "@components/common/InfoBox.jsx";
 import Grouping from "@components/teacher/RollGroup.jsx";
 
 import { assignRollAlphabetically } from "@controller/teacher/students.controller.js";
+
 import { useTeacherStore } from "@store/teacher.store.js";
+import { useAppStore } from "@store/app.store.js";
+
 import confirm from "@utils/confirm.js";
 
 const StyledActivityIndicator = withUniwind(ActivityIndicator);
 const infoText = "Note: Auto-assigning will reset existing roll numbers.";
 
 const AssignRoleNumber = () => {
-    const inCharge = useTeacherStore(state => state.inCharge);
+    const inChargeYear = useAppStore(state => state.user.in_charge_year);
+    const inChargeCourse = useAppStore(state => state.user.in_charge_course);
+
     const getVerifiedStudents = useTeacherStore(
         state => state.getVerifiedStudents
     );
@@ -33,8 +37,8 @@ const AssignRoleNumber = () => {
             async () => {
                 setLoading(true);
                 await assignRollAlphabetically({
-                    course: inCharge.course,
-                    year: inCharge.year
+                    course: inChargeCourse,
+                    year: inChargeYear
                 });
                 setLoading(false);
             }
@@ -75,7 +79,7 @@ const AssignRoleNumber = () => {
 
             <Grouping
                 students={students}
-                inCharge={inCharge}
+                inCharge={{ course: inChargeCourse, year: inChargeYear }}
                 setLoading={setLoading}
             />
         </ScrollView>

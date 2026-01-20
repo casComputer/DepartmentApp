@@ -29,10 +29,6 @@ const Header = ({ onSave, saving, disabled }) => {
                 </Text>
             </TouchableOpacity>
             
-            {
-                console.log(typeof onSave)
-            }
-            
             {typeof onSave === 'function' && (
 
                 <TouchableOpacity

@@ -10,6 +10,10 @@ const createAllTables = () => {
         year_of_study text check (year_of_study IN ('First', 'Second', 'Third', 'Fourth')) not null,
         is_verified BOOLEAN DEFAULT FALSE,
         rollno integer default NULL,
+
+        email TEXT,
+        phone TEXT,
+        about TEXT,
         
         UNIQUE (course, year_of_study, rollno),
         CHECK (is_verified = 1 OR rollno IS NULL),
@@ -24,10 +28,13 @@ const createAllTables = () => {
           password text not null,
           dp TEXT, 
           dp_public_id TEXT,
-          phone DECIMAL(10),
+          
+          email TEXT,
+            phone TEXT,
+            about TEXT,
           
           is_verified BOOLEAN DEFAULT FALSE
-        );`
+        );`,
   );
 
   turso.execute(
@@ -38,8 +45,10 @@ const createAllTables = () => {
             fullname text not null,
             password text not null,
             phone text,
-            is_verified BOOLEAN DEFAULT FALSE
-        )`
+            is_verified BOOLEAN DEFAULT FALSE,
+            
+
+        )`,
   );
 
   turso.execute(
@@ -49,11 +58,11 @@ const createAllTables = () => {
             PRIMARY KEY (parentId, studentId), 
             FOREIGN KEY (parentId) REFERENCES parents(parentId) ON DELETE CASCADE,
             FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE
-        );`
+        );`,
   );
 
   turso.execute(
-    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, password text not null);"
+    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, phone text, email text, about text, password text not null);",
   );
 
   turso.execute(`

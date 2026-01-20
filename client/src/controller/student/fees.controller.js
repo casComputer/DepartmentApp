@@ -7,8 +7,6 @@ export const fetch = async page => {
     try {
         const { course, year_of_study: year } = useAppStore.getState().user;
         
-        console.log(useAppStore.getState());
-
         if (!course || !year) {
             ToastAndroid.show("Missing required values!", ToastAndroid.LONG);
             return { success: false, hasMore: true, page, fees: [] };

@@ -70,7 +70,6 @@ export const getAttendanceHistoryByTeacherId = async ({ pageParam, limit }) => {
                 hasMore: false
             };
     } catch (error) {
-        console.log("Error while getting attendance history: ", error);
         ToastAndroid.show(
             "Failed to get attendance history",
             ToastAndroid.LONG

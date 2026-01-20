@@ -23,7 +23,7 @@ const authController = async (data) => {
 
       await SecureStore.setItemAsync("refreshToken", refreshToken);
       storage.set("accessToken", accessToken);
-      console.log(user);
+      
       useAppStore.getState().setUser({ ...user });
 
       return { success: true, message: "Authentication Successful" };

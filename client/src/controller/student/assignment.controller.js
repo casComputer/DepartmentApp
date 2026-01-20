@@ -17,9 +17,6 @@ export const getAssignment = async ({ pageParam }) => {
         }
 
         const { course, year_of_study, userId } = user;
-
-        console.log("requesting...");
-
         const response = await axios.post(
             "/assignment/getAssignmentForStudent",
             {

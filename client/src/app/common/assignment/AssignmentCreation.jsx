@@ -47,7 +47,7 @@ const AssignmentCreation = () => {
         };
 
         const result = await createAssignment(assignmentData);
-        console.log(result);
+       
         if (result.success) {
             queryClient.setQueryData(["assignments"], prev => {
                 if (!prev) return prev;

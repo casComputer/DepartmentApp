@@ -28,3 +28,7 @@ unused packages:
     - expo-font
     - expo-image
     - expo-media-library
+
+🟥 review the need of seperate store for teacher and student rather than user store 
+    - del teacher storage file
+    - loading inCharge in two layout files

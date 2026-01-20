@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { clearUser } from "@storage/user.storage.js";
 
 let url = "https://dc-connect.onrender.com";
-url = "http://192.168.0.132:3000";
+// url = "http://192.168.0.132:3000";
 
 console.log(url);
 

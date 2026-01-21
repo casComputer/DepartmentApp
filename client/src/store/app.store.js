@@ -10,7 +10,13 @@ import { Color } from "@constants/TWPallet.js";
 
 export const useAppStore = create(set => ({
     user: {
-        role: "unknown"
+        role: "unknown", 
+        fullname: "",
+        userId: "",
+        dp: "",
+        email: "",
+        
+        courses: []
     },
 
     globalProgress: 0,

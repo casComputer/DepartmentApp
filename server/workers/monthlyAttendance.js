@@ -20,8 +20,6 @@ import {
             .toISOString()
             .slice(0, 10);
 
-        console.log("Date Range:", startDate, "to", endDate);
-
         const { rows: studentsReport } = await turso.execute(
             `
             SELECT

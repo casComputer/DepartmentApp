@@ -1,53 +1,39 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 import {
     View,
     Text,
     TouchableOpacity,
-    ScrollView
+    ScrollView,
+    ToastAndroid,
 } from "react-native";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 
 import {
-    handleSaveResultDetails
-} from '@controller/student/exam.controller.js'
+    handleSaveResultDetails,
+    checkExamResultUpload,
+} from "@controller/student/exam.controller.js";
 
-import {
-    handleDocumentPick,
-    handleUpload
-} from "@utils/file.upload.js";
+import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 
-import {
-    useAppStore
-} from "@store/app.store.js"
+import { useAppStore } from "@store/app.store.js";
 
-import {
-    YEAR,
-    COURSES,
-    SEM
-} from "@constants/ClassAndCourses";
+import { YEAR, COURSES, SEM } from "@constants/ClassAndCourses";
 
-const setProgress = useAppStore.getState().setGlobalProgress
-const setProgressText = useAppStore.getState().setGlobalProgressText
+const setProgress = useAppStore.getState().setGlobalProgress;
+const setProgressText = useAppStore.getState().setGlobalProgressText;
 
 const ExamResult = () => {
-    const [selectedClass,
-        setSelectedClass] = useState( {});
-    const [selectedCourse,
-        setSelectedCourse] = useState( {});
-    const [selectedSem,
-        setSelectedSem] = useState( {});
-    const [file,
-        setFile] = useState( {});
+    const [selectedClass, setSelectedClass] = useState({});
+    const [selectedCourse, setSelectedCourse] = useState({});
+    const [selectedSem, setSelectedSem] = useState({});
+    const [file, setFile] = useState({});
 
     const handleSelectFile = async () => {
         const asset = await handleDocumentPick(["application/pdf", "image/*"]);
-        if (asset)
-            setFile(asset);
-        console.log(asset)
+        if (asset) setFile(asset);
+        console.log(asset);
     };
 
     const handdleUploadFile = async () => {
@@ -61,16 +47,32 @@ const ExamResult = () => {
             return;
         }
 
-        setProgress(1)
+        setProgress(1);
+        setProgressText("Checking Previous Uploads..");
 
-        const {
-            secure_url,
-            format,
-            success,
-            public_id
-        } = await handleUpload(file, "exam_result")
+        const isUploaded = await checkExamResultUpload(
+            selectedCourse.id,
+            selectedClass.id,
+            selectedSem.id,
+        );
 
-        if (!success || !secure_url || !format || !public_id) return setProgress(0)
+        if (isUploaded) {
+            ToastAndroid.show(
+                "You already uploaded result for this sem!",
+                ToastAndroid.SHORT,
+            );
+            setProgress(0);
+            return;
+        }
+        setProgressText("Uploading File..");
+
+        const { secure_url, format, success, public_id } = await handleUpload(
+            file,
+            "exam_result",
+        );
+
+        if (!success || !secure_url || !format || !public_id)
+            return setProgress(0);
 
         const data = {
             course: selectedCourse.id,
@@ -79,16 +81,19 @@ const ExamResult = () => {
             filename: file.name,
             secure_url,
             format,
-            public_id
-        }
+            public_id,
+        };
 
-        setProgressText('Saving Result Details..')
-        await handleSaveResultDetails(data)
-        setGlobalProgress(0)
-    }
+        setProgressText("Saving Result Details..");
+        await handleSaveResultDetails(data);
+        setProgress(0);
+    };
 
     return (
-        <ScrollView className="flex-1 bg-primary">
+        <ScrollView
+            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+            className="bg-primary"
+        >
             <Header onSave={handdleUploadFile} />
 
             <View className="px-1">
@@ -97,25 +102,27 @@ const ExamResult = () => {
                     options={YEAR}
                     select={setSelectedClass}
                     selected={selectedClass}
-                    />
+                />
                 <Select
                     title="Course"
                     options={COURSES}
                     select={setSelectedCourse}
                     selected={selectedCourse}
-                    />
+                />
                 <Select
                     title="Semester"
                     options={SEM}
                     select={setSelectedSem}
                     selected={selectedSem}
-                    />
+                />
             </View>
             {file?.name ? (
                 <View className="mt-5 px-2">
-                    <Text className="text-text-secondary font-bold text-center text-lg ">Selected File: {file.name}</Text>
+                    <Text className="text-text-secondary font-bold text-center text-lg ">
+                        Selected File: {file.name}
+                    </Text>
                 </View>
-            ): (
+            ) : (
                 <TouchableOpacity onPress={handleSelectFile}>
                     <Text className="text-2xl font-black text-blue-500 text-center mt-5">
                         Select File

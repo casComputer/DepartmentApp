@@ -9,11 +9,13 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { useTeacherStore } from "@store/teacher.store.js";
-
 import { syncUser } from "@controller/teacher/teacher.controller.js";
 
 export default function TabLayout() {
+
+    useEffect(() => {
+        syncUser();
+    }, []);
     
     const theme = useColorScheme();
 

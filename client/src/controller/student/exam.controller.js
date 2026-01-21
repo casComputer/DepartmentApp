@@ -1,21 +1,45 @@
-import axios from "@utils/axios.js"
-import {
-    ToastAndroid
-} from "react-native"
+import axios from "@utils/axios.js";
+import { ToastAndroid } from "react-native";
 
-export const handleSaveResultDetails = async(data)=> {
-    try {
-        const res = await axios.post('/student/saveExamResultDetails', {
-            data
-        })
+export const handleSaveResultDetails = async (data) => {
+  try {
+    const res = await axios.post("/student/saveExamResultDetails", {
+      data,
+    });
 
-        if (res.data.success)
-            ToastAndroid.show("Exam result uploaded successfull ✨", ToastAndroid.SHORT)
-        else
-            ToastAndroid(res.data.message ?? 'Failed to upload exam result!', ToastAndroid.LONG)
+    if (res.data.success)
+      ToastAndroid.show(
+        "Exam result uploaded successfull ✨",
+        ToastAndroid.SHORT,
+      );
+    else
+      ToastAndroid.show(
+        res.data.message ?? "Failed to upload exam result!",
+        ToastAndroid.LONG,
+      );
+  } catch (e) {
+    ToastAndroid.show("Failed to upload exam result!", ToastAndroid.LONG);
+    console.log(e, e?.message);
+  }
+};
 
-    } catch(e) {
-        ToastAndroid('Failed to upload exam result!', ToastAndroid.LONG)
-        console.log(e)
-    }
-}
+export const checkExamResultUpload = async (course, year, sem) => {
+  try {
+    const res = await axios.post("/student/checkExamResultUpload", {
+      course,
+      year,
+      sem,
+    });
+
+    if (res.data.success) return res.data.uploaded;
+
+    ToastAndroid.show(
+      res.data.message ?? "Failed to check exam result upload!",
+      ToastAndroid.LONG,
+    );
+    return false;
+  } catch (e) {
+    ToastAndroid.show("Failed to check exam result upload!", ToastAndroid.LONG);
+    return false;
+  }
+};

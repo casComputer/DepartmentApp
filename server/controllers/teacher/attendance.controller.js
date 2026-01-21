@@ -216,6 +216,7 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
             page = 1,
             limit = 10
         } = req.body;
+        
         const {
             userId: teacherId,
             role

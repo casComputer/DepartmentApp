@@ -3,9 +3,7 @@ import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
 
 export const fetchStudentsByClass = async (req, res) => {
   const { course, year } = req.body;
-
-  console.log(course, year);
-
+  
   try {
     if (!validateCourseAndYear(course, year))
       return res

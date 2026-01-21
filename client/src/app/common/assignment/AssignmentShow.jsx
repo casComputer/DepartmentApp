@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
-import { useQuery } from  "@tanstack/react-query";
 
 import Header from "@components/common/Header2.jsx";
 import { AssignmentShowRenderItem as RenderItem } from "@components/teacher/Assignment.jsx";

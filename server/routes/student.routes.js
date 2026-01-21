@@ -12,7 +12,8 @@ import {
 } from "../controllers/student/rollno.controller.js";
 
 import {
-    saveExamResultDetails
+    saveExamResultDetails,
+    checkExamResultUpload
 } from '../controllers/student/exam.controller.js'
 
 import {
@@ -40,5 +41,7 @@ router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically);
 router.post("/assignGroupedRollNo", assignGroupedRollNo);
 
 router.post("/saveExamResultDetails", saveExamResultDetails);
+
+router.post("/checkExamResultUpload", checkExamResultUpload);
 
 export default router;

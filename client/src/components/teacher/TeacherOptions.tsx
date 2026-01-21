@@ -3,12 +3,11 @@ import {
     MaterialCommunityIcons,
     Octicons,
     SimpleLineIcons,
-    MaterialIcons
+    MaterialIcons,
+    Entypo,
 } from "@icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
-
-import { useAppStore } from "@store/app.store.js";
 
 const ICONS_SIZE = 35;
 
@@ -36,7 +35,7 @@ const TeacherOptions = () => {
             <TouchableOpacity
                 onPress={() =>
                     router.push(
-                        "/common/attendance/AttendanceClassSelect" as any
+                        "/common/attendance/AttendanceClassSelect" as any,
                     )
                 }
                 className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4"
@@ -72,6 +71,16 @@ const TeacherOptions = () => {
                 <MaterialIcons name="currency-rupee" size={ICONS_SIZE} />
                 <Text className="font-bold text-xl text-text ">
                     Manage Fees
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={() => router.push("/(teacher)/(others)/ExamResultSelector" as any)}
+                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
+            >
+               <Entypo name="text-document" size={ICONS_SIZE} />
+                <Text className="font-bold text-xl text-text ">
+                    Exam Results
                 </Text>
             </TouchableOpacity>
         </View>

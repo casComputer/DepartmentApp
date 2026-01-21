@@ -158,7 +158,7 @@ export const AssignmentShowRenderItem = ({
             setIsDownloaded(result);
         };
         checkIfDownloaded();
-    }, []);
+    }, [url]);
 
     useEffect(() => {
         if (item.status === "rejected") height.value = withTiming(150, 800);

@@ -41,6 +41,8 @@ export const getOverallAttendenceReport = async () => {
                 userId
             }
         );
+
+        console.log(res.data.report)
         
         if (res.data.success) return res.data.report;
         else {

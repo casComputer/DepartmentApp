@@ -40,11 +40,12 @@ const CourseList = ({ courses }) => {
 };
 
 export const TeacherOptions = () => {
-    const courses = useAppStore(state => state.user?.courses || []);
+    const courses = useAppStore(state => state.user?.courses);
 
+    
     return (
         <View className="px-2">
-            {!!courses.length ? (
+            {!!courses?.length ? (
                 <CourseList courses={courses} />
             ) : (
                 <TouchableOpacity

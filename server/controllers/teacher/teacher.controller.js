@@ -1,8 +1,10 @@
 import { turso } from "../../config/turso.js";
 
 export const syncUser = async (req, res) => {
+  console.log("userId:", req.user.userId);
   try {
     const { userId } = req.user;
+
 
     if (!userId)
       return res.status(400).json({
@@ -19,7 +21,7 @@ export const syncUser = async (req, res) => {
             FROM classes c RIGHT JOIN teacher_courses tc
             ON c.in_charge = tc.teacherId
             WHERE in_charge = ?`,
-      [userId]
+      [userId],
     );
 
     const inCharge = {
@@ -118,4 +120,3 @@ export const fetchAllTeachers = async (req, res) => {
     });
   }
 };
-

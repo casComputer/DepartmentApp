@@ -1,5 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
@@ -11,7 +10,6 @@ import {
 } from "@components/common/ItemSeperatorDateComponent.jsx";
 
 import { getAssignment } from "@controller/student/assignment.controller.js";
-import { formatDate } from "@utils/date.js";
 
 const Assignment = () => {
     const {

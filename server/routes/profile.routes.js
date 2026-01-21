@@ -122,7 +122,6 @@ router.post("/getDp", async (req, res) => {
 
 router.post("/editProfile", async (req, res) => {
   try {
-	console.log("first")
     const { userId: existUserId, role } = req.user;
 
     const { username, fullname, email, phone, about } = req.body;

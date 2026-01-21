@@ -24,7 +24,6 @@ import {
 
 import {
     generateAttendanceReport
-
 } from "../controllers/common/attendance.controller.js";
 
 router.post("/save", save);

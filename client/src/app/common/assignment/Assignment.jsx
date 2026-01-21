@@ -13,8 +13,6 @@ import {
 
 import { getAssignment } from "@controller/teacher/assignment.controller.js";
 
-import { formatDate } from "@utils/date.js";
-
 const Assignment = () => {
     const {
         data,

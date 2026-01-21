@@ -1,73 +1,129 @@
-import { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+    useState
+} from "react";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView
+} from "react-native";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 
-import { handleDocumentPick } from "@utils/file.upload.js";
+import {
+    handleSaveResultDetails
+} from '@controller/student/exam.controller.js'
 
-import { YEAR, COURSES, SEM } from "@constants/ClassAndCourses";
+import {
+    handleDocumentPick,
+    handleUpload
+} from "@utils/file.upload.js";
+
+import {
+    useAppStore
+} from "@store/app.store.js"
+
+import {
+    YEAR,
+    COURSES,
+    SEM
+} from "@constants/ClassAndCourses";
+
+const setProgress = useAppStore.getState().setGlobalProgress
+const setProgressText = useAppStore.getState().setGlobalProgressText
 
 const ExamResult = () => {
-  const [selectedClass, setSelectedClass] = useState({});
-  const [selectedCourse, setSelectedCourse] = useState({});
-  const [selectedSem, setSelectedSem] = useState({});
-  const [file, setFile] = useState(null);
+    const [selectedClass,
+        setSelectedClass] = useState( {});
+    const [selectedCourse,
+        setSelectedCourse] = useState( {});
+    const [selectedSem,
+        setSelectedSem] = useState( {});
+    const [file,
+        setFile] = useState( {});
 
-  const handleSelectFile = async () => {
-    const asset = await handleDocumentPick(["application/pdf", "image/*"]);
-    if (asset) {
-      setFile(asset);
+    const handleSelectFile = async () => {
+        const asset = await handleDocumentPick(["application/pdf", "image/*"]);
+        if (asset)
+            setFile(asset);
+        console.log(asset)
+    };
+
+    const handdleUploadFile = async () => {
+        if (!selectedClass.id || !selectedCourse.id || !selectedSem.id) {
+            ToastAndroid.show("Please select all fields.", ToastAndroid.SHORT);
+            return;
+        }
+
+        if (!file || !file.name) {
+            ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
+            return;
+        }
+
+        setProgress(1)
+
+        const {
+            secure_url,
+            format,
+            success,
+            public_id
+        } = await handleUpload(file, "exam_result")
+
+        if (!success || !secure_url || !format || !public_id) return setProgress(0)
+
+        const data = {
+            course: selectedCourse.id,
+            year: selectedClass.id,
+            sem: selectedSem.id,
+            filename: file.name,
+            secure_url,
+            format,
+            public_id
+        }
+
+        setProgressText('Saving Result Details..')
+        await handleSaveResultDetails(data)
+        setGlobalProgress(0)
     }
-  };
 
-  const handdleUploadFile = async () => {
-    if(!selectedClass.id || !selectedCourse.id || !selectedSem.id) {
-      ToastAndroid.show("Please select all fields.", ToastAndroid.SHORT);
-      return;
-    }
-    const data = {
-      
-    }
-  }
+    return (
+        <ScrollView className="flex-1 bg-primary">
+            <Header onSave={handdleUploadFile} />
 
-  return (
-    <ScrollView className="flex-1 bg-primary">
-      <Header />
-
-      <View className="px-1">
-        <Select
-          title="Year"
-          options={YEAR}
-          select={setSelectedClass}
-          selected={selectedClass}
-        />
-        <Select
-          title="Class"
-          options={COURSES}
-          select={setSelectedCourse}
-          selected={selectedCourse}
-        />
-        <Select
-          title="Semester"
-          options={SEM}
-          select={setSelectedSem}
-          selected={selectedSem}
-        />
-      </View>
-      {file ? (
-        <View className="mt-5 px-2">
-          <Text className="text-text-secondary font-bold text-center text-lg ">Selected File: {file.name}</Text>
-        </View>
-      ) : (
-        <TouchableOpacity onPress={handleSelectFile}>
-          <Text className="text-2xl font-black text-blue-500 text-center mt-5">
-            Select File
-          </Text>
-        </TouchableOpacity>
-      )}
-    </ScrollView>
-  );
+            <View className="px-1">
+                <Select
+                    title="Year"
+                    options={YEAR}
+                    select={setSelectedClass}
+                    selected={selectedClass}
+                    />
+                <Select
+                    title="Course"
+                    options={COURSES}
+                    select={setSelectedCourse}
+                    selected={selectedCourse}
+                    />
+                <Select
+                    title="Semester"
+                    options={SEM}
+                    select={setSelectedSem}
+                    selected={selectedSem}
+                    />
+            </View>
+            {file?.name ? (
+                <View className="mt-5 px-2">
+                    <Text className="text-text-secondary font-bold text-center text-lg ">Selected File: {file.name}</Text>
+                </View>
+            ): (
+                <TouchableOpacity onPress={handleSelectFile}>
+                    <Text className="text-2xl font-black text-blue-500 text-center mt-5">
+                        Select File
+                    </Text>
+                </TouchableOpacity>
+            )}
+        </ScrollView>
+    );
 };
 
 export default ExamResult;

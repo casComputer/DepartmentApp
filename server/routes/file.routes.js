@@ -17,6 +17,7 @@ export const getSignature = (req, res) => {
     if (preset_type === "note") preset = "notes_upload";
     else if (preset_type === "assignment") preset = "assignment_upload";
     else if (preset_type === "dp") preset = "dp_upload";
+    else if(preset_type === 'exam_result') preset = "exam_result_upload"
 
     if (!preset)
         return res.json({ success: false, message: "invalid preset type!" });

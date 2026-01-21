@@ -27,7 +27,7 @@ const ExamResult = () => {
       return;
     }
     const data = {
-
+      
     }
   }
 

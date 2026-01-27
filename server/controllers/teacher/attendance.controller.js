@@ -271,7 +271,7 @@ export const fetchStudentsForAttendance = async (req, res) => {
         const {
             rows
         } = await turso.execute(
-            "SELECT userId, rollno from students s LEFT JOIN users u ON s.userId = s.userId where course = ? and year = ? and u.is_verified = true AND rollno > 0 ORDER BY rollno;",
+            "SELECT s.userId, s.rollno from students s LEFT JOIN users u ON u.userId = s.userId where s.course = ? and s.year = ? and u.is_verified = true AND s.rollno > 0 ORDER BY s.rollno;",
             [course, year]
         );
         const numberOfStudents = rows?.length || 0;

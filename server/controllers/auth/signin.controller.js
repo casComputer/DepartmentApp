@@ -93,7 +93,7 @@ const signinController = async (req, res) => {
                 course: row.course,
                 course_name: row.course_name,
             }));
-        } else if (role === "student") {
+        } else if (user.role === "student") {
             const studentExtra = await turso.execute(`
                 SELECT course , year, rollno FROM students WHERE userId = ?
                 `, [username])

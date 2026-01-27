@@ -1,4 +1,6 @@
-import React from "react";
+import {
+    useState
+} from "react";
 import {
     View,
     Text,
@@ -50,9 +52,11 @@ const AssignClass = ({
                     pathname: `/(admin)/(others)/AssignClass`,
                     params: { userId: user.userId },
                 })
+                
                 }
+                className="px-2"
                 >
-                <Text className="text-center bg-btn text-text font-bold text-xl mt-10 py-6 rounded-3xl">
+                <Text className="text-center bg-btn text-text font-black text-2xl mt-10 py-5 rounded-3xl">
                     {user?.in_charge_course && user?.in_charge_year
                     ? "Reassign Class": "Assign class"}
                 </Text>
@@ -69,14 +73,25 @@ const VerifyTeacher = () => {
         state.teachers.find((t) => t.userId === userId)
     );
 
-    const handleCancelVerification = () => {
+    const [verifying,
+        setVerifying] = useState(false)
+    const [cancelling,
+        setCancelling] = useState(false)
+
+    const handleCancelVerification = async () => {
         if (user && user.userId) {
-            cancelVerification(user.userId);
+            setCancelling(true)
+            await cancelVerification(user.userId);
+            setCancelling(false)
         }
     };
 
     const handleVerification = async () => {
-        if (user && user.userId) verifyTeacher(user.userId);
+        if (user && user.userId) {
+            setVerifying(true)
+            await verifyTeacher(user.userId);
+            setVerifying(false)
+        }
     };
 
     if (!user) {
@@ -118,13 +133,17 @@ const VerifyTeacher = () => {
                         onPress={handleCancelVerification}
                         className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
                         >
-                        <Text className="text-2xl text-text font-bold">Cancel</Text>
+                        <Text className="text-2xl text-text font-bold">{
+                            cancelling ? 'Cancelling..': 'Cancel'
+                            }</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={handleVerification}
                         className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
                         >
-                        <Text className="text-2xl text-text font-bold">Verify</Text>
+                        <Text className="text-2xl text-text font-bold">{
+                            verifying ? 'Verifying..': 'Verify'
+                            }</Text>
                     </TouchableOpacity>
                 </View>
             ): (

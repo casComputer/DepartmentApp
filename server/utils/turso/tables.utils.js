@@ -51,18 +51,20 @@ const createAllTables = () => {
         )`,
   );
 
+
+  turso.execute(
+    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, phone text, email text, about text, password text not null);",
+  );
+  
+
   turso.execute(
     `CREATE TABLE parent_child (
             parentId TEXT NOT NULL,
             studentId TEXT NOT NULL, 
             PRIMARY KEY (parentId, studentId), 
-            FOREIGN KEY (parentId) REFERENCES parents(parentId) ON DELETE CASCADE,
-            FOREIGN KEY (studentId) REFERENCES students(studentId) ON DELETE CASCADE
+            FOREIGN KEY (parentId) REFERENCES users(userId) ON DELETE CASCADE,
+            FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE
         );`,
-  );
-
-  turso.execute(
-    "CREATE TABLE admins (adminId TEXT primary key, dp TEXT, dp_public_id TEXT, fullname text not null, phone text, email text, about text, password text not null);",
   );
 
   turso.execute(`

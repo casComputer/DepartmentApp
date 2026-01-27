@@ -60,19 +60,18 @@ export const save = async (req, res) => {
             course,
             year,
             hour,
-            userId,
-            role,
             attendanceId
         } =
         req.body;
+        
+        const { userId, role } = req.user
 
         if (
             !attendance?.length ||
             !course ||
             !year ||
             !hour ||
-            !userId ||
-            !role
+            !userId
         )
             return abort(tx, res, {
             success: false,
@@ -89,12 +88,10 @@ export const save = async (req, res) => {
 
         // ================= CREATE =================
         if (!attendanceId) {
-            const idColumn = role === "teacher" ? "teacherId": "adminId";
-
             const result = await tx.execute({
                 sql: `
                 INSERT INTO attendance
-                (course, year, hour, date, timestamp, ${idColumn}, present_count, absent_count)
+                (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 args: [

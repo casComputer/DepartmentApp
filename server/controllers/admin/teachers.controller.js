@@ -5,7 +5,7 @@ import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
 export const getTeachers = async (req, res) => {
     try {
         const result = await turso.execute(
-            "SELECT t.teacherId, t.fullname, t.is_verified, c.course as in_charge_course, c.year AS in_charge_year FROM teachers t LEFT JOIN classes c ON c.in_charge = t.teacherId"
+            "SELECT u.userId, u.fullname, u.is_verified, c.course as in_charge_course, c.year AS in_charge_year FROM users u LEFT JOIN classes c ON c.in_charge = u.userId"
         );
 
         res.json(result.rows);
@@ -70,7 +70,7 @@ export const verifyTeacher = async (req, res) => {
 
     try {
         await turso.execute(
-            `update teachers set is_verified = TRUE where teacherId = ?`,
+            `update users set is_verified = TRUE where userId = ? AND role = 'teacher`,
             [teacherId]
         );
         res.json({ message: "Teacher verified successfully", success: true });

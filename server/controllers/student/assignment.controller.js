@@ -5,10 +5,11 @@ export const getAssignmentForStudent = async (req, res) => {
         const {
             course,
             year_of_study,
-            studentId,
             page = 1,
             limit = 10
         } = req.body;
+        
+        const { userId: studentId } = req.user
 
         if (!course || !year_of_study || !studentId) {
             return res.json({
@@ -39,8 +40,9 @@ export const getAssignmentForStudent = async (req, res) => {
 };
 
 export const saveAssignmentSubmissionDetails = async (req, res) => {
-    const { studentId, secure_url: url, format, assignmentId } = req.body;
-
+    const { secure_url: url, format, assignmentId } = req.body;
+    const { userId: studentId } = req.user
+    
     try {
         if (!studentId || !assignmentId || !url || !format) {
             return res.json({

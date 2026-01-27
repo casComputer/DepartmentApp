@@ -1,6 +1,7 @@
 import express from "express";
 
 import cloudinary from "../config/cloudinary.js";
+import { authorize } from "../utils/auth.utils.js"
 
 import {
     createAssignment,
@@ -15,19 +16,20 @@ import {
 
 const router = express.Router();
 
-router.post("/create", createAssignment);
+router.post("/create", authorize('teacher', 'admin'), createAssignment);
 
-router.post("/getAssignmentsCreatedByMe", getAssignmentsCreatedByMe);
+router.post("/getAssignmentsCreatedByMe",authorize('teacher', 'admin'),  getAssignmentsCreatedByMe);
 
-router.post("/getAssignmentForStudent", getAssignmentForStudent);
+router.post("/getAssignmentForStudent",authorize('student'),  getAssignmentForStudent);
 
 router.post(
     "/saveAssignmentSubmissionDetails",
+    authorize('student'), 
     saveAssignmentSubmissionDetails
 );
 
-router.post("/reject", reject);
+router.post("/reject", authorize('teacher', 'admin'), reject);
 
-router.post("/accept", accept);
+router.post("/accept", authorize('teacher', 'admin'),  accept);
 
 export default router;

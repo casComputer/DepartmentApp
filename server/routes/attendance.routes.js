@@ -5,6 +5,8 @@ import {
     turso
 } from "../config/turso.js";
 
+import { authorize} from "../utils/auth.utils.js"
+
 const router = express.Router();
 
 import {
@@ -26,11 +28,11 @@ import {
     generateAttendanceReport
 } from "../controllers/common/attendance.controller.js";
 
-router.post("/save", save);
+router.post("/save", authorize('teacher', 'admin'), save);
 
-router.post("/getAttandanceTakenByTeacher", getAttandanceTakenByTeacher);
+router.post("/getAttandanceTakenByTeacher", authorize('teacher', 'admin'),getAttandanceTakenByTeacher);
 
-router.post("/fetchStudentsForAttendance", fetchStudentsForAttendance);
+router.post("/fetchStudentsForAttendance", authorize('teacher', 'admin'), fetchStudentsForAttendance);
 
 router.post("/getClassAttendance", getClassAttendance);
 

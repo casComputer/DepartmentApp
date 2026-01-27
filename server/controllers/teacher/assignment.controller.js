@@ -3,8 +3,12 @@ import Assignment from "../../models/assignment.js";
 
 export const createAssignment = async (req, res) => {
     try {
-        const { topic, description, year, course, dueDate, userId, role } =
+        const { topic, description, year, course, dueDate } =
             req.body;
+            
+        const {
+            userId, role
+        }
 
         if (
             !topic ||
@@ -32,7 +36,7 @@ export const createAssignment = async (req, res) => {
             year,
             course,
             dueDate,
-            teacherId,
+            teacherId: userId,
             strength: rows[0]?.strength || 0
         });
 
@@ -52,7 +56,8 @@ export const createAssignment = async (req, res) => {
 
 export const getAssignmentsCreatedByMe = async (req, res) => {
     try {
-        const { teacherId, page = 1, limit = 10 } = req.body;
+        const { page = 1, limit = 10 } = req.body;
+        const { userId: teacherId} = req.user
 
         if (!teacherId) {
             return res.json({

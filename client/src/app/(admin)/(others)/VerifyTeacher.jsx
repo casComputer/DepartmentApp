@@ -11,6 +11,7 @@ import {
     useLocalSearchParams,
     router
 } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import {
     verifyTeacher,
@@ -20,6 +21,9 @@ import {
 import {
     useAdminStore
 } from "@store/admin.store.js";
+
+import confirm from "@utils/confirm.js";
+
 import Header from "@components/common/Header2.jsx";
 
 const ClassInChargeInfo = ({
@@ -52,11 +56,11 @@ const AssignClass = ({
                     pathname: `/(admin)/(others)/AssignClass`,
                     params: { userId: user.userId },
                 })
-                
+
                 }
-                className="px-2"
+                className="px-2 mt-5"
                 >
-                <Text className="text-center bg-btn text-text font-black text-2xl mt-10 py-5 rounded-3xl">
+                <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
                     {user?.in_charge_course && user?.in_charge_year
                     ? "Reassign Class": "Assign class"}
                 </Text>
@@ -80,17 +84,32 @@ const VerifyTeacher = () => {
 
     const handleCancelVerification = async () => {
         if (user && user.userId) {
-            setCancelling(true)
-            await cancelVerification(user.userId);
-            setCancelling(false)
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+            confirm(
+                `Are you sure to remove ${user.userId}`,
+                async () => {
+                    setCancelling(true)
+                    await cancelVerification(user.userId);
+                    setCancelling(false)
+                    router.back()
+                }
+            );
         }
     };
 
-    const handleVerification = async () => {
+    const handleVerification = () => {
         if (user && user.userId) {
-            setVerifying(true)
-            await verifyTeacher(user.userId);
-            setVerifying(false)
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+            confirm(
+                `Are you sure to verify ${user.userId}`,
+                async () => {
+                    setVerifying(true)
+                    await verifyTeacher(user.userId);
+                    setVerifying(false)
+                }
+            );
         }
     };
 
@@ -127,28 +146,29 @@ const VerifyTeacher = () => {
                     />
             </View>
 
-            {!user.is_verified ? (
-                <View className="flex-1 justify-center items-end flex-row gap-3 py-20 px-2">
-                    <TouchableOpacity
-                        onPress={handleCancelVerification}
-                        className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
-                        >
-                        <Text className="text-2xl text-text font-bold">{
-                            cancelling ? 'Cancelling..': 'Cancel'
-                            }</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={handleVerification}
-                        className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
-                        >
-                        <Text className="text-2xl text-text font-bold">{
-                            verifying ? 'Verifying..': 'Verify'
-                            }</Text>
-                    </TouchableOpacity>
-                </View>
-            ): (
-                <AssignClass user={user} />
-            )}
+            {user.is_verified ?
+            <AssignClass user={user} /> : null
+            }
+            <View className="flex-1 justify-center items-end flex-row gap-3 py-20 px-2">
+                <TouchableOpacity
+                    onPress={handleCancelVerification}
+                    className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
+                    >
+                    <Text className="text-2xl text-text font-bold">{
+                        cancelling ? 'Cancelling..': 'Cancel'
+                        }</Text>
+                </TouchableOpacity>
+                {!user.is_verified &&
+                <TouchableOpacity
+                    onPress={handleVerification}
+                    className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
+                    >
+                    <Text className="text-2xl text-text font-bold">{
+                        verifying ? 'Verifying..': 'Verify'
+                        }</Text>
+                </TouchableOpacity>
+                }
+            </View>
         </View>
     );
 };

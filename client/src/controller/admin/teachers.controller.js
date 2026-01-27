@@ -28,6 +28,7 @@ export const assignClass = async ({
     year, course, teacherId
 }) => {
     try {
+
         const res = await axios.post("/admin/assignClass", {
             year: year.id,
             course: course.id,
@@ -59,8 +60,10 @@ export const verifyTeacher = async (teacherId) => {
             const verifyTeacher = useAdminStore.getState().verifyTeacher;
             verifyTeacher(teacherId);
         }
+        else ToastAndroid.show(res.data?.message ?? 'Failed to verify teacher', ToastAndroid.LONG)
     } catch (error) {
         console.error(error);
+        ToastAndroid.show('Failed to verify teacher', ToastAndroid.LONG)
     }
 };
 
@@ -69,9 +72,14 @@ export const cancelVerification = async (teacherId) => {
         const res = await axios.post("/admin/deleteTeacher", {
             teacherId
         });
-
+        
+        if(res.data?.success)
+            useAdminStore.getState().removeTeacher(teacherId);
+        else ToastAndroid.show(res.data?.message ?? 'Failed to remove teacher', ToastAndroid.LONG)
+        
         return res.data.success;
     } catch (error) {
         console.error(error);
+        ToastAndroid.show('Failed to remove teacher', ToastAndroid.LONG)
     }
 };

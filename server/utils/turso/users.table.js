@@ -158,3 +158,21 @@ turso.execute(`
     );
 
     `);
+
+
+
+////////////////////////////////////////////////////
+///                    VIEWS                     ///
+////////////////////////////////////////////////////
+
+turso.execute(`CREATE VIEW class_strength AS
+SELECT
+  c.course,
+  c.year,
+  COUNT(s.student_id) AS strength,
+  c.in_charge
+FROM classes c
+LEFT JOIN students s
+  ON s.course = c.course
+ AND s.year = c.year
+GROUP BY c.course, c.year;`)

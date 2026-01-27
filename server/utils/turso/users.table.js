@@ -32,6 +32,15 @@ turso.execute(`
     );
     `);
 
+turso.execute(
+    `CREATE TABLE parent_child (
+            parentId TEXT NOT NULL,
+            studentId TEXT NOT NULL, 
+            PRIMARY KEY (parentId, studentId), 
+            FOREIGN KEY (parentId) REFERENCES users(userId) ON DELETE CASCADE,
+            FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE
+        );`,
+);
 
 turso.execute(`
     create table classes (

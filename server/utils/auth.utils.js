@@ -43,8 +43,6 @@ export const authenticateToken = async (req, res, next) => {
     });
 };
 
-<<<<<<< HEAD
-=======
 export const authorize = (...allowedRoles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -64,4 +62,3 @@ export const authorize = (...allowedRoles) => {
         next();
     };
 };
->>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377

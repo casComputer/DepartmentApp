@@ -34,14 +34,18 @@ export const fetchStudentsByClass = async (req, res) => {
 };
 
 export const fetchStudentsByClassTeacher = async (req, res) => {
-  const { userId: teacherId } = req.user;
+  const { userId: teacherId, role } = req.user;
+  
+  if(role !=== 'teacher' || role !== 'admin') return res.json({ success: false, message: 'UnAutherized request!'})
+  
+  const field = role === 'teacher' ? 'in_charge_teacher' : 'in_charge_admin'
 
   try {
     const classResult = await turso.execute(
       `
             SELECT course, year 
             FROM classes
-            WHERE in_charge = ?
+            WHERE ${field} = ?
             `,
       [teacherId]
     );

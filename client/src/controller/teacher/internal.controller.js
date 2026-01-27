@@ -1,0 +1,43 @@
+import axios from 'axios'
+
+export const handleSave = async (data) => {
+    try {
+        const res = await axios.post("/teacher/saveInternalMarkDetails", {
+            data,
+        });
+
+        if (res.data.success)
+            ToastAndroid.show(
+            "Internal mark uploaded successfull ✨",
+            ToastAndroid.SHORT,
+        );
+        else
+            ToastAndroid.show(
+            res.data.message ?? "Failed to upload internal mark!",
+            ToastAndroid.LONG,
+        );
+    } catch (e) {
+        ToastAndroid.show("Failed to upload internal mark!", ToastAndroid.LONG);
+        console.log(e, e?.message);
+    }
+};
+
+export const checkExists = async (course, sem) => {
+    try {
+        const res = await axios.post("/teacher/checkInternalMarkUpload", {
+            course,
+            sem,
+        });
+
+        if (res.data.success) return res.data.uploaded;
+
+        ToastAndroid.show(
+            res.data.message ?? "Failed to check existing internal marks!",
+            ToastAndroid.LONG,
+        );
+        return false;
+    } catch (e) {
+        ToastAndroid.show("Failed to check existing internal marks!", ToastAndroid.LONG);
+        return false;
+    }
+};

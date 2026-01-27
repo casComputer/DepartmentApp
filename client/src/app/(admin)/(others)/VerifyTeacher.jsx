@@ -1,16 +1,28 @@
 import React from "react";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    TextInput
+} from "react-native";
+import {
+    useLocalSearchParams,
+    router
+} from "expo-router";
 
 import {
     verifyTeacher,
     cancelVerification,
 } from "@controller/admin/teachers.controller";
 
-import { useAdminStore } from "@store/admin.store.js";
+import {
+    useAdminStore
+} from "@store/admin.store.js";
 import Header from "@components/common/Header2.jsx";
 
-const ClassInChargeInfo = ({ year = "", classCharge = "" }) => {
+const ClassInChargeInfo = ({
+    year = "", classCharge = ""
+}) => {
     if (!year || !classCharge) return null;
 
     return (
@@ -22,26 +34,27 @@ const ClassInChargeInfo = ({ year = "", classCharge = "" }) => {
     );
 };
 
-const AssignClass = ({ user }) => {
+const AssignClass = ({
+    user
+}) => {
     return (
         <View>
             <ClassInChargeInfo
                 year={user.in_charge_year}
                 classCharge={user.in_charge_course}
-            />
+                />
 
             <TouchableOpacity
                 onPress={() =>
-                    router.push({
-                        pathname: `/(admin)/(others)/AssignClass`,
-                        params: { userId: user.teacherId },
-                    })
+                router.push({
+                    pathname: `/(admin)/(others)/AssignClass`,
+                    params: { userId: user.userId },
+                })
                 }
-            >
+                >
                 <Text className="text-center bg-btn text-text font-bold text-xl mt-10 py-6 rounded-3xl">
                     {user?.in_charge_course && user?.in_charge_year
-                        ? "Reassign Class"
-                        : "Assign class"}
+                    ? "Reassign Class": "Assign class"}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -49,19 +62,21 @@ const AssignClass = ({ user }) => {
 };
 
 const VerifyTeacher = () => {
-    const { teacherId } = useLocalSearchParams();
+    const {
+        userId
+    } = useLocalSearchParams();
     const user = useAdminStore((state) =>
-        state.teachers.find((t) => t.teacherId === teacherId)
+        state.teachers.find((t) => t.userId === userId)
     );
 
     const handleCancelVerification = () => {
-        if (user && user.teacherId) {
-            cancelVerification(user.teacherId);
+        if (user && user.userId) {
+            cancelVerification(user.userId);
         }
     };
 
     const handleVerification = async () => {
-        if (user && user.teacherId) verifyTeacher(user.teacherId);
+        if (user && user.userId) verifyTeacher(user.userId);
     };
 
     if (!user) {
@@ -86,7 +101,7 @@ const VerifyTeacher = () => {
             </TouchableOpacity>
 
             <Text className="text-center text-text text-xl mt-1">
-                @{user.teacherId}
+                @{user.userId}
             </Text>
 
             <View className="w-full h-[8vh] rounded-full border-text border mt-5">
@@ -94,25 +109,25 @@ const VerifyTeacher = () => {
                     className="text-text w-full h-full font-bold text-[5vw] px-5"
                     value={user.fullname}
                     editable={false}
-                />
+                    />
             </View>
 
             {!user.is_verified ? (
-                <View className="flex-1 justify-center items-end flex-row gap-3 py-20">
+                <View className="flex-1 justify-center items-end flex-row gap-3 py-20 px-2">
                     <TouchableOpacity
                         onPress={handleCancelVerification}
-                        className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-6"
-                    >
-                        <Text className="text-xl font-bold">Cancel</Text>
+                        className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
+                        >
+                        <Text className="text-2xl text-text font-bold">Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={handleVerification}
-                        className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-6"
-                    >
-                        <Text className="text-xl font-bold">Verify</Text>
+                        className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
+                        >
+                        <Text className="text-2xl text-text font-bold">Verify</Text>
                     </TouchableOpacity>
                 </View>
-            ) : (
+            ): (
                 <AssignClass user={user} />
             )}
         </View>

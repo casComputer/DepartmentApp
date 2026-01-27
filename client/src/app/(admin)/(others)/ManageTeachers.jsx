@@ -33,7 +33,7 @@ const ManageTeachers = () => {
         setLoading(true);
         fetchTeachers().then(() => setLoading(false));
     }, []);
-    
+
     console.log(teachers)
 
     return (
@@ -46,7 +46,7 @@ const ManageTeachers = () => {
                 data={teachers ??[]}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) =>
-                item?.teacherId?.toString() ?? index
+                item?.userId ?? index
                 }
                 className={"px-2"}
                 contentContainerStyle={ { paddingBottom: 60 }}
@@ -54,10 +54,10 @@ const ManageTeachers = () => {
                     <TeacherItem
                         item={item}
                         handlePress={() =>
-                        item?.teacherId &&
+                        item?.userId &&
                         router.push({
                             pathname: "(admin)/(others)//VerifyTeacher",
-                            params: { teacherId: item?.teacherId }
+                            params: { userId: item?.userId }
                         })
                         }
                         />

@@ -17,16 +17,16 @@ const AssignClass = () => {
     let { userId } = useLocalSearchParams();
 
     const user = useAdminStore((state) =>
-        state.teachers.find((t) => t.teacherId === userId)
+        state.teachers.find((t) => t.userId === userId)
     );
 
     const handleAssignClass = async () => {
-        if (selectedClass && selectedCourse && user && user.teacherId) {
+        if (selectedClass && selectedCourse && user && user.userId) {
             setSaving(true);
             await assignClass({
                 year: selectedClass,
                 course: selectedCourse,
-                teacherId: user.teacherId,
+                teacherId: user.userId,
             });
             setSaving(false);
             router.back();

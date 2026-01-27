@@ -79,7 +79,7 @@ export const verifyTeacher = async (req, res) => {
 
     try {
         await turso.execute(
-            `update users set is_verified = TRUE where userId = ? AND role = 'teacher`,
+            `update users set is_verified = TRUE where userId = ? AND role = 'teacher'`,
             [teacherId]
         );
         res.json({ message: "Teacher verified successfully", success: true });

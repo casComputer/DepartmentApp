@@ -1,6 +1,11 @@
 import express from "express";
 
+<<<<<<< HEAD
 import { authorize } from "../middleware/authentication.middleware.js";
+=======
+import cloudinary from "../config/cloudinary.js";
+import { authorize } from "../utils/auth.utils.js"
+>>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377
 
 import {
     createAssignment,

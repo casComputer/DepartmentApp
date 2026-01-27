@@ -41,25 +41,12 @@ export const fetch = async (req, res) => {
         const { page = 1, limit = 10 } = req.body;
         const { role, userId } = req.user;
 
-        const ids = {
-            teacher: "teacherId",
-            admin: "adminId"
-        };
-
-        const column = ids[role];
-
-        if (!column)
-            return res.json({
-                success: false,
-                message: "Invalid role"
-            });
-
         const offset = (page - 1) * limit;
 
         const feesQuery = `
             SELECT *
             FROM fees
-            WHERE ${column} = ?
+            WHERE teacherId = ?
             ORDER BY timestamp DESC
             LIMIT ? OFFSET ?
         `;
@@ -67,7 +54,7 @@ export const fetch = async (req, res) => {
         const countQuery = `
             SELECT COUNT(*) as count
             FROM fees
-            WHERE ${column} = ?
+            WHERE teacherId = ?
         `;
 
         const { rows: fees } = await turso.execute(feesQuery, [

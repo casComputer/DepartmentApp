@@ -11,10 +11,6 @@ export const getInternalMarks = async (req, res)=> {
             course
         } = req.body
 
-        if (role !== 'student') return res.json({
-            success: false, message: 'UnAutherized access!'
-        })
-
         const internals = await Internal.find({
             sem, course
         })

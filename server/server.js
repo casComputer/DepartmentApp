@@ -29,13 +29,6 @@ app.use(express.json());
 app.use(cors( {
     origin: "*", credentials: true
 }));
-<<<<<<< HEAD
-
-app.get("/hello", (req, res) => {
-    res.send("Department App Server is running");
-});
-=======
->>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377
 
 app.use("/auth", authRoutes);
 app.use(authenticateToken);

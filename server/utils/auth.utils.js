@@ -43,3 +43,25 @@ export const authenticateToken = async (req, res, next) => {
     });
 };
 
+<<<<<<< HEAD
+=======
+export const authorize = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                error: "Unauthorized",
+            });
+        }
+
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                error: "Forbidden",
+            });
+        }
+
+        next();
+    };
+};
+>>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377

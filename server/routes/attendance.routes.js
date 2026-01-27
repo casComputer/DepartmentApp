@@ -2,6 +2,8 @@ import express, { json } from "express";
 
 import { authorize } from "../middleware/authentication.middleware.js";
 
+import { authorize} from "../utils/auth.utils.js"
+
 const router = express.Router();
 
 import {
@@ -21,6 +23,7 @@ import {
 
 import { generateAttendanceReport } from "../controllers/common/attendance.controller.js";
 
+<<<<<<< HEAD
 router.post("/save", authorize("teacher", "admin"), save);
 
 router.post(
@@ -34,6 +37,13 @@ router.post(
     authorize("teacher", "admin"),
     fetchStudentsForAttendance,
 );
+=======
+router.post("/save", authorize('teacher', 'admin'), save);
+
+router.post("/getAttandanceTakenByTeacher", authorize('teacher', 'admin'),getAttandanceTakenByTeacher);
+
+router.post("/fetchStudentsForAttendance", authorize('teacher', 'admin'), fetchStudentsForAttendance);
+>>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377
 
 router.post(
     "/getClassAttendance",

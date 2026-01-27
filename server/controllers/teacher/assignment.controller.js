@@ -8,7 +8,11 @@ export const createAssignment = async (req, res) => {
             
         const {
             userId, role
+<<<<<<< HEAD
         } = req.user;
+=======
+        }
+>>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377
 
         if (
             !topic ||
@@ -58,8 +62,11 @@ export const getAssignmentsCreatedByMe = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.body;
         const { userId: teacherId} = req.user
+<<<<<<< HEAD
 
         console.log(req.body)
+=======
+>>>>>>> 8f6fbfb7337e0f68e250856d66f4750fa1968377
 
         if (!teacherId) {
             return res.json({

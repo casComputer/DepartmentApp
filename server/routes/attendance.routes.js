@@ -2,9 +2,6 @@ import express from "express";
 
 import { authorize } from "../middleware/authentication.middleware.js";
 
-
-import { authorize} from "../utils/auth.utils.js"
-
 const router = express.Router();
 
 import {

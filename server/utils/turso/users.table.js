@@ -156,8 +156,5 @@ turso.execute(`
     FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
     FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE CASCADE
     );
-<<<<<<< HEAD
+
     `);
-=======
-    `);
->>>>>>> table

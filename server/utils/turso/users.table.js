@@ -10,43 +10,141 @@ turso.execute(`
     phone TEXT,
     about TEXT,
 
-    role TEXT CHECK(role IN('admin', 'teacher', 'student', 'parent')),
+    role TEXT NOT NULL CHECK(role IN('admin', 'teacher', 'student', 'parent')),
 
     is_verified BOOLEAN DEFAULT FALSE,
-    joinedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    joinedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     `);
 
 turso.execute(`
     CREATE TABLE students (
-        studentId TEXT NOT NULL,
-        
-        course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
-        year_of_study text check (year_of_study IN ('First', 'Second', 'Third', 'Fourth')) not null,
-        rollno integer default NULL,
+    userId TEXT NOT NULL,
 
-        UNIQUE (course, year_of_study, rollno),
-        CHECK (is_verified = 1 OR rollno IS NULL),
-        foreign key (course, year_of_study) references classes(course, year) ON DELETE SET NULL,
-        foreign key (studentId) references users(userId) ON DELETE CASCADE,
+    course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
+    year text check (year IN ('First', 'Second', 'Third', 'Fourth')) not null,
+    rollno integer default -1,
+
+    UNIQUE (course, year_of_study, rollno),
+
+    foreign key (course, year_of_study) references classes(course, year) ON DELETE SET NULL,
+    foreign key (studentId) references users(userId) ON DELETE CASCADE,
     );
     `);
 
-turso.execute(
-    `CREATE TABLE teachers ( 
-          teacherId TEXT NOT NULL, 
-        );`,
-  );
-  
- turso.execute(
-    `CREATE TABLE parents(
-            parentId TEXT NOT NULL,
-            
-        )`,
-  );
-  
-  turso.execute(
-    `CREATE TABLE admins (
-        adminId TEXT NOT NULL,
-        );`
-  );
+
+turso.execute(`
+    create table classes (
+    course text check (course in ('Bca', 'Bsc')),
+    year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
+    strength integer,
+    in_charge text UNIQUE REFERENCES users(userId) ON DELETE SET NULL,
+    primary key (course, year)
+    )
+    `);
+
+turso.execute(`
+    CREATE TABLE IF NOT EXISTS attendance (
+    attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    course TEXT NOT NULL,
+    year TEXT NOT NULL,
+    hour TEXT NOT NULL,
+    date DATE NOT NULL,
+    timestamp TEXT NOT NULL,
+    updated_timestamp TEXT,
+    updated_by TEXT,
+
+    teacherId TEXT NOT NULL,
+
+    present_count INTEGER NOT NULL DEFAULT 0,
+    absent_count INTEGER NOT NULL DEFAULT 0,
+    late_count INTEGER NOT NULL DEFAULT 0,
+
+    strength INTEGER
+    GENERATED ALWAYS AS (
+    present_count + absent_count + late_count
+    ) STORED,
+
+    UNIQUE (course, year, hour, date),
+
+    FOREIGN KEY (course, year)
+    REFERENCES classes(course, year),
+
+    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(userId) ON DELETE SET NULL,
+
+    );
+    `);
+
+turso.execute(`
+    CREATE TABLE IF NOT EXISTS attendance_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    attendanceId INTEGER NOT NULL,
+    studentId TEXT NOT NULL,
+    rollno INTEGER NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('present','absent', 'late')),
+
+    FOREIGN KEY (attendanceId) REFERENCES attendance(attendanceId) ON DELETE CASCADE,
+    FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE
+    );
+    `);
+
+turso.execute(`
+    CREATE TABLE worklogs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    year TEXT NOT NULL,
+    course TEXT NOT NULL,
+    date TEXT NOT NULL,
+    hour TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    topics TEXT NOT NULL,
+
+    teacherId TEXT NOT NULL,
+
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(teacherId, date, hour),
+
+    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE CASCADE,
+    FOREIGN KEY (year, course) REFERENCES classes(year, course));
+    `);
+
+turso.execute(`
+    CREATE TABLE fees (
+    feeId INTEGER PRIMARY KEY AUTOINCREMENT,
+    year TEXT NOT NULL,
+    course TEXT NOT NULL,
+    dueDate TEXT NOT NULL,
+    details TEXT NOT NULL,
+    amount TEXT NOT NULL,
+
+    teacherId TEXT NOT NULL,
+
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
+    FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
+
+
+    );
+    `);
+
+turso.execute(`
+    CREATE TABLE teacher_courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacherId TEXT NOT NULL,
+
+    year TEXT NOT NULL,
+    course TEXT NOT NULL,
+    course_name TEXT NOT NULL,
+
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (course_name, year, course),
+
+    FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
+    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE CASCADE
+    );
+    `);

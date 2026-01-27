@@ -17,17 +17,23 @@ import feesRoutes from "./routes/fees.routes.js";
 
 import data from "./cron/attendance.js";
 
-import { authenticateToken } from "./middleware/authentication.middleware.js";
+import {
+    authenticateToken,
+    authorize
+} from "./middleware/authentication.middleware.js";
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors( {
+    origin: "*", credentials: true
+}));
 
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
-app.use("/admin", adminRoutes);
+app.use("/admin", authorize("admin"), adminRoutes);
+
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
@@ -39,7 +45,9 @@ app.use("/profile", profileRoutes);
 app.use("/fees", feesRoutes);
 
 app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
+    res.status(404).json({
+        message: "Route not found"
+    });
 });
 
 app.listen(PORT, () => {

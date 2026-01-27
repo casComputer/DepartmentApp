@@ -57,7 +57,7 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
 
     const studentResult = await turso.execute(
       `
-            SELECT u.studentId, u.fullname , u.is_verified, u.dp, s.rollno 
+            SELECT u.userId, u.fullname , u.is_verified, u.dp, s.rollno 
             FROM students s
             JOIN users u ON s.studentId = u.userId
             WHERE s.course = ? AND s.year = ?

@@ -32,7 +32,7 @@ const router = express.Router();
 
 router.post("/fetchStudentsByClass", authorize("teacher", "admin"), fetchStudentsByClass);
 
-router.post("/fetchStudentsByClassTeacher", authorize("teacher", "admin"), fetchStudentsByClassTeacher);
+router.get("/fetchStudentsByClassTeacher", authorize("teacher", "admin"), fetchStudentsByClassTeacher);
 
 router.post("/verifyStudent", authorize("teacher", "admin"), verifyStudent);
 

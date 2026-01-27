@@ -30,6 +30,10 @@ app.use(cors( {
     origin: "*", credentials: true
 }));
 
+app.get("/hello", (req, res) => {
+    res.send("Department App Server is running");
+});
+
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/admin", authorize("admin"), adminRoutes);

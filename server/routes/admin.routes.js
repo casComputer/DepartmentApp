@@ -1,5 +1,4 @@
 import express from "express";
-import { turso } from "../config/turso.js";
 
 import { getTeachers, assignClass, verifyTeacher } from "../controllers/admin/teachers.controller.js"
 

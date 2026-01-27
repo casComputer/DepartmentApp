@@ -3,13 +3,11 @@ import { turso } from "../../config/turso.js";
 export const addCourse = async (req, res) => {
     try {
         const { list } = req.body;
-        const { userId, role } = req.user;
-
-        const userField = role === "teacher" ? "teacherId" : "adminId";
+        const { userId } = req.user;
 
         await turso.execute(
             `
-        DELETE FROM teacher_courses WHERE ${userField} = ?
+        DELETE FROM teacher_courses WHERE teacherId = ?
     `,
             [userId]
         );
@@ -30,7 +28,7 @@ export const addCourse = async (req, res) => {
         ]);
 
         const query = `
-      INSERT INTO teacher_courses (${userField}, year, course, course_name)
+      INSERT INTO teacher_courses (teacherId, year, course, course_name)
       VALUES ${placeholders}
     `;
 

@@ -52,9 +52,9 @@ export const fetchAllTeachers = async (req, res) => {
   try {
     const { rows } = await turso.execute(`
             SELECT
-            t.teacherId,
-            t.fullname,
-            t.dp,
+            u.teacherId,
+            u.fullname,
+            u.dp,
 
             tc.course,
             tc.year,
@@ -63,12 +63,12 @@ export const fetchAllTeachers = async (req, res) => {
             c.course as in_charge_course,
             c.year as in_charge_year
 
-            FROM teachers t
+            FROM users u
 
-            LEFT JOIN classes c ON t.teacherId = c.in_charge
-            left JOIN teacher_courses tc ON t.teacherId = tc.teacherId
+            LEFT JOIN classes c ON u.userId = c.in_charge
+            left JOIN teacher_courses tc ON u.userId = tc.teacherId
 
-            WHERE t.is_verified = 1;
+            WHERE u.is_verified = 1;
             `);
 
     const result = rows.map((row) => ({

@@ -71,7 +71,7 @@ export const saveInternalMarkDetails = async(req, res)=> {
 
 }
 
-export const checkInternalMarkUpload = await (req, res)=> {
+export const checkInternalMarkUpload = async (req, res) => {
     try {
         const {
             course,

@@ -3,10 +3,9 @@ import { turso } from "../../config/turso.js";
 export const create = async (req, res) => {
     try {
         const { dueDate, details, year, course, amount } = req.body;
-        const { role, userId } = req.user;
+        const { userId } = req.user;
 
         if (
-            !role ||
             !userId ||
             !dueDate ||
             !details ||
@@ -19,7 +18,7 @@ export const create = async (req, res) => {
                 message: "missing required parameters!"
             });
 
-        if (role === "teacher") {
+        
             await turso.execute(
                 `
                 INSERT INTO fees 
@@ -29,21 +28,11 @@ export const create = async (req, res) => {
             `,
                 [year, course, details, dueDate, userId, amount]
             );
-        } else if (role === "admin") {
-            await turso.execute(
-                `
-                INSERT INTO fees 
-                    (year, course, details, dueDate, adminId, amount)
-                    VALUES
-                    (?, ?, ?, ?, ?, ?);
-            `,
-                [year, course, details, dueDate, userId, amount]
-            );
-        } else return res.json({ message: "invalid role", success: false });
-
+        
         res.json({ success: true });
     } catch (error) {
         console.error(error);
+        res.json({ success: false, message: "Internal server error!" });
     }
 };
 
@@ -52,25 +41,12 @@ export const fetch = async (req, res) => {
         const { page = 1, limit = 10 } = req.body;
         const { role, userId } = req.user;
 
-        const ids = {
-            teacher: "teacherId",
-            admin: "adminId"
-        };
-
-        const column = ids[role];
-
-        if (!column)
-            return res.json({
-                success: false,
-                message: "Invalid role"
-            });
-
         const offset = (page - 1) * limit;
 
         const feesQuery = `
             SELECT *
             FROM fees
-            WHERE ${column} = ?
+            WHERE teacherId = ?
             ORDER BY timestamp DESC
             LIMIT ? OFFSET ?
         `;
@@ -78,7 +54,7 @@ export const fetch = async (req, res) => {
         const countQuery = `
             SELECT COUNT(*) as count
             FROM fees
-            WHERE ${column} = ?
+            WHERE teacherId = ?
         `;
 
         const { rows: fees } = await turso.execute(feesQuery, [

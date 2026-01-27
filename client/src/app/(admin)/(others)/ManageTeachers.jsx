@@ -34,14 +34,10 @@ const ManageTeachers = () => {
         fetchTeachers().then(() => setLoading(false));
     }, []);
 
-    console.log(teachers)
-
     return (
         <View className="flex-1 bg-primary">
             <Header title={"Manage Teachers"} />
-            {loading && teachers.length == 0 && (
-                <ActivityIndicator size="large" />
-            )}
+
             <FlashList
                 data={teachers ??[]}
                 showsVerticalScrollIndicator={false}
@@ -62,6 +58,7 @@ const ManageTeachers = () => {
                         }
                         />
                 )}
+                ListEmptyComponent={loading ? <ActivityIndicator size="large" />: !teachers.length && <Text className="text-lg font-bold text-text text-center mt-3">No teachers registered yet!</Text>}
                 />
         </View>
     );

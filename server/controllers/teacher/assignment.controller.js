@@ -8,7 +8,7 @@ export const createAssignment = async (req, res) => {
             
         const {
             userId, role
-        }
+        } = req.user;
 
         if (
             !topic ||

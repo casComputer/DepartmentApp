@@ -11,7 +11,7 @@ export const fetchStudentsByClass = async (req, res) => {
         .json({ message: "invalid course or year", success: false });
 
     const result = await turso.execute(
-      "SELECT studentId, fullname, rollno, is_verified, dp from students where course = ? and year_of_study = ? and is_verified = true",
+      "SELECT u.studentId, u.fullname, s.rollno, u.is_verified, u.dp from students s JOIN users u ON s.studentId = u.userId where s.course = ? and s.year = ? and u.is_verified = true",
       [course, year]
     );
 
@@ -36,16 +36,12 @@ export const fetchStudentsByClass = async (req, res) => {
 export const fetchStudentsByClassTeacher = async (req, res) => {
   const { userId: teacherId, role } = req.user;
   
-  if(role !=== 'teacher' || role !== 'admin') return res.json({ success: false, message: 'UnAutherized request!'})
-  
-  const field = role === 'teacher' ? 'in_charge_teacher' : 'in_charge_admin'
-
   try {
     const classResult = await turso.execute(
       `
             SELECT course, year 
             FROM classes
-            WHERE ${field} = ?
+            WHERE in_charge = ?
             `,
       [teacherId]
     );
@@ -61,9 +57,10 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
 
     const studentResult = await turso.execute(
       `
-            SELECT studentId, fullname , is_verified, dp, rollno 
-            FROM students
-            WHERE course = ? AND year_of_study = ?
+            SELECT u.studentId, u.fullname , u.is_verified, u.dp, s.rollno 
+            FROM students s
+            JOIN users u ON s.studentId = u.userId
+            WHERE s.course = ? AND s.year = ?
             `,
       [course, year]
     );
@@ -99,7 +96,7 @@ export const saveStudentDetails = async (req, res) => {
     // assign roll number
     await turso.execute(
       `
-			update students set rollno = ? where studentId = ?
+			update students set rollno = ? where userId = ?
 		`,
       [rollno, studentId]
     );

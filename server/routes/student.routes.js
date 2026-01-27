@@ -26,28 +26,30 @@ import {
     getInternalMarks
 } from "../controllers/student/internal.controller.js";
 
+import { authorize } from "../middleware/authentication.middleware.js";
+
 const router = express.Router();
 
-router.post("/fetchStudentsByClass", fetchStudentsByClass);
+router.post("/fetchStudentsByClass", authorize("teacher", "admin"), fetchStudentsByClass);
 
-router.post("/fetchStudentsByClassTeacher", fetchStudentsByClassTeacher);
+router.post("/fetchStudentsByClassTeacher", authorize("teacher", "admin"), fetchStudentsByClassTeacher);
 
-router.post("/verifyStudent", verifyStudent);
+router.post("/verifyStudent", authorize("teacher", "admin"), verifyStudent);
 
-router.post("/cancelStudentVerification", cancelStudentVerification);
+router.post("/cancelStudentVerification", authorize("teacher", "admin"), cancelStudentVerification);
 
-router.post("/saveStudentDetails", saveStudentDetails);
+router.post("/saveStudentDetails", authorize("teacher", "admin"), saveStudentDetails);
 
-router.post("/verifyMultipleStudents", verifyMultipleStudents);
+router.post("/verifyMultipleStudents", authorize("teacher", "admin"), verifyMultipleStudents);
 
-router.post("/autoAssignRollNoAlphabetically", autoAssignRollNoAlphabetically);
+router.post("/autoAssignRollNoAlphabetically", authorize("teacher", "admin"), autoAssignRollNoAlphabetically);
 
-router.post("/assignGroupedRollNo", assignGroupedRollNo);
+router.post("/assignGroupedRollNo", authorize("teacher", "admin"), assignGroupedRollNo);
 
 router.post("/saveExamResultDetails", saveExamResultDetails);
 
-router.post("/checkExamResultUpload", checkExamResultUpload);
+router.post("/checkExamResultUpload", authorize("teacher", "admin"), checkExamResultUpload);
 
-router.post("/getInternalMarks", getInternalMarks);
+router.post("/getInternalMarks", authorize("student"), getInternalMarks);
 
 export default router;

@@ -2,7 +2,9 @@ import { turso } from "../../config/turso.js";
 
 export const saveWorklog = async (req, res) => {
   try {
-    const { year, course, date, hour, subject, topics, teacherId } = req.body;
+    const { year, course, date, hour, subject, topics } = req.body;
+
+    const { userId: teacherId } = req.user;
 
     if (
       !year ||
@@ -49,7 +51,9 @@ export const saveWorklog = async (req, res) => {
 
 export const getWorklogs = async (req, res) => {
   try {
-    const { teacherId, page = 1, limit = 15 } = req.body;
+    const { page = 1, limit = 15 } = req.body;
+
+    const { userId: teacherId } = req.user;
 
     if (!teacherId) {
       return res

@@ -18,11 +18,11 @@ router.post("/fetchByClassTeacher", async (req, res) => {
             FROM classes c
             JOIN students s
                 ON s.course = c.course 
-               AND s.year_of_study = c.year
+               AND s.year = c.year
             JOIN parent_child pc
                 ON pc.studentId = s.studentId
-            JOIN parents p
-                ON p.parentId = pc.parentId
+            JOIN users u
+                ON u.userId = pc.parentId
             WHERE c.in_charge = ?;
         `,
             [teacherId]

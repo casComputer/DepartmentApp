@@ -4,8 +4,6 @@ export const fetchExamResult = async (req, res) => {
     try {
         const { course, year, sem } = req.body;
 
-        console.log(course, year, sem)
-
         if (!course || !year || !sem) {
             return res.json({
                 success: false,

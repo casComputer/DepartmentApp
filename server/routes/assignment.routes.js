@@ -1,7 +1,6 @@
 import express from "express";
 
-import cloudinary from "../config/cloudinary.js";
-import { authorize } from "../utils/auth.utils.js"
+import { authorize } from "../middleware/authentication.middleware.js";
 
 import {
     createAssignment,

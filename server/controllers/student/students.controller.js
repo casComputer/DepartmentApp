@@ -36,7 +36,7 @@ export const fetchStudentsByClass = async (req, res) => {
 export const fetchStudentsByClassTeacher = async (req, res) => {
   const { userId: teacherId, role } = req.user;
   
-  if(role !=== 'teacher' || role !== 'admin') return res.json({ success: false, message: 'UnAutherized request!'})
+  if(role !== 'teacher' || role !== 'admin') return res.json({ success: false, message: 'UnAutherized request!'})
   
   const field = role === 'teacher' ? 'in_charge_teacher' : 'in_charge_admin'
 

@@ -3,10 +3,9 @@ import { turso } from "../../config/turso.js";
 export const create = async (req, res) => {
     try {
         const { dueDate, details, year, course, amount } = req.body;
-        const { role, userId } = req.user;
+        const { userId } = req.user;
 
         if (
-            !role ||
             !userId ||
             !dueDate ||
             !details ||
@@ -19,7 +18,7 @@ export const create = async (req, res) => {
                 message: "missing required parameters!"
             });
 
-        if (role === "teacher") {
+        
             await turso.execute(
                 `
                 INSERT INTO fees 
@@ -29,21 +28,11 @@ export const create = async (req, res) => {
             `,
                 [year, course, details, dueDate, userId, amount]
             );
-        } else if (role === "admin") {
-            await turso.execute(
-                `
-                INSERT INTO fees 
-                    (year, course, details, dueDate, adminId, amount)
-                    VALUES
-                    (?, ?, ?, ?, ?, ?);
-            `,
-                [year, course, details, dueDate, userId, amount]
-            );
-        } else return res.json({ message: "invalid role", success: false });
-
+        
         res.json({ success: true });
     } catch (error) {
         console.error(error);
+        res.json({ success: false, message: "Internal server error!" });
     }
 };
 

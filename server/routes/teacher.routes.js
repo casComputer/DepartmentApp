@@ -8,7 +8,7 @@ import { syncUser, fetchAllTeachers } from "../controllers/teacher/teacher.contr
 import { fetchExamResult } from "../controllers/teacher/exam.controller.js";
 import {
     saveInternalMarkDetails
-} from '../controller/teacher/internal.controller.js'
+} from '../controllers/teacher/internal.controller.js'
 
 router.post("/saveWorklog", saveWorklog);
 
@@ -24,6 +24,6 @@ router.post("/fetchExamResult", fetchExamResult);
 
 router.post("/saveInternalMarkDetails", saveInternalMarkDetails);
 
-router.post("/checkInternalMarkUpload", checkInternalMarkUpload);
+// router.post("/checkInternalMarkUpload", checkInternalMarkUpload);
 
 export default router;

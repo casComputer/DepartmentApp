@@ -310,13 +310,13 @@ export const fetchStudentsForAttendance = async (req, res) => {
 export const getClassAttendance = async (req, res) => {
     try {
         let {
-            userId,
             course,
             year,
-            role,
             page = 1,
             limit = 10
         } = req.body;
+
+        const { userId, role } = req.user;
 
         page = Math.max(1, page);
         limit = Math.min(50, Math.max(1, limit));
@@ -341,9 +341,9 @@ export const getClassAttendance = async (req, res) => {
         if (role === "teacher") {
             query = `
             SELECT c.course, c.year
-            FROM teachers t
-            JOIN classes c ON c.in_charge = t.teacherId
-            WHERE t.teacherId = ?
+            FROM users u
+            JOIN classes c ON c.in_charge = u.userId
+            WHERE u.userId = ?
             `;
         } else if (role === "admin") {
             query = `

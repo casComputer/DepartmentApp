@@ -1,6 +1,6 @@
 import express from "express";
 
-import { turso } from "../config/turso.js";
+import { authorize } from "../middleware/authentication.middleware.js";
 
 import {
     create,
@@ -11,12 +11,12 @@ import { fetch as fetchByStudent } from "../controllers/student/fees.controller.
 
 const router = express.Router();
 
-router.post("/create", create);
+router.post("/create", authorize("teacher", "admin"), create);
 
-router.post("/fetchByTeacher", fetchByTeacher);
+router.post("/fetchByTeacher", authorize("teacher", "admin"), fetchByTeacher);
 
-router.post("/delete", deleteFee);
+router.post("/delete", authorize("teacher", "admin"), deleteFee);
 
-router.post("/fetchByStudent", fetchByStudent);
+router.post("/fetchByStudent", authorize("student"), fetchByStudent);
 
 export default router;

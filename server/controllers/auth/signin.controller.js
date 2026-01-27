@@ -1,123 +1,131 @@
 import "dotenv/config";
 
-import { turso } from "../../config/turso.js";
-import { comparePassword } from "../../utils/auth.utils.js";
-import { generateTokens } from "../../utils/token.utils.js";
+import {
+    turso
+} from "../../config/turso.js";
+import {
+    comparePassword
+} from "../../utils/auth.utils.js";
+import {
+    generateTokens
+} from "../../utils/token.utils.js";
 
 const signinController = async (req, res) => {
-  try {
-    let { username, password, userRole } = req.body;
-    userRole = userRole.toLowerCase();
+    try {
+        let {
+            username,
+            password,
+            userRole
+        } = req.body;
+        userRole = userRole.toLowerCase();
 
-    const tableMap = {
-      student: "students",
-      teacher: "teachers",
-      parent: "parents",
-      admin: "admins",
-    };
+        username = username?.trim()
+        password = password?.trim()
 
-    const table = tableMap[userRole];
+        if (!username || !password) return res.status(400).json({
+            success: false,
+            error: "Invalid username or password",
+        });
 
-    if (!table) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid user role",
-      });
-    }
+        if (!userRole || !['student', 'teacher', 'admin', 'parent'].includes(userRole)) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid user role",
+            });
+        }
 
-    let existUser = null;
+        const existUser = await turso.execute(`
+            SELECT * FROM users WHERE userId = ?
 
-    if (table === "teachers") {
-      existUser = await turso.execute(
-        `
-               SELECT 
-               t.*,
-                c.course as in_charge_course,
-                c.year as in_charge_year,
+            `, [username]);
+
+        if (!existUser.rows.length) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid username or password",
+            });
+        }
+
+        let user = existUser.rows[0];
+
+        if (user.role !== userRole) {
+            return res.status(403).json({
+                success: false,
+                error: "Role mismatch",
+            });
+        }
+
+        const validPassword = await comparePassword(password, user.password);
+        if (!validPassword)
+            return res.status(400).json({
+            success: false,
+            error: "Invalid username or password",
+        });
+
+
+
+        if (user.role === "teacher") {
+            const teacherExtra = await turso.execute(
+                `
+                SELECT
+                c.course AS in_charge_course,
+                c.year AS in_charge_year,
                 tc.course_name,
                 tc.year,
                 tc.course
+                FROM users u
+                LEFT JOIN classes c ON c.in_charge = u.userId
+                LEFT JOIN teacher_courses tc ON tc.teacherId = u.userId
+                WHERE u.userId = ?
+                `,
+                [user.userId],
+            );
 
-               FROM teachers t 
+            const inCharge = teacherExtra.rows.find(
+                row => row.in_charge_course && row.in_charge_year
+            );
 
-               LEFT JOIN classes c ON c.in_charge = t.teacherId
-               
-               RIGHT JOIN teacher_courses tc ON tc.teacherId = t.teacherId
-               
-               WHERE t.teacherId = ?`,
-        [username],
-      );
+            user.in_charge_course = inCharge?.in_charge_course ?? null;
+            user.in_charge_year = inCharge?.in_charge_year ?? null;
 
-      existUser.rows = [{
-        fullname: existUser.rows[0]?.fullname,
-        teacherId: existUser.rows[0]?.teacherId,
-        dp: existUser.rows[0]?.dp,
-        dp_public_id: existUser.rows[0]?.dp_public_id,
-        email: existUser.rows[0]?.email,
-        phone: existUser.rows[0]?.phone,
-        about: existUser.rows[0]?.about,
-        is_verified: existUser.rows[0]?.is_verified,
-        password: existUser.rows[0]?.password,
+            user.courses = teacherExtra.rows.map(row => ({
+                year: row.year,
+                course: row.course,
+                course_name: row.course_name,
+            }));
+        } else if (role === "student") {
+            const studentExtra = await turso.execute(`
+                SELECT course , year, rollno FROM students WHERE userId = ?
+                `, [username])
 
-        in_charge_course: existUser.rows[0]?.in_charge_course,
-        in_charge_year: existUser.rows[0]?.in_charge_year,
+            const {
+                course,
+                year,
+                rollno
+            } = studentExtra?.rows?.[0] ?? {}
 
-        courses: existUser.rows?.map((row) => ({
-          year: row.year,
-          course: row.course,
-          course_name: row.course_name,
-        })),
-      }]
+            user.course = course
+            user.year = year
+            user.rollno = rollno ?? -1
+        }
 
-    } else {
-      existUser = await turso.execute(
-        `SELECT * FROM ${table} WHERE ${table.slice(0, -1)}Id = ?`,
-        [username],
-      );
+        delete user.password;
+        console.log(user)
+
+        const tokens = generateTokens(user.userId, user.role);
+        // await storeRefreshToken(user.userId, tokens.refreshToken);
+
+        res.json({
+            success: true,
+            ...tokens,
+            user,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false, error: "Server error"
+        });
     }
-
-    if (!existUser.rows.length) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid username or password",
-      });
-    }
-
-    let user = existUser.rows[0];
-
-    console.log(user)
-
-    const validPassword = await comparePassword(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid username or password",
-      });
-    }
-
-    const idKey = {
-      student: "studentId",
-      teacher: "teacherId",
-      parent: "parentId",
-      admin: "adminId",
-    }[userRole];
-
-    delete user.password;
-    user.userId = user[idKey];
-    user.role = userRole;
-
-    const tokens = generateTokens(user.userId, user.role);
-    // await storeRefreshToken(user.userId, tokens.refreshToken);
-
-    res.json({
-      success: true,
-      ...tokens,
-      user,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: "Server error" });
-  }
 };
 
 export default signinController;

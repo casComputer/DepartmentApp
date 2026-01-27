@@ -61,8 +61,5 @@ export const authorize = (...allowedRoles) => {
 
         next();
     };
-<<<<<<< HEAD
+
 };
-=======
-};
->>>>>>> table

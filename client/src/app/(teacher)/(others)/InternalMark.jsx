@@ -11,9 +11,9 @@ import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 
 import {
-    handleSaveResultDetails,
-    checkExamResultUpload,
-} from "@controller/student/exam.controller.js";
+    handleSave,
+    checkExists,
+} from "@controller/teacher/internal.controller.js";
 
 import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 
@@ -24,7 +24,8 @@ import { COURSES, SEM } from "@constants/ClassAndCourses";
 const setProgress = useAppStore.getState().setGlobalProgress;
 const setProgressText = useAppStore.getState().setGlobalProgressText;
 
-const ExamResult = () => {
+const InternalMark = () => {
+    
     const [selectedCourse, setSelectedCourse] = useState({});
     const [selectedSem, setSelectedSem] = useState({});
     const [file, setFile] = useState({});
@@ -32,11 +33,10 @@ const ExamResult = () => {
     const handleSelectFile = async () => {
         const asset = await handleDocumentPick(["application/pdf", "image/*"]);
         if (asset) setFile(asset);
-        console.log(asset);
     };
 
     const handdleUploadFile = async () => {
-        if (!selectedCourse.id || !selectedSem.id) {
+        if ( !selectedCourse.id || !selectedSem.id) {
             ToastAndroid.show("Please select all fields.", ToastAndroid.SHORT);
             return;
         }
@@ -49,14 +49,14 @@ const ExamResult = () => {
         setProgress(1);
         setProgressText("Checking Previous Uploads..");
 
-        const isUploaded = await checkExamResultUpload(
+        const isUploaded = await checkExists(
             selectedCourse.id,
             selectedSem.id,
         );
 
         if (isUploaded) {
             ToastAndroid.show(
-                "You already uploaded result for this sem!",
+                "You already uploaded internal marks for this sem!",
                 ToastAndroid.SHORT,
             );
             setProgress(0);
@@ -66,7 +66,7 @@ const ExamResult = () => {
 
         const { secure_url, format, success, public_id } = await handleUpload(
             file,
-            "exam_result",
+            "internal_mark",
         );
 
         if (!success || !secure_url || !format || !public_id)
@@ -81,8 +81,8 @@ const ExamResult = () => {
             public_id,
         };
 
-        setProgressText("Saving Result Details..");
-        await handleSaveResultDetails(data);
+        setProgressText("Saving internal marks details..");
+        await handleSave(data);
         setProgress(0);
     };
 
@@ -124,4 +124,4 @@ const ExamResult = () => {
     );
 };
 
-export default ExamResult;
+export default InternalMark;

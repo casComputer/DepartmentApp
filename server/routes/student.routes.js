@@ -22,6 +22,10 @@ import {
     cancelStudentVerification
 } from "../controllers/student/verification.controller.js";
 
+import {
+    getInternalMarks
+} from "../controllers/student/internal.controller.js";
+
 const router = express.Router();
 
 router.post("/fetchStudentsByClass", fetchStudentsByClass);
@@ -43,5 +47,7 @@ router.post("/assignGroupedRollNo", assignGroupedRollNo);
 router.post("/saveExamResultDetails", saveExamResultDetails);
 
 router.post("/checkExamResultUpload", checkExamResultUpload);
+
+router.post("/getInternalMarks", getInternalMarks);
 
 export default router;

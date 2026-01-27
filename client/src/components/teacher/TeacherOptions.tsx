@@ -1,89 +1,106 @@
+import { View, Text, TouchableOpacity } from "react-native";
 import {
     FontAwesome5,
     MaterialCommunityIcons,
     Octicons,
     SimpleLineIcons,
     MaterialIcons,
-    Entypo,
+    Entypo
 } from "@icons";
+import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
 
 const ICONS_SIZE = 35;
 
+const optionsData = [
+    {
+        Icon: MaterialCommunityIcons,
+        iconName: "account-group-outline",
+        text: "Students",
+        locaton: "/(teacher)/(others)/ManageStudents"
+    },
+    {
+        Icon: FontAwesome5,
+        iconName: "clipboard-list",
+        text: "Attendance",
+        locaton: "/common/attendance/AttendanceClassSelect"
+    },
+    {
+        Icon: Octicons,
+        iconName: "log",
+        text: "Work Log",
+        locaton: "/(teacher)/(others)/WorkLogSelection"
+    },
+    {
+        Icon: SimpleLineIcons,
+        iconName: "notebook",
+        text: "Assignment",
+        locaton: "/common/assignment/Assignment"
+    },
+    {
+        Icon: MaterialIcons,
+        iconName: "currency-rupee",
+        text: "Fees",
+        locaton: "/common/fees/Selector"
+    },
+    {
+        Icon: Entypo,
+        iconName: "text-document",
+        text: "Results",
+        locaton: "/(teacher)/(others)/ExamResultSelector"
+    },
+    {
+        Icon: Entypo,
+        iconName: "grade",
+        text: "Internal Marks",
+        locaton: "/(teacher)/(others)/InternalMark"
+    }
+];
+
+const Option = ({ Icon, iconName, text = "", locaton }) => {
+    const handlePress = () => {
+        if (!locaton) return;
+        router.push(locaton as any);
+    };
+
+    return (
+        <TouchableOpacity
+            onPress={handlePress}
+            className="bg-card flex-row items-center gap-4 my-1 py-6 px-6 rounded-2xl"
+            style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
+        >
+            <Icon
+                name={iconName}
+                size={ICONS_SIZE}
+                style={{ minWidth: "10%" }}
+            />
+
+            <Text
+                allowFontScaling={false}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                className="text-md font-bold text-center text-text"
+            >
+                {text}
+            </Text>
+        </TouchableOpacity>
+    );
+};
+
 const TeacherOptions = () => {
     return (
-        <View className="px-2 mt-12 flex-1 gap-3">
-            {/* First Row of Options */}
-
-            <TouchableOpacity
-                style={{}}
-                onPress={() =>
-                    router.push("/(teacher)/(others)/ManageStudents")
-                }
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
-                <MaterialCommunityIcons
-                    name="account-group-outline"
-                    size={ICONS_SIZE}
+        <FlashList
+            data={optionsData}
+            renderItem={({ item }) => (
+                <Option
+                    Icon={item.Icon}
+                    iconName={item.iconName}
+                    text={item.text}
+                    locaton={item.locaton}
                 />
-                <Text className="font-bold text-xl text-text">
-                    Manage Students
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() =>
-                    router.push(
-                        "/common/attendance/AttendanceClassSelect" as any,
-                    )
-                }
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4"
-            >
-                <FontAwesome5 name="clipboard-list" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-text ">Attendance</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() =>
-                    router.push("/(teacher)/(others)/WorkLogSelection" as any)
-                }
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
-                <Octicons name="log" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-text ">Work Log</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() =>
-                    router.push("/common/assignment/Assignment" as any)
-                }
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
-                <SimpleLineIcons name="notebook" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-text ">Assignment</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => router.push("/common/fees/Selector" as any)}
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
-                <MaterialIcons name="currency-rupee" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-text ">
-                    Manage Fees
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => router.push("/(teacher)/(others)/ExamResultSelector" as any)}
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
-               <Entypo name="text-document" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-text ">
-                    Exam Results
-                </Text>
-            </TouchableOpacity>
-        </View>
+            )}
+            style={{ paddingBottom: 50, paddingTop: 30, paddingHorizontal: 6 }}
+        />
     );
 };
 

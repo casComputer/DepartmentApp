@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
         required: true
     },
 
-    studentId: {
+    teacherId: {
         type: String,
         required: true,
     },
@@ -35,4 +35,4 @@ const schema = new mongoose.Schema({
         }
     });
 
-    export default mongoose.model("examResult", schema);
+    export default mongoose.model("internalMark", schema);

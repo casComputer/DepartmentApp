@@ -82,7 +82,7 @@ export const save = async (req, res) => {
         const absentCount = attendance.length - presentCount;
 
         const now = new Date();
-        const date = now.toISOString().slice(0, 10);
+        // const date = now.toISOString().slice(0, 10);
 
         let finalAttendanceId = attendanceId;
 
@@ -91,14 +91,13 @@ export const save = async (req, res) => {
             const result = await tx.execute({
                 sql: `
                 INSERT INTO attendance
-                (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (course, year, hour, timestamp, teacherId, present_count, absent_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 `,
                 args: [
                     course,
                     year,
                     hour,
-                    date,
                     now.toISOString(),
                     userId,
                     presentCount,

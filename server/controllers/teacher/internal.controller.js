@@ -77,6 +77,7 @@ export const checkInternalMarkUpload = async (req, res) => {
             course,
             sem
         } = req.body
+        
         const {
             userId: teacherId,
             role

@@ -38,6 +38,6 @@ router.post(
     saveInternalMarkDetails,
 );
 
-router.post("/checkInternalMarkUpload", checkInternalMarkUpload);
+router.post("/checkInternalMarkUpload",authorize("teacher", "admin"), checkInternalMarkUpload);
 
 export default router;

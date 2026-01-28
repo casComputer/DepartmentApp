@@ -83,11 +83,6 @@ export const checkInternalMarkUpload = async (req, res) => {
             role
         } = req.body
 
-        if (role !== 'teacher' || role !== 'admin')
-            return res.json({
-            success: false, message: 'UnAutherized access!'
-        })
-
         if (!course || !sem)
            return  res.json({
             success: false, message: 'Missing some required fields!'
@@ -101,9 +96,9 @@ export const checkInternalMarkUpload = async (req, res) => {
             success: true, uploaded: existDoc ? true: false
         })
     } catch(e) {
+        console.error('Error while checking internal mark uploads: ', e)
         res.json({
             success: false, message: 'Internal Server Error'
         })
-        console.error('Error while checking internal mark uploads: ', e)
     }
 }

@@ -134,6 +134,14 @@ export const handleUpload = async (file, preset_type) => {
         const {
             secure_url, format, public_id
         } = res.data;
+        
+        if (!secure_url || !format || !public_id) {
+                ToastAndroid.show("Failed to upload the file!", ToastAndroid.SHORT);
+                return {
+                success: false
+            };
+            }
+
 
         return {
             secure_url,

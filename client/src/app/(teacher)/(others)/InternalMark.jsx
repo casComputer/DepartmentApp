@@ -63,18 +63,15 @@ const InternalMark = () => {
             setProgress(1);
             setProgressText("Checking Previous Uploads..");
 
-            const isUploaded = await checkExists(
+            const {
+                uploaded,
+                failed
+            } = await checkExists(
                 selectedCourse.id,
                 selectedSem.id
             );
 
-            if (isUploaded) {
-                ToastAndroid.show(
-                    "You already uploaded internal marks for this sem!",
-                    ToastAndroid.SHORT
-                );
-                return;
-            }
+            if (failed || uploaded) return
 
             setProgressText("Uploading File..");
 
@@ -86,10 +83,7 @@ const InternalMark = () => {
             } =
             await handleUpload(file, "internal_mark");
 
-            if (!success || !secure_url || !format || !public_id) {
-                ToastAndroid.show("Upload failed!", ToastAndroid.SHORT);
-                return;
-            }
+            if (!success) return
 
             const data = {
                 course: selectedCourse.id,

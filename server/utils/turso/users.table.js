@@ -59,8 +59,8 @@ turso.execute(`
     course TEXT NOT NULL,
     year TEXT NOT NULL,
     hour TEXT NOT NULL,
-    date DATE NOT NULL,
     timestamp TEXT NOT NULL,
+    date TEXT NOT NULL,
     updated_timestamp TEXT,
     updated_by TEXT,
 

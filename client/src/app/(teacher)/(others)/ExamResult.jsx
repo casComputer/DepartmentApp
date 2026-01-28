@@ -1,4 +1,10 @@
-import { View, Text, ActivityIndicator, Image, TouchableOpacity } from "react-native";
+import {
+    View,
+    Text,
+    ActivityIndicator,
+    Image,
+    TouchableOpacity,
+} from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
@@ -14,7 +20,7 @@ const ResultItem = ({ item }) => {
     let url = item.secure_url;
     if (item.format === "pdf") {
         url = getPdfPreviewUrl(url);
-    };
+    }
 
     return (
         <View className="p-4 bg-card mx-2 my-2 rounded-xl">
@@ -30,7 +36,9 @@ const ResultItem = ({ item }) => {
                 onPress={() => openFileInBrowser(item.secure_url)}
                 className="bg-primary px-4 py-3 rounded-lg mt-3 w-full"
             >
-                <Text className="text-white font-bold text-center">Open in Browser</Text>
+                <Text className="text-white font-bold text-center">
+                    Open in Browser
+                </Text>
             </TouchableOpacity>
         </View>
     );
@@ -48,12 +56,19 @@ const ExamResult = () => {
         <View className="flex-1 bg-primary">
             <Header title="Exam Results" />
 
-            {isLoading && <ActivityIndicator size="large" />}
-
             <FlashList
                 data={data}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => <ResultItem item={item} />}
+                ListEmptyComponent={
+                    isLoading ? (
+                        <ActivityIndicator size="large" />
+                    ) : (
+                        <Text className="text-white text-center text-lg mt-10">
+                            No Results Found
+                        </Text>
+                    )
+                }
             />
         </View>
     );

@@ -1,7 +1,6 @@
-import axios from 'axios'
-import {
-    ToastAndroid
-} from 'react-native'
+import axios from "@utils/axios.js";
+import { ToastAndroid } from "react-native";
+import { router } from "expo-router";
 
 export const handleSave = async (data) => {
     try {
@@ -9,16 +8,17 @@ export const handleSave = async (data) => {
             data,
         });
 
-        if (res.data.success)
+        if (res.data.success) {
             ToastAndroid.show(
-            "Internal mark uploaded successfull ✨",
-            ToastAndroid.SHORT,
-        );
-        else
+                "Internal mark uploaded successfull ✨",
+                ToastAndroid.SHORT,
+            );
+            router.back();
+        } else
             ToastAndroid.show(
-            res.data.message ?? "Failed to upload internal mark!",
-            ToastAndroid.LONG,
-        );
+                res.data.message ?? "Failed to upload internal mark!",
+                ToastAndroid.LONG,
+            );
     } catch (e) {
         ToastAndroid.show("Failed to upload internal mark!", ToastAndroid.LONG);
         console.log(e, e?.message);
@@ -32,18 +32,19 @@ export const checkExists = async (course, sem) => {
             sem,
         });
 
+        console.log(res.data)
 
         if (res.data.success) {
             if (res.data?.uploaded) {
                 ToastAndroid.show(
                     "You already uploaded internal marks for this sem!",
-                    ToastAndroid.SHORT
+                    ToastAndroid.SHORT,
                 );
             }
 
             return {
                 uploaded: res.data.uploaded,
-                failed: false
+                failed: false,
             };
         }
 
@@ -53,14 +54,16 @@ export const checkExists = async (course, sem) => {
         );
         return {
             uploaded: false,
-            failed: true
+            failed: true,
         };
     } catch (e) {
-        ToastAndroid.show("Failed to check existing internal marks!", ToastAndroid.LONG);
+        ToastAndroid.show(
+            "Failed to check existing internal marks!",
+            ToastAndroid.LONG,
+        );
         return {
             uploaded: false,
-            failed: true
+            failed: true,
         };
-
     }
 };

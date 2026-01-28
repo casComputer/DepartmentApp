@@ -19,7 +19,7 @@ const ExamResult = () => {
     const [selectedSem, setSelectedSem] = useState({});
 
     const handlePress = async () => {
-        if (!selectedClass || !selectedCourse || !selectedSem) {
+        if (!selectedClass.id || !selectedCourse.id || !selectedSem.id) {
             ToastAndroid.show("Please select all fields", ToastAndroid.LONG);
             return;
         }

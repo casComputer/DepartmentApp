@@ -1,4 +1,5 @@
 import Internal from '../../models/internalMark.js'
+import cloudinary from '../../config/cloudinary.js'
 
 const deleteFile = async (public_id)=> {
     try {
@@ -18,7 +19,7 @@ export const saveInternalMarkDetails = async(req, res)=> {
         secure_url,
         format,
         public_id
-    } = req.body
+    } = req.body.data
     try {
 
         const {
@@ -26,7 +27,7 @@ export const saveInternalMarkDetails = async(req, res)=> {
             role
         } = req.user
 
-        if (role !== 'teacher' || role !== 'admin') {
+        if (role !== 'teacher' && role !== 'admin') {
             await deleteFile(public_id)
             return res.json({
                 success: false, message: 'UnAutherized access!'
@@ -41,7 +42,7 @@ export const saveInternalMarkDetails = async(req, res)=> {
             })
         }
 
-        const existDoc = await internal.findOne({
+        const existDoc = await Internal.findOne({
             teacherId, course, sem
         })
 
@@ -83,6 +84,8 @@ export const checkInternalMarkUpload = async (req, res) => {
             role
         } = req.body
 
+        console.log(course, sem)
+
         if (!course || !sem)
            return  res.json({
             success: false, message: 'Missing some required fields!'
@@ -91,6 +94,8 @@ export const checkInternalMarkUpload = async (req, res) => {
         const existDoc = await Internal.findOne({
             course, sem, teacherId
         })
+
+        console.log(existDoc)
 
         res.json({
             success: true, uploaded: existDoc ? true: false

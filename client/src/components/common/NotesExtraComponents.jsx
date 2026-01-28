@@ -40,11 +40,9 @@ import {
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import {
     downloadFile,
-    checkFileExists,
-    openFileInBrowser
+    checkFileExists
 } from "@utils/file.js";
 import confirm from "@utils/confirm.js";
-import getMimeType from "@utils/getMimeType.js";
 
 import {
     uploadFileDetails,
@@ -235,12 +233,6 @@ export const FolderItem = ({
         let message = "Opening " + item.name ?? "file";
         ToastAndroid.show(`${message}`, ToastAndroid.SHORT);
 
-        const filename = url.split("/").at(-1);
-        let {
-            foundUri,
-            exists
-        } = await checkFileExists(filename);
-
         await downloadFile(item.fileUrl, item.format, item.name);
     };
 
@@ -279,7 +271,7 @@ export const FolderItem = ({
                     <Text
                         allowFontScaling={false}
                         // adjustsFontSizeToFit
-                        className="flex-1 text-[12px] font-bold text-black dark:text-white"
+                        className="flex-1 text-[12px] font-bold text-text"
                         numberOfLines={2}
                         >
                         {item.name}

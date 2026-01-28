@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { View, Text, TextInput, ToastAndroid } from "react-native";
+import {  TextInput, ToastAndroid } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
@@ -40,7 +41,7 @@ const CreateNote = () => {
     };
 
     return (
-        <View className="flex-1 bg-white dark:bg-black">
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }} className="bg-primary">
             <Header onSave={handleSave} saving={saving} />
 
             <TextInput
@@ -67,7 +68,7 @@ const CreateNote = () => {
                     />
                 </>
             )}
-        </View>
+        </KeyboardAwareScrollView>
     );
 };
 

@@ -107,3 +107,24 @@ export const checkInternalMarkUpload = async (req, res) => {
         })
     }
 }
+
+export const getInternalMarkHistory = async (req, res) => {
+    try {
+        const {
+            userId: teacherId
+        } = req.user
+        
+        const history = await Internal.find({
+            teacherId
+        }).sort({ createdAt: -1 })
+        
+        res.json({
+            success: true, history
+        })
+    } catch(e) {
+        console.error('Error while fetching internal mark history: ', e)
+        res.json({
+            success: false, message: 'Internal Server Error'
+        })
+    }
+}

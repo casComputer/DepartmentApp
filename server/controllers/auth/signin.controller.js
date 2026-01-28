@@ -1,43 +1,40 @@
 import "dotenv/config";
 
-import {
-    turso
-} from "../../config/turso.js";
-import {
-    comparePassword
-} from "../../utils/auth.utils.js";
-import {
-    generateTokens
-} from "../../utils/token.utils.js";
+import { turso } from "../../config/turso.js";
+import { comparePassword } from "../../utils/auth.utils.js";
+import { generateTokens } from "../../utils/token.utils.js";
 
 const signinController = async (req, res) => {
     try {
-        let {
-            username,
-            password,
-            userRole
-        } = req.body;
+        let { username, password, userRole } = req.body;
         userRole = userRole.toLowerCase();
 
-        username = username?.trim()
-        password = password?.trim()
+        username = username?.trim();
+        password = password?.trim();
 
-        if (!username || !password) return res.status(400).json({
-            success: false,
-            error: "Invalid username or password",
-        });
+        if (!username || !password)
+            return res.status(400).json({
+                success: false,
+                error: "Invalid username or password",
+            });
 
-        if (!userRole || !['student', 'teacher', 'admin', 'parent'].includes(userRole)) {
+        if (
+            !userRole ||
+            !["student", "teacher", "admin", "parent"].includes(userRole)
+        ) {
             return res.status(400).json({
                 success: false,
                 error: "Invalid user role",
             });
         }
 
-        const existUser = await turso.execute(`
+        const existUser = await turso.execute(
+            `
             SELECT * FROM users WHERE userId = ?
 
-            `, [username]);
+            `,
+            [username],
+        );
 
         if (!existUser.rows.length) {
             return res.status(400).json({
@@ -58,11 +55,9 @@ const signinController = async (req, res) => {
         const validPassword = await comparePassword(password, user.password);
         if (!validPassword)
             return res.status(400).json({
-            success: false,
-            error: "Invalid username or password",
-        });
-
-
+                success: false,
+                error: "Invalid username or password",
+            });
 
         if (user.role === "teacher") {
             const teacherExtra = await turso.execute(
@@ -82,35 +77,37 @@ const signinController = async (req, res) => {
             );
 
             const inCharge = teacherExtra.rows.find(
-                row => row.in_charge_course && row.in_charge_year
+                (row) => row.in_charge_course && row.in_charge_year,
             );
 
             user.in_charge_course = inCharge?.in_charge_course ?? null;
             user.in_charge_year = inCharge?.in_charge_year ?? null;
 
-            user.courses = teacherExtra.rows.map(row => ({
-                year: row.year,
-                course: row.course,
-                course_name: row.course_name,
-            }));
+            // add courses only if year, course and course_name are present
+            user.courses = teacherExtra.rows
+                .filter((row) => row.course_name && row.year && row.course)
+                .map((row) => ({
+                    course_name: row.course_name,
+                    year: row.year,
+                    course: row.course,
+                }));
         } else if (user.role === "student") {
-            const studentExtra = await turso.execute(`
+            const studentExtra = await turso.execute(
+                `
                 SELECT course , year, rollno FROM students WHERE userId = ?
-                `, [username])
+                `,
+                [username],
+            );
 
-            const {
-                course,
-                year,
-                rollno
-            } = studentExtra?.rows?.[0] ?? {}
+            const { course, year, rollno } = studentExtra?.rows?.[0] ?? {};
 
-            user.course = course
-            user.year = year
-            user.rollno = rollno ?? -1
+            user.course = course;
+            user.year = year;
+            user.rollno = rollno ?? -1;
         }
 
         delete user.password;
-        console.log(user)
+        console.log(user);
 
         const tokens = generateTokens(user.userId, user.role);
         // await storeRefreshToken(user.userId, tokens.refreshToken);
@@ -123,7 +120,8 @@ const signinController = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            success: false, error: "Server error"
+            success: false,
+            error: "Server error",
         });
     }
 };

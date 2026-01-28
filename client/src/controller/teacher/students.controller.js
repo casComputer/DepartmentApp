@@ -84,7 +84,7 @@ export const verifyMultipleStudents = async (students) => {
             );
         }
 
-        students = students.map((s) => s.studentId);
+        students = students.map((s) => s.userId);
         if (!students)
             return ToastAndroid.show(
             "Currently you no students!",

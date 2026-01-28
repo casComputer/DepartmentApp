@@ -26,12 +26,12 @@ export const useTeacherStore = create((set, get) => ({
         }
     },
 
-    getStudent: id => get().students.find(s => s.studentId === id),
+    getStudent: id => get().students.find(s => s.userId === id),
 
     verifyStudent: id =>
         set(state => {
             const updated = state.students.map(s =>
-                s.studentId === id ? { ...s, is_verified: true } : s
+                s.userId === id ? { ...s, is_verified: true } : s
             );
 
             storage.set(STUDENT_KEY, JSON.stringify(updated));
@@ -41,7 +41,7 @@ export const useTeacherStore = create((set, get) => ({
     updateStudentRollNo: (studentId, rollno) =>
         set(state => {
             const updated = state.students.map(s =>
-                s.studentId === studentId ? { ...s, rollno } : s
+                s.userId === studentId ? { ...s, rollno } : s
             );
 
             storage.set(STUDENT_KEY, JSON.stringify(updated));
@@ -68,7 +68,7 @@ export const useTeacherStore = create((set, get) => ({
 
     removeStudent: id =>
         set(state => {
-            const filtered = state.students.filter(s => s.studentId !== id);
+            const filtered = state.students.filter(s => s.userId !== id);
 
             const updated = filtered.map(s => ({ ...s, rollno: null }));
 

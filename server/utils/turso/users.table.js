@@ -25,9 +25,9 @@ turso.execute(`
     year text check (year IN ('First', 'Second', 'Third', 'Fourth')) not null,
     rollno integer default -1,
 
-    UNIQUE (course, year_of_study, rollno),
+    UNIQUE (course, year, rollno),
 
-    foreign key (course, year_of_study) references classes(course, year) ON DELETE SET NULL,
+    foreign key (course, year) references classes(course, year) ON DELETE SET NULL,
     foreign key (studentId) references users(userId) ON DELETE CASCADE,
     );
     `);

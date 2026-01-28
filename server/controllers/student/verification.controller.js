@@ -22,7 +22,7 @@ export const cancelStudentVerification = async (req, res) => {
 
     try {
     
-    	const {rows} = await turso.execute("SELECT * FROM students WHERE studentId = ?", [studentId])
+    	const {rows} = await turso.execute("SELECT * FROM students WHERE userId = ?", [studentId])
     	const student = rows[0] || null
     	
     	if(!student) return res.json({ message: "student not found" , success: false })

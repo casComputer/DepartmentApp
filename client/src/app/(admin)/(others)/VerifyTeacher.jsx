@@ -83,6 +83,8 @@ const VerifyTeacher = () => {
         setCancelling] = useState(false)
 
     const handleCancelVerification = async () => {
+        if(cancelling) return
+        
         if (user && user.userId) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -99,6 +101,7 @@ const VerifyTeacher = () => {
     };
 
     const handleVerification = () => {
+        if(verifying) return
         if (user && user.userId) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 

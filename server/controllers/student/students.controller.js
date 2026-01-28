@@ -59,7 +59,7 @@ export const fetchStudentsByClassTeacher = async (req, res) => {
       `
             SELECT u.userId, u.fullname , u.is_verified, u.dp, s.rollno 
             FROM students s
-            JOIN users u ON s.studentId = u.userId
+            JOIN users u ON s.userId = u.userId
             WHERE s.course = ? AND s.year = ?
             `,
       [course, year]

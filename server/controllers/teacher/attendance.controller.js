@@ -19,6 +19,8 @@ attendance.map(s => ({
 const insertAttendanceDetails = async (tx, rows) => {
     if (!rows.length) return;
 
+    console.log(rows)
+
     const placeholders = rows.map(() => "(?, ?, ?, ?)").join(", ");
     const values = rows.flatMap(r => [
         r.attendanceId,
@@ -63,6 +65,8 @@ export const save = async (req, res) => {
             attendanceId
         } =
         req.body;
+
+        console.log(attendance, course, year, attendanceId)
         
         const { userId, role } = req.user
 

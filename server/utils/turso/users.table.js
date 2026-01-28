@@ -23,7 +23,7 @@ turso.execute(`
 
     course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
     year text check (year IN ('First', 'Second', 'Third', 'Fourth')) not null,
-    rollno integer default -1,
+    rollno integer default NULL,
 
     UNIQUE (course, year, rollno),
 

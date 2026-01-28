@@ -67,3 +67,23 @@ export const checkExists = async (course, sem) => {
         };
     }
 };
+
+export const getHistory = async () => {
+    try {
+        const res = await axios.post("/teacher/getInternalMarkHistory");
+
+        if (res.data.success) {
+            console.log(res.data.history)
+            return res.data.history ?? [];
+        } else {
+            ToastAndroid.show(
+                res.data.message ?? "Failed to fetch history!",
+                ToastAndroid.LONG,
+            );
+            return [];
+        }
+    } catch (e) {
+        ToastAndroid.show("Failed to fetch history!", ToastAndroid.LONG);
+        return [];
+    }
+};

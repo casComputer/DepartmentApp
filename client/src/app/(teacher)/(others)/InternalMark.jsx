@@ -6,6 +6,7 @@ import {
     ScrollView,
     ToastAndroid,
 } from "react-native";
+import { router } from "expo-router";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
@@ -89,6 +90,7 @@ const InternalMark = () => {
             className="bg-primary"
         >
             <Header onSave={handdleUploadFile} />
+            <TouchableOpacity onPress={()=> router.push("/(teacher)/(others)/InternalHistory")}><Text className="text-blue-500 text-2xl font-black px-4 pt-5">History</Text></TouchableOpacity>
 
             <View className="px-1">
                 <Select

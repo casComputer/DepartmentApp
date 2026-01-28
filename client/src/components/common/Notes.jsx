@@ -1,6 +1,4 @@
-import {
-    useState
-} from "react";
+
 import {
     View,
     Text,
@@ -37,9 +35,6 @@ import {
     useMultiSelectionList
 } from "@store/app.store.js";
 
-import {
-    openFileInBrowser
-} from "@utils/file.js";
 
 const replaceMultiSelectionList = useMultiSelectionList.getState().replace;
 

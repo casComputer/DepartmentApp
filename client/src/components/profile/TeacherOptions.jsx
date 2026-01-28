@@ -42,6 +42,8 @@ const CourseList = ({ courses }) => {
 export const TeacherOptions = () => {
     const courses = useAppStore(state => state.user?.courses);
 
+    console.log(courses)
+
     
     return (
         <View className="px-2">

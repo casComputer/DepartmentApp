@@ -52,6 +52,8 @@ export const verifyMultipleStudents = async (req, res) => {
 
         const placeholders = students.map(() => "?").join(",");
 
+        console.log(students)
+
         const query = `
             UPDATE users 
             SET is_verified = true

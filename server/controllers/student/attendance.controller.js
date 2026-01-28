@@ -346,3 +346,4 @@ export const getYearlyAttendanceReport = async (req, res) => {
     });
   }
 };
+

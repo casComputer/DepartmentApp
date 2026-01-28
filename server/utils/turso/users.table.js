@@ -25,13 +25,22 @@ turso.execute(`
     year text check (year IN ('First', 'Second', 'Third', 'Fourth')) not null,
     rollno integer default -1,
 
-    UNIQUE (course, year_of_study, rollno),
+    UNIQUE (course, year, rollno),
 
-    foreign key (course, year_of_study) references classes(course, year) ON DELETE SET NULL,
+    foreign key (course, year) references classes(course, year) ON DELETE SET NULL,
     foreign key (studentId) references users(userId) ON DELETE CASCADE,
     );
     `);
 
+turso.execute(
+    `CREATE TABLE parent_child (
+            parentId TEXT NOT NULL,
+            studentId TEXT NOT NULL, 
+            PRIMARY KEY (parentId, studentId), 
+            FOREIGN KEY (parentId) REFERENCES users(userId) ON DELETE CASCADE,
+            FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE
+        );`,
+);
 
 turso.execute(`
     create table classes (
@@ -147,4 +156,23 @@ turso.execute(`
     FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
     FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE CASCADE
     );
+
     `);
+
+
+
+////////////////////////////////////////////////////
+///                    VIEWS                     ///
+////////////////////////////////////////////////////
+
+turso.execute(`CREATE VIEW class_strength AS
+SELECT
+  c.course,
+  c.year,
+  COUNT(s.student_id) AS strength,
+  c.in_charge
+FROM classes c
+LEFT JOIN students s
+  ON s.course = c.course
+ AND s.year = c.year
+GROUP BY c.course, c.year;`)

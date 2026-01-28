@@ -6,178 +6,154 @@ import cloudinary from "../config/cloudinary.js";
 const router = express.Router();
 
 const tables = {
-  student: { table: "students", id: "studentId" },
-  teacher: { table: "teachers", id: "teacherId" },
-  admin: { table: "admins", id: "adminId" },
-  parent: { table: "parents", id: "parentId" },
+    student: { table: "students", id: "studentId" },
+    teacher: { table: "teachers", id: "teacherId" },
+    admin: { table: "admins", id: "adminId" },
+    parent: { table: "parents", id: "parentId" },
 };
 
 router.post("/uploadDp", async (req, res) => {
-  let { role, userId, secure_url, public_id, current_dp_public_id } = req.body;
+    let { secure_url, public_id, current_dp_public_id } = req.body;
+    const { role, userId } = req.user;
 
-  if (!role || !userId || !secure_url || !public_id)
-    return res.json({
-      success: false,
-      message: "Missing required parameters!",
-    });
+    if (!role || !userId || !secure_url || !public_id)
+        return res.json({
+            success: false,
+            message: "Missing required parameters!",
+        });
 
-  try {
-    if (!tables[role])
-      return res.json({
-        success: false,
-        message: "Invalid role!",
-      });
+    try {
+        if (!current_dp_public_id) {
+            const { rows } = await turso.execute(
+                `SELECT dp_public_id FROM users WHERE userId = ?`,
+                [userId],
+            );
+            current_dp_public_id = rows[0]?.dp_public_id;
+        }
 
-    const { table, id } = tables[role];
-
-    if (!current_dp_public_id) {
-      const { rows } = await turso.execute(
-        `SELECT dp_public_id FROM ${table} WHERE ${id} = ?`,
-        [userId],
-      );
-      current_dp_public_id = rows[0]?.dp_public_id;
-    }
-
-    const query = `
-            UPDATE ${table}
+        const query = `
+            UPDATE users
             SET dp = ?, dp_public_id = ?
-            WHERE ${id} = ?
+            WHERE userId = ?
         `;
 
-    await turso.execute(query, [secure_url, public_id, userId]);
+        await turso.execute(query, [secure_url, public_id, userId]);
 
-    if (current_dp_public_id)
-      await cloudinary.api.delete_resources([current_dp_public_id], {
-        resource_type: "image",
-      });
+        if (current_dp_public_id)
+            await cloudinary.api.delete_resources([current_dp_public_id], {
+                resource_type: "image",
+            });
 
-    return res.json({
-      success: true,
-      message: "Profile picture updated successfully",
-    });
-  } catch (error) {
-    console.error("uploadDp error:", error);
+        return res.json({
+            success: true,
+            message: "Profile picture updated successfully",
+        });
+    } catch (error) {
+        console.error("uploadDp error:", error);
 
-    await cloudinary.api.delete_resources([public_id], {
-      resource_type: "image",
-    });
+        await cloudinary.api.delete_resources([public_id], {
+            resource_type: "image",
+        });
 
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
 });
 
 router.post("/getDp", async (req, res) => {
-  try {
-    const { userId, role } = req.body;
+    try {
+        const { userId, role } = req.user;
 
-    if (!userId || !role) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required parameters!",
-      });
-    }
+        if (!userId || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required parameters!",
+            });
+        }
 
-    if (!tables[role]) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid role!",
-      });
-    }
-
-    const { table, id } = tables[role];
-
-    const query = `
+        const query = `
             SELECT dp, dp_public_id
-            FROM ${table}
-            WHERE ${id} = ?
+            FROM users
+            WHERE userId = ?
         `;
 
-    const result = await turso.execute(query, [userId]);
+        const result = await turso.execute(query, [userId]);
 
-    if (!result.rows || result.rows.length === 0) {
-      return res.json({
-        success: false,
-        message: "User not found",
-      });
+        if (!result.rows || result.rows.length === 0) {
+            return res.json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const { dp, dp_public_id } = result.rows[0];
+
+        return res.json({
+            success: true,
+            dp,
+            dp_public_id,
+        });
+    } catch (error) {
+        console.error("Fetch dp Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
-
-    const { dp, dp_public_id } = result.rows[0];
-
-    return res.json({
-      success: true,
-      dp,
-      dp_public_id,
-    });
-  } catch (error) {
-    console.error("Fetch dp Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
 });
 
 router.post("/editProfile", async (req, res) => {
-  try {
-    const { userId: existUserId, role } = req.user;
+    try {
+        const { userId: existUserId, role } = req.user;
 
-    const { username, fullname, email, phone, about } = req.body;
+        const { username, fullname, email, phone, about } = req.body;
 
-	if( !username || !fullname ) return res.json({
-		success: false,
-		message: "Username and Fullname cannot be empty",
-	});
+        if (!username || !fullname)
+            return res.json({
+                success: false,
+                message: "Username and Fullname cannot be empty",
+            });
 
-    const tables = {
-      student: { table: "students", id: "studentId" },
-      teacher: { table: "teachers", id: "teacherId" },
-      admin: { table: "admins", id: "adminId" },
-      parent: { table: "parents", id: "parentId" },
-    };
+        const { rows: existUser } = await turso.execute(
+            `SELECT * FROM users WHERE userId = ?`,
+            [existUserId],
+        );
 
-    const { rows: existUser } = await turso.execute(
-      `SELECT * FROM ${tables[role].table} WHERE ${tables[role].id} = ?`,
-      [existUserId],
-    );
+        if (existUser.length === 0)
+            if (existUserId === existUser[0]?.userId)
+                return res.status(404).json({
+                    success: false,
+                    message: "Username already exists",
+                });
 
-    if (existUser.length === 0)
-      if (existUserId === existUser[0]?.userId)
-        return res.status(404).json({
-          success: false,
-          message: "Username already exists",
-		});
-
-
-    const updateQuery = `
-	  UPDATE ${tables[role].table}
-	  SET ${tables[role].id} = ?, fullname = ?, email = ?, phone = ?, about = ?
-	  WHERE ${tables[role].id} = ?
+        const updateQuery = `
+	  UPDATE users
+	  SET username = ?, fullname = ?, email = ?, phone = ?, about = ?
+	  WHERE userId = ?
 	`;
 
-    await turso.execute(updateQuery, [
-      username,
-      fullname,
-      email,
-      phone,
-	  about,
-      existUserId
-    ]);
+        await turso.execute(updateQuery, [
+            username,
+            fullname,
+            email,
+            phone,
+            about,
+            existUserId,
+        ]);
 
-    return res.json({
-      success: true,
-      message: "Profile updated successfully",
-    });
-
-  } catch (error) {
-    console.error("Edit Profile Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
+        return res.json({
+            success: true,
+            message: "Profile updated successfully",
+        });
+    } catch (error) {
+        console.error("Edit Profile Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
 });
 
 export default router;

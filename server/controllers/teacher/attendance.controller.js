@@ -86,7 +86,7 @@ export const save = async (req, res) => {
         const absentCount = attendance.length - presentCount;
 
         const now = new Date();
-        const date = now.toISOString().slice(0, 10);
+        // const date = now.toISOString().slice(0, 10);
 
         let finalAttendanceId = attendanceId;
 
@@ -95,14 +95,13 @@ export const save = async (req, res) => {
             const result = await tx.execute({
                 sql: `
                 INSERT INTO attendance
-                (course, year, hour, date, timestamp, teacherId, present_count, absent_count)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (course, year, hour, timestamp, teacherId, present_count, absent_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 `,
                 args: [
                     course,
                     year,
                     hour,
-                    date,
                     now.toISOString(),
                     userId,
                     presentCount,
@@ -275,7 +274,7 @@ export const fetchStudentsForAttendance = async (req, res) => {
         const {
             rows
         } = await turso.execute(
-            "SELECT studentId, rollno from students where course = ? and year_of_study = ? and is_verified = true and rollno > 0 ORDER BY rollno;",
+            "SELECT s.userId, s.rollno from students s LEFT JOIN users u ON u.userId = s.userId where s.course = ? and s.year = ? and u.is_verified = true AND s.rollno > 0 ORDER BY s.rollno;",
             [course, year]
         );
         const numberOfStudents = rows?.length || 0;

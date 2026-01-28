@@ -6,16 +6,23 @@ export const useAdminStore = create((set) => ({
     verifyTeacher: teacherId => {
         set((state) => ({
             teachers: state.teachers.map((teacher) =>
-                teacher.teacherId === teacherId
+                teacher.userId === teacherId
                     ? { ...teacher, is_verified: true }
                     : teacher
             ),
         }));
     },
+    removeTeacher: teacherId =>{
+       set((state) => ({
+            teachers: state.teachers.filter(teacher =>
+                teacher.userId !== teacherId
+            ),
+        })); 
+    },
     setInCharge: (teacherId, year, classCharge) => {
         set((state) => ({
             teachers: state.teachers.map((teacher) =>
-                teacher.teacherId === teacherId
+                teacher.userId === teacherId
                     ? { ...teacher, in_charge_year: year, in_charge_course: classCharge }
                     : teacher
             ),

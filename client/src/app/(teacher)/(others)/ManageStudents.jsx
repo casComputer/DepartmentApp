@@ -37,7 +37,7 @@ const handlePress = item => {
         router.push({
         pathname: "/(teacher)/(others)/VerifyStudent",
         params: {
-            username: item.studentId,
+            username: item.userId,
             fullname: item.fullname,
             isVerified: item.is_verified
         }
@@ -77,7 +77,7 @@ const ManageStudents = () => {
             <FlashList
                 data={students ?? []}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.studentId.toString()}
+                keyExtractor={item => item?.userId}
                 className={"px-3"}
                 contentContainerStyle={ { paddingBottom: 60 }}
                 renderItem={({ item }) => (

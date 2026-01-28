@@ -22,7 +22,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
         // Fetch ONLY verified students sorted by name
         const { rows: verifiedStudents } = await turso.execute(
             `
-            SELECT userId, fullname
+            SELECT s.userId, fullname
             FROM students s
             JOIN users u ON s.userId = u.userId
             WHERE s.course = ?
@@ -44,7 +44,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
                 SET rollno = ?
                 WHERE userId = ?
                 `,
-                [rollno, s.studentId]
+                [rollno, s.userId]
             );
 
             updated.push({ ...s, rollno });

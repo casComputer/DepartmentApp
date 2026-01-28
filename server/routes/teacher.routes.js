@@ -12,7 +12,7 @@ import {
     fetchAllTeachers,
 } from "../controllers/teacher/teacher.controller.js";
 import { fetchExamResult } from "../controllers/teacher/exam.controller.js";
-import { saveInternalMarkDetails } from "../controllers/teacher/internal.controller.js";
+import { saveInternalMarkDetails, checkInternalMarkUpload } from "../controllers/teacher/internal.controller.js";
 
 import { authorize } from "../middleware/authentication.middleware.js";
 
@@ -38,6 +38,6 @@ router.post(
     saveInternalMarkDetails,
 );
 
-// router.post("/checkInternalMarkUpload", checkInternalMarkUpload);
+router.post("/checkInternalMarkUpload", checkInternalMarkUpload);
 
 export default router;

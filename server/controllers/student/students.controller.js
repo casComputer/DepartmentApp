@@ -96,7 +96,7 @@ export const saveStudentDetails = async (req, res) => {
     // assign roll number
     await turso.execute(
       `
-			update students set rollno = ? where userId = ?
+			update students s JOIN users u on u.userId = s.userId set rollno = ? where s.userId = ? AND u.is_verified = 1
 		`,
       [rollno, studentId]
     );

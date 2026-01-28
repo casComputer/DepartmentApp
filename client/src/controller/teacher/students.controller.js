@@ -1,7 +1,5 @@
 import axios from "@utils/axios.js";
-import {
-    router
-} from "expo-router";
+
 import {
     ToastAndroid
 } from "react-native";
@@ -172,7 +170,7 @@ export const cancelStudentVerification = async ({
             useTeacherStore.getState().removeStudent(studentId);
             ToastAndroid.show("Removed student", ToastAndroid.SHORT);
 
-            router.back();
+            
         } else {
             ToastAndroid.show(
                 `Student couldn't removed: ${res.data?.message} `,

@@ -21,6 +21,7 @@ import {
     RFPercentage,
     RFValue
 } from "react-native-responsive-fontsize";
+import * as Haptics from "expo-haptics";
 
 import {
     verifyStudent,
@@ -29,6 +30,7 @@ import {
 } from "@controller/teacher/students.controller.js";
 
 import Header from "@components/common/Header2.jsx";
+import confirm from "@utils/confirm.js";
 
 import {
     useTeacherStore
@@ -99,7 +101,7 @@ const Inputs = ({
                     ? "border-red-500": "border-black dark:border-white"
                     }`}
                     value={`${rollno}`}
-                    disabled={!is_verified}
+                    editable={Boolean(is_verified)}
                     keyboardType="number-pad"
                     onChangeText={rollno => {
                         let cleaned = (rollno ?? "")
@@ -125,38 +127,43 @@ const VerifyStudent = () => {
     const is_verified = student?.is_verified;
     const rollno = student?.rollno ?? "";
 
+
+
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [roll, setRoll] = useState(rollno);
 
-    const showConfirm = useCallback((msg, onConfirm) => {
-        Alert.alert("Confirm", msg, [{
-            text: "Cancel", style: "cancel"
-        },
-            {
-                text: "OK", onPress: onConfirm
-            }]);
-    },
-        []);
-
     const handleCancelVerification = () => {
         if (loading) return;
-        showConfirm("Are you sure to delete the user?", async () => {
-            setLoading(true);
-            await cancelStudentVerification( {
-                studentId: username
-            });
-            setLoading(false);
-        });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        confirm(
+            `Are you sure to delete the user?`,
+            async () => {
+                setLoading(true);
+                await cancelStudentVerification( {
+                    studentId: username
+                });
+                setLoading(false);
+                router.back()
+            }
+        );
     };
 
     const handleVerification = async () => {
         if (loading) return;
-        setLoading(true);
-        await verifyStudent( {
-            studentId: username
-        });
-        setLoading(false);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        confirm(
+            `Are you sure to verify the user?`,
+            async () => {
+                setLoading(true);
+                await verifyStudent( {
+                    studentId: username
+                });
+                setLoading(false);
+            }
+        );
     };
 
     const handleSave = async () => {

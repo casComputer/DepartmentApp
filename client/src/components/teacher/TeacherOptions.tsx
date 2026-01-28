@@ -50,7 +50,7 @@ const optionsData = [
         locaton: "/(teacher)/(others)/ExamResultSelector"
     },
     {
-        Icon: Entypo,
+        Icon: MaterialIcons,
         iconName: "grade",
         text: "Internal Marks",
         locaton: "/(teacher)/(others)/InternalMark"

@@ -12,21 +12,22 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
 
         // Clear students' roll numbers
         await turso.execute(
-            `UPDATE students 
-             SET rollno = NULL 
-             WHERE course = ? 
-             AND year_of_study = ?`,
+            `UPDATE students s JOIN users u ON s.userId = u.userId
+             SET s.rollno = NULL 
+             WHERE u.course = ? 
+             AND u.year = ?`,
             [course, year]
         );
 
         // Fetch ONLY verified students sorted by name
         const { rows: verifiedStudents } = await turso.execute(
             `
-            SELECT studentId, fullname
-            FROM students
-            WHERE course = ?
-            AND year_of_study = ?
-            AND is_verified = 1
+            SELECT s.userId, fullname
+            FROM students s
+            JOIN users u ON s.userId = u.userId
+            WHERE s.course = ?
+            AND s.year = ?
+            AND u.is_verified = 1
             ORDER BY fullname ASC
             `,
             [course, year]
@@ -41,9 +42,9 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
                 `
                 UPDATE students
                 SET rollno = ?
-                WHERE studentId = ?
+                WHERE userId = ?
                 `,
-                [rollno, s.studentId]
+                [rollno, s.userId]
             );
 
             updated.push({ ...s, rollno });
@@ -77,7 +78,7 @@ export const assignGroupedRollNo = async (req, res) => {
             });
 
         await turso.execute(
-            `UPDATE students SET rollno = NULL WHERE course = ? AND year_of_study = ?`,
+            `UPDATE students SET rollno = NULL WHERE course = ? AND year = ?`,
             [course, year]
         );
 
@@ -92,7 +93,7 @@ export const assignGroupedRollNo = async (req, res) => {
                     `
                     UPDATE students 
                     SET rollno = ?
-                    WHERE studentId = ?
+                    WHERE userId = ?
                     `,
                     [rollno, studentId]
                 );

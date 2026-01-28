@@ -15,7 +15,7 @@ export const saveExamResultDetails = async (req, res) => {
     const {
         userId: studentId,
         role
-    } = req.user || {};
+    } = req.user;
 
     const {
         filename,
@@ -25,7 +25,7 @@ export const saveExamResultDetails = async (req, res) => {
         secure_url,
         public_id
     } =
-    req.body?.data || {};
+    req.body?.data;
 
     try {
         if (role !== "student") {

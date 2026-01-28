@@ -1,17 +1,33 @@
-import { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import { router } from "expo-router";
+import {
+    useState,
+    useEffect
+} from "react";
+import {
+    View,
+    Text,
+    ActivityIndicator
+} from "react-native";
+import {
+    FlashList
+} from "@shopify/flash-list";
+import {
+    router
+} from "expo-router";
 
-import { fetchTeachers } from "@controller/admin/teachers.controller.js";
-import { useAdminStore } from "@store/admin.store.js";
+import {
+    fetchTeachers
+} from "@controller/admin/teachers.controller.js";
+import {
+    useAdminStore
+} from "@store/admin.store.js";
 
 import TeacherItem from "@components/common/UserItem.jsx";
 import Header from "@components/common/Header.jsx";
 
 const ManageTeachers = () => {
     const teachers = useAdminStore(state => state.teachers);
-    const [loading, setLoading] = useState(false);
+    const [loading,
+        setLoading] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -21,29 +37,29 @@ const ManageTeachers = () => {
     return (
         <View className="flex-1 bg-primary">
             <Header title={"Manage Teachers"} />
-            {loading && teachers.length == 0 && (
-                <ActivityIndicator size="large" />
-            )}
+
             <FlashList
-                data={teachers}
+                data={teachers ??[]}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) =>
-                    item.teacherId.toString() ?? index
+                item?.userId ?? index
                 }
                 className={"px-2"}
-                contentContainerStyle={{ paddingBottom: 60 }}
+                contentContainerStyle={ { paddingBottom: 60 }}
                 renderItem={({ item }) => (
                     <TeacherItem
                         item={item}
                         handlePress={() =>
-                            router.push({
-                                pathname: "(admin)/(others)//VerifyTeacher",
-                                params: { teacherId: item.teacherId }
-                            })
+                        item?.userId &&
+                        router.push({
+                            pathname: "(admin)/(others)//VerifyTeacher",
+                            params: { userId: item?.userId }
+                        })
                         }
-                    />
+                        />
                 )}
-            />
+                ListEmptyComponent={loading ? <ActivityIndicator size="large" />: !teachers.length && <Text className="text-lg font-bold text-text text-center mt-3">No teachers registered yet!</Text>}
+                />
         </View>
     );
 };

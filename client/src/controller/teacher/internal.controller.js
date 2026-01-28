@@ -1,4 +1,7 @@
 import axios from 'axios'
+import {
+    ToastAndroid
+} from 'react-native'
 
 export const handleSave = async (data) => {
     try {
@@ -29,15 +32,35 @@ export const checkExists = async (course, sem) => {
             sem,
         });
 
-        if (res.data.success) return res.data.uploaded;
+
+        if (res.data.success) {
+            if (res.data?.uploaded) {
+                ToastAndroid.show(
+                    "You already uploaded internal marks for this sem!",
+                    ToastAndroid.SHORT
+                );
+            }
+
+            return {
+                uploaded: res.data.uploaded,
+                failed: false
+            };
+        }
 
         ToastAndroid.show(
             res.data.message ?? "Failed to check existing internal marks!",
             ToastAndroid.LONG,
         );
-        return false;
+        return {
+            uploaded: false,
+            failed: true
+        };
     } catch (e) {
         ToastAndroid.show("Failed to check existing internal marks!", ToastAndroid.LONG);
-        return false;
+        return {
+            uploaded: false,
+            failed: true
+        };
+
     }
 };

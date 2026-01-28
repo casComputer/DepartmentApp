@@ -5,7 +5,7 @@ export const verifyStudent = async (req, res) => {
 
     try {
         await turso.execute(
-            "UPDATE students SET is_verified = true WHERE studentId = ?",
+            "UPDATE users SET is_verified = true WHERE userId = ?",
             [studentId]
         );
         
@@ -22,15 +22,15 @@ export const cancelStudentVerification = async (req, res) => {
 
     try {
     
-    	const {rows} = await turso.execute("SELECT * FROM students WHERE studentId = ?", [studentId])
+    	const {rows} = await turso.execute("SELECT * FROM students WHERE userId = ?", [studentId])
     	const student = rows[0] || null
     	
     	if(!student) return res.json({ message: "student not found" , success: false })
     	
     	await turso.execute("UPDATE students SET rollno = null")
-    
-    
-        await turso.execute("DELETE FROM students WHERE studentId = ?", [
+
+
+        await turso.execute("DELETE FROM users WHERE userId = ?", [
             studentId
         ]);
 
@@ -50,13 +50,12 @@ export const verifyMultipleStudents = async (req, res) => {
                 .status(400)
                 .json({ error: "students must be a non-empty array" });
 
-        // Build placeholders: (?, ?, ?, ...)
         const placeholders = students.map(() => "?").join(",");
 
         const query = `
-            UPDATE students 
-            SET is_verified = true 
-            WHERE studentId IN (${placeholders})
+            UPDATE users 
+            SET is_verified = true
+            WHERE userId IN (${placeholders})
         `;
 
         await turso.execute(query, students);

@@ -73,7 +73,6 @@ const signupController = async (req, res) => {
                     [username, student]
                 );
             }
-
         }
 
         const tokens = generateTokens(username, userRole);

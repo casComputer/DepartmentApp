@@ -101,7 +101,7 @@ const Inputs = ({
                     ? "border-red-500": "border-black dark:border-white"
                     }`}
                     value={`${rollno}`}
-                    disabled={!is_verified}
+                    editable={Boolean(is_verified)}
                     keyboardType="number-pad"
                     onChangeText={rollno => {
                         let cleaned = (rollno ?? "")
@@ -126,6 +126,8 @@ const VerifyStudent = () => {
     const student = useTeacherStore(s => s.getStudent(username));
     const is_verified = student?.is_verified;
     const rollno = student?.rollno ?? "";
+
+
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);

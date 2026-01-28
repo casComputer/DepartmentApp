@@ -192,9 +192,7 @@ export const fetchStudentsByClassTeacher = async ({
     try {
         const {
             data
-        } = await axios.get("/student/fetchStudentsByClassTeacher"
-
-        );
+        } = await axios.get("/student/fetchStudentsByClassTeacher");
 
         if (data?.success) {
             useAppStore.getState().updateUser({

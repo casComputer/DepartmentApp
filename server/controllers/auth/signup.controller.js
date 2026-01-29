@@ -98,7 +98,6 @@ const signupController = async (req, res) => {
             }
         }
 
-
         res.json({
             success: true, ...tokens, user
         });

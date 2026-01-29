@@ -95,8 +95,13 @@ export const getTodaysAttendanceReport = async (req, res) => {
             userId, role
         } = req.user;
         
-        if(role === 'parent')
+        if(role === 'parent'){
             userId = req.body.studentId
+            if(!userId) return res.json({
+            mesage: "StudenId is required!",
+            success: false,
+        });
+        }
         
         const today = new Date();
         const date = today.toISOString().slice(0, 10);

@@ -44,6 +44,7 @@ export const getSignature = (req, res) => {
             api_key: cloudinary.config().api_key,
             cloud_name: cloudinary.config().cloud_name,
             preset,
+            success: true
         });
     } catch (error) {
         console.error("Error generating signature:", error);

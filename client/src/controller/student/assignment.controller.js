@@ -36,11 +36,12 @@ export const getAssignment = async ({
         );
 
         if (response.data.success)
-            return response.data ??[]
+            return response.data ?? []
 
         ToastAndroid.show(response.data?.message ?? "Failed to fetch assignments", ToastAndroid.LONG);
         return response.data ?? [];
     } catch (error) {
+        console.log(error)
         ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
         return []
     }
@@ -127,7 +128,7 @@ const saveAssignmentSubmissionDetails = async ({
         );
 
         if (res?.data?.success) {
-            ToastAndroid.show(getRandomSubmitMessage(), ToastAndroid.SHORT);
+            ToastAndroid.show(getRandomSubmitMessage() ?? "Assignment successfully submitted 🎉", ToastAndroid.SHORT);
             return true;
         } else {
             ToastAndroid.show(
@@ -170,7 +171,7 @@ export const handleAssignmentUpload = async (
         });
 
         if (!signatureRes.data.success) {
-            ToastAndroid.show(signatureRes.data.message, ToastAndroid.SHORT);
+            ToastAndroid.show(signatureRes.data.message ?? 'failed to generate signature!', ToastAndroid.SHORT);
             return false;
         }
 

@@ -5,7 +5,7 @@ import { useAppStore } from "@store/app.store.js";
 
 export const fetch = async page => {
     try {
-        const { course, year_of_study: year } = useAppStore.getState().user;
+        const { course, year } = useAppStore.getState().user;
         
         if (!course || !year) {
             ToastAndroid.show("Missing required values!", ToastAndroid.LONG);
@@ -31,7 +31,6 @@ export const fetch = async page => {
         }
     } catch (error) {
         ToastAndroid.show("Fees fetching Failed", ToastAndroid.LONG);
-        console.error(error);
         return { success: false, hasMore: true, page, fees: [] };
     }
 };

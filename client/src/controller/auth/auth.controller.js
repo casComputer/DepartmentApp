@@ -12,7 +12,7 @@ let API_URL =
 process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
 
 API_URL = "https://dc-connect.onrender.com";
-API_URL = "http://192.168.0.132:3000";
+// API_URL = "http://192.168.0.132:3000";
 
 console.log(API_URL);
 

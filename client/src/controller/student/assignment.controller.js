@@ -1,42 +1,48 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
+import {
+    ToastAndroid
+} from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore
+} from "@store/app.store.js";
 
-import { getRandomSubmitMessage } from "@utils/displayMessages.js";
+import {
+    getRandomSubmitMessage
+} from "@utils/displayMessages.js";
 
-export const getAssignment = async ({ pageParam }) => {
+export const getAssignment = async ({
+    pageParam
+}) => {
     try {
-        const user = useAppStore.getState().user;
+        const {
+            course,
+            year
+        } = useAppStore.getState().user;
 
-        const limit = 10;
-        if (!user.userId || !user.course || !user.year_of_study) {
-            throw new Error("User not logged in");
-        }
+        if (!course || !year)
+            return []
 
-        const { course, year_of_study, userId } = user;
         const response = await axios.post(
             "/assignment/getAssignmentForStudent",
             {
                 course,
-                year_of_study,
-                studentId: userId,
+                year,
                 page: pageParam,
-                limit
+                limit: 15
             }
         );
 
-        if (response.data.success) {
-            return response.data;
-        }
+        if (response.data.success)
+            return response.data ??[]
 
-        return response.data;
+        ToastAndroid.show(response.data?.message ?? "Failed to fetch assignments", ToastAndroid.LONG);
+        return response.data ?? [];
     } catch (error) {
         ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
-        console.error("Error creating assignment:", error);
-        throw error;
+        return []
     }
 };
 
@@ -48,7 +54,12 @@ export const handleDocumentPick = async setFormData => {
     if (result.canceled) {
         return;
     } else {
-        const { name, size, uri, mimeType } = result.assets[0];
+        const {
+            name,
+            size,
+            uri,
+            mimeType
+        } = result.assets[0];
 
         if (!name || !uri || !mimeType || !size) {
             ToastAndroid.show(
@@ -85,7 +96,9 @@ export const handleDocumentPick = async setFormData => {
             return;
         }
 
-        setFormData({ uri, name, size, mimeType });
+        setFormData({
+            uri, name, size, mimeType
+        });
     }
 };
 
@@ -161,7 +174,12 @@ export const handleAssignmentUpload = async (
             return false;
         }
 
-        const { timestamp, signature, api_key, preset } = signatureRes.data;
+        const {
+            timestamp,
+            signature,
+            api_key,
+            preset
+        } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
             ToastAndroid.show(
@@ -177,7 +195,9 @@ export const handleAssignmentUpload = async (
         formData.append("api_key", api_key);
 
         const res = await orgAxios.post(url, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
 
             onUploadProgress: pe => {
                 const total = pe.total || file.size * 1.35; // 35% extra for multipart
@@ -189,9 +209,11 @@ export const handleAssignmentUpload = async (
             }
         });
 
-        const { secure_url, format } = res.data;
+        const {
+            secure_url, format
+        } = res.data;
 
-        return await saveAssignmentSubmissionDetails({
+        return await saveAssignmentSubmissionDetails( {
             secure_url,
             format,
             assignmentId
@@ -201,7 +223,8 @@ export const handleAssignmentUpload = async (
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
         );
-        console.error("Error uploading to Cloudinary:", error);
+        console.error("Error uploading to Cloudinary:",
+            error);
         return false;
     }
 };

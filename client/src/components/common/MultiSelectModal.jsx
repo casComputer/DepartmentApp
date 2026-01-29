@@ -26,11 +26,11 @@ const MultiSelectModal = ({
   };
 
   const renderItem = ({ item }) => {
-    const isSelected = selected.includes(item.studentId);
+    const isSelected = selected.includes(item.userId);
 
     return (
       <TouchableOpacity
-        onPress={() => toggleSelect(item.studentId)}
+        onPress={() => toggleSelect(item.userId)}
         className={`bg-card p-5 rounded-3xl my-1 ${
           isSelected && "border-[#3399ff] bg-card-selected"
         }`}
@@ -54,6 +54,7 @@ const MultiSelectModal = ({
               isLoading &&
                     <ActivityIndicator size={'large'} />
                 }
+                showsVerticalScrollIndicator={false}
         />
         <TouchableOpacity
           onPress={handleDone}

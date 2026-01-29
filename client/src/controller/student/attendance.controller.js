@@ -5,12 +5,19 @@ import { useAppStore } from "@store/app.store.js";
 
 export const getTodaysAttendanceReport = async () => {
     try {
-        const userId = useAppStore.getState().user?.userId;
-        if (!userId) return;
+        const students = useAppStore.getState().user.students;
+        
+        if(!students || !students.length){
+            ToastAndroid.show(
+                "No linked students details found!",
+                ToastAndroid.LONG
+            );
+            return {};
+        }
 
-        const res = await axios.post("/attendance/getTodaysAttendanceReport", {
-            userId
-        });
+        const res = await axios.post("/attendance/getTodaysAttendanceReport"
+            students
+        );
 
         if (res.data.success) return res.data.attendance;
         else {

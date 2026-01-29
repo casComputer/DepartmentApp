@@ -1,6 +1,6 @@
 import "../../global.css";
 import React from "react";
-import { Stack, router } from "expo-router";
+import { Stack, router, Redirect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -53,17 +53,20 @@ export default function RootLayout() {
   let userId = useAppStore((state) => state.user.userId);
   let role = useAppStore((state) => state.user.role);
 
-  React.useEffect(() => {
-    if (!mounted) return;
-    if (!userId || !role || role == "unknown") router.replace("Auth/SignIn");
-    setMounted(true);
-  }, [userId, role]);
-
+//   React.useEffect(() => {
+//     if (!mounted) return;
+//     if (!userId || !role || role == "unknown") router.replace("Auth/SignIn");
+//     setMounted(true);
+//   }, [userId, role]);
+  
+  if (!userId || !role) return <Redirect href="/" />;
+  
   return (
     <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
       <StatusBar style="auto" animated />
       <KeyboardProvider>
         <QueryClientProvider client={queryClient}>
+            
           <Layout userId={userId} role={role} />
         </QueryClientProvider>
       </KeyboardProvider>

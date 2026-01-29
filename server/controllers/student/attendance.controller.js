@@ -91,10 +91,13 @@ export const generateAttendanceCalendarReport = async (req, res) => {
 
 export const getTodaysAttendanceReport = async (req, res) => {
     try {
-        const {
-            userId
+        let {
+            userId, role
         } = req.user;
-
+        
+        if(role === 'parent')
+            userId = req.body.studentId
+        
         const today = new Date();
         const date = today.toISOString().slice(0, 10);
 

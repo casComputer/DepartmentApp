@@ -42,7 +42,7 @@ const ParentExtra = ({
         <View className="px-2 flex-row flex-wrap gap-2">
           {selectedStudents.map((studentId) => {
             const student = data?.students.find(
-              (s) => s.studentId === studentId
+              (s) => s.userId === studentId
             );
 
             return (

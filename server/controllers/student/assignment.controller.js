@@ -4,32 +4,34 @@ export const getAssignmentForStudent = async (req, res) => {
     try {
         const {
             course,
-            year_of_study,
+            year,
             page = 1,
             limit = 10
         } = req.body;
-        
-        const { userId: studentId } = req.user
 
-        if (!course || !year_of_study || !studentId) {
+        if (!course || !year) {
             return res.json({
-                message: "course, year_of_study and studentId are required",
+                message: "course and year are required",
                 success: false
             });
         }
 
         const assignments = await Assignment.find({
             course,
-            year: year_of_study
+            year
         })
-            .sort({ timestamp: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+        .sort({
+            timestamp: -1
+        })
+        .skip((page - 1) * limit)
+        .limit(limit);
 
         const hasMore = assignments.length === limit;
-        const nextPage = hasMore ? page + 1 : null;
+        const nextPage = hasMore ? page + 1: null;
 
-        res.status(200).json({ assignments, success: true, hasMore, nextPage });
+        res.status(200).json({
+            assignments, success: true, hasMore, nextPage
+        });
     } catch (error) {
         console.error("Error fetching assignments:", error);
         res.status(500).json({
@@ -40,9 +42,15 @@ export const getAssignmentForStudent = async (req, res) => {
 };
 
 export const saveAssignmentSubmissionDetails = async (req, res) => {
-    const { secure_url: url, format, assignmentId } = req.body;
-    const { userId: studentId } = req.user
-    
+    const {
+        secure_url: url,
+        format,
+        assignmentId
+    } = req.body;
+    const {
+        userId: studentId
+    } = req.user
+
     try {
         if (!studentId || !assignmentId || !url || !format) {
             return res.json({
@@ -50,19 +58,19 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
                 success: false
             });
         }
-        
+
         const existAssignment = await Assignment.findById(assignmentId)
-        
-        if(!existAssignment) return res.json({
+
+        if (!existAssignment) return res.json({
             success: false, message: 'Assignment not found!'
         })
-        
+
         const isSubmitted = existAssignment?.submissions.some(submission => submission.studentId === studentId);
 
-        if(isSubmitted) return res.json({
+        if (isSubmitted) return res.json({
             success: false, message: 'Assignment already submitted!'
         })
-        
+
         const submission = {
             studentId,
             url,
@@ -75,9 +83,13 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
             }
         });
 
-        res.json({ success: true });
+        res.json({
+            success: true
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(500).json({
+            success: false, message: "Internal server error"
+        });
     }
 };

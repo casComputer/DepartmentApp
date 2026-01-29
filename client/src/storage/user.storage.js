@@ -1,4 +1,6 @@
-import { storage } from "@utils/storage.js";
+import {
+    storage
+} from "@utils/storage.js";
 
 export const setUser = ({
     userId,
@@ -20,7 +22,7 @@ export const setUser = ({
     // For students
     rollno = "",
     course = "",
-    year_of_study = "",
+    year = "",
 }) => {
     if (!role || !userId || !fullname) return;
     storage.set("userId", userId);
@@ -32,7 +34,7 @@ export const setUser = ({
     storage.set("email", email || "");
     storage.set("about", about || "");
 
-    storage.set("year_of_study", year_of_study ?? "");
+    storage.set("year", year ?? "");
     storage.set("course", course ?? "");
 
     storage.set("in_charge_course", in_charge_course || "");
@@ -62,8 +64,8 @@ export const getUser = () => {
 
     const rollno = storage.getString("rollno") || "";
     const course = storage.getString("course") || "";
-    const year_of_study = storage.getString("year_of_study") || "";
-    
+    const year = storage.getString("year") || "";
+
     const in_charge_course = storage.getString("in_charge_course") || "";
     const in_charge_year = storage.getString("in_charge_year") || "";
     const courses = JSON.parse(storage.getString("courses") || "[]");
@@ -78,15 +80,15 @@ export const getUser = () => {
         phone,
         email,
         about,
-        
+
         rollno,
-        course, 
-        year_of_study,
-        
+        course,
+        year,
+
         in_charge_course,
         in_charge_year,
         courses
-        
+
     };
 };
 
@@ -101,11 +103,11 @@ export const clearUser = () => {
     storage.remove("phone");
     storage.remove("email");
     storage.remove("about");
-    
+
     storage.remove("rollno");
     storage.remove("course");
-    storage.remove("year_of_study");
-    
+    storage.remove("year");
+
     storage.remove("in_charge_course");
     storage.remove("in_charge_year");
     storage.remove("courses");

@@ -23,7 +23,7 @@ const Layout = ({ userId, role }) => (
       animation: "slide_from_right",
     }}
   >
-    <Stack.Protected guard={!userId || role === "unknown"}>
+    <Stack.Protected guard={!userId || role === "unknown" || !role}>
       <Stack.Screen name="index" />
       <Stack.Screen name="auth/Signin" />
       <Stack.Screen name="auth/Signup" />
@@ -32,10 +32,12 @@ const Layout = ({ userId, role }) => (
     <Stack.Protected guard={userId !== "" && role === "student"}>
       <Stack.Screen name="(student)/(tabs)" />
       <Stack.Screen name="(student)/(others)" />
+      
     </Stack.Protected>
     <Stack.Protected guard={userId !== "" && role === "admin"}>
       <Stack.Screen name="(admin)/(tabs)" />
     </Stack.Protected>
+    
     <Stack.Protected guard={userId !== "" && role === "teacher"}>
       <Stack.Screen name="(teacher)/(tabs)" />
       <Stack.Screen name="(teacher)/(others)" />
@@ -50,8 +52,8 @@ const Layout = ({ userId, role }) => (
 export default function RootLayout() {
   const theme = useColorScheme();
   const [mounted, setMounted] = React.useState(false);
-  let userId = useAppStore((state) => state.user.userId);
-  let role = useAppStore((state) => state.user.role);
+  let {userId, role} = useAppStore((state) => state.user);
+  
 
 //   React.useEffect(() => {
 //     if (!mounted) return;
@@ -59,14 +61,13 @@ export default function RootLayout() {
 //     setMounted(true);
 //   }, [userId, role]);
   
-  if (!userId || !role) return <Redirect href="/" />;
+//   if (!userId || !role) return <Redirect href="/" />;
   
   return (
     <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
       <StatusBar style="auto" animated />
       <KeyboardProvider>
         <QueryClientProvider client={queryClient}>
-            
           <Layout userId={userId} role={role} />
         </QueryClientProvider>
       </KeyboardProvider>

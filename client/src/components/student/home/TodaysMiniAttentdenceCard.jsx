@@ -59,16 +59,24 @@ const MiniAttentdenceCard = ({
         });
 
     const theme = useColorScheme();
+    
+    console.log(studentId)
 
     return (
         <View className="px-3 mt-12">
             <View
                 style={ { boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
-                className="w-full rounded-3xl overflow-hidden p-8 gap-8 bg-card"
+                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card"
                 >
                 {/* Top */}
+                {
+                studentId ?
+                <Text className="text-lg font-bold text-text">
+                    studentId
+                </Text>: null
+                }
 
-                <View className="flex-row items-center">
+                <View className="flex-row items-center my-4">
                     <Text className="text-5xl font-bold text-text">{day}</Text>
                     <View className="ml-5">
                         <Text className="text-xl font-semibold text-text ">

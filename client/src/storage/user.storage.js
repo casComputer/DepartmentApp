@@ -124,30 +124,7 @@ export const getUser = () => {
             about,
             students
         };
-    } else {
-        alert('Invalid role occured while syncing from local storage!')
     }
-
-    return {
-        userId,
-        fullname,
-        role,
-        dp_public_id,
-        dp,
-        is_verified,
-        phone,
-        email,
-        about,
-
-        rollno,
-        course,
-        year,
-
-        in_charge_course,
-        in_charge_year,
-        courses
-
-    };
 };
 
 
@@ -169,6 +146,6 @@ export const clearUser = () => {
     storage.remove("in_charge_course");
     storage.remove("in_charge_year");
     storage.remove("courses");
-    
+
     storage.remove("students");
 };

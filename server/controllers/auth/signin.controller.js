@@ -125,7 +125,7 @@ const signinController = async (req, res) => {
             
             user = {
                 ...user,
-                students
+                students: students.map(st=> st.studentId)
             }
         }
 

@@ -18,7 +18,7 @@ const Home = () => {
     >
       <Header />
             <TodaysMiniAttentdenceCard />
-      <MonthlyAttendenceMiniReport />
+
       <ParentOptions />
     </ScrollView>
   );

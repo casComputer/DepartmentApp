@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router"
 
@@ -15,7 +15,6 @@ import queryClient from "@utils/queryClient";
 
 import { useAppStore } from "@store/app.store.js";
 
-const { width: vw } = Dimensions.get("window");
 const studentId = useAppStore.getState().user.userId;
 
 const AssignmentUpload = () => {
@@ -29,6 +28,7 @@ const AssignmentUpload = () => {
     const handleUpload = async () => {
         if (uploading) return;
         setUploading(true)
+        setProgress(1);
         const is_uploaded = await handleAssignmentUpload(
             file,
             assignmentId,

@@ -3,7 +3,7 @@ import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
 
 export const fetchStudentsByClass = async (req, res) => {
   const { course, year } = req.body;
-  
+
   try {
     if (!validateCourseAndYear(course, year))
       return res
@@ -11,7 +11,7 @@ export const fetchStudentsByClass = async (req, res) => {
         .json({ message: "invalid course or year", success: false });
 
     const result = await turso.execute(
-      "SELECT u.studentId, u.fullname, s.rollno, u.is_verified, u.dp from students s JOIN users u ON s.studentId = u.userId where s.course = ? and s.year = ? and u.is_verified = true",
+      "SELECT u.userId, u.fullname, s.rollno, u.is_verified, u.dp from students s JOIN users u ON s.userId = u.userId where s.course = ? and s.year = ? and u.is_verified = true",
       [course, year]
     );
 

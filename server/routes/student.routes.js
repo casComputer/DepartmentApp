@@ -30,7 +30,7 @@ import { authorize } from "../middleware/authentication.middleware.js";
 
 const router = express.Router();
 
-router.post("/fetchStudentsByClass", authorize("teacher", "admin"), fetchStudentsByClass);
+router.post("/fetchStudentsByClass", fetchStudentsByClass);
 
 router.get("/fetchStudentsByClassTeacher", authorize("teacher", "admin"), fetchStudentsByClassTeacher);
 
@@ -48,7 +48,7 @@ router.post("/assignGroupedRollNo", authorize("teacher", "admin"), assignGrouped
 
 router.post("/saveExamResultDetails", saveExamResultDetails);
 
-router.post("/checkExamResultUpload", authorize("teacher", "admin"), checkExamResultUpload);
+router.post("/checkExamResultUpload", authorize("student"), checkExamResultUpload);
 
 router.post("/getInternalMarks", authorize("student"), getInternalMarks);
 

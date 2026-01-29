@@ -32,7 +32,6 @@ const ExamResult = () => {
     const handleSelectFile = async () => {
         const asset = await handleDocumentPick(["application/pdf", "image/*"]);
         if (asset) setFile(asset);
-        console.log(asset);
     };
 
     const handdleUploadFile = async () => {

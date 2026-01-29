@@ -8,19 +8,21 @@ router.post("/fetchByClassTeacher", async (req, res) => {
     try {
         const { userId: teacherId } = req.user;
 
+        console.log("fetch parents by: ",teacherId)
+
         const { rows } = turso.execute(
             `
             SELECT DISTINCT 
-                p.parentId,
-                p.fullname,
-                p.phone,
-                p.is_verified
+                u.userId,
+                u.fullname,
+                u.phone,
+                u.is_verified
             FROM classes c
             JOIN students s
                 ON s.course = c.course 
                AND s.year = c.year
             JOIN parent_child pc
-                ON pc.studentId = s.studentId
+                ON pc.studentId = s.userId
             JOIN users u
                 ON u.userId = pc.parentId
             WHERE c.in_charge = ?;

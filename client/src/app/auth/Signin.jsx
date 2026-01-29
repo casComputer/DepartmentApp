@@ -1,14 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View,
-    Dimensions
+    Dimensions,
+    BackHandler,
 } from "react-native";
 import { AntDesign, Feather } from "@icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useRouter  } from "expo-router";
 
 import handleSignin from "../../controller/auth/auth.controller.js";
 import { Chip } from "../../components/auth/StudentExtra.jsx";
@@ -22,6 +23,20 @@ const Signin = () => {
     const [message, setMessage] = useState("");
     const [isPassVisible, setIsPassVisible] = useState(false);
 
+    const router = useRouter();
+
+    useEffect(() => {
+        const handler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            () => {
+                if(!router.canGoBack()) router.replace("/");
+                else router.back();
+                return true;
+            },
+        );
+        return () => handler.remove();
+    }, []);
+
     const usernameRef = useRef();
 
     const passwordRef = useRef();
@@ -30,12 +45,12 @@ const Signin = () => {
         if (username.trim()?.length <= 5) {
             setMessage({
                 type: "error",
-                message: "username is too short"
+                message: "username is too short",
             });
             usernameRef.current?.setNativeProps({
                 style: {
-                    borderColor: "red"
-                }
+                    borderColor: "red",
+                },
             });
             return;
         }
@@ -43,13 +58,13 @@ const Signin = () => {
         if (password.trim()?.length <= 5) {
             setMessage({
                 type: "error",
-                message: "password is too short"
+                message: "password is too short",
             });
 
             passwordRef.current?.setNativeProps({
                 style: {
-                    borderColor: "red"
-                }
+                    borderColor: "red",
+                },
             });
             return;
         }
@@ -57,7 +72,7 @@ const Signin = () => {
         if (!role) {
             setMessage({
                 type: "error",
-                message: "please select a role"
+                message: "please select a role",
             });
 
             return;
@@ -65,19 +80,19 @@ const Signin = () => {
 
         setMessage({
             type: "info",
-            message: "please wait..."
+            message: "please wait...",
         });
 
         const { success, message: resMessage } = await handleSignin({
             username,
             password,
             userRole: role,
-            endpoint: "signin"
+            endpoint: "signin",
         });
 
         setMessage({
             type: success ? "success" : "error",
-            message: resMessage
+            message: resMessage,
         });
     };
 
@@ -86,10 +101,12 @@ const Signin = () => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             style={{ paddingBottom: 100 }}
-            className=" flex-1 pt-20 dark:bg-black">
+            className=" flex-1 pt-20 dark:bg-black"
+        >
             <Text
                 style={{ fontSize: vw * 0.2 }}
-                className="font-black dark:text-white px-3">
+                className="font-black dark:text-white px-3"
+            >
                 SignIn
             </Text>
 
@@ -99,9 +116,10 @@ const Signin = () => {
                         message.type === "error"
                             ? "text-red-500"
                             : message.type === "info"
-                            ? "text-orange-500"
-                            : "text-green-500"
-                    }`}>
+                              ? "text-orange-500"
+                              : "text-green-500"
+                    }`}
+                >
                     {message?.message}
                 </Text>
 
@@ -117,7 +135,7 @@ const Signin = () => {
                     placeholderTextColor={"rgba(119,119,119,0.7)"}
                     keyboardType="username"
                     autoCapitalize="none"
-                    onChangeText={txt =>
+                    onChangeText={(txt) =>
                         setUsername(txt.replace(/[^a-zA-Z0-9._-]/g, ""))
                     }
                     value={username}
@@ -135,8 +153,9 @@ const Signin = () => {
                         secureTextEntry={!isPassVisible}
                     />
                     <TouchableOpacity
-                        onPress={() => setIsPassVisible(prev => !prev)}
-                        className="absolute top-1/2 -translate-y-1/2 right-5">
+                        onPress={() => setIsPassVisible((prev) => !prev)}
+                        className="absolute top-1/2 -translate-y-1/2 right-5"
+                    >
                         {isPassVisible ? (
                             <Feather name="eye" size={20} />
                         ) : (
@@ -149,7 +168,7 @@ const Signin = () => {
                     Select role:
                 </Text>
                 <View className="flex-row justify-center items-center py-5 px-3 gap-5">
-                    {["Teacher", "Student", "Parent", "Admin"].map(y => (
+                    {["Teacher", "Student", "Parent", "Admin"].map((y) => (
                         <Chip
                             key={y}
                             year={y}
@@ -161,9 +180,10 @@ const Signin = () => {
 
                 <TouchableOpacity
                     className="bg-green-400 py-5 w-full rounded-3xl mt-10"
-                    onPress={handleSubmit}>
+                    onPress={handleSubmit}
+                >
                     <Text className="text-white font-black text-3xl text-center">
-                        Sign Up
+                        Sign In
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -45,11 +45,11 @@ const ResultItem = ({ item }) => {
 };
 
 const ExamResult = () => {
-    const { course, year, sem } = useLocalSearchParams();
+    const { course, sem } = useLocalSearchParams();
 
     const { data, isLoading } = useQuery({
         queryKey: ["examResults"],
-        queryFn: () => fetchExamResult({ course, year, sem }),
+        queryFn: () => fetchExamResult({ course, sem }),
     });
 
     return (

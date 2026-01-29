@@ -28,8 +28,6 @@ const authController = async (data) => {
                 accessToken,
                 user
             } = response.data;
-
-            console.log(user)
             
             await SecureStore.setItemAsync("refreshToken", refreshToken);
             storage.set("accessToken", accessToken);

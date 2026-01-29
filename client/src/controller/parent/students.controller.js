@@ -1,17 +1,32 @@
 import axios from "@utils/axios.js";
+import { ToastAndroid } from "react-native";
 
 export const fetchStudentsByClass = async ({ course, year }) => {
     try {
-        if (!course || !year) throw new Error("course and year not found.");
+        if (!course || !year)
+            return {
+                students: [],
+                numberOfStudents: 0,
+                success: true,
+                course,
+                year,
+            };
 
-        const res = await axios.post("/student/fetchStudentsByClass", {
+        const res = await axios.post("auth/getStudentsForParents", {
             course,
-            year
+            year,
         });
 
         return res.data;
     } catch (error) {
-        throw new Error("Failed to fetch students");
-        console.error("error while fetching students : ", error);
+        ToastAndroid.show("Failed to fetch students", ToastAndroid.LONG);
+        if (!course || !year)
+            return {
+                students: [],
+                numberOfStudents: 0,
+                success: true,
+                course,
+                year,
+            };
     }
 };

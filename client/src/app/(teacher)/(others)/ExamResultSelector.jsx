@@ -11,15 +11,14 @@ import { router } from "expo-router";
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 
-import { YEAR, COURSES, SEM } from "@constants/ClassAndCourses";
+import { COURSES, SEM } from "@constants/ClassAndCourses";
 
 const ExamResult = () => {
-    const [selectedClass, setSelectedClass] = useState({});
     const [selectedCourse, setSelectedCourse] = useState({});
     const [selectedSem, setSelectedSem] = useState({});
 
     const handlePress = async () => {
-        if (!selectedClass.id || !selectedCourse.id || !selectedSem.id) {
+        if (!selectedCourse.id || !selectedSem.id) {
             ToastAndroid.show("Please select all fields", ToastAndroid.LONG);
             return;
         }
@@ -27,7 +26,6 @@ const ExamResult = () => {
         router.push({
             pathname: "/(teacher)/(others)/ExamResult",
             params: {
-                year: selectedClass.id,
                 course: selectedCourse.id,
                 sem: selectedSem.id,
             },
@@ -39,12 +37,7 @@ const ExamResult = () => {
             <Header />
 
             <View className="px-1">
-                <Select
-                    title="Year"
-                    options={YEAR}
-                    select={setSelectedClass}
-                    selected={selectedClass}
-                />
+             
                 <Select
                     title="Course"
                     options={COURSES}

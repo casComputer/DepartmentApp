@@ -17,8 +17,6 @@ import { useAppStore } from "@store/app.store.js";
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 const setGlobalProgressText = useAppStore.getState().setGlobalProgressText;
 
-console.log(useAppStore.getState().user)
-
 const Profile = () => {
   const [showDpOptions, setDpOptions] = useState(false);
   const role = useAppStore((state) => state.user?.role || "");

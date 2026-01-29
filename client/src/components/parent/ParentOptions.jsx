@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity } from "react-native"
-import { router } from "expo-router"
 import { MaterialCommunityIcons } from "@icons"
 
 const ICONS_SIZE = 30;

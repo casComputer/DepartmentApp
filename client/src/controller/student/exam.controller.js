@@ -21,7 +21,6 @@ export const handleSaveResultDetails = async (data) => {
         );
     } catch (e) {
         ToastAndroid.show("Failed to upload exam result!", ToastAndroid.LONG);
-        console.log(e, e?.message);
     }
 };
 

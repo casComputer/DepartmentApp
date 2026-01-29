@@ -206,7 +206,7 @@ export const handleAssignmentUpload = async (
                     Math.round((pe.loaded / total) * 100),
                     100
                 );
-                if (progress > 1) setProgress(percent);
+                if (percent > 1) setProgress(percent);
             }
         });
 

@@ -2,17 +2,17 @@ import Exam from "../../models/examResult.js"
 
 export const fetchExamResult = async (req, res) => {
     try {
-        const { course, year, sem } = req.body;
+        const { course, sem } = req.body;
 
-        if (!course || !year || !sem) {
+        if (!course || !sem) {
             return res.json({
                 success: false,
                 message: "Missing required parameters",
             });
         }
 
-        const results = await Exam.find({ course, year, sem });
-        
+        const results = await Exam.find({ course, sem });
+
         return res.json({ success: true, results });
     } catch (error) {
         console.error("Error fetching exam results:", error);

@@ -17,7 +17,7 @@ const ParentExtra = ({
   const [open, setOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["students", course, year],
+    queryKey: ["students", course, year, open],
     queryFn: () => fetchStudentsByClass({ course, year }),
     enabled: Boolean(course && year),
   });

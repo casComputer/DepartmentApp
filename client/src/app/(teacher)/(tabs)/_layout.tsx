@@ -12,11 +12,10 @@ import { Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { syncUser } from "@controller/teacher/teacher.controller.js";
 
 export default function TabLayout() {
-
     useEffect(() => {
         syncUser();
     }, []);
-    
+
     const theme = useColorScheme();
 
     return (

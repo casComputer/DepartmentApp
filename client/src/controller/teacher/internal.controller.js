@@ -21,7 +21,6 @@ export const handleSave = async (data) => {
             );
     } catch (e) {
         ToastAndroid.show("Failed to upload internal mark!", ToastAndroid.LONG);
-        console.log(e, e?.message);
     }
 };
 
@@ -31,8 +30,6 @@ export const checkExists = async (course, sem) => {
             course,
             sem,
         });
-
-        console.log(res.data)
 
         if (res.data.success) {
             if (res.data?.uploaded) {
@@ -73,7 +70,6 @@ export const getHistory = async () => {
         const res = await axios.post("/teacher/getInternalMarkHistory");
 
         if (res.data.success) {
-            console.log(res.data.history)
             return res.data.history ?? [];
         } else {
             ToastAndroid.show(

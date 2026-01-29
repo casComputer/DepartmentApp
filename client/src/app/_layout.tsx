@@ -1,5 +1,5 @@
 import "../../global.css";
-import React, { use } from "react";
+import React from "react";
 import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
@@ -15,8 +15,6 @@ import ProgressBar from "@components/common/ProgressBar.jsx";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
-// useAppStore.getState().removeUser();
-// router.push("/");
 
 const Layout = ({ userId, role }) => (
   <Stack
@@ -54,8 +52,6 @@ export default function RootLayout() {
   const [mounted, setMounted] = React.useState(false);
   let userId = useAppStore((state) => state.user.userId);
   let role = useAppStore((state) => state.user.role);
-
-  // (userId = ""), (role = "unknown");
 
   React.useEffect(() => {
     if (!mounted) return;

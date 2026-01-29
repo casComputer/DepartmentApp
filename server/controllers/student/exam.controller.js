@@ -109,11 +109,6 @@ export const checkExamResultUpload = async (req, res) => {
     } = req.body;
 
     try {
-        if (role !== "student")
-            return res.json({
-            success: false,
-            message: "You have no access to check exam results!",
-        });
 
         if (!course || !sem)
             return res.json({

@@ -8,16 +8,12 @@ import { setNotes } from "@storage/app.storage.js";
 
 export const fetchNotes = async ({ queryKey }) => {
     const parentId = queryKey[1] ?? null;
-    const student = useAppStore.getState().user;
+    const { course, year } = useAppStore.getState().user;
 
-    if (!student) return { notes: [], success: true };
-        
     try {
-        const { course, year_of_study } = student;
-
-        if (!course || !year_of_study) {
+        if (!course || !year) {
             ToastAndroid.show(
-                "Something went wrong. If the issue persist, please re-authenticate",
+                "Missing course and year fields!",
                 ToastAndroid.LONG
             );
             return { notes: [], success: true };
@@ -25,12 +21,13 @@ export const fetchNotes = async ({ queryKey }) => {
 
         const res = await axios.post("/notes/fetchByStudent", {
             course,
-            year: year_of_study,
+            year,
             parentId
         });
 
         if (!res.data?.success) {
-            throw new Error("Failed to fetch notes");
+        ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
+            return { notes: [], success: false };
         }
 
         setNotes(parentId ?? "root", res.data);

@@ -23,6 +23,9 @@ export const setUser = ({
     rollno = "",
     course = "",
     year = "",
+
+    // For parents
+    students = []
 }) => {
     if (!role || !userId || !fullname) return;
     storage.set("userId", userId);
@@ -49,6 +52,9 @@ export const setUser = ({
         storage.set("is_verified", Boolean(is_verified));
 
     if (rollno) storage.set("rollno", rollno);
+
+    if (students && students?.length)
+        storage.set("students", JSON.stringify(students || []));
 };
 
 export const getUser = () => {
@@ -62,13 +68,65 @@ export const getUser = () => {
     const email = storage.getString("email") || "";
     const about = storage.getString("about") || "";
 
+    // student
     const rollno = storage.getString("rollno") || "";
     const course = storage.getString("course") || "";
     const year = storage.getString("year") || "";
 
+    // teacher
     const in_charge_course = storage.getString("in_charge_course") || "";
     const in_charge_year = storage.getString("in_charge_year") || "";
     const courses = JSON.parse(storage.getString("courses") || "[]");
+
+    // parent
+    const students = JSON.parse(storage.getString("students") || "[]");
+
+    if (role === 'student') {
+        return {
+            userId,
+            fullname,
+            role,
+            dp_public_id,
+            dp,
+            is_verified,
+            phone,
+            email,
+            about,
+            rollno,
+            course,
+            year,
+        };
+    } else if (role === 'teacher' || role === 'admin') {
+        return {
+            userId,
+            fullname,
+            role,
+            dp_public_id,
+            dp,
+            is_verified,
+            phone,
+            email,
+            about,
+            in_charge_course,
+            in_charge_year,
+            courses
+        };
+    } else if (role === 'parent') {
+        return {
+            userId,
+            fullname,
+            role,
+            dp_public_id,
+            dp,
+            is_verified,
+            phone,
+            email,
+            about,
+            students
+        };
+    } else {
+        alert('Invalid role occured while syncing from local storage!')
+    }
 
     return {
         userId,
@@ -111,4 +169,6 @@ export const clearUser = () => {
     storage.remove("in_charge_course");
     storage.remove("in_charge_year");
     storage.remove("courses");
+    
+    storage.remove("students");
 };

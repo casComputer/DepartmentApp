@@ -1,22 +1,18 @@
 import axios from "@utils/axios";
-import { ToastAndroid } from "react-native";
+import {
+    ToastAndroid
+} from "react-native";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore
+} from "@store/app.store.js";
 
-export const getTodaysAttendanceReport = async () => {
+export const getTodaysAttendanceReport = async (studentId = null) => {
     try {
-        const students = useAppStore.getState().user.students;
-        
-        if(!students || !students.length){
-            ToastAndroid.show(
-                "No linked students details found!",
-                ToastAndroid.LONG
-            );
-            return {};
-        }
-
-        const res = await axios.post("/attendance/getTodaysAttendanceReport"
-            students
+        const res = await axios.post("/attendance/getTodaysAttendanceReport",
+            {
+                studentId
+            }
         );
 
         if (res.data.success) return res.data.attendance;
@@ -48,7 +44,7 @@ export const getOverallAttendenceReport = async () => {
                 userId
             }
         );
-        
+
         if (res.data.success) return res.data.report;
         else {
             return res.data.report;
@@ -105,7 +101,7 @@ export const getYearlyAttendenceReport = async year => {
         } else {
             ToastAndroid.show(
                 res.data?.message ??
-                    `Failed to fetch yearly attendance report!`,
+                `Failed to fetch yearly attendance report!`,
                 ToastAndroid.LONG
             );
             return []
@@ -116,8 +112,8 @@ export const getYearlyAttendenceReport = async year => {
             `Failed to fetch yearly attendance report!`,
             ToastAndroid.LONG
         );
-            return []
-        
+        return []
+
     }
 };
 
@@ -139,7 +135,7 @@ export const generateAttendanceCalendarReport = async (month, year) => {
         else {
             ToastAndroid.show(
                 res.data.message ??
-                    "Generating attendance calendar report failed",
+                "Generating attendance calendar report failed",
                 ToastAndroid.LONG
             );
             return [];
@@ -148,7 +144,7 @@ export const generateAttendanceCalendarReport = async (month, year) => {
         console.error(error);
         ToastAndroid.show(
             error.response?.data.message ??
-                `Generating attendance calendar report failed`,
+            `Generating attendance calendar report failed`,
             ToastAndroid.LONG
         );
         throw new Error(error.message);

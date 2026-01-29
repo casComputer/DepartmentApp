@@ -1,12 +1,22 @@
 import "dotenv/config";
 
-import { turso } from "../../config/turso.js";
-import { comparePassword } from "../../utils/auth.utils.js";
-import { generateTokens } from "../../utils/token.utils.js";
+import {
+    turso
+} from "../../config/turso.js";
+import {
+    comparePassword
+} from "../../utils/auth.utils.js";
+import {
+    generateTokens
+} from "../../utils/token.utils.js";
 
 const signinController = async (req, res) => {
     try {
-        let { username, password, userRole } = req.body;
+        let {
+            username,
+            password,
+            userRole
+        } = req.body;
         userRole = userRole.toLowerCase();
 
         username = username?.trim();
@@ -14,9 +24,9 @@ const signinController = async (req, res) => {
 
         if (!username || !password)
             return res.status(400).json({
-                success: false,
-                error: "Invalid username or password",
-            });
+            success: false,
+            error: "Invalid username or password",
+        });
 
         if (
             !userRole ||
@@ -31,7 +41,6 @@ const signinController = async (req, res) => {
         const existUser = await turso.execute(
             `
             SELECT * FROM users WHERE userId = ?
-
             `,
             [username],
         );
@@ -55,9 +64,9 @@ const signinController = async (req, res) => {
         const validPassword = await comparePassword(password, user.password);
         if (!validPassword)
             return res.status(400).json({
-                success: false,
-                error: "Invalid username or password",
-            });
+            success: false,
+            error: "Invalid username or password",
+        });
 
         if (user.role === "teacher") {
             const teacherExtra = await turso.execute(
@@ -85,12 +94,12 @@ const signinController = async (req, res) => {
 
             // add courses only if year, course and course_name are present
             user.courses = teacherExtra.rows
-                .filter((row) => row.course_name && row.year && row.course)
-                .map((row) => ({
-                    course_name: row.course_name,
-                    year: row.year,
-                    course: row.course,
-                }));
+            .filter((row) => row.course_name && row.year && row.course)
+            .map((row) => ({
+                course_name: row.course_name,
+                year: row.year,
+                course: row.course,
+            }));
         } else if (user.role === "student") {
             const studentExtra = await turso.execute(
                 `
@@ -99,11 +108,25 @@ const signinController = async (req, res) => {
                 [username],
             );
 
-            const { course, year, rollno } = studentExtra?.rows?.[0] ?? {};
-
-            user.course = course;
-            user.year = year;
-            user.rollno = rollno ?? -1;
+            const {
+                course,
+                year,
+                rollno
+            } = studentExtra?.rows?.[0] ?? {};
+            
+            user = {
+                ...user,
+                course, year, rollno: rollno ?? -1
+            }
+        } else if (user.role === 'parent') {
+            const { rows: students} = await turso.execute(`
+                SELECT DISTINCT studentId FROM parent_child WHERE parentId = ?
+                `, [user.userId])
+            
+            user = {
+                ...user,
+                students
+            }
         }
 
         delete user.password;

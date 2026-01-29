@@ -24,7 +24,7 @@ const signupController = async (req, res) => {
         } = req.body;
         const userRole = req.body.userRole.toLowerCase();
         validateSignupFields(req.body);
-        
+
         username = username?.trim()
         password = password?.trim()
         fullName = fullName?.trim()
@@ -80,11 +80,24 @@ const signupController = async (req, res) => {
 
         let user = {
             fullname: fullName,
-            course: course || "",
-            year: year || "",
             userId: username,
             role: userRole,
         };
+
+        if (userRole === 'student') {
+
+            user = {
+                ...user,
+                course,
+                year
+            }
+        } else if (userRole === 'parent') {
+            user = {
+                ...user,
+                students
+            }
+        }
+
 
         res.json({
             success: true, ...tokens, user

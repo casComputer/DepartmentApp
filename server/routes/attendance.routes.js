@@ -38,7 +38,7 @@ router.post(
 
 router.post(
     "/getTodaysAttendanceReport",
-    authorize("student"),
+    authorize("student", "parent"),
     getTodaysAttendanceReport,
 );
 

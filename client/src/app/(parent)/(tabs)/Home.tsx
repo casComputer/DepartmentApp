@@ -1,7 +1,10 @@
-import { ScrollView, View,  } from "react-native";
+import React from 'react'
+import { ScrollView, View } from "react-native";
 
-import Header from "../../../components/common/HomeHeader";
-import ParentOptions from "../../../components/parent/ParentOptions";
+import Header from "@components/common/HomeHeader";
+import ParentOptions from "@components/parent/ParentOptions";
+import TodaysMiniAttentdenceCard from "@components/student/home/TodaysMiniAttentdenceCard";
+import MonthlyAttendenceMiniReport from "@components/student/home/MonthlyAttendenceMiniReport";
 
 const Home = () => {
   return (
@@ -14,6 +17,8 @@ const Home = () => {
       showsVerticalScrollIndicator={false}
     >
       <Header />
+            <TodaysMiniAttentdenceCard />
+      <MonthlyAttendenceMiniReport />
       <ParentOptions />
     </ScrollView>
   );

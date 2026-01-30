@@ -15,9 +15,7 @@ const ShortSummary = ({ summary, time_analysis, projections }) => {
         {summary?.totalClassesSoFar}{" "}
         {summary?.totalClassesSoFar > 1 ? "classes" : "class"}
       </Text>
-      <Text className="mt-2 text-text-secondary text-md text-center">
-        {projections?.message}
-      </Text>
+
       <Text className=" text-text-secondary text-sm text-center">
         Estimated attendance if all remaining classes were attended:{" "}
         <Text className="font-black">{projections?.expectedMaxPercentage}</Text>

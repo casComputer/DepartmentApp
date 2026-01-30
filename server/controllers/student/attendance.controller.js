@@ -33,13 +33,18 @@ export const generateAttendanceCalendarReport = async (req, res) => {
             a.timestamp,
 
             CASE
-            WHEN SUM(
-            CASE
-            WHEN ad.status IN ('present', 'late') THEN 1
-            ELSE 0
-            END
-            ) > 0
+            WHEN
+            SUM(CASE WHEN a.hour IN ('First','Second','Third')
+            AND ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
+            AND
+            SUM(CASE WHEN a.hour IN ('Fourth','Fifth')
+            AND ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
             THEN 'present'
+
+            WHEN
+            SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
+            THEN 'half-day'
+
             ELSE 'absent'
             END AS day_status,
 
@@ -92,17 +97,18 @@ export const generateAttendanceCalendarReport = async (req, res) => {
 export const getTodaysAttendanceReport = async (req, res) => {
     try {
         let {
-            userId, role
+            userId,
+            role
         } = req.user;
-        
-        if(role === 'parent'){
+
+        if (role === 'parent') {
             userId = req.body.studentId
-            if(!userId) return res.json({
-            mesage: "StudenId is required!",
-            success: false,
-        });
+            if (!userId) return res.json({
+                mesage: "StudenId is required!",
+                success: false,
+            });
         }
-        
+
         const today = new Date();
         const date = today.toISOString().slice(0, 10);
 
@@ -146,28 +152,32 @@ export const getTodaysAttendanceReport = async (req, res) => {
 };
 
 const calculateProjections = (
-    present,
-    total,
-    remainingClasses,
-    targetThreshold = 75,
+    presentDays,
+    totalWorkingDays,
+    remainingDays,
+    targetThreshold = 75
 ) => {
-    const finalTotal = total + remainingClasses;
-    const maxPossiblePresent = present + remainingClasses;
-    const maxPossiblePercent = (maxPossiblePresent / finalTotal) * 100;
+    const finalTotalDays = totalWorkingDays + remainingDays;
+    const maxPossiblePresent = presentDays + remainingDays;
+
+    const maxPossiblePercent =
+    finalTotalDays === 0
+    ? 0: (maxPossiblePresent / finalTotalDays) * 100;
 
     const isCritical = maxPossiblePercent < targetThreshold;
 
-    let safetyMarginClasses = Math.floor(
-        present + remainingClasses - (targetThreshold / 100) * finalTotal,
+    let safetyMarginDays = Math.floor(
+        maxPossiblePresent - (targetThreshold / 100) * finalTotalDays
     );
 
-    if (isCritical || safetyMarginClasses < 0) {
-        safetyMarginClasses = 0;
+    if (isCritical || safetyMarginDays < 0) {
+        safetyMarginDays = 0;
     }
 
     return {
         maxPossiblePercent: Number(maxPossiblePercent.toFixed(2)),
-        safetyMarginClasses,
+        safetyMarginClasses: safetyMarginDays,
+        // kept name for API compatibility
         isCritical,
     };
 };
@@ -177,63 +187,141 @@ export const overallAttendenceReport = async (req, res) => {
         const {
             userId
         } = req.user;
+
         const {
             first,
             last
         } = getFirstAndLastDate();
         const {
             remainingDays,
-            remainingHours: remainingClasses
-        } =
-        getRemainingWorkSummary();
+            remainingHours
+        } = getRemainingWorkSummary();
 
-        // -------- Student Monthly Data --------
+        // -------- Student Info --------
         const {
-            rows
+            rows: studentRows
         } = await turso.execute(
             `
-            SELECT
-            course,
-            year
-            FROM students s
-            WHERE s.userId = ?
+            SELECT course, year
+            FROM students
+            WHERE userId = ?
             `,
-            [userId],
+            [userId]
         );
 
-        if (!rows.length) {
+        if (!studentRows.length) {
             return res.json({
                 success: false,
                 message: "No user data found",
             });
         }
+
         const {
             course,
             year
-        } = rows[0];
+        } = studentRows[0];
 
-        // -------- Leaderboard --------
+        // -------- Monthly Attendance (NEW LOGIC) --------
+        const now = new Date();
+
+        const monthlyReport = await getMonthlyAttendanceReport({
+            studentId: userId,
+            month: now.getMonth() + 1,
+            calendarYear: now.getFullYear(),
+        });
+
+        if (!monthlyReport.length) {
+            return res.json({
+                success: false,
+                message: "No attendance data found",
+            });
+        }
+
+        const {
+            working_days,
+            present_days,
+            absent_days,
+            attendance_percentage,
+        } = monthlyReport[0];
+
+        // -------- Leaderboard (SAME DAILY LOGIC) --------
         const leaderboardQuery = `
+        WITH daily_sections AS (
         SELECT
         ad.studentId,
-        u.dp,
+        a.date,
 
-        CAST(
-        SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END)
-        AS FLOAT
-        ) / COUNT(*) * 100 AS pct
+        COUNT(DISTINCT CASE
+        WHEN a.hour IN ('First','Second','Third') THEN a.hour END
+        ) AS first_total,
 
-        FROM attendance_details ad
+        COUNT(DISTINCT CASE
+        WHEN a.hour IN ('Fourth','Fifth') THEN a.hour END
+        ) AS second_total,
 
-        JOIN attendance a ON a.attendanceId = ad.attendanceId
-        JOIN users u ON u.userId = ad.studentId
+        SUM(CASE
+        WHEN a.hour IN ('First','Second','Third')
+        AND ad.status IN ('present','late') THEN 1 ELSE 0 END
+        ) AS first_present,
+
+        SUM(CASE
+        WHEN a.hour IN ('Fourth','Fifth')
+        AND ad.status IN ('present','late') THEN 1 ELSE 0 END
+        ) AS second_present
+
+        FROM attendance a
+        JOIN attendance_details ad ON ad.attendanceId = a.attendanceId
 
         WHERE a.course = ?
         AND a.year = ?
         AND a.date BETWEEN ? AND ?
 
-        GROUP BY ad.studentId
-        ORDER BY pct DESC
+        GROUP BY ad.studentId, a.date
+        ),
+
+        daily_attendance AS (
+        SELECT
+        studentId,
+        CASE
+        WHEN first_total > 0 AND second_total > 0 THEN
+        CASE
+        WHEN first_present = first_total
+        AND second_present = second_total THEN 1.0
+        WHEN first_present = 0
+        AND second_present = 0 THEN 0.0
+        ELSE 0.5
+        END
+
+        WHEN first_total > 0 AND second_total = 0 THEN
+        CASE
+        WHEN first_present = first_total THEN 1.0
+        WHEN first_present = 0 THEN 0.0
+        ELSE 0.5
+        END
+
+        WHEN first_total = 0 AND second_total > 0 THEN
+        CASE
+        WHEN second_present = second_total THEN 1.0
+        WHEN second_present = 0 THEN 0.0
+        ELSE 0.5
+        END
+
+        ELSE NULL
+        END AS attendance_value
+        FROM daily_sections
+        )
+
+        SELECT
+        da.studentId,
+        u.dp,
+        ROUND(
+        (SUM(da.attendance_value) * 100.0) / COUNT(da.attendance_value),
+        2
+        ) AS pct
+        FROM daily_attendance da
+        JOIN users u ON u.userId = da.studentId
+        GROUP BY da.studentId
+        ORDER BY pct DESC;
         `;
 
         const leaderboardResult = await turso.execute(leaderboardQuery, [
@@ -251,52 +339,32 @@ export const overallAttendenceReport = async (req, res) => {
             (
                 classRows.reduce((acc, row) => acc + row.pct, 0) /
                 classRows.length
-            ).toFixed(2),
+            ).toFixed(2)
         );
 
         const studentRankIndex = classRows.findIndex(
-            (row) => row.studentId === userId,
+            (row) => row.studentId === userId
         );
 
-        const currentRank = studentRankIndex === -1 ? null: studentRankIndex + 1;
+        const currentRank =
+        studentRankIndex === -1 ? null: studentRankIndex + 1;
 
         const top3 = classRows.slice(0, 3).map((row, index) => ({
             rank: index + 1,
-            percentage: Number(row.pct.toFixed(2)),
+            percentage: row.pct,
             isMe: row.studentId === userId,
             studentId: row.studentId,
             dp: row.dp,
         }));
 
-        const report = await getMonthlyAttendanceReport({
-            studentId: userId,
-            month: "01",
-            calendarYear: "2026",
-        });
-
-        if (!report) {
-            return res.json({
-                success: false,
-                message: "No attendance data found",
-            });
-        }
-
-        const {
-            working_days,
-            present_days,
-            absent_days,
-            attendance_percentage
-        } =
-        report[0];
-
-        // -------- Projections --------
+        // -------- Projections (DAY BASED) --------
         const projections = calculateProjections(
-            present_days,
-            working_days,
-            remainingClasses,
+            Number(present_days),
+            Number(working_days),
+            Number(remainingDays)
         );
 
-        // -------- Response --------
+        // -------- Response (UNCHANGED STRUCTURE) --------
         return res.json({
             success: true,
             report: {
@@ -309,14 +377,14 @@ export const overallAttendenceReport = async (req, res) => {
                 time_analysis: {
                     passedWorkingDays: Number(working_days || 0),
                     remainingDays,
-                    remainingHours: remainingClasses,
+                    remainingHours,
                 },
                 comparison: {
                     yourRank: currentRank,
                     totalStudents: classRows.length,
                     classAverage,
                     diffFromAvg: Number(
-                        (attendance_percentage - classAverage).toFixed(2),
+                        (attendance_percentage - classAverage).toFixed(2)
                     ),
                     topPerformers: top3,
                 },
@@ -324,12 +392,12 @@ export const overallAttendenceReport = async (req, res) => {
                     expectedMaxPercentage: projections.maxPossiblePercent,
                     safetyMarginClasses: projections.safetyMarginClasses,
                     message: projections.isCritical
-                    ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: `You can afford to miss ${projections.safetyMarginClasses} more individual periods and still maintain ${75}%.`,
+                    ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: `You can afford to miss ${projections.safetyMarginClasses} more individual periods and still maintain 75%.`,
                 },
             },
         });
     } catch (err) {
-        console.error("Error while fetching monthly attendance report:", err);
+        console.error("Error while fetching overall attendance report:", err);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
@@ -346,36 +414,96 @@ export const getYearlyAttendanceReport = async (req, res) => {
             userId
         } = req.user;
 
-        if (!year)
+        if (!year) {
             return res.json({
-            success: false,
-            message: "year is missing!",
-        });
+                success: false,
+                message: "year is missing!",
+            });
+        }
 
         const {
             rows
         } = await turso.execute(
             `
+            WITH daily_sections AS (
             SELECT
+            ad.studentId,
+            a.date,
             strftime('%m', a.date) AS month,
-            COUNT(ad.attendanceId) AS value,
 
-            (COUNT(CASE WHEN ad.status = 'present' THEN 1 END) * 100.0)
-            / (COUNT(DISTINCT a.date) * 5) AS percentage
+            COUNT(DISTINCT CASE
+            WHEN a.hour IN ('First','Second','Third') THEN a.hour END
+            ) AS first_total,
+
+            COUNT(DISTINCT CASE
+            WHEN a.hour IN ('Fourth','Fifth') THEN a.hour END
+            ) AS second_total,
+
+            SUM(CASE
+            WHEN a.hour IN ('First','Second','Third')
+            AND ad.status IN ('present','late') THEN 1 ELSE 0 END
+            ) AS first_present,
+
+            SUM(CASE
+            WHEN a.hour IN ('Fourth','Fifth')
+            AND ad.status IN ('present','late') THEN 1 ELSE 0 END
+            ) AS second_present
 
             FROM attendance a
-            JOIN students s
-            ON s.year = a.year
-            AND s.course = a.course
             JOIN attendance_details ad
             ON ad.attendanceId = a.attendanceId
-            AND ad.studentId = s.userId
-            WHERE s.userId = ?
+
+            WHERE ad.studentId = ?
             AND strftime('%Y', a.date) = ?
+
+            GROUP BY ad.studentId, a.date
+            ),
+
+            daily_attendance AS (
+            SELECT
+            studentId,
+            month,
+            CASE
+            WHEN first_total > 0 AND second_total > 0 THEN
+            CASE
+            WHEN first_present = first_total
+            AND second_present = second_total THEN 1.0
+            WHEN first_present = 0
+            AND second_present = 0 THEN 0.0
+            ELSE 0.5
+            END
+
+            WHEN first_total > 0 AND second_total = 0 THEN
+            CASE
+            WHEN first_present = first_total THEN 1.0
+            WHEN first_present = 0 THEN 0.0
+            ELSE 0.5
+            END
+
+            WHEN first_total = 0 AND second_total > 0 THEN
+            CASE
+            WHEN second_present = second_total THEN 1.0
+            WHEN second_present = 0 THEN 0.0
+            ELSE 0.5
+            END
+
+            ELSE NULL
+            END AS attendance_value
+            FROM daily_sections
+            )
+
+            SELECT
+            month,
+            COUNT(attendance_value) AS value,
+            ROUND(
+            (SUM(attendance_value) * 100.0) / COUNT(attendance_value),
+            2
+            ) AS percentage
+            FROM daily_attendance
             GROUP BY month
-            ORDER BY month
+            ORDER BY month;
             `,
-            [userId, year?.toString()],
+            [userId, year.toString()]
         );
 
         res.json({

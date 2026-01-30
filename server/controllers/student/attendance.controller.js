@@ -177,7 +177,6 @@ const calculateProjections = (
     return {
         maxPossiblePercent: Number(maxPossiblePercent.toFixed(2)),
         safetyMarginClasses: safetyMarginDays,
-        // kept name for API compatibility
         isCritical,
     };
 };
@@ -357,11 +356,15 @@ export const overallAttendenceReport = async (req, res) => {
             dp: row.dp,
         }));
 
+        const effectiveRemainingDays =
+        remainingDays > 0 && remainingHours > 0
+        ? remainingDays: 0;
+
         // -------- Projections (DAY BASED) --------
         const projections = calculateProjections(
             Number(present_days),
             Number(working_days),
-            Number(remainingDays)
+            effectiveRemainingDays
         );
 
         // -------- Response (UNCHANGED STRUCTURE) --------
@@ -387,13 +390,16 @@ export const overallAttendenceReport = async (req, res) => {
                         (attendance_percentage - classAverage).toFixed(2)
                     ),
                     topPerformers: top3,
-                },
-                projections: {
+                }, projections: {
                     expectedMaxPercentage: projections.maxPossiblePercent,
                     safetyMarginClasses: projections.safetyMarginClasses,
-                    message: projections.isCritical
-                    ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: `You can afford to miss ${projections.safetyMarginClasses} more individual periods and still maintain 75%.`,
+                    message:
+                    remainingDays === 0
+                    ? "No remaining classes left to improve or reduce your attendance this month.": projections.isCritical
+                    ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: projections.safetyMarginClasses === 0
+                    ? "You cannot miss any more working days if you want to maintain 75% attendance.": `You can afford to miss ${projections.safetyMarginClasses} more working day(s) and still maintain 75%.`,
                 },
+
             },
         });
     } catch (err) {

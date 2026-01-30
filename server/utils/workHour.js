@@ -64,6 +64,7 @@ export const getRemainingHoursToday = () => {
     const now = new Date();
     const day = now.getDay();
 
+    // Weekend
     if (day === 0 || day === 6) {
         return {
             remainingHoursToday: 0,
@@ -72,6 +73,29 @@ export const getRemainingHoursToday = () => {
     }
 
     const schedule = getTodaySchedule(now);
+
+    const firstSlotStart = toDateTime(now, schedule[0].start);
+    const lastSlotEnd = toDateTime(
+        now,
+        schedule[schedule.length - 1].end
+    );
+
+    // 🔒 Before first class
+    if (now < firstSlotStart) {
+        return {
+            remainingHoursToday: HOURS_PER_DAY,
+            currentSlot: null
+        };
+    }
+
+    // 🔒 After last class
+    if (now >= lastSlotEnd) {
+        return {
+            remainingHoursToday: 0,
+            currentSlot: null
+        };
+    }
+
     let remainingMinutes = 0;
     let currentSlot = null;
 
@@ -86,6 +110,7 @@ export const getRemainingHoursToday = () => {
             remainingMinutes += (end - start) / 1000 / 60;
         }
     }
+
     return {
         remainingHoursToday: Number((remainingMinutes / 60).toFixed(2)),
         currentSlot

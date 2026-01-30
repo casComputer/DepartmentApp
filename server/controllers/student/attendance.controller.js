@@ -1,6 +1,4 @@
-import {
-    turso
-} from "../../config/turso.js";
+import { turso } from "../../config/turso.js";
 
 import {
     getFirstAndLastDate,
@@ -8,29 +6,19 @@ import {
     getRemainingOngoingDaysThisMonth
 } from "../../utils/workHour.js";
 
-import {
-    getMonthlyAttendanceReport
-} from "../common/attendance.controller.js";
+import { getMonthlyAttendanceReport } from "../common/attendance.controller.js";
 
 export const generateAttendanceCalendarReport = async (req, res) => {
     try {
-        const {
-            month,
-            year, studentId
-        } = req.body;
-        let {
-            userId,
-            role
-        } = req.user;
-        
-        if(role === 'parent') userId = studentId
+        const { month, year, studentId } = req.body;
+        let { userId, role } = req.user;
+
+        if (role === "parent") userId = studentId;
 
         const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
         const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);
 
-        const {
-            rows
-        } = await turso.execute(
+        const { rows } = await turso.execute(
             `
             WITH daily_sections AS (
   SELECT
@@ -119,51 +107,47 @@ FROM daily_attendance
 ORDER BY date;
 
             `,
-            [userId, firstDay, lastDay],
+            [userId, firstDay, lastDay]
         );
 
         const report = {};
 
         for (const row of rows) {
             report[row.date] = {
-                status: row.day_status
+                status: row.status
             };
         }
 
         res.json({
             success: true,
-            report,
+            report
         });
     } catch (err) {
         console.error("Error while generating attendance calendar: ", err);
         res.status(500).json({
             success: false,
-            message: "Internal Server Error!",
+            message: "Internal Server Error!"
         });
     }
 };
 
 export const getTodaysAttendanceReport = async (req, res) => {
     try {
-        let {
-            userId,
-            role
-        } = req.user;
+        let { userId, role } = req.user;
 
-        if (role === 'parent') {
-            userId = req.body.studentId
-            if (!userId) return res.json({
-                mesage: "StudenId is required!",
-                success: false,
-            });
+        if (role === "parent") {
+            userId = req.body.studentId;
+            if (!userId)
+                return res.json({
+                    mesage: "StudenId is required!",
+                    success: false
+                });
         }
 
         const today = new Date();
         const date = today.toISOString().slice(0, 10);
 
-        const {
-            rows
-        } = await turso.execute(
+        const { rows } = await turso.execute(
             `
             SELECT *
             FROM attendance a
@@ -179,7 +163,7 @@ export const getTodaysAttendanceReport = async (req, res) => {
             WHERE s.userId = ?
             AND a.date = ?
             `,
-            [userId, date],
+            [userId, date]
         );
 
         let attendance = rows.reduce((acc, item) => {
@@ -189,13 +173,13 @@ export const getTodaysAttendanceReport = async (req, res) => {
 
         res.json({
             attendance,
-            success: true,
+            success: true
         });
     } catch (err) {
         console.error("Error while getting daily attendance report: ", err);
         res.json({
             mesage: "internal server error",
-            success: false,
+            success: false
         });
     }
 };
@@ -210,8 +194,7 @@ const calculateProjections = (
     const maxPossiblePresent = presentDays + remainingDays;
 
     const maxPossiblePercent =
-    finalTotalDays === 0
-    ? 0: (maxPossiblePresent / finalTotalDays) * 100;
+        finalTotalDays === 0 ? 0 : (maxPossiblePresent / finalTotalDays) * 100;
 
     const isCritical = maxPossiblePercent < targetThreshold;
 
@@ -226,31 +209,21 @@ const calculateProjections = (
     return {
         maxPossiblePercent: Number(maxPossiblePercent.toFixed(2)),
         safetyMarginClasses: safetyMarginDays,
-        isCritical,
+        isCritical
     };
 };
 
 export const overallAttendenceReport = async (req, res) => {
     try {
-        let {
-            userId, role
-        } = req.user;
+        let { userId, role } = req.user;
 
-        if(role==='parent') userId = req.body.studentId
+        if (role === "parent") userId = req.body.studentId;
 
-        const {
-            first,
-            last
-        } = getFirstAndLastDate();
-        const {
-            remainingDays,
-            remainingHours
-        } = getRemainingWorkSummary();
+        const { first, last } = getFirstAndLastDate();
+        const { remainingDays, remainingHours } = getRemainingWorkSummary();
 
         // -------- Student Info --------
-        const {
-            rows: studentRows
-        } = await turso.execute(
+        const { rows: studentRows } = await turso.execute(
             `
             SELECT course, year
             FROM students
@@ -262,14 +235,11 @@ export const overallAttendenceReport = async (req, res) => {
         if (!studentRows.length) {
             return res.json({
                 success: false,
-                message: "No user data found",
+                message: "No user data found"
             });
         }
 
-        const {
-            course,
-            year
-        } = studentRows[0];
+        const { course, year } = studentRows[0];
 
         // -------- Monthly Attendance (NEW LOGIC) --------
         const now = new Date();
@@ -277,13 +247,13 @@ export const overallAttendenceReport = async (req, res) => {
         const monthlyReport = await getMonthlyAttendanceReport({
             studentId: userId,
             month: now.getMonth() + 1,
-            calendarYear: now.getFullYear(),
+            calendarYear: now.getFullYear()
         });
 
         if (!monthlyReport.length) {
             return res.json({
                 success: false,
-                message: "No attendance data found",
+                message: "No attendance data found"
             });
         }
 
@@ -291,7 +261,7 @@ export const overallAttendenceReport = async (req, res) => {
             working_days,
             present_days,
             absent_days,
-            attendance_percentage,
+            attendance_percentage
         } = monthlyReport[0];
 
         // -------- Leaderboard (SAME DAILY LOGIC) --------
@@ -378,38 +348,38 @@ export const overallAttendenceReport = async (req, res) => {
             course,
             year,
             first,
-            last,
+            last
         ]);
 
         const classRows = leaderboardResult.rows || [];
 
         const classAverage =
-        classRows.length === 0
-        ? 0: Number(
-            (
-                classRows.reduce((acc, row) => acc + row.pct, 0) /
-                classRows.length
-            ).toFixed(2)
-        );
+            classRows.length === 0
+                ? 0
+                : Number(
+                      (
+                          classRows.reduce((acc, row) => acc + row.pct, 0) /
+                          classRows.length
+                      ).toFixed(2)
+                  );
 
         const studentRankIndex = classRows.findIndex(
-            (row) => row.studentId === userId
+            row => row.studentId === userId
         );
 
         const currentRank =
-        studentRankIndex === -1 ? null: studentRankIndex + 1;
+            studentRankIndex === -1 ? null : studentRankIndex + 1;
 
         const top3 = classRows.slice(0, 3).map((row, index) => ({
             rank: index + 1,
             percentage: row.pct,
             isMe: row.studentId === userId,
             studentId: row.studentId,
-            dp: row.dp,
+            dp: row.dp
         }));
 
         const effectiveRemainingDays =
-        remainingDays > 0 && remainingHours > 0
-        ? remainingDays: 0;
+            remainingDays > 0 && remainingHours > 0 ? remainingDays : 0;
 
         // -------- Projections (DAY BASED) --------
         const projections = calculateProjections(
@@ -423,10 +393,10 @@ export const overallAttendenceReport = async (req, res) => {
             success: true,
             report: {
                 summary: {
-                    status: projections.isCritical ? "Critical": "Good",
+                    status: projections.isCritical ? "Critical" : "Good",
                     currentPercentage: attendance_percentage,
                     classesAttended: present_days,
-                    totalClassesSoFar: working_days,
+                    totalClassesSoFar: working_days
                 },
                 time_analysis: {
                     passedWorkingDays: Number(working_days || 0),
@@ -441,48 +411,45 @@ export const overallAttendenceReport = async (req, res) => {
                     diffFromAvg: Number(
                         (attendance_percentage - classAverage).toFixed(2)
                     ),
-                    topPerformers: top3,
-                }, projections: {
+                    topPerformers: top3
+                },
+                projections: {
                     expectedMaxPercentage: projections.maxPossiblePercent,
                     safetyMarginClasses: projections.safetyMarginClasses,
                     isCritical: projections.isCritical,
                     message:
-                    remainingDays === 0
-                    ? "No remaining classes left to improve or reduce your attendance this month.": projections.isCritical
-                    ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`: projections.safetyMarginClasses === 0
-                    ? "You cannot miss any more working days if you want to maintain 75% attendance.": `You can afford to miss ${projections.safetyMarginClasses} more working day(s) and still maintain 75%.`,
-                },
-
-            },
+                        remainingDays === 0
+                            ? "No remaining classes left to improve or reduce your attendance this month."
+                            : projections.isCritical
+                            ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`
+                            : projections.safetyMarginClasses === 0
+                            ? "You cannot miss any more working days if you want to maintain 75% attendance."
+                            : `You can afford to miss ${projections.safetyMarginClasses} more working day(s) and still maintain 75%.`
+                }
+            }
         });
     } catch (err) {
         console.error("Error while fetching overall attendance report:", err);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error!",
+            message: "Internal Server Error!"
         });
     }
 };
 
 export const getYearlyAttendanceReport = async (req, res) => {
     try {
-        const {
-            year
-        } = req.body;
-        const {
-            userId
-        } = req.user;
+        const { year } = req.body;
+        const { userId } = req.user;
 
         if (!year) {
             return res.json({
                 success: false,
-                message: "year is missing!",
+                message: "year is missing!"
             });
         }
 
-        const {
-            rows
-        } = await turso.execute(
+        const { rows } = await turso.execute(
             `
             WITH daily_sections AS (
             SELECT
@@ -567,13 +534,13 @@ export const getYearlyAttendanceReport = async (req, res) => {
 
         res.json({
             success: true,
-            rows,
+            rows
         });
     } catch (err) {
         console.error("Error while fetching yearly attendance report: ", err);
         res.status(500).json({
             success: false,
-            message: "Internal Server Error!",
+            message: "Internal Server Error!"
         });
     }
 };

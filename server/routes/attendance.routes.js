@@ -44,7 +44,7 @@ router.post(
 
 router.post(
     "/overallAttendenceReport",
-    authorize("student"),
+    authorize("student", "parent"),
     overallAttendenceReport,
 );
 

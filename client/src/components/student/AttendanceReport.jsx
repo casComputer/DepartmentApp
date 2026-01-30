@@ -5,26 +5,29 @@ import { Feather } from "@icons";
 import { useQuery } from "@tanstack/react-query";
 
 import { Color } from "@constants/TWPallet.js";
-import { yearlyData } from "@constants/SampleData.js";
 
 import { getYearlyAttendenceReport } from "@controller/student/attendance.controller.js";
 
 export const SelectYear = ({ setYear, year }) => {
-    const handleChangeYear = dir => {
-        setYear(y => {
+    const handleChangeYear = (dir) => {
+        setYear((y) => {
             const nextYear = y + dir;
             return nextYear > new Date().getFullYear() ? y : nextYear;
         });
     };
+
+    const hideArrowRight = year + 1 > new Date().getFullYear();
     return (
         <View className="w-full pt-3 flex-row items-center justify-between px-20 mb-3">
             <TouchableOpacity onPress={() => handleChangeYear(-1)}>
                 <Feather name="chevron-left" size={24} />
             </TouchableOpacity>
             <Text className="text-2xl font-bold dark:text-white ">{year}</Text>
-            <TouchableOpacity onPress={() => handleChangeYear(1)}>
-                <Feather name="chevron-right" size={24} />
-            </TouchableOpacity>
+          
+                <TouchableOpacity style={{ opacity: hideArrowRight ? 0 : 1 }} disabled={hideArrowRight} onPress={() => handleChangeYear(1)}>
+                    <Feather name="chevron-right" size={24} />
+                </TouchableOpacity>
+            
         </View>
     );
 };
@@ -34,7 +37,7 @@ export const Chart = () => {
 
     const { isLoading, data } = useQuery({
         queryKey: ["YearlyAttendenceReport", year],
-        queryFn: () => getYearlyAttendenceReport(year)
+        queryFn: () => getYearlyAttendenceReport(year),
     });
 
     return (
@@ -55,15 +58,15 @@ export const Chart = () => {
                     xAxisLabelTextStyle={{
                         color: Color.gray[400],
                         fontSize: 12,
-                        fontWeight: "500"
+                        fontWeight: "500",
                     }}
                     yAxisTextStyle={{
                         color: Color.gray[400],
                         fontSize: 12,
-                        fontWeight: "500"
+                        fontWeight: "500",
                     }}
                     isAnimated
-                    animationDuration={500}
+                    animationDuration={250}
                     showGradient
                     gradientColor={Color.pink[500]}
                     frontColor={Color.pink[300]}

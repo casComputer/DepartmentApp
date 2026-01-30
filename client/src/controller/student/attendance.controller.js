@@ -122,8 +122,8 @@ export const generateAttendanceCalendarReport = async (
 
         if (res.data.success) {
             const report = res.data.report;
-            
-            console.log(report);
+
+            console.log(report, studentId);
 
             data.map(day => {
                 if (report[day.date]) {

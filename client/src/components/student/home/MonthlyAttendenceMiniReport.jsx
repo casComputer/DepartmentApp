@@ -20,18 +20,6 @@ const gap = vw * 0.1;
 
 const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
 
-function getRemainingDays(rnDays) {
-  const now = new Date();
-
-  const hours = now.getHours();     // 0–23
-  const minutes = now.getMinutes(); // 0–59
-
-  const passed330 =
-    hours > 15 || (hours === 15 && minutes >= 30);
-
-  return passed330 ? rnDays - 1 : rnDays;
-}
-
 export default function MonthlyAttendenceMiniReport() {
   const { data: report } = useQuery({
     queryKey: ["OverallAttendenceReport"],
@@ -87,7 +75,7 @@ export default function MonthlyAttendenceMiniReport() {
       </View>
       <View className="flex-1">
         <CircularProgress
-          progress={getRemainingDays(remainingDays) || 0}
+          progress={remainingDays || 0}
           size={size}
           showPercentage={false}
           maxProgress={31}

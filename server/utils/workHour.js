@@ -177,3 +177,27 @@ export const getFirstAndLastDate = (date = new Date()) => {
         last
     };
 };
+
+
+export const getRemainingOngoingDaysThisMonth = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const todayDate = now.getDate();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    let remainingOngoingDays = 0;
+
+    for (let d = todayDate; d <= lastDay; d++) {
+        const date = new Date(year, month, d);
+        const dow = date.getDay();
+
+        // Monday–Friday only
+        if (dow !== 0 && dow !== 6) {
+            remainingOngoingDays++;
+        }
+    }
+
+    return remainingOngoingDays;
+};

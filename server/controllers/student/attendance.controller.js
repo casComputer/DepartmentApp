@@ -5,6 +5,7 @@ import {
 import {
     getFirstAndLastDate,
     getRemainingWorkSummary,
+    getRemainingOngoingDaysThisMonth
 } from "../../utils/workHour.js";
 
 import {
@@ -381,6 +382,7 @@ export const overallAttendenceReport = async (req, res) => {
                     passedWorkingDays: Number(working_days || 0),
                     remainingDays,
                     remainingHours,
+                    ongoingDays: getRemainingOngoingDaysThisMonth() ?? -1
                 },
                 comparison: {
                     yourRank: currentRank,
@@ -393,6 +395,7 @@ export const overallAttendenceReport = async (req, res) => {
                 }, projections: {
                     expectedMaxPercentage: projections.maxPossiblePercent,
                     safetyMarginClasses: projections.safetyMarginClasses,
+                    isCritical: projections.isCritical,
                     message:
                     remainingDays === 0
                     ? "No remaining classes left to improve or reduce your attendance this month.": projections.isCritical

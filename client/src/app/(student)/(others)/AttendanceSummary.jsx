@@ -33,6 +33,8 @@ const ShortSummary = ({ summary, time_analysis, projections }) => {
 const AttendanceSummary = () => {
   const report = queryClient.getQueryData(["OverallAttendenceReport"]) ?? {};
 
+    console.log(report)
+
   return (
     <View className="flex-1 bg-primary">
       <Header title="Attendance Summary" />

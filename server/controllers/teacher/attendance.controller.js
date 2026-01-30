@@ -1,22 +1,24 @@
 import ExcelJS from "exceljs";
 import streamifier from "streamifier";
 
-import { turso } from "../../config/turso.js";
+import {
+    turso
+} from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
 
 import {
     getMonthlyAttendanceReport
-} from "../../controller/common/attendance.controller.js";
+} from "../../controllers/common/attendance.controller.js";
 
 const UPDATE_LIMIT_MINUTES = 20;
 
 const buildDetailRows = (attendanceId, attendance) =>
-    attendance.map((s) => ({
-        attendanceId,
-        studentId: s.userId,
-        rollno: s.rollno,
-        status: s.present ? "present" : "absent",
-    }));
+attendance.map((s) => ({
+    attendanceId,
+    studentId: s.userId,
+    rollno: s.rollno,
+    status: s.present ? "present": "absent",
+}));
 
 const insertAttendanceDetails = async (tx, rows) => {
     if (!rows.length) return;
@@ -41,7 +43,9 @@ const insertAttendanceDetails = async (tx, rows) => {
     });
 };
 
-const isUpdateAllowed = ({ createdAt, isAdmin, isClassTeacher }) => {
+const isUpdateAllowed = ({
+    createdAt, isAdmin, isClassTeacher
+}) => {
     if (isAdmin || isClassTeacher) return true;
 
     const diffMinutes = (Date.now() - new Date(createdAt).getTime()) / 60000;
@@ -57,17 +61,26 @@ export const save = async (req, res) => {
     const tx = await turso.transaction("write");
 
     try {
-        const { attendance, course, year, hour, attendanceId } = req.body;
+        const {
+            attendance,
+            course,
+            year,
+            hour,
+            attendanceId
+        } = req.body;
 
         console.log(attendance, course, year, attendanceId);
 
-        const { userId, role } = req.user;
+        const {
+            userId,
+            role
+        } = req.user;
 
         if (!attendance?.length || !course || !year || !hour || !userId)
             return abort(tx, res, {
-                success: false,
-                message: "missing required fields!",
-            });
+            success: false,
+            message: "missing required fields!",
+        });
 
         const presentCount = attendance.filter((s) => s.present).length;
         const absentCount = attendance.length - presentCount;
@@ -102,22 +115,26 @@ export const save = async (req, res) => {
 
         // ================= UPDATE =================
         else {
-            const { rows } = await tx.execute({
-                sql: `
+            const {
+                rows
+            } = await tx.execute({
+                    sql: `
                     SELECT timestamp
                     FROM attendance
                     WHERE attendanceId = ?
                     `,
-                args: [attendanceId],
-            });
+                    args: [attendanceId],
+                });
 
             if (!rows.length)
                 return abort(tx, res, {
-                    success: false,
-                    message: "Attendance not found",
-                });
+                success: false,
+                message: "Attendance not found",
+            });
 
-            const { rows: inCharge } = await turso.execute(
+            const {
+                rows: inCharge
+            } = await turso.execute(
                 `SELECT in_charge FROM classes c WHERE course = ? AND year = ?`,
                 [course, year],
             );
@@ -131,16 +148,16 @@ export const save = async (req, res) => {
                 isClassTeacher = true;
 
             if (
-                !isUpdateAllowed({
+                !isUpdateAllowed( {
                     createdAt: rows[0].timestamp,
                     isAdmin: role === "admin",
                     isClassTeacher,
                 })
             )
-                return abort(tx, res, {
-                    success: false,
-                    message: `Updates allowed only within ${UPDATE_LIMIT_MINUTES} minutes`,
-                });
+            return abort(tx, res, {
+                success: false,
+                message: `Updates allowed only within ${UPDATE_LIMIT_MINUTES} minutes`,
+            });
 
             await tx.execute({
                 sql: `
@@ -174,8 +191,7 @@ export const save = async (req, res) => {
         return res.json({
             success: true,
             message: attendanceId
-                ? "Attendance updated successfully"
-                : "Attendance saved successfully",
+            ? "Attendance updated successfully": "Attendance saved successfully",
         });
     } catch (err) {
         await tx.rollback();
@@ -197,14 +213,22 @@ export const save = async (req, res) => {
 
 export const getAttandanceTakenByTeacher = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.body;
+        const {
+            page = 1,
+            limit = 10
+        } = req.body;
 
-        const { userId: teacherId, role } = req.user;
+        const {
+            userId: teacherId,
+            role
+        } = req.user;
 
         const offset = (page - 1) * limit;
-        const userField = role === "teacher" ? "teacherId" : "adminId";
+        const userField = role === "teacher" ? "teacherId": "adminId";
 
-        const { rows: attendance } = await turso.execute(
+        const {
+            rows: attendance
+        } = await turso.execute(
             `SELECT * FROM attendance WHERE ${userField} = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
             [teacherId, limit, offset],
         );
@@ -220,7 +244,7 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
         res.json({
             success: true,
             attendance,
-            nextPage: hasMore ? page + 1 : null,
+            nextPage: hasMore ? page + 1: null,
             hasMore,
         });
     } catch (err) {
@@ -234,23 +258,32 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
 
 export const fetchStudentsForAttendance = async (req, res) => {
     try {
-        const { course, year, hour, date } = req.body;
+        const {
+            course,
+            year,
+            hour,
+            date
+        } = req.body;
 
         if (!course || !year || !hour)
             return res.json({
-                success: false,
-                message: "course or year is miising",
-            });
+            success: false,
+            message: "course or year is miising",
+        });
 
         // get students
-        const { rows } = await turso.execute(
+        const {
+            rows
+        } = await turso.execute(
             "SELECT s.userId, s.rollno from students s LEFT JOIN users u ON u.userId = s.userId where s.course = ? and s.year = ? and u.is_verified = true AND s.rollno > 0 ORDER BY s.rollno;",
             [course, year],
         );
         const numberOfStudents = rows?.length || 0;
 
         // get attendance
-        const { rows: attendance } = await turso.execute(
+        const {
+            rows: attendance
+        } = await turso.execute(
             `
             SELECT ad.rollno, ad.status, a.attendanceId FROM attendance a
             JOIN attendance_details ad
@@ -280,9 +313,17 @@ export const fetchStudentsForAttendance = async (req, res) => {
 
 export const getClassAttendance = async (req, res) => {
     try {
-        let { course, year, page = 1, limit = 10 } = req.body;
+        let {
+            course,
+            year,
+            page = 1,
+            limit = 10
+        } = req.body;
 
-        const { userId, role } = req.user;
+        const {
+            userId,
+            role
+        } = req.user;
 
         page = Math.max(1, page);
         limit = Math.min(50, Math.max(1, limit));
@@ -325,7 +366,9 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-        const { rows: existUser } = await turso.execute(query, params);
+        const {
+            rows: existUser
+        } = await turso.execute(query, params);
 
         if (existUser.length === 0) {
             return res.json({
@@ -337,9 +380,9 @@ export const getClassAttendance = async (req, res) => {
         if (role === "teacher") {
             if (!existUser[0].course || !existUser[0].year)
                 return res.json({
-                    success: false,
-                    message: "You are not assigned to any class!",
-                });
+                success: false,
+                message: "You are not assigned to any class!",
+            });
 
             course = existUser[0].course;
             year = existUser[0].year;
@@ -347,7 +390,9 @@ export const getClassAttendance = async (req, res) => {
 
         const offset = (page - 1) * limit;
 
-        const { rows: attendance } = await turso.execute(
+        const {
+            rows: attendance
+        } = await turso.execute(
             `
             SELECT *
             FROM attendance
@@ -370,7 +415,7 @@ export const getClassAttendance = async (req, res) => {
             success: true,
             attendance,
             hasMore,
-            nextPage: hasMore ? page + 1 : null,
+            nextPage: hasMore ? page + 1: null,
         });
     } catch (error) {
         console.error(error);
@@ -385,12 +430,11 @@ async function generateAttendanceExcel(data) {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Attendance");
 
-    sheet.columns = [
-        {
-            header: "Student ID",
-            key: "studentId",
-            width: 20,
-        },
+    sheet.columns = [{
+        header: "Student ID",
+        key: "studentId",
+        width: 20,
+    },
         {
             header: "Working Days",
             key: "working_days",
@@ -415,7 +459,12 @@ async function generateAttendanceExcel(data) {
 }
 
 export const generateXlSheet = async (req, res) => {
-    const { course, year, month, calendarYear } = req.body;
+    const {
+        course,
+        year,
+        month,
+        calendarYear
+    } = req.body;
 
     if (!course || !year || !month || !calendarYear)
         throw new Error("course, year, month, calendarYear are required");

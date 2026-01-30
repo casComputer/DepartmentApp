@@ -13,20 +13,18 @@ const CalendarItem = ({ day, status }) => {
     const statusColors = {
         present: "text-green-500",
         absent: "text-red-500",
-        "half-day": "text-yellow-500",
+        "half-day": "text-yellow-500"
     };
 
-    if (!day) {
-        return <View className="h-12 w-[14.28%]" />;
-    }
+    if (!day) return <View className="h-12 w-[14.28%]" />;
 
     return (
         <View className="flex items-center justify-center rounded-xl p-3 m-1">
             <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                className={`text-lg font-bold ${
-                    statusColors[status] || "text-text"
+                className={`text-lg text-center font-bold w-full ${
+                    statusColors[status] ?? "text-text"
                 }`}
             >
                 {day}
@@ -89,20 +87,20 @@ const CalendarDatePicker = ({ loading, date, setDate }) => {
     );
 };
 
-export const AttendanceCalendar = () => {
+export const AttendanceCalendar = ({ studentId=null}) => {
     const [date, setDate] = useState(new Date(new Date().setDate(1)));
 
     const year = date.getFullYear();
     const month = date.getMonth();
 
     const { data, isLoading } = useQuery({
-        queryKey: ["attendanceCalendarReport", month, year],
-        queryFn: () => generateAttendanceCalendarReport(month + 1, year),
-        initialData: calendarData(year, month),
+        queryKey: ["attendanceCalendarReport", month, year, studentId],
+        queryFn: () => generateAttendanceCalendarReport(month + 1, year, studentId),
+        initialData: calendarData(year, month)
     });
 
     return (
-        <View className="rounded-3xl bg-card p-2 mx-2 mt-5">
+        <View className=" rounded-3xl bg-card p-2 mx-2 mt-5">
             <CalendarDatePicker
                 date={date}
                 setDate={setDate}
@@ -111,19 +109,18 @@ export const AttendanceCalendar = () => {
 
             {/* Weekday header */}
             <View className="flex-row flex-wrap my-2">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                    (day) => (
-                        <View key={day} className="w-[14.28%] items-center">
-                            <Text className="text-xs text-text/60">{day}</Text>
-                        </View>
-                    ),
-                )}
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+                    <View key={day} className="w-[14.28%] items-center">
+                        <Text className="text-xs text-text/60">{day}</Text>
+                    </View>
+                ))}
             </View>
 
             <FlashList
                 data={data}
-                keyExtractor={(item) => item.date}
+                keyExtractor={item => item.date}
                 numColumns={7}
+                estimatedItemSize={48}
                 renderItem={({ item }) => (
                     <CalendarItem day={item.day} status={item.status} />
                 )}

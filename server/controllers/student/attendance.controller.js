@@ -16,11 +16,14 @@ export const generateAttendanceCalendarReport = async (req, res) => {
     try {
         const {
             month,
-            year
+            year, studentId
         } = req.body;
-        const {
-            userId
+        let {
+            userId,
+            role
         } = req.user;
+        
+        if(role === 'parent') userId = studentId
 
         const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
         const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);

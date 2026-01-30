@@ -4,6 +4,10 @@ import streamifier from "streamifier";
 import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
 
+import {
+    getMonthlyAttendanceReport
+} from "../../common/attendance.controller.js";
+
 const UPDATE_LIMIT_MINUTES = 20;
 
 const buildDetailRows = (attendanceId, attendance) =>

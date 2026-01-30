@@ -3,7 +3,7 @@ import {
     Text,
     TouchableOpacity,
     ActivityIndicator,
-    useColorScheme,
+    
 } from "react-native";
 import {
     useQuery
@@ -52,18 +52,15 @@ const MiniAttentdenceCard = ({
     studentId = null
 }) => {
     const {
-        data: attendance
+        data: attendance,
+        isLoading
     } = useQuery( {
-            queryKey: ["todaysAttendanceReport"],
+            queryKey: ["todaysAttendanceReport", studentId],
             queryFn: ()=> getTodaysAttendanceReport(studentId),
         });
 
-    const theme = useColorScheme();
-    
-    console.log(studentId)
-
     return (
-        <View className="px-3 mt-12">
+        <View className={`${!studentId ? 'mt-12': 'mt-0'}`}>
             <View
                 style={ { boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
                 className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card"
@@ -71,8 +68,8 @@ const MiniAttentdenceCard = ({
                 {/* Top */}
                 {
                 studentId ?
-                <Text className="text-lg font-bold text-text">
-                    studentId
+                <Text className="text-lg font-black text-text-secondary">
+                    {studentId}
                 </Text>: null
                 }
 
@@ -110,9 +107,9 @@ const MiniAttentdenceCard = ({
                                     />
                             ))
                         )}
-                        {!attendance && (
+                        {isLoading && (
                             <ActivityIndicator
-                                color={theme == "dark" ? "black": "white"}
+                                size="large"
                                 />
                         )}
                     </View>
@@ -128,13 +125,10 @@ const MiniAttentdence = ()=> {
     if (role === 'student') return <MiniAttentdenceCard />
 
     const students = useAppStore.getState().user.students
-
-    console.log(students)
-
     return(
-        <View className="flex-1 gap-4">
+        <View className="flex-1 gap-4 px-3 mt-12">
             {
-            students.map(student => (<MiniAttentdenceCard studentId={student} />))
+            students.map(student => (<MiniAttentdenceCard key={student} studentId={student} />))
             }
         </View>
     )

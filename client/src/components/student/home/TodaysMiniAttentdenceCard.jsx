@@ -3,7 +3,8 @@ import {
     Text,
     TouchableOpacity,
     ActivityIndicator,
-    
+    FlatList,
+    Dimensions
 } from "react-native";
 import {
     useQuery
@@ -20,6 +21,11 @@ import {
 import {
     useAppStore
 } from "@store/app.store.js";
+
+const SCREEN_WIDTH = Dimensions.get('window').width
+const CARD_WIDTH = SCREEN_WIDTH * 0.95;
+const SIDE_SPACING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
+
 
 const today = new Date();
 const day = today.getDate();
@@ -49,7 +55,7 @@ const Bubble = ({
 );
 
 const MiniAttentdenceCard = ({
-    studentId = null
+    studentId = null, index
 }) => {
     const {
         data: attendance,
@@ -60,10 +66,10 @@ const MiniAttentdenceCard = ({
         });
 
     return (
-        <View className={`${!studentId ? 'mt-12': 'mt-0'}`}>
+        <View style={ { width: studentId ? CARD_WIDTH: '100%', marginRight: SIDE_SPACING * 2 }} className={`${!studentId ? 'mt-12 px-3': 'mt-0'}`}>
             <View
                 style={ { boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
-                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card"
+                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card "
                 >
                 {/* Top */}
                 {
@@ -125,11 +131,29 @@ const MiniAttentdence = ()=> {
     if (role === 'student') return <MiniAttentdenceCard />
 
     const students = useAppStore.getState().user.students
+
     return(
-        <View className="flex-1 gap-4 px-3 mt-12">
-            {
-            students.map(student => (<MiniAttentdenceCard key={student} studentId={student} />))
-            }
+        <View className="flex-1 gap-4 mt-12">
+            <FlatList
+                data={students}
+                renderItem={({ item, index })=> <MiniAttentdenceCard studentId={item} index={index} />}
+                horizontal
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={CARD_WIDTH + SIDE_SPACING * 2}
+                decelerationRate="fast"
+
+                contentContainerStyle={ {
+                    paddingHorizontal: SIDE_SPACING
+                }}
+
+                getItemLayout={(_, index) => ({
+                    length: CARD_WIDTH + SIDE_SPACING * 2,
+                    offset: (CARD_WIDTH + SIDE_SPACING * 2) * index,
+                    index,
+                })}
+
+                />
         </View>
     )
 }

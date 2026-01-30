@@ -93,7 +93,7 @@ export const getYearlyAttendenceReport = async year => {
 
                 return {
                     label,
-                    value: rowMap[monthNumber]?.value ?? 0
+                    value: rowMap[monthNumber]?.percentage ?? 0
                 };
             });
 
@@ -129,6 +129,7 @@ export const generateAttendanceCalendarReport = async (month, year) => {
                 month,
                 year
             }
+        );
         );
 
         if (res.data.success) return res.data.report;

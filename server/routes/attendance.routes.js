@@ -50,7 +50,7 @@ router.post(
 
 router.post(
     "/generateAttendanceCalendarReport",
-    authorize("student"),
+    authorize("student", "parent"),
     generateAttendanceCalendarReport,
 );
 

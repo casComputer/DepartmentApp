@@ -1,4 +1,7 @@
 import {
+    useEffect
+} from 'react'
+import {
     View,
     Text,
     TouchableOpacity,
@@ -6,13 +9,29 @@ import {
     FlatList,
     Dimensions,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import Animated, {
+    useAnimatedRef,
+    useSharedValue,
+    scrollTo,
+    withTiming,
+    withDelay,
+    useDerivedValue,
+} from "react-native-reanimated";
+import {
+    useQuery
+} from "@tanstack/react-query";
 
-import { getTodaysAttendanceReport } from "@controller/student/attendance.controller.js";
+import {
+    getTodaysAttendanceReport
+} from "@controller/student/attendance.controller.js";
 
-import { HOURS } from "@constants/ClassAndCourses.js";
+import {
+    HOURS
+} from "@constants/ClassAndCourses.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore
+} from "@store/app.store.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const CARD_WIDTH = SCREEN_WIDTH * 0.95;
@@ -28,47 +47,52 @@ const month = today.toLocaleString("en-US", {
 });
 const year = today.getFullYear();
 
-const Bubble = ({ item, attendance }) => (
+const Bubble = ({
+    item, attendance
+}) => (
     <View
-        style={{
+        style={ {
             backgroundColor:
-                attendance?.[item.id] === "present"
-                    ? "rgb(34, 197, 94)"
-                    : attendance?.[item.id] === "absent"
-                      ? "rgb(239, 68, 68)"
-                      : "rgb(120, 129, 143)",
+            attendance?.[item.id] === "present"
+            ? "rgb(34, 197, 94)": attendance?.[item.id] === "absent"
+            ? "rgb(239, 68, 68)": "rgb(120, 129, 143)",
             borderRadius: "50%",
         }}
         className="w-8 h-8 justify-center items-center"
-    >
+        >
         <Text className="text-white font-black text-xl">{item.key}</Text>
     </View>
 );
 
-const MiniAttentdenceCard = ({ studentId = null, index }) => {
-    const { data: attendance, isLoading } = useQuery({
-        queryKey: ["todaysAttendanceReport", studentId],
-        queryFn: () => getTodaysAttendanceReport(studentId),
-    });
+const MiniAttentdenceCard = ({
+    studentId = null
+}) => {
+    const {
+        data: attendance,
+        isLoading
+    } = useQuery( {
+            queryKey: ["todaysAttendanceReport", studentId],
+            queryFn: () => getTodaysAttendanceReport(studentId),
+        });
 
     return (
         <View
-            style={{
-                width: studentId ? CARD_WIDTH : "100%",
+            style={ {
+                width: studentId ? CARD_WIDTH: "100%",
                 marginRight: SIDE_SPACING * 2,
             }}
-            className={`${!studentId ? "px-3" : "mt-0"}`}
-        >
-            <View
-                style={{ boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
-                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card "
+            className={`${!studentId ? "px-3": "mt-0"}`}
             >
+            <View
+                style={ { boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
+                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card "
+                >
                 {/* Top */}
                 {studentId ? (
                     <Text className="text-lg font-black text-text-secondary">
                         {studentId}
                     </Text>
-                ) : null}
+                ): null}
 
                 <View className="flex-row items-center my-4">
                     <Text className="text-5xl font-bold text-text">{day}</Text>
@@ -95,13 +119,13 @@ const MiniAttentdenceCard = ({ studentId = null, index }) => {
                             <Text className="text-2xl font-bold text-text">
                                 Holiday 🎉
                             </Text>
-                        ) : (
+                        ): (
                             HOURS.map((item) => (
                                 <Bubble
                                     key={item.key}
                                     item={item}
                                     attendance={attendance}
-                                />
+                                    />
                             ))
                         )}
                         {isLoading && <ActivityIndicator size="large" />}
@@ -116,30 +140,48 @@ const MiniAttentdence = () => {
     const role = useAppStore((state) => state.user.role);
     const students = useAppStore((state) => state.user.students);
 
+    const itemSize = CARD_WIDTH + SIDE_SPACING * 2;
+    const maxOffset = itemSize * (students?.length - 1) ?? 0;
+
+    const scrollRef = useAnimatedRef();
+    const scrollX = useSharedValue(maxOffset);
+
+    useDerivedValue(() => {
+        scrollTo(scrollRef, scrollX.value, 0, false);
+    });
+
+    useEffect(() => {
+        if (!students || students.length <= 1) return;
+
+        scrollX.value = withDelay(
+            50,
+            withTiming(0, {
+                duration: 400
+            })
+        );
+    },
+        [students]);
+
     return (
         <View className="gap-4 mt-12">
             {role === "student" ? (
                 <MiniAttentdenceCard />
-            ) : (
-                <FlatList
-                    data={students}
-                    renderItem={({ item, index }) => (
-                        <MiniAttentdenceCard studentId={item} index={index} />
-                    )}
+            ): (
+
+                <Animated.ScrollView
+                    ref={scrollRef}
                     horizontal
-                    keyExtractor={(item) => item}
                     showsHorizontalScrollIndicator={false}
                     snapToInterval={CARD_WIDTH + SIDE_SPACING * 2}
                     decelerationRate="fast"
-                    contentContainerStyle={{
+                    contentContainerStyle={ {
                         paddingHorizontal: SIDE_SPACING,
                     }}
-                    getItemLayout={(_, index) => ({
-                        length: CARD_WIDTH + SIDE_SPACING * 2,
-                        offset: (CARD_WIDTH + SIDE_SPACING * 2) * index,
-                        index,
-                    })}
-                />
+                    >
+                    {students?.map((item) => (
+                        <MiniAttentdenceCard key={item} studentId={item} />
+                    ))}
+                </Animated.ScrollView>
             )}
         </View>
     );

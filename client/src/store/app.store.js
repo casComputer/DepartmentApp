@@ -16,7 +16,8 @@ export const useAppStore = create(set => ({
         dp: "",
         email: "",
         
-        courses: []
+        courses: [],
+        students: [],
     },
 
     globalProgress: 0,

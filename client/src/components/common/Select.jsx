@@ -6,9 +6,12 @@ const Select = ({ title, options, select, selected }) => {
         <View
             style={styles.shadow}
             className="mt-5 px-2 py-4 bg-card rounded-3xl">
+            {
+               title ? 
             <Text className="text-[6vw] px-3 font-bold mb-3 text-text">
                 Select the {title}:
-            </Text>
+            </Text> : null
+            }
             <View className="w-full flex-row flex-wrap">
                 {options.map(item => (
                     <TouchableOpacity

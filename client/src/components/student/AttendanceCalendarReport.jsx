@@ -87,16 +87,17 @@ const CalendarDatePicker = ({ loading, date, setDate }) => {
     );
 };
 
-export const AttendanceCalendar = ({ studentId=null}) => {
+export const AttendanceCalendar = ({ studentId = null }) => {
     const [date, setDate] = useState(new Date(new Date().setDate(1)));
 
     const year = date.getFullYear();
     const month = date.getMonth();
 
-    const { data, isLoading } = useQuery({
+    const { data, isFetching } = useQuery({
         queryKey: ["attendanceCalendarReport", month, year, studentId],
-        queryFn: () => generateAttendanceCalendarReport(month + 1, year, studentId),
-        initialData: calendarData(year, month)
+        queryFn: () =>
+            generateAttendanceCalendarReport(month + 1, year, studentId),
+        placeholderData: calendarData(year, month)
     });
 
     return (
@@ -104,7 +105,7 @@ export const AttendanceCalendar = ({ studentId=null}) => {
             <CalendarDatePicker
                 date={date}
                 setDate={setDate}
-                loading={isLoading}
+                loading={isFetching}
             />
 
             {/* Weekday header */}

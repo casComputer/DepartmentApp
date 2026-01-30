@@ -14,64 +14,63 @@ import { Uniwind } from "uniwind";
 import ProgressBar from "@components/common/ProgressBar.jsx";
 
 Uniwind.setTheme("system");
-useAppStore.getState().hydrateUser(getUser());
+// useAppStore.getState().hydrateUser(getUser());
 
 const Layout = ({ userId, role }) => (
-  <Stack
-    screenOptions={{
-      headerShown: false,
-      animation: "slide_from_right",
-    }}
-  >
-    <Stack.Protected guard={!userId || role === "unknown" || !role}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="auth/Signin" />
-      <Stack.Screen name="auth/Signup" />
-    </Stack.Protected>
+    <Stack
+        screenOptions={{
+            headerShown: false,
+            animation: "slide_from_right"
+        }}
+    >
+        <Stack.Protected guard={!userId || role === "unknown" || !role}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="auth/Signin" />
+            <Stack.Screen name="auth/Signup" />
+        </Stack.Protected>
 
-    <Stack.Protected guard={userId !== "" && role === "student"}>
-      <Stack.Screen name="(student)/(tabs)" />
-      <Stack.Screen name="(student)/(others)" />
-      
-    </Stack.Protected>
-    <Stack.Protected guard={userId !== "" && role === "admin"}>
-      <Stack.Screen name="(admin)/(tabs)" />
-    </Stack.Protected>
-    
-    <Stack.Protected guard={userId !== "" && role === "teacher"}>
-      <Stack.Screen name="(teacher)/(tabs)" />
-      <Stack.Screen name="(teacher)/(others)" />
-    </Stack.Protected>
+        <Stack.Protected guard={userId !== "" && role === "student"}>
+            <Stack.Screen name="(student)/(tabs)" />
+            <Stack.Screen name="(student)/(others)" />
+        </Stack.Protected>
+        <Stack.Protected guard={userId !== "" && role === "admin"}>
+            <Stack.Screen name="(admin)/(tabs)" />
+        </Stack.Protected>
 
-    <Stack.Protected guard={userId !== "" && role === "parent"}>
-      <Stack.Screen name="(parent)/(tabs)" />
-    </Stack.Protected>
-  </Stack>
+        <Stack.Protected guard={userId !== "" && role === "teacher"}>
+            <Stack.Screen name="(teacher)/(tabs)" />
+            <Stack.Screen name="(teacher)/(others)" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={userId !== "" && role === "parent"}>
+            <Stack.Screen name="(parent)/(tabs)" />
+        </Stack.Protected>
+    </Stack>
 );
 
 export default function RootLayout() {
-  const theme = useColorScheme();
-  const [mounted, setMounted] = React.useState(false);
-  let {userId, role} = useAppStore((state) => state.user);
-  
+    const theme = useColorScheme();
+    const [mounted, setMounted] = React.useState(false);
 
-//   React.useEffect(() => {
-//     if (!mounted) return;
-//     if (!userId || !role || role == "unknown") router.replace("Auth/SignIn");
-//     setMounted(true);
-//   }, [userId, role]);
-  
-//   if (!userId || !role) return <Redirect href="/" />;
-  
-  return (
-    <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
-      <StatusBar style="auto" animated />
-      <KeyboardProvider>
-        <QueryClientProvider client={queryClient}>
-          <Layout userId={userId} role={role} />
-        </QueryClientProvider>
-      </KeyboardProvider>
-      <ProgressBar />
-    </View>
-  );
+    React.useEffect(() => {
+        const hydrate = async () => {
+            const user = await getUser();
+            useAppStore.getState().hydrateUser(user);
+        };
+        hydrate();
+    }, []);
+
+    const { userId, role } = useAppStore(state => state?.user) ?? {};
+
+    return (
+        <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
+            <StatusBar style="auto" animated />
+            <KeyboardProvider>
+                <QueryClientProvider client={queryClient}>
+                    <Layout userId={userId} role={role} />
+                </QueryClientProvider>
+            </KeyboardProvider>
+            <ProgressBar />
+        </View>
+    );
 }

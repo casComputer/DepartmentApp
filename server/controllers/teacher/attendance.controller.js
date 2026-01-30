@@ -6,7 +6,7 @@ import cloudinary from "../../config/cloudinary.js";
 
 import {
     getMonthlyAttendanceReport
-} from "../../common/attendance.controller.js";
+} from "../../controller/common/attendance.controller.js";
 
 const UPDATE_LIMIT_MINUTES = 20;
 

@@ -382,7 +382,7 @@ export const overallAttendenceReport = async (req, res) => {
                     passedWorkingDays: Number(working_days || 0),
                     remainingDays,
                     remainingHours,
-                    ongoingDays: getRemainingOngoingDaysThisMonth() ?? -1
+                    ongoingDays: getRemainingOngoingDaysThisMonth() ?? 0
                 },
                 comparison: {
                     yourRank: currentRank,

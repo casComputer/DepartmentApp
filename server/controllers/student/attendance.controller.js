@@ -184,9 +184,11 @@ const calculateProjections = (
 
 export const overallAttendenceReport = async (req, res) => {
     try {
-        const {
-            userId
+        let {
+            userId, role
         } = req.user;
+
+        if(role==='parent') userId = req.body.studentId
 
         const {
             first,

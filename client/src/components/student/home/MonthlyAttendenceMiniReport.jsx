@@ -1,107 +1,138 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 import {
     ScrollView,
     Text,
     View,
     TouchableOpacity,
     Dimensions,
+    FlatList,
 } from "react-native";
-import {
-    useQuery
-} from "@tanstack/react-query";
-import {
-    router
-} from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 
 import CircularProgress from "@components/common/CircularProgress";
-import {
-    getOverallAttendenceReport
-} from "@controller/student/attendance.controller.js";
+import { getOverallAttendenceReport } from "@controller/student/attendance.controller.js";
 
-const {
-    width: vw
-} = Dimensions.get("window");
+import { useAppStore } from "@store/app.store.js";
+
+const { width: vw } = Dimensions.get("window");
+
+const SCREEN_WIDTH = vw;
+const CARD_WIDTH = SCREEN_WIDTH * 0.95;
+const SIDE_SPACING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 
 const numberOfPies = 3;
-const containerWidth = vw * 0.95;
 const gap = vw * 0.1;
 
-const size = (containerWidth - (numberOfPies - 1) * gap) / numberOfPies;
+const size = (CARD_WIDTH - (numberOfPies - 1) * gap) / numberOfPies;
 
-export default function MonthlyAttendenceMiniReport() {
-    const {
-        data: report
-    } = useQuery( {
-            queryKey: ["OverallAttendenceReport"],
-            queryFn: getOverallAttendenceReport,
-        });
+const ReportCard = ({ studentId = null }) => {
+    const { data: report } = useQuery({
+        queryKey: ["OverallAttendenceReport", studentId],
+        queryFn: () => getOverallAttendenceReport(studentId),
+    });
 
     const percentage = report?.summary?.currentPercentage ?? 0;
     const classesAttended = report?.summary?.classesAttended ?? 0;
     const totalClassesSoFar = report?.summary?.totalClassesSoFar ?? 0;
-    // const remainingDays = report?.time_analysis?.remainingDays ?? 0;
-    const ongoingDays = report?.time_analysis?. ongoingDays ?? 0;
+    const ongoingDays = report?.time_analysis?.ongoingDays ?? 0;
 
     return (
         <TouchableOpacity
-            onPress={() => router.push("(student)/(others)/AttendanceSummary")}
-            activeOpacity={0.75}
-            style={ {
+            style={{
+                width: CARD_WIDTH,
+                marginRight: SIDE_SPACING * 2,
                 boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)",
-                width: containerWidth,
                 gap: gap,
             }}
-            className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 flex-row justify-between items-center bg-card"
-            >
-            <View className="flex-1">
-                <CircularProgress
-                    progress={percentage || 0}
-                    size={size}
-                    strokeFillColor={"rgb(247,55,159)"}
-                    />
-                <Text
-                    adjustsFontSizeToFit
-                    numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white"
-                    >
-                    Attendance
+            onPress={() => router.push("(student)/(others)/AttendanceSummary")}
+            activeOpacity={0.75}
+            className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 bg-card"
+        >
+            {studentId ? (
+                <Text className="text-xl font-bold text-text">
+                    {studentId}
                 </Text>
-            </View>
-            <View className="flex-1">
-                <CircularProgress
-                    progress={
-                    totalClassesSoFar > 0 && (classesAttended / totalClassesSoFar) * 100
-                    }
-                    size={size}
-                    fraction={`${classesAttended}/${totalClassesSoFar} Days`}
-                    strokeFillColor={"rgb(247,55,159)"}
+            ) : null}
+            <View className="flex-row justify-between items-center">
+                <View className="flex-1">
+                    <CircularProgress
+                        progress={percentage || 0}
+                        size={size}
+                        strokeFillColor={"rgb(247,55,159)"}
                     />
-                <Text
-                    adjustsFontSizeToFit
-                    numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white"
+                    <Text
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                        className="text-center text-lg font-semibold mt-4 dark:text-white"
                     >
-                    On Time
-                </Text>
-            </View>
-            <View className="flex-1">
-                <CircularProgress
-                    progress={ongoingDays ?? 0}
-                    size={size}
-                    showPercentage={false}
-                    maxProgress={31}
-                    strokeFillColor={"rgb(247,55,159)"}
+                        Attendance
+                    </Text>
+                </View>
+                <View className="flex-1">
+                    <CircularProgress
+                        progress={
+                            totalClassesSoFar > 0 &&
+                            (classesAttended / totalClassesSoFar) * 100
+                        }
+                        size={size}
+                        fraction={`${classesAttended}/${totalClassesSoFar} Days`}
+                        strokeFillColor={"rgb(247,55,159)"}
                     />
-                <Text
-                    adjustsFontSizeToFit
-                    numberOfLines={1}
-                    className="text-center text-lg font-semibold mt-4 dark:text-white"
+                    <Text
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                        className="text-center text-lg font-semibold mt-4 dark:text-white"
                     >
-                    Ongoing Days
-                </Text>
+                        On Time
+                    </Text>
+                </View>
+                <View className="flex-1">
+                    <CircularProgress
+                        progress={ongoingDays ?? 0}
+                        size={size}
+                        showPercentage={false}
+                        maxProgress={31}
+                        strokeFillColor={"rgb(247,55,159)"}
+                    />
+                    <Text
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                        className="text-center text-lg font-semibold mt-4 dark:text-white"
+                    >
+                        Ongoing Days
+                    </Text>
+                </View>
             </View>
         </TouchableOpacity>
+    );
+};
+
+export default function MonthlyAttendenceMiniReport() {
+    const role = useAppStore((state) => state.user?.role);
+    const students = useAppStore((state) => state.user?.students);
+
+    if (role === "student") return <ReportCard />;
+
+    return (
+        <View>
+            <FlatList
+                data={students}
+                renderItem={({ item }) => <ReportCard studentId={item} />}
+                horizontal
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={CARD_WIDTH + SIDE_SPACING * 2}
+                decelerationRate="fast"
+                contentContainerStyle={{
+                    paddingHorizontal: SIDE_SPACING,
+                }}
+                getItemLayout={(_, index) => ({
+                    length: CARD_WIDTH + SIDE_SPACING * 2,
+                    offset: (CARD_WIDTH + SIDE_SPACING * 2) * index,
+                    index,
+                })}
+            />
+        </View>
     );
 }

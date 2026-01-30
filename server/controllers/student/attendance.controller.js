@@ -32,42 +32,91 @@ export const generateAttendanceCalendarReport = async (req, res) => {
             rows
         } = await turso.execute(
             `
-            SELECT
-            a.date,
-            a.timestamp,
+            WITH daily_sections AS (
+  SELECT
+    a.date,
 
-            CASE
-            WHEN
-            SUM(CASE WHEN a.hour IN ('First','Second','Third')
-            AND ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
-            AND
-            SUM(CASE WHEN a.hour IN ('Fourth','Fifth')
-            AND ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
-            THEN 'present'
+    COUNT(DISTINCT CASE
+      WHEN a.hour IN ('First','Second','Third')
+      THEN a.hour END
+    ) AS first_total,
 
-            WHEN
-            SUM(CASE WHEN ad.status IN ('present','late') THEN 1 ELSE 0 END) > 0
-            THEN 'half-day'
+    COUNT(DISTINCT CASE
+      WHEN a.hour IN ('Fourth','Fifth')
+      THEN a.hour END
+    ) AS second_total,
 
-            ELSE 'absent'
-            END AS day_status,
+    SUM(CASE
+      WHEN a.hour IN ('First','Second','Third')
+      AND ad.status IN ('present','late')
+      THEN 1 ELSE 0 END
+    ) AS first_present,
 
-            COUNT(*) AS total_hours,
+    SUM(CASE
+      WHEN a.hour IN ('Fourth','Fifth')
+      AND ad.status IN ('present','late')
+      THEN 1 ELSE 0 END
+    ) AS second_present
 
-            SUM(CASE WHEN ad.status = 'present' THEN 1 ELSE 0 END) AS present_hours,
-            SUM(CASE WHEN ad.status = 'late' THEN 1 ELSE 0 END) AS late_hours,
-            SUM(CASE WHEN ad.status = 'absent' THEN 1 ELSE 0 END) AS absent_hours
+  FROM attendance a
+  JOIN attendance_details ad
+    ON a.attendanceId = ad.attendanceId
 
-            FROM attendance a
-            JOIN attendance_details ad
-            ON a.attendanceId = ad.attendanceId
+  WHERE
+    ad.studentId = ?
+    AND a.date BETWEEN ? AND ?
 
-            WHERE
-            ad.studentId = ?
-            AND a.date BETWEEN ? AND ?
+  GROUP BY a.date
 
-            GROUP BY a.date
-            ORDER BY a.date;
+  -- 🚫 remove holidays / no-class days
+  HAVING (first_total > 0 OR second_total > 0)
+),
+
+daily_attendance AS (
+  SELECT
+    date,
+
+    CASE
+      -- BOTH HALVES
+      WHEN first_total > 0 AND second_total > 0 THEN
+        CASE
+          WHEN first_present = first_total
+           AND second_present = second_total
+          THEN 1.0
+          WHEN first_present = 0
+           AND second_present = 0
+          THEN 0.0
+          ELSE 0.5
+        END
+
+      -- ONLY FIRST HALF
+      WHEN first_total > 0 AND second_total = 0 THEN
+        CASE
+          WHEN first_present = first_total THEN 1.0
+          WHEN first_present = 0 THEN 0.0
+          ELSE 0.5
+        END
+
+      -- ONLY SECOND HALF
+      WHEN first_total = 0 AND second_total > 0 THEN
+        CASE
+          WHEN second_present = second_total THEN 1.0
+          WHEN second_present = 0 THEN 0.0
+          ELSE 0.5
+        END
+    END AS attendance_value
+  FROM daily_sections
+)
+
+SELECT
+  date,
+  CASE
+    WHEN attendance_value = 1.0 THEN 'present'
+    WHEN attendance_value = 0.5 THEN 'half-day'
+    WHEN attendance_value = 0.0 THEN 'absent'
+  END AS status
+FROM daily_attendance
+ORDER BY date;
 
             `,
             [userId, firstDay, lastDay],
@@ -77,11 +126,7 @@ export const generateAttendanceCalendarReport = async (req, res) => {
 
         for (const row of rows) {
             report[row.date] = {
-                status: row.day_status,
-                total_hours: row.total_hours,
-                present_hours: row.present_hours,
-                late_hours: row.late_hours,
-                absent_hours: row.absent_hours,
+                status: row.day_status
             };
         }
 

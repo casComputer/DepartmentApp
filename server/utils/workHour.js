@@ -1,31 +1,60 @@
-import { HOURS_PER_DAY } from "../constants/constants.js";
+import {
+    HOURS_PER_DAY
+} from "../constants/constants.js";
 
 const getTodaySchedule = (date = new Date()) => {
     const isFriday = date.getDay() === 5;
 
     if (!isFriday) {
         // Monday – Thursday
-        return [
-            { start: "09:30", end: "10:30" },
-            { start: "10:30", end: "11:25" },
-            { start: "11:35", end: "12:30" },
-            { start: "13:30", end: "14:30" },
-            { start: "14:30", end: "15:30" }
-        ];
+        return [{
+            start: "09:30",
+            end: "10:30"
+        },
+            {
+                start: "10:30",
+                end: "11:25"
+            },
+            {
+                start: "11:35",
+                end: "12:30"
+            },
+            {
+                start: "13:30",
+                end: "14:30"
+            },
+            {
+                start: "14:30",
+                end: "15:30"
+            }];
     }
 
     // Friday schedule
-    return [
-        { start: "09:30", end: "10:30" },
-        { start: "10:30", end: "11:25" },
-        { start: "11:35", end: "12:30" },
-        { start: "14:00", end: "15:00" },
-        { start: "15:00", end: "16:00" }
-    ];
+    return [{
+        start: "09:30",
+        end: "10:30"
+    },
+        {
+            start: "10:30",
+            end: "11:25"
+        },
+        {
+            start: "11:35",
+            end: "12:30"
+        },
+        {
+            start: "14:00",
+            end: "15:00"
+        },
+        {
+            start: "15:00",
+            end: "16:00"
+        }];
 };
 
 const toDateTime = (baseDate, timeStr) => {
-    const [h, m] = timeStr.split(":").map(Number);
+    const [h,
+        m] = timeStr.split(":").map(Number);
     const d = new Date(baseDate);
     d.setHours(h, m, 0, 0);
     return d;
@@ -51,15 +80,12 @@ export const getRemainingHoursToday = () => {
         const end = toDateTime(now, slot.end);
 
         if (now >= start && now <= end) {
-            // inside a slot → add remaining part
             currentSlot = slot;
             remainingMinutes += (end - now) / 1000 / 60;
         } else if (now < start) {
-            // future slot → add full slot
             remainingMinutes += (end - start) / 1000 / 60;
         }
     }
-
     return {
         remainingHoursToday: Number((remainingMinutes / 60).toFixed(2)),
         currentSlot
@@ -74,16 +100,13 @@ export const getRemainingWorkingHoursThisMonth = () => {
     const lastDay = new Date(year, month + 1, 0).getDate();
     let remainingDays = 0;
 
-    for (let d = now.getDate(); d <= lastDay; d++) {
+    for (let d = now.getDate() + 1; d <= lastDay; d++) {
         const date = new Date(year, month, d);
         const dow = date.getDay();
 
-        if (dow !== 0 && dow !== 6) {
-            remainingDays++;
-        }
+        if (dow !== 0 && dow !== 6) remainingDays++;
     }
-
-    const remainingHours = remainingDays * 5;
+    const remainingHours = remainingDays * HOURS_PER_DAY;
 
     return {
         remainingDays,
@@ -92,9 +115,20 @@ export const getRemainingWorkingHoursThisMonth = () => {
 };
 
 export const getRemainingWorkSummary = () => {
+    const today = getRemainingHoursToday();
+    const month = getRemainingWorkingHoursThisMonth();
+
     return {
-        ...getRemainingHoursToday(),
-        ...getRemainingWorkingHoursThisMonth()
+        remainingHoursToday: today.remainingHoursToday,
+        currentSlot: today.currentSlot,
+        remainingDays: month.remainingDays,
+        remainingHours:
+        Number(
+            (
+                today.remainingHoursToday +
+                month.remainingHours
+            ).toFixed(2)
+        ),
     };
 };
 
@@ -103,23 +137,20 @@ export const getWorkingHoursThisMonth = () => {
     const year = now.getFullYear();
     const month = now.getMonth();
     const hoursPerDay = HOURS_PER_DAY;
-
     const lastDay = new Date(year, month + 1, 0).getDate();
-
     let workingDays = 0;
 
     for (let day = 1; day <= lastDay; day++) {
         const date = new Date(year, month, day);
         const dayOfWeek = date.getDay();
 
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-            workingDays++;
-        }
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) workingDays++;
     }
-
     const totalHours = workingDays * hoursPerDay;
-
-    return { workingDays, totalHours };
+    return {
+        workingDays,
+        totalHours
+    };
 };
 
 export const getYYYYMMDD = () => {
@@ -133,10 +164,16 @@ export const getYYYYMMDD = () => {
 
 export const getFirstAndLastDate = (date = new Date()) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const monthIndex = date.getMonth();
+    const month = String(monthIndex + 1).padStart(2, "0");
+
+    const lastDay = new Date(year, monthIndex + 1, 0).getDate();
 
     const first = `${year}-${month}-01`;
-    const last = `${year}-${month}-31`;
+    const last = `${year}-${month}-${lastDay}`;
 
-    return { first, last };
+    return {
+        first,
+        last
+    };
 };

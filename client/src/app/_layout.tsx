@@ -48,16 +48,14 @@ const Layout = ({ userId, role }) => (
     </Stack>
 );
 
+const user = getUser();
+
 export default function RootLayout() {
     const theme = useColorScheme();
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
-        const hydrate = async () => {
-            const user = await getUser();
-            useAppStore.getState().hydrateUser(user);
-        };
-        hydrate();
+        useAppStore.getState().hydrateUser(user);
     }, []);
 
     const { userId, role } = useAppStore(state => state?.user) ?? {};

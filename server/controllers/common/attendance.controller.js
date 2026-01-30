@@ -1,175 +1,123 @@
 import { turso } from "../../config/turso.js";
 
-export const getMonthlyAttendanceReport = async ({
-  course,
-  classYear, // class year (eg: "Third")
-  month,
-  calendarYear,
-  studentId = null,
-}) => {
-  try {
-    if (!studentId) {
-      if (!course || !classYear) {
-        throw new Error(
-          "course and classYear are required when studentId is not provided",
-        );
-      }
-    }
+export const generateAttendanceCalendarReport = async (req, res) => {
+    try {
+        const { month, year, studentId } = req.body;
+        let { userId, role } = req.user;
 
-    if (!month || !calendarYear) {
-      throw new Error("course, classYear, month, calendarYear are required");
-    }
+        if (role === "parent") userId = studentId;
 
-    const monthStr = String(month).padStart(2, "0");
-    const yearStr = String(calendarYear);
+        const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
+        const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);
 
-    const studentFilterSQL = studentId
-      ? `AND ad.studentId = ? `
-      : `AND a.course = ? AND a.year = ?`;
-      
-    const args = studentId
-      ? [yearStr, monthStr, studentId]
-      : [course, classYear, yearStr, monthStr];
-
-    const result = await turso.execute({
-      sql: `
-        WITH daily_sections AS (
+        const { rows } = await turso.execute(
+            `
+      WITH daily_sections AS (
         SELECT
-        ad.studentId,
-        a.date,
+          a.date,
 
-        -- how many hours were actually conducted
-        COUNT(DISTINCT CASE
-        WHEN a.hour IN ('First','Second','Third')
-        THEN a.hour END
-        ) AS first_total,
+          COUNT(DISTINCT CASE
+            WHEN a.hour IN ('First','Second','Third')
+            THEN a.hour END
+          ) AS first_total,
 
-        COUNT(DISTINCT CASE
-        WHEN a.hour IN ('Fourth','Fifth')
-        THEN a.hour END
-        ) AS second_total,
+          COUNT(DISTINCT CASE
+            WHEN a.hour IN ('Fourth','Fifth')
+            THEN a.hour END
+          ) AS second_total,
 
-        -- present hours
-        SUM(CASE
-        WHEN a.hour IN ('First','Second','Third')
-        AND ad.status IN ('present','late')
-        THEN 1 ELSE 0 END
-        ) AS first_present,
+          SUM(CASE
+            WHEN a.hour IN ('First','Second','Third')
+             AND ad.status IN ('present','late')
+            THEN 1 ELSE 0 END
+          ) AS first_present,
 
-        SUM(CASE
-        WHEN a.hour IN ('Fourth','Fifth')
-        AND ad.status IN ('present','late')
-        THEN 1 ELSE 0 END
-        ) AS second_present
+          SUM(CASE
+            WHEN a.hour IN ('Fourth','Fifth')
+             AND ad.status IN ('present','late')
+            THEN 1 ELSE 0 END
+          ) AS second_present
 
-        FROM attendance_details ad
-        JOIN attendance a
-        ON ad.attendanceId = a.attendanceId
+        FROM attendance a
+        JOIN attendance_details ad
+          ON a.attendanceId = ad.attendanceId
 
-        WHERE 
-        strftime('%Y', a.date) = ?
-        AND strftime('%m', a.date) = ?
-        ${studentFilterSQL}
+        WHERE ad.studentId = ?
+          AND a.date BETWEEN ? AND ?
 
-        GROUP BY ad.studentId, a.date
+        GROUP BY a.date
 
-        -- 🔥 CRITICAL FIX: exclude days where no hours were conducted
-        HAVING NOT (
-        COUNT(DISTINCT CASE
-        WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
-        THEN a.hour END
-        ) = 0
-        )
-        ),
+        -- exclude holidays / no-class days
+        HAVING
+          COUNT(DISTINCT CASE
+            WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
+            THEN a.hour END
+          ) > 0
+      )
 
-        daily_attendance AS (
-        SELECT
-        studentId,
+      SELECT
         date,
-
         CASE
-        -- BOTH HALVES CONDUCTED
-        WHEN first_total > 0 AND second_total > 0 THEN
-        CASE
-        WHEN first_present = first_total
-        AND second_present = second_total
-        THEN 1.0
-        WHEN first_present < first_total
-        AND second_present < second_total
-        THEN 0.0
-        ELSE 0.5
-        END
+          -- FULL DAY PRESENT
+          WHEN first_present = first_total
+           AND second_present = second_total
+          THEN 'present'
 
-        -- ONLY FIRST HALF CONDUCTED
-        WHEN first_total > 0 AND second_total = 0 THEN
-        CASE
-        WHEN first_present = first_total THEN 1.0
-        WHEN first_present = 0 THEN 0.0
-        ELSE 0.5
-        END
+          -- FULL DAY LEAVE
+          WHEN first_present < first_total
+           AND second_present < second_total
+          THEN 'leave'
 
-        -- ONLY SECOND HALF CONDUCTED
-        WHEN first_total = 0 AND second_total > 0 THEN
-        CASE
-        WHEN second_present = second_total THEN 1.0
-        WHEN second_present = 0 THEN 0.0
-        ELSE 0.5
-        END
+          -- HALF DAY LEAVE
+          ELSE 'half-day'
+        END AS status
+      FROM daily_sections
+      ORDER BY date;
+      `,
+            [userId, firstDay, lastDay]
+        );
 
-        ELSE NULL
-        END AS attendance_value
-        FROM daily_sections
-        )
+        const report = {};
+        for (const row of rows) {
+            report[row.date] = { status: row.status };
+        }
 
-        SELECT
-        studentId,
-        COUNT(attendance_value) AS working_days,
-        SUM(attendance_value) AS present_days,
-        COUNT(attendance_value) - SUM(attendance_value) AS absent_days,
-        ROUND(
-        (SUM(attendance_value) * 100.0) / COUNT(attendance_value),
-        2
-        ) AS attendance_percentage
-        FROM daily_attendance
-        GROUP BY studentId
-        ORDER BY studentId;
-        `,
-      args,
-    });
-
-    return result.rows;
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
+        res.json({ success: true, report });
+    } catch (err) {
+        console.error("Error while generating attendance calendar:", err);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
 };
 
 export const generateAttendanceReport = async (req, res) => {
-  try {
-    const { course, year: classYear, month, calendarYear } = req.body;
+    try {
+        const { course, year: classYear, month, calendarYear } = req.body;
 
-    const { role, userId } = req.user;
+        const { role, userId } = req.user;
 
-    const data = await getMonthlyAttendanceReport({
-      course,
-      classYear,
-      month,
-      calendarYear,
-      studentId: role === "student" ? userId : null,
-    });
+        const data = await getMonthlyAttendanceReport({
+            course,
+            classYear,
+            month,
+            calendarYear,
+            studentId: role === "student" ? userId : null
+        });
 
-    res.json({
-      course,
-      classYear,
-      month,
-      calendarYear,
-      scope: role === "student" ? "STUDENT" : "CLASS",
-      data,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: err.message || "Internal server error",
-    });
-  }
+        res.json({
+            course,
+            classYear,
+            month,
+            calendarYear,
+            scope: role === "student" ? "STUDENT" : "CLASS",
+            data
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: err.message || "Internal server error"
+        });
+    }
 };

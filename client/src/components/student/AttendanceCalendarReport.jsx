@@ -84,6 +84,8 @@ export const AttendanceCalendar = () => {
     const [date, setDate] = useState(new Date(new Date().setDate(1)));
     const [loading, setLoading] = useState(true);
     const [report, setReport] = useState([]);
+    
+    console.log(report)
 
     const year = date.getFullYear();
     const month = date.getMonth();

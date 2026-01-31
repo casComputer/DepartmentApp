@@ -4,20 +4,24 @@ const router = express.Router();
 
 import {
     saveWorklog,
-    getWorklogs,
+    getWorklogs
 } from "../controllers/teacher/worklog.controller.js";
 import { addCourse } from "../controllers/teacher/course.controller.js";
 import {
     syncUser,
-    fetchAllTeachers,
+    fetchAllTeachers
 } from "../controllers/teacher/teacher.controller.js";
 import { fetchExamResult } from "../controllers/teacher/exam.controller.js";
 import {
     saveInternalMarkDetails,
     checkInternalMarkUpload,
-    getInternalMarkHistory,
+    getInternalMarkHistory
 } from "../controllers/teacher/internal.controller.js";
-import { fetchParents } from "../controllers/teacher/parent.controller.js";
+import {
+    fetchParents,
+    verifyParent,
+    removeParent
+} from "../controllers/teacher/parent.controller.js";
 
 import { authorize } from "../middleware/authentication.middleware.js";
 
@@ -36,25 +40,24 @@ router.post("/fetchExamResult", authorize("teacher", "admin"), fetchExamResult);
 router.post(
     "/saveInternalMarkDetails",
     authorize("teacher", "admin"),
-    saveInternalMarkDetails,
+    saveInternalMarkDetails
 );
 
 router.post(
     "/checkInternalMarkUpload",
     authorize("teacher", "admin"),
-    checkInternalMarkUpload,
+    checkInternalMarkUpload
 );
 
 router.post(
     "/getInternalMarkHistory",
     authorize("teacher", "admin"),
-    getInternalMarkHistory,
+    getInternalMarkHistory
 );
 
-router.get(
-    "/fetchParents",
-    authorize("teacher"),
-    fetchParents,
-);
+router.get("/fetchParents", authorize("teacher", "admin"), fetchParents);
+
+router.post("/verifyParent", authorize("teacher", "admin"), verifyParent);
+router.post("/removeParent", authorize("teacher", "admin"), removeParent);
 
 export default router;

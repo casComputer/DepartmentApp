@@ -40,7 +40,7 @@ export const fetchParents = async (req, res) => {
             success: true,
             parents: parents.map(parent => ({
                 ...parent,
-                students: [...(JSON.parse(parent.students) ?? [])].map(
+                students: JSON.parse(parent.students || "[]").map(
                     st => st.studentId
                 )
             }))
@@ -50,6 +50,116 @@ export const fetchParents = async (req, res) => {
             success: false,
             message: "Internal Server Error"
         });
+        console.error(error);
+    }
+};
+
+export const verifyParent = async (req, res) => {
+    try {
+        const { parentId } = req.body;
+
+        const { userId: teacherId } = req.user;
+
+        if (!parentId)
+            return res.json({
+                success: false,
+                message: "parentId is required!"
+            });
+        await turso.transaction(async tx => {
+            await tx.execute(
+                `
+                UPDATE parent_child
+                SET is_verified = 1
+                WHERE parentId = ?
+                  AND studentId IN (
+                    SELECT s.userId
+                    FROM students s
+                    JOIN classes c
+                      ON s.course = c.course
+                     AND s.year = c.year
+                    WHERE c.in_charge = ?
+                  )
+                `,
+                [parentId, teacherId]
+            );
+
+            await tx.execute(
+                `
+                UPDATE users
+                SET is_verified = 1
+                WHERE userId = ?
+                  AND role = 'parent'
+                `,
+                [parentId]
+            );
+        });
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const removeParent = async (req, res) => {
+    /* THIS FUNCTION DOESN'T REMOVE THE PARENT FROM THE USERS TABLE,
+    INSTED IT UN VERIFY THE PARENT-STUDENT RELATION IN PARENT_CHILD 
+    TABLE WHERE STUDENTS ARE FROM THE INCHARGE CLASS OF THE TEACHER.
+    
+    AFTER THAT, CHECK IF THE PARENT HAVE ANY OTHER VERIFIED RELATIONS,
+    IF FALSE, THEN UN VERIFY THE PARENT IN USERS TABLE */
+
+    try {
+        const { parentId } = req.body;
+        const { userId: teacherId } = req.user;
+
+        if (!parentId) {
+            return res.json({
+                success: false,
+                message: "parentId is required!"
+            });
+        }
+
+        await turso.transaction(async tx => {
+            await tx.execute(
+                `
+                UPDATE parent_child
+                SET is_verified = 0
+                WHERE parentId = ?
+                  AND studentId IN (
+                    SELECT s.userId
+                    FROM students s
+                    JOIN classes c
+                      ON s.course = c.course
+                     AND s.year = c.year
+                    WHERE c.in_charge = ?
+                  )
+                `,
+                [parentId, teacherId]
+            );
+
+            // Check if parent still has ANY verified child
+            const result = await tx.execute(
+                `
+                SELECT 1
+                FROM parent_child
+                WHERE parentId = ?
+                  AND is_verified = 1
+                LIMIT 1
+                `,
+                [parentId]
+            );
+
+            if (result.rows.length === 0) {
+                await tx.execute(
+                    `
+                  UPDATE users
+                  SET is_verified = 0
+                  WHERE userId = ?
+                    AND role = 'parent'
+                  `,
+                    [parentId]
+                );
+            }
+        });
+    } catch (error) {
         console.error(error);
     }
 };

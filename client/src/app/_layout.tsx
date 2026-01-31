@@ -14,7 +14,7 @@ import { Uniwind } from "uniwind";
 import ProgressBar from "@components/common/ProgressBar.jsx";
 
 Uniwind.setTheme("system");
-// useAppStore.getState().hydrateUser(getUser());
+useAppStore.getState().hydrateUser(getUser());
 
 const Layout = ({ userId, role }) => (
     <Stack
@@ -48,20 +48,13 @@ const Layout = ({ userId, role }) => (
     </Stack>
 );
 
-const user = getUser();
-
 export default function RootLayout() {
     const theme = useColorScheme();
-    const [mounted, setMounted] = React.useState(false);
-
-    React.useEffect(() => {
-        useAppStore.getState().hydrateUser(user);
-    }, []);
 
     const { userId, role } = useAppStore(state => state?.user) ?? {};
 
     return (
-        <View className="${theme === 'dark' ? 'dark': ''} flex-1 ${theme== 'dark' ? 'bg-black' : 'bg-white' }">
+        <View className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary">
             <StatusBar style="auto" animated />
             <KeyboardProvider>
                 <QueryClientProvider client={queryClient}>

@@ -20,7 +20,7 @@ const Header = ({ title }) => {
       >
         {title}
       </Text>
-      <View className="flex-row gap-4 justify-center items-center">
+      <View className="flex-row gap-5 justify-center items-center">
         <TouchableOpacity
           onPress={() => router.push("/common/profile/EditProfile")}
         >

@@ -4,13 +4,12 @@ import {
     Label,
     NativeTabs,
     Icon,
-    VectorIcon,
+    VectorIcon
 } from "expo-router/unstable-native-tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Octicons, FontAwesome5 } from "@expo/vector-icons";
 
 export default function TabLayout() {
-
     const theme = useColorScheme();
 
     return (
@@ -19,7 +18,7 @@ export default function TabLayout() {
                 labelStyle={{
                     color: theme === "dark" ? "white" : "black",
                     fontWeight: "900",
-                    fontSize: 14,
+                    fontSize: 14
                 }}
                 shadowColor={"black"}
                 backgroundColor={theme === "dark" ? "#1a120d" : "#ffece6"}
@@ -28,7 +27,19 @@ export default function TabLayout() {
                     <Label>Home</Label>
                     <Icon sf="house.fill" drawable="home" />
                 </NativeTabs.Trigger>
-              
+
+                <NativeTabs.Trigger name="TeachersList">
+                    <Label>Teachers</Label>
+                    <Icon
+                        src={
+                            <VectorIcon
+                                family={FontAwesome5}
+                                name="chalkboard-teacher"
+                            />
+                        }
+                    />
+                </NativeTabs.Trigger>
+
                 <NativeTabs.Trigger name="Profile">
                     <Icon
                         src={<VectorIcon family={Octicons} name="person" />}

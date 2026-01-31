@@ -12,7 +12,7 @@ import { calendarData } from "@utils/calenderData.js";
 const CalendarItem = ({ day, status }) => {
     const statusColors = {
         present: "text-green-500",
-        absent: "text-red-500",
+        leave: "text-red-500",
         "half-day": "text-yellow-500"
     };
 
@@ -53,7 +53,7 @@ const CalendarDatePicker = ({ loading, date, setDate }) => {
 
     return (
         <View className="w-full pt-3 pb-2 flex-row items-center justify-center gap-6 ">
-            <TouchableOpacity onPress={handleMonthDown}>
+            <TouchableOpacity className="px-3" onPress={handleMonthDown}>
                 <Feather name="chevron-left" size={24} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -61,7 +61,7 @@ const CalendarDatePicker = ({ loading, date, setDate }) => {
                     {month} {year}
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleMonthUp}>
+            <TouchableOpacity className="px-3" onPress={handleMonthUp}>
                 <Feather name="chevron-right" size={24} />
             </TouchableOpacity>
             {loading && (

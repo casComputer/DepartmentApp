@@ -8,8 +8,6 @@ router.post("/fetchByClassTeacher", async (req, res) => {
     try {
         const { userId: teacherId } = req.user;
 
-        console.log("fetch parents by: ",teacherId)
-
         const { rows } = turso.execute(
             `
             SELECT DISTINCT 

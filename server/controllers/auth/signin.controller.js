@@ -120,7 +120,7 @@ const signinController = async (req, res) => {
             }
         } else if (user.role === 'parent') {
             const { rows: students} = await turso.execute(`
-                SELECT DISTINCT studentId FROM parent_child WHERE parentId = ?
+                SELECT DISTINCT studentId FROM parent_child WHERE parentId = ? AND is_verified = 1
                 `, [user.userId])
             
             user = {

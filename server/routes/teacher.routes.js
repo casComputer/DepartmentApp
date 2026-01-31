@@ -55,7 +55,7 @@ router.post(
     getInternalMarkHistory
 );
 
-router.get("/fetchParents", authorize("teacher", "admin"), fetchParents);
+router.post("/fetchParents", authorize("teacher", "admin"), fetchParents);
 
 router.post("/verifyParent", authorize("teacher", "admin"), verifyParent);
 router.post("/removeParent", authorize("teacher", "admin"), removeParent);

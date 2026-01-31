@@ -17,6 +17,7 @@ import {
     checkInternalMarkUpload,
     getInternalMarkHistory,
 } from "../controllers/teacher/internal.controller.js";
+import { fetchParents } from "../controllers/teacher/parent.controller.js";
 
 import { authorize } from "../middleware/authentication.middleware.js";
 

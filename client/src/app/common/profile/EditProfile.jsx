@@ -16,7 +16,6 @@ const EditProfile = () => {
   const currentAbout = useAppStore((state) => state.user.about) || "";
 
   const [fullname, setFullname] = useState(currentFullname);
-  const [username, setUsername] = useState(currentUsername);
   const [phone, setPhone] = useState(currentPhone);
   const [email, setEmail] = useState(currentEmail);
   const [about, setAbout] = useState(currentAbout);
@@ -28,25 +27,25 @@ const EditProfile = () => {
     if (saving) return;
     setSaving(true);
     
-    if(fullname.trim() === "" || username.trim() === "") {
-      setMessage("Fullname and Username cannot be empty.");
+    if(fullname.trim() === "") {
+      setMessage("Fullname cannot be empty.");
       setSaving(false);
       return;
     }
 
-    if(phone && !/^\+?[1-9]\d{1,14}$/.test(phone)) {
+    if(phone.trim() && !/^\+?[1-9]\d{1,14}$/.test(phone.trim())) {
       setMessage("Invalid phone number format.");
       setSaving(false);
       return;
     }
 
-    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if(email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setMessage("Invalid email format.");
       setSaving(false);
       return;
     }
 
-    await editProfile({ fullname, username, phone, email, about });
+    await editProfile({ fullname: fullname.trim(), phone: phone.trim(), email: email.trim(), about: about.trim() });
 
     setSaving(false);
   }
@@ -69,8 +68,7 @@ const EditProfile = () => {
           placeholder="username"
           defaultValue={currentUsername}
           returnKeyType="next"
-          value={username}
-          onChangeText={setUsername}
+          editable={false}
           />
         <TextInput
           className="bg-card px-4 py-5 rounded-2xl text-text font-bold text-lg"

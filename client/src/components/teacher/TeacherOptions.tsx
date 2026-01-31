@@ -11,13 +11,18 @@ import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
 const ICONS_SIZE = 35;
-
 const optionsData = [
     {
         Icon: MaterialCommunityIcons,
         iconName: "account-group-outline",
         text: "Students",
         locaton: "/(teacher)/(others)/ManageStudents"
+    },
+    {
+        Icon: MaterialCommunityIcons,
+        iconName: "human-male-female-child",
+        text: "Parents",
+        locaton: "/(teacher)/(others)/ManageParents"
     },
     {
         Icon: FontAwesome5,
@@ -99,7 +104,13 @@ const TeacherOptions = () => {
                     locaton={item.locaton}
                 />
             )}
-            style={{ paddingBottom: 50, paddingTop: 30, paddingHorizontal: 6 }}
+            showsVerticalScrollIndicator={false}
+            
+            contentContainerStyle={{
+                paddingBottom: 110,
+                paddingTop: 30,
+                paddingHorizontal: 6
+            }}
         />
     );
 };

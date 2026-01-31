@@ -36,6 +36,7 @@ turso.execute(
     `CREATE TABLE parent_child (
             parentId TEXT NOT NULL,
             studentId TEXT NOT NULL, 
+            is_verified BOOLEAN DEFAULT FALSE,
             PRIMARY KEY (parentId, studentId), 
             FOREIGN KEY (parentId) REFERENCES users(userId) ON DELETE CASCADE,
             FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE

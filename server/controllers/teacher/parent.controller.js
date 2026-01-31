@@ -13,6 +13,7 @@ export const fetchParents = async (req, res) => {
                 p.about,
                 p.phone,
                 p.dp,
+                p.is_verified,
                 
                 json_group_array(
                     json_object(
@@ -34,11 +35,14 @@ export const fetchParents = async (req, res) => {
         `,
             [userId]
         );
+        
+        const students = JSON.parse(parent.students) ?? []
+        
         res.json({
             success: true,
             parents: parents.map(parent => ({
                 ...parent,
-                students: JSON.parse(parent.students)
+                students: students.map(st=> st.studentId)
             }))
         });
     } catch (error) {

@@ -93,7 +93,15 @@ export const verifyParent = async (req, res) => {
                 [parentId]
             );
         });
+
+        res.json({
+            success: true
+        });
     } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error"
+        });
         console.error(error);
     }
 };
@@ -159,7 +167,15 @@ export const removeParent = async (req, res) => {
                 );
             }
         });
+
+        res.json({
+            success: true
+        });
     } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error"
+        });
         console.error(error);
     }
 };

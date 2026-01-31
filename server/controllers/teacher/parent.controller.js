@@ -14,12 +14,13 @@ export const fetchParents = async (req, res) => {
                 p.phone,
                 p.dp,
                 p.is_verified,
-                
                 json_group_array(
                     json_object(
-                        'studentId', pc.studentId
+                        'studentId', pc.studentId,
+                        'isVerified', pc.is_verified
                     )
                 ) AS students
+                
             FROM classes c
             
             JOIN students s
@@ -40,9 +41,7 @@ export const fetchParents = async (req, res) => {
             success: true,
             parents: parents.map(parent => ({
                 ...parent,
-                students: JSON.parse(parent.students || "[]").map(
-                    st => st.studentId
-                )
+                students: JSON.parse(parent.students || "[]")
             }))
         });
     } catch (error) {
@@ -65,6 +64,7 @@ export const verifyParent = async (req, res) => {
                 success: false,
                 message: "parentId is required!"
             });
+
         await turso.transaction(async tx => {
             await tx.execute(
                 `

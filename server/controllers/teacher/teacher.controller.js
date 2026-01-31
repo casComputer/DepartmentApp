@@ -56,14 +56,14 @@ export const fetchAllTeachers = async (req, res) => {
             u.dp,
             u.phone,
             u.about,
-            u.email
+            u.email,
 
             tc.course,
             tc.year,
             tc.course_name,
 
             c.course as in_charge_course,
-            c.year as in_charge_year,
+            c.year as in_charge_year
 
             FROM users u
 

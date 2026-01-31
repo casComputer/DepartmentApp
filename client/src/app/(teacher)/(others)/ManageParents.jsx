@@ -9,7 +9,12 @@ import {
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import {
+    MaterialIcons,
+    FontAwesome,
+    Ionicons,
+    Entypo
+} from "@expo/vector-icons";
 
 import Header from "@components/common/Header.jsx";
 
@@ -101,52 +106,18 @@ const Details = ({ phone, email }) => (
     </View>
 );
 
-const Verification = ({ userId, isVerified }) => {
-    const [verifying, setVerifiying] = useState(false);
-    const [removing, setRemoving] = useState(false);
-
-    const handleVerify = () => {
-        confirm(`Are you sure to verify ${userId}`, async () => {
-            setVerifiying(true);
-            await verifyParent(userId);
-            setVerifiying(false);
-        });
-    };
-    const handleRemove = () => {
-        confirm(`Are you sure to remove ${userId}`, async () => {
-            setRemoving(true);
-            await removeParent(userId);
-            setRemoving(false);
-        });
-    };
-
-    return (
-        <View className="mt-5 w-full flex-row items-center justify-center gap-14">
-            <TouchableOpacity disabled={removing} onPress={handleRemove}>
-                <Text className="text-red-500 text-xl font-bold text-center">
-                    {removing ? "Removing.." : "Remove"}
-                </Text>
-            </TouchableOpacity>
-            {!isVerified && (
-                <TouchableOpacity disabled={verifying} onPress={handleVerify}>
-                    <Text className="text-green-500 text-xl font-bold text-center">
-                        {verifying ? "Verifying.." : "Verify"}
-                    </Text>
-                </TouchableOpacity>
-            )}
-        </View>
-    );
-};
-
 const TeacherItem = ({ item }) => {
     const fullname = useAppStore(state => state.user.fullname);
 
     const studentMsg =
         item.students?.length === 1
-            ? item.students[0]
-            : item?.students?.slice(0, -1)?.join(", ") +
+            ? item.students[0].studentId
+            : item?.students
+                  ?.map(st => st.studentId)
+                  ?.slice(0, -1)
+                  ?.join(", ") +
               " and " +
-              item?.students?.at(-1);
+              item?.students?.at(-1)?.studentId;
 
     const message = `
 *Hi ${item.fullname.toUpperCase()}*,
@@ -169,26 +140,38 @@ I am reaching out to inform you / enquire about ...
             />
 
             {!!item.students?.length && (
-                <View className="w-full mt-2">
-                    <Text className="text-text font-black text-2xl text-center pt-2">
-                        • STUDENTS •
+                <View className="w-full my-2">
+                    <Text className="text-text font-black text-2xl pt-2">
+                        STUDENTS
                     </Text>
                     {item.students?.map(student => (
-                        <Text
-                            key={student}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="w-full text-center font-bold text-md text-text"
+                        <View
+                            key={student.studentId}
+                            className="flex-row items-center py-1 gap-5 pl-5"
                         >
-                            {student}
-                        </Text>
+                            <Text className="w-[70%] font-bold text-lg text-text">
+                                {student.studentId}
+                            </Text>
+                            <Entypo
+                                name="cross"
+                                size={iconSize}
+                                color="rgb(239, 68, 68)"
+                            />
+                            {!student.isVerified && (
+                                <TouchableOpacity onPress={()=> verifyParent(student.studentId, item.userId)}>
+                                <Ionicons
+                                    name="checkmark"
+                                    size={iconSize}
+                                    color="rgb(34, 197, 94)"
+                                />
+                                </TouchableOpacity>
+                            )}
+                        </View>
                     ))}
                 </View>
             )}
 
             <Details email={item.email} phone={item.phone} />
-
-            <Verification userId={item.userId} isVerified={item.is_verified} />
         </View>
     );
 };

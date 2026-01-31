@@ -55,9 +55,7 @@ export const fetchParents = async (req, res) => {
 
 export const verifyParent = async (req, res) => {
     try {
-        const { parentId } = req.body;
-
-        const { userId: teacherId } = req.user;
+        const { parentId, studentId } = req.body;
 
         if (!parentId)
             return res.json({
@@ -65,34 +63,15 @@ export const verifyParent = async (req, res) => {
                 message: "parentId is required!"
             });
 
-        await turso.transaction(async tx => {
-            await tx.execute(
-                `
+        await turso.execute(
+            `
                 UPDATE parent_child
                 SET is_verified = 1
                 WHERE parentId = ?
-                  AND studentId IN (
-                    SELECT s.userId
-                    FROM students s
-                    JOIN classes c
-                      ON s.course = c.course
-                     AND s.year = c.year
-                    WHERE c.in_charge = ?
-                  )
+                  AND studentId = ?
                 `,
-                [parentId, teacherId]
-            );
-
-            await tx.execute(
-                `
-                UPDATE users
-                SET is_verified = 1
-                WHERE userId = ?
-                  AND role = 'parent'
-                `,
-                [parentId]
-            );
-        });
+            [parentId, studentId]
+        );
 
         res.json({
             success: true

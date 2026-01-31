@@ -19,10 +19,11 @@ export const fetchParents = async () => {
     }
 };
 
-export const verifyParent = async parentId => {
+export const verifyParent = async (studentId, parentId) => {
     try {
         const { data } = await axios.post("/teacher/verifyParent", {
-            parentId
+            parentId,
+            studentId
         });
 
         if (data.success) {
@@ -37,10 +38,11 @@ export const verifyParent = async parentId => {
         console.error(error);
     }
 };
-export const removeParent = async () => {
+export const removeParent = async (studentId, parentId) => {
     try {
         const { data } = await axios.post("/teacher/removeParent", {
-            parentId
+            parentId,
+            studentId
         });
 
         if (data.message) return;

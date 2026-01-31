@@ -32,7 +32,7 @@ router.post("/fetchAllTeachers", fetchAllTeachers);
 
 router.post("/fetchExamResult", authorize("teacher", "admin"), fetchExamResult);
 
-router.get(
+router.post(
     "/saveInternalMarkDetails",
     authorize("teacher", "admin"),
     saveInternalMarkDetails,
@@ -50,7 +50,7 @@ router.post(
     getInternalMarkHistory,
 );
 
-router.post(
+router.get(
     "/fetchParents",
     authorize("teacher"),
     fetchParents,

@@ -1,4 +1,5 @@
 import axios from "@utils/axios";
+import queryClient from "@utils/queryClient";
 
 import { ToastAndroid } from "react-native";
 
@@ -10,6 +11,7 @@ export const fetchParents = async page => {
         });
 
         if (data.success) return data;
+
         ToastAndroid.show(
             data.message ?? "Failed to fetch parents!",
             ToastAndroid.LONG
@@ -40,6 +42,31 @@ export const verifyParent = async (studentId, parentId) => {
         });
 
         if (data.success) {
+            queryClient.setQueryData(["parents"], prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        parents: page.parents.map(parent =>
+                            parentId === parent.userId
+                                ? {
+                                      ...parent,
+                                      students: parent.students.map(student =>
+                                          student.studentId === studentId
+                                              ? {
+                                                    ...studentId,
+                                                    isVerified: true
+                                                }
+                                              : student
+                                      )
+                                  }
+                                : parent
+                        )
+                    }))
+                };
+            });
             ToastAndroid.show("verified", ToastAndroid.LONG);
         } else
             ToastAndroid.show(

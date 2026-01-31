@@ -34,6 +34,11 @@ const gap = vw * 0.1;
 
 const size = (CARD_WIDTH - (numberOfPies - 1) * gap) / numberOfPies;
 
+function hasPassed4PM() {
+    const now = new Date();
+    return now.getHours() >= 16;
+}
+
 const ReportCard = ({ studentId = null }) => {
     const { data: report } = useQuery({
         queryKey: ["OverallAttendenceReport", studentId],
@@ -99,7 +104,11 @@ const ReportCard = ({ studentId = null }) => {
                 </View>
                 <View className="flex-1">
                     <CircularProgress
-                        progress={ongoingDays ?? 0}
+                        progress={
+                            hasPassed4PM()
+                                ? Math.max(0, ongoingDays - 1)
+                                : ongoingDays ?? 0
+                        }
                         size={size}
                         showPercentage={false}
                         maxProgress={31}

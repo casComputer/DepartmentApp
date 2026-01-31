@@ -6,28 +6,46 @@ export const fetchParents = async (req, res) => {
 
         const { rows: parents } = await turso.execute(
             `
-SELECT DISTINCT p.*, pc.*
-FROM classes c
-JOIN students s
-    ON s.course = c.course
-   AND s.year = c.year
-JOIN parent_child pc
-    ON pc.studentId = s.userId
-JOIN users p
-    ON p.userId = pc.parentId
-WHERE c.in_charge = ? AND p.role = 'parent';
-`,
+            SELECT
+                p.userId,
+                p.fullname,
+                p.email,
+                p.about,
+                p.phone,
+                p.dp,
+                
+                json_group_array(
+                    json_object(
+                        'studentId', pc.studentId
+                    )
+                ) AS students
+            FROM classes c
+            
+            JOIN students s
+                ON s.course = c.course
+                AND s.year = c.year
+            JOIN parent_child pc
+                ON pc.studentId = s.userId
+            JOIN users p
+                ON p.userId = pc.parentId
+            WHERE c.in_charge = 'femina'
+                AND p.role = 'parent'
+            GROUP BY p.userId;
+        `,
             [userId]
         );
 
         res.json({
             success: true,
-            parents
+            parents: parents.map(parent => ({
+                ...parent,
+                students: JSON.parse(parent.students)
+            }))
         });
     } catch (error) {
         res.json({
             success: false,
-            message: 'Internal Server Error'
+            message: "Internal Server Error"
         });
         console.error(error);
     }

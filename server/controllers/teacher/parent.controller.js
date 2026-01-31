@@ -3,8 +3,13 @@ import { turso } from "../../config/turso.js";
 export const fetchParents = async (req, res) => {
     try {
         const { userId } = req.user;
+        const { page = 1, limit = 15 } = req.body;
 
-        const { rows: parents } = await turso.execute(
+        const pageNum = Number(page);
+        const limitNum = Number(limit);
+        const offset = (pageNum - 1) * limitNum;
+
+        const { rows } = await turso.execute(
             `
             SELECT
                 p.userId,
@@ -20,36 +25,41 @@ export const fetchParents = async (req, res) => {
                         'isVerified', pc.is_verified
                     )
                 ) AS students
-                
             FROM classes c
-            
             JOIN students s
                 ON s.course = c.course
-                AND s.year = c.year
+               AND s.year = c.year
             JOIN parent_child pc
                 ON pc.studentId = s.userId
             JOIN users p
                 ON p.userId = pc.parentId
             WHERE c.in_charge = ?
-                AND p.role = 'parent'
-            GROUP BY p.userId;
-        `,
-            [userId]
+              AND p.role = 'parent'
+            GROUP BY p.userId
+            ORDER BY pc.joinedAt DESC
+            LIMIT ? OFFSET ?;
+            `,
+            [userId, limitNum + 1, offset]
         );
+
+        const hasMore = rows.length > limitNum;
+        const parents = rows.slice(0, limitNum).map(parent => ({
+            ...parent,
+            students: JSON.parse(parent.students || "[]").filter(Boolean)
+        }));
 
         res.json({
             success: true,
-            parents: parents.map(parent => ({
-                ...parent,
-                students: JSON.parse(parent.students || "[]")
-            }))
+            parents,
+            hasMore,
+            nextPage: hasMore ? pageNum + 1 : null
         });
     } catch (error) {
-        res.json({
+        console.error(error);
+        res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
-        console.error(error);
     }
 };
 
@@ -57,10 +67,10 @@ export const verifyParent = async (req, res) => {
     try {
         const { parentId, studentId } = req.body;
 
-        if (!parentId)
+        if (!parentId || !studentId)
             return res.json({
                 success: false,
-                message: "parentId is required!"
+                message: "parentId and studentId is required!"
             });
 
         await turso.execute(
@@ -86,66 +96,23 @@ export const verifyParent = async (req, res) => {
 };
 
 export const removeParent = async (req, res) => {
-    /* THIS FUNCTION DOESN'T REMOVE THE PARENT FROM THE USERS TABLE,
-    INSTED IT UN VERIFY THE PARENT-STUDENT RELATION IN PARENT_CHILD 
-    TABLE WHERE STUDENTS ARE FROM THE INCHARGE CLASS OF THE TEACHER.
-    
-    AFTER THAT, CHECK IF THE PARENT HAVE ANY OTHER VERIFIED RELATIONS,
-    IF FALSE, THEN UN VERIFY THE PARENT IN USERS TABLE */
-
     try {
-        const { parentId } = req.body;
-        const { userId: teacherId } = req.user;
+        const { parentId, studentId } = req.body;
 
-        if (!parentId) {
+        if (!parentId || !studentId) {
             return res.json({
                 success: false,
-                message: "parentId is required!"
+                message: "parentId and studentId is required!"
             });
         }
 
-        await turso.transaction(async tx => {
-            await tx.execute(
-                `
-                UPDATE parent_child
-                SET is_verified = 0
-                WHERE parentId = ?
-                  AND studentId IN (
-                    SELECT s.userId
-                    FROM students s
-                    JOIN classes c
-                      ON s.course = c.course
-                     AND s.year = c.year
-                    WHERE c.in_charge = ?
-                  )
+        await turso.execute(
+            `
+                DELETE FROM parent_child
+                    WHERE parentId = ? AND studentId = ?
                 `,
-                [parentId, teacherId]
-            );
-
-            // Check if parent still has ANY verified child
-            const result = await tx.execute(
-                `
-                SELECT 1
-                FROM parent_child
-                WHERE parentId = ?
-                  AND is_verified = 1
-                LIMIT 1
-                `,
-                [parentId]
-            );
-
-            if (result.rows.length === 0) {
-                await tx.execute(
-                    `
-                  UPDATE users
-                  SET is_verified = 0
-                  WHERE userId = ?
-                    AND role = 'parent'
-                  `,
-                    [parentId]
-                );
-            }
-        });
+            [parentId, studentId]
+        );
 
         res.json({
             success: true

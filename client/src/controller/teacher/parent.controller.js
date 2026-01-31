@@ -21,14 +21,12 @@ export const fetchParents = async () => {
 
 export const verifyParent = async parentId => {
     try {
-        alert(parentId)
-    
         const { data } = await axios.post("/teacher/verifyParent", {
             parentId
         });
 
         if (data.success) {
-            ToastAndroid.show("varified", ToastAndroid.LONG);
+            ToastAndroid.show("verified", ToastAndroid.LONG);
         } else
             ToastAndroid.show(
                 data.message ?? "Failed to varify parent!",

@@ -127,13 +127,13 @@ const Verification = ({ userId, isVerified }) => {
                     {removing ? "Removing.." : "Remove"}
                 </Text>
             </TouchableOpacity>
-{
-    !isVerified &&             <TouchableOpacity disabled={verifying} onPress={handleVerify}>
-                <Text className="text-green-500 text-xl font-bold text-center">
-                    {verifying ? "Verifying.." : "Verify"}
-                </Text>
-            </TouchableOpacity>
-}
+            {!isVerified && (
+                <TouchableOpacity disabled={verifying} onPress={handleVerify}>
+                    <Text className="text-green-500 text-xl font-bold text-center">
+                        {verifying ? "Verifying.." : "Verify"}
+                    </Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

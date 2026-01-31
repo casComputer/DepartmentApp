@@ -8,7 +8,7 @@ export const syncUser = async (req, res) => {
         if (!userId)
             return res.status(400).json({
                 message: "User ID is required.",
-                success: false,
+                success: false
             });
 
         const { rows } = await turso.execute(
@@ -20,29 +20,29 @@ export const syncUser = async (req, res) => {
             FROM classes c RIGHT JOIN teacher_courses tc
             ON c.in_charge = tc.teacherId
             WHERE in_charge = ?`,
-            [userId],
+            [userId]
         );
 
         const inCharge = {
             year: rows[0]?.in_charge_year || null,
-            course: rows[0]?.in_charge_course || null,
+            course: rows[0]?.in_charge_course || null
         };
 
         return res.json({
             success: true,
             inCharge,
-            courses: rows.map((row) => ({
+            courses: rows.map(row => ({
                 year: row.year,
                 course: row.course,
-                course_name: row.course_name,
-            })),
+                course_name: row.course_name
+            }))
         });
     } catch (error) {
         console.error("Error syncing teacher:", error);
 
         return res.status(500).json({
             message: "Internal server error.",
-            success: false,
+            success: false
         });
     }
 };
@@ -74,37 +74,41 @@ export const fetchAllTeachers = async (req, res) => {
             ORDER BY u.fullname ASC
         `);
 
-        const result = rows.map((row) => ({
+        const result = rows.map(row => ({
             teacherId: row.teacherId,
             fullname: row.fullname,
             dp: row.dp,
+            phone: row.phone,
+            email: row.email,
+            about: row.about,
+            
             courses: [],
             inCharge: row.in_charge_course
                 ? {
                       course: row.in_charge_course,
-                      year: row.in_charge_year,
+                      year: row.in_charge_year
                   }
-                : null,
+                : null
         }));
 
         // Aggregate courses for each teacher
         const teachersMap = new Map();
 
-        result.forEach((teacher) => {
+        result.forEach(teacher => {
             if (!teachersMap.has(teacher.teacherId)) {
                 teachersMap.set(teacher.teacherId, {
                     ...teacher,
-                    courses: [],
+                    courses: []
                 });
             }
         });
 
-        rows.forEach((row) => {
+        rows.forEach(row => {
             if (teachersMap.has(row.teacherId) && row.course) {
                 teachersMap.get(row.teacherId).courses.push({
                     course: row.course,
                     year: row.year,
-                    course_name: row.course_name,
+                    course_name: row.course_name
                 });
             }
         });
@@ -113,13 +117,13 @@ export const fetchAllTeachers = async (req, res) => {
 
         res.json({
             success: true,
-            teachers: finalResult,
+            teachers: finalResult
         });
     } catch (err) {
         console.error(err);
         return res.status(500).json({
             message: "Internal server Error",
-            success: false,
+            success: false
         });
     }
 };

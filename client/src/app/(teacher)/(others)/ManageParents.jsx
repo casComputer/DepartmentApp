@@ -27,8 +27,6 @@ const ManageParents = () => {
 
     const parents = data?.pages?.flatMap(page => page?.parents);
 
-    console.log(data?.pages, parents);
-
     return (
         <View className="flex-1 bg-primary">
             <Header title={"Manage Parents"} />

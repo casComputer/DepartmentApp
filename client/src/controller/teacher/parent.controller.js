@@ -2,20 +2,33 @@ import axios from "@utils/axios";
 
 import { ToastAndroid } from "react-native";
 
-export const fetchParents = async () => {
+export const fetchParents = async page => {
     try {
-        const { data } = await axios.get("/teacher/fetchParents");
+        const { data } = await axios.post("/teacher/fetchParents", {
+            page,
+            limit: 25
+        });
 
-        if (data.success) return data.parents ?? [];
+        if (data.success) return data;
         ToastAndroid.show(
             data.message ?? "Failed to fetch parents!",
             ToastAndroid.LONG
         );
-        return [];
+        return {
+            parents: [],
+            hasMore: false,
+            nextPage: undefined,
+            success: false
+        };
     } catch (error) {
         console.error(error);
         ToastAndroid.show("Failed to fetch parents!", ToastAndroid.LONG);
-        return [];
+        return {
+            data: [],
+            hasMore: false,
+            nextPage: undefined,
+            success: false
+        };
     }
 };
 

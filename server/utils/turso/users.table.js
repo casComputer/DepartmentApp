@@ -21,14 +21,14 @@ turso.execute(`
     CREATE TABLE students (
     userId TEXT NOT NULL,
 
-    course TEXT CHECK (course IN ('Bca', 'Bsc')) not null,
-    year text check (year IN ('First', 'Second', 'Third', 'Fourth')) not null,
+    course TEXT CHECK (course IN ('Bca', 'Bsc')),
+    year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
     rollno integer default NULL,
 
     UNIQUE (course, year, rollno),
 
     foreign key (course, year) references classes(course, year) ON DELETE SET NULL,
-    foreign key (studentId) references users(userId) ON DELETE CASCADE,
+    foreign key (userId) references users(userId) ON DELETE CASCADE,
     );
     `);
 
@@ -39,7 +39,7 @@ turso.execute(
             PRIMARY KEY (parentId, studentId), 
             FOREIGN KEY (parentId) REFERENCES users(userId) ON DELETE CASCADE,
             FOREIGN KEY (studentId) REFERENCES users(userId) ON DELETE CASCADE
-        );`,
+        );`
 );
 
 turso.execute(`
@@ -56,8 +56,8 @@ turso.execute(`
     CREATE TABLE IF NOT EXISTS attendance (
     attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    course TEXT NOT NULL,
-    year TEXT NOT NULL,
+    course TEXT,
+    year TEXT,
     hour TEXT NOT NULL,
     timestamp TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -103,8 +103,8 @@ turso.execute(`
     CREATE TABLE worklogs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    year TEXT NOT NULL,
-    course TEXT NOT NULL,
+    year TEXT,
+    course TEXT,
     date TEXT NOT NULL,
     hour TEXT NOT NULL,
     subject TEXT NOT NULL,
@@ -123,8 +123,8 @@ turso.execute(`
 turso.execute(`
     CREATE TABLE fees (
     feeId INTEGER PRIMARY KEY AUTOINCREMENT,
-    year TEXT NOT NULL,
-    course TEXT NOT NULL,
+    year TEXT,
+    course TEXT,
     dueDate TEXT NOT NULL,
     details TEXT NOT NULL,
     amount TEXT NOT NULL,
@@ -145,8 +145,8 @@ turso.execute(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     teacherId TEXT NOT NULL,
 
-    year TEXT NOT NULL,
-    course TEXT NOT NULL,
+    year TEXT,
+    course TEXT,
     course_name TEXT NOT NULL,
 
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -158,8 +158,6 @@ turso.execute(`
     );
 
     `);
-
-
 
 ////////////////////////////////////////////////////
 ///                    VIEWS                     ///
@@ -175,4 +173,4 @@ FROM classes c
 LEFT JOIN students s
   ON s.course = c.course
  AND s.year = c.year
-GROUP BY c.course, c.year;`)
+GROUP BY c.course, c.year;`);

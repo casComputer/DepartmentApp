@@ -35,14 +35,14 @@ export const fetchParents = async (req, res) => {
         `,
             [userId]
         );
-        
-        const students = JSON.parse(parent.students) ?? []
-        
+
         res.json({
             success: true,
             parents: parents.map(parent => ({
                 ...parent,
-                students: students.map(st=> st.studentId)
+                students: [...(JSON.parse(parent.students) ?? [])].map(
+                    st => st.studentId
+                )
             }))
         });
     } catch (error) {

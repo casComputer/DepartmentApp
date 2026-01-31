@@ -28,13 +28,12 @@ export const fetchParents = async (req, res) => {
                 ON pc.studentId = s.userId
             JOIN users p
                 ON p.userId = pc.parentId
-            WHERE c.in_charge = 'femina'
+            WHERE c.in_charge = ?
                 AND p.role = 'parent'
             GROUP BY p.userId;
         `,
             [userId]
         );
-
         res.json({
             success: true,
             parents: parents.map(parent => ({

@@ -15,7 +15,7 @@ import fileRoutes from "./routes/file.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
 
-import data from "./cron/attendance.js";
+// import data from "./cron/attendance.js";
 
 import {
     authenticateToken,

@@ -16,6 +16,7 @@ export const fetchParents = async page => {
             data.message ?? "Failed to fetch parents!",
             ToastAndroid.LONG
         );
+
         return {
             parents: [],
             hasMore: false,
@@ -23,10 +24,10 @@ export const fetchParents = async page => {
             success: false
         };
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to fetch parents!", ToastAndroid.LONG);
+
         return {
-            data: [],
+            parents: [],
             hasMore: false,
             nextPage: undefined,
             success: false
@@ -75,7 +76,6 @@ export const verifyParent = async (studentId, parentId) => {
             );
     } catch (error) {
         ToastAndroid.show("Failed to verify parent!", ToastAndroid.LONG);
-        console.error(error);
     }
 };
 export const removeParent = async (studentId, parentId) => {
@@ -85,13 +85,34 @@ export const removeParent = async (studentId, parentId) => {
             studentId
         });
 
-        if (data.message) return;
+        if (data.success) {
+            queryClient.setQueryData(["parents"], prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        parents: page.parents.map(parent =>
+                            parentId === parent.userId
+                                ? {
+                                      ...parent,
+                                      students: parent.students.filter(
+                                          student =>
+                                              student.studentId !== studentId
+                                      )
+                                  }
+                                : parent
+                        )
+                    }))
+                };
+            });
+        }
         ToastAndroid.show(
             data.message ?? "Failed to remove parent!",
             ToastAndroid.LONG
         );
     } catch (error) {
         ToastAndroid.show("Failed to remove parent!", ToastAndroid.LONG);
-        console.error(error);
     }
 };

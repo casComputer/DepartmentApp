@@ -36,7 +36,7 @@ export const fetchParents = async (req, res) => {
             WHERE c.in_charge = ?
               AND p.role = 'parent'
             GROUP BY p.userId
-            ORDER BY pc.joinedAt DESC
+            ORDER BY p.joinedAt DESC
             LIMIT ? OFFSET ?;
             `,
             [userId, limitNum + 1, offset]

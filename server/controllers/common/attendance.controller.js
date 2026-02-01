@@ -198,22 +198,22 @@ async function generateAttendanceExcel(data) {
     return await workbook.xlsx.writeBuffer();
 }
 
-function generateAttendancePDF(data, meta = {
-    course,
-    year,
-    month,
-    calendarYear
-}) {
+const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+function generateAttendancePDF(
+    data,
+    {
+        course, year, month, calendarYear
+    }
+) {
     return new Promise((resolve, reject) => {
         try {
             const doc = new PDFDocument( {
-                size: 'A4'
+                size: "A4"
             });
-
-            const monthNames = [
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ];
 
             const calendarMonth = monthNames[month];
 
@@ -222,19 +222,21 @@ function generateAttendancePDF(data, meta = {
             doc.on("end", () => resolve(Buffer.concat(buffers)));
 
             doc.fontSize(14);
-            doc.font('Times-Roman');
+            doc.font("Times-Roman");
 
             doc
-            .text(`Attendance Report for ${year} ${course} – ${calendarMonth} ${calendarYear}`)
+            .text(
+                `Attendance Report for ${year} ${course} – ${calendarMonth} ${calendarYear}`
+            )
             .table({
                 rowStyles: [30],
                 data: [
                     [
-                        'StudentId',
-                        'Working Days',
-                        'Present Days',
-                        'Absent Days',
-                        'Percentage'
+                        "StudentId",
+                        "Working Days",
+                        "Present Days",
+                        "Absent Days",
+                        "Percentage"
                     ],
                     ...data.map(item => Object.values(item))
                 ]
@@ -277,7 +279,7 @@ export const generateXlSheet = async (req, res) => {
             success: false,
             xl_url: existDoc.xl_url,
             pdf_url: existDoc.pdf_url,
-            message: `Attendance report for ${month}-${year} already exist!`
+            message: `Attendance report for ${monthNames[month]}-${year} already exist!`
         });
 
         const data = await getMonthlyAttendanceReport({

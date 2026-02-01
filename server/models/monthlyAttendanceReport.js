@@ -21,7 +21,15 @@ const reportSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    xl_public_id: {
+        type: String,
+        required: true
+    },
     pdf_url: {
+        type: String,
+        required: true
+    },
+    pdf_public_id: {
         type: String,
         required: true
     },

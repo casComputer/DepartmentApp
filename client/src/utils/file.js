@@ -16,27 +16,44 @@ import {
     open in default app for viewing 
 */
 
-export const checkFileExists = async filename => {
+export const checkFileExists = async (
+    filename,
+    localDir = FileSystem.documentDirectory
+) => {
+    let contentUri = null;
+    let fileUri = null;
+
     try {
-        let dirUri = getSystemStorageUri();
+        const dirUri = getSystemStorageUri();
 
-        if (!dirUri) return { exists: false };
+        if (dirUri) {
+            const files =
+                await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                    dirUri
+                );
 
-        const files =
-            await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
+            contentUri =
+                files.find(uri => {
+                    const decoded = decodeURIComponent(uri);
+                    return decoded.endsWith("/" + filename);
+                }) ?? null;
+        }
+    } catch (e) {}
 
-        const foundUri = files.find(uri => {
-            const decoded = decodeURIComponent(uri);
-            return decoded.endsWith("/" + filename);
-        });
-        
-        console.log(files);
+    try {
+        const localPath = localDir + filename;
+        const info = await FileSystem.getInfoAsync(localPath);
 
-        if (foundUri) return { exists: true, foundUri };
-        else return { exists: false };
-    } catch (error) {
-        return { exists: false };
-    }
+        if (info.exists) {
+            fileUri = info.uri;
+        }
+    } catch (e) {}
+
+    return {
+        exists: Boolean(contentUri || fileUri),
+        contentUri,
+        fileUri
+    };
 };
 
 export const openFileWithDefaultApp = async (uri, mimeType) => {
@@ -57,38 +74,51 @@ export const saveFile = async (
     format,
     autoOpen = false
 ) => {
+    // iOS: still keep file:// only
     if (Platform.OS !== "android") {
-        return Sharing.shareAsync(localUri);
+        await Sharing.shareAsync(localUri);
+        return {
+            success: true,
+            fileUri: localUri,
+            contentUri: null
+        };
     }
 
     const mimetype = getMimeType(format);
-
     const dirUri = await ensureDirectoryPermission();
-    if (!dirUri) return { success: false }
+    if (!dirUri) return { success: false };
 
     await deleteIfExists(dirUri, filename);
 
-    const base64 = await FileSystem.readAsStringAsync(localUri, {
-        encoding: FileSystem.EncodingType.Base64
-    });
-
     try {
-        const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
-            dirUri,
-            filename,
-            mimetype
-        );
-
-        await FileSystem.writeAsStringAsync(fileUri, base64, {
+        const base64 = await FileSystem.readAsStringAsync(localUri, {
             encoding: FileSystem.EncodingType.Base64
         });
 
-        if (autoOpen) openFileWithDefaultApp(fileUri, mimetype);
-        if (!dirUri) return { success: true, fileUri, localUri }
+        const contentUri =
+            await FileSystem.StorageAccessFramework.createFileAsync(
+                dirUri,
+                filename,
+                mimetype
+            );
+
+        await FileSystem.writeAsStringAsync(contentUri, base64, {
+            encoding: FileSystem.EncodingType.Base64
+        });
+
+        if (autoOpen) {
+            await openFileWithDefaultApp(contentUri, mimetype);
+        }
+
+        return {
+            success: true,
+            fileUri: localUri, // file://
+            contentUri // content://
+        };
     } catch (err) {
         ToastAndroid.show("Failed to save file!", ToastAndroid.LONG);
         console.log("SAVE ERROR:", err);
-        return { success: false }
+        return { success: false };
     }
 };
 
@@ -99,20 +129,33 @@ export const downloadFile = async (
     autoOpen = true
 ) => {
     if (!filename) filename = url.split("/").at(-1);
+    console.log("downloading..");
 
-    const { exists, foundUri } = await checkFileExists(filename);
+    const { exists, fileUri, contentUri } = await checkFileExists(filename);
 
-    if (exists) {
-        format = getMimeType(format);
-        if(autoOpen) openFileWithDefaultApp(foundUri, format);
-        return { success: true, fileUri: foundUri, }
-    } else {
-        const result = await FileSystem.downloadAsync(
-            url,
-            FileSystem.documentDirectory + filename
-        );
-        return saveFile(result.uri, filename, format, autoOpen);
+    const mimeType = getMimeType(format);
+    
+    console.log(exists, contentUri);
+
+    if (exists && contentUri) {
+        // ✅ open SAF file, not local cache
+        if (autoOpen && contentUri) {
+            await openFileWithDefaultApp(contentUri, mimeType);
+        }
+
+        return {
+            success: true,
+            fileUri,
+            contentUri
+        };
     }
+
+    const result = await FileSystem.downloadAsync(
+        url,
+        FileSystem.documentDirectory + filename
+    );
+
+    return saveFile(result.uri, filename, format, autoOpen);
 };
 
 export const deleteIfExists = async (dirUri, filename) => {

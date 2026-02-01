@@ -39,7 +39,7 @@ function hasPassed4PM() {
     return now.getHours() >= 16;
 }
 
-const ReportCard = ({ studentId = null }) => {
+const ReportCard = ({ studentId = null, isSingle = false }) => {
     const { data: report } = useQuery({
         queryKey: ["OverallAttendenceReport", studentId],
         queryFn: () => getOverallAttendenceReport(studentId)
@@ -55,8 +55,8 @@ const ReportCard = ({ studentId = null }) => {
     return (
         <TouchableOpacity
             style={{
-                width: CARD_WIDTH,
-                marginRight: SIDE_SPACING * 2,
+                width: !studentId || isSingle ? "100%" : CARD_WIDTH,
+                marginRight: !studentId || isSingle ? 0 : SIDE_SPACING * 2,
                 boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)"
             }}
             disabled={role === "parent"}
@@ -127,9 +127,7 @@ const ReportCard = ({ studentId = null }) => {
     );
 };
 
-const MultiReports = () => {
-    const students = useAppStore(state => state.user?.students);
-
+const MultiReports = ({ students }) => {
     const itemSize = CARD_WIDTH + SIDE_SPACING * 2;
     const maxOffset = itemSize * (students?.length - 1);
 
@@ -148,7 +146,6 @@ const MultiReports = () => {
             withTiming(0, {
                 duration: 600
             })
-            
         );
     }, [students]);
 
@@ -174,13 +171,14 @@ const MultiReports = () => {
 
 export default function MonthlyAttendenceMiniReport() {
     const role = useAppStore(state => state.user?.role);
+    const students = useAppStore(state => state.user?.students);
 
-    if (role === "student")
+    if (role === "student" || students?.length === 1)
         return (
-            <View className="px-3">
-                <ReportCard />
+            <View className="px-2">
+                <ReportCard studentId={students?.[0] ?? null} isSingle={true} />
             </View>
         );
 
-    return <MultiReports />;
+    return <MultiReports students={students} />;
 }

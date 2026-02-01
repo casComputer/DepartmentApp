@@ -143,7 +143,8 @@ Just wanted to ask about (your message here...)
 };
 
 const TeachersList = () => {
-    const { data: teachers, isLoading } = useQuery({
+    const { data: teachers, isLoading , refetch,
+        isRefetching} = useQuery({
         queryKey: ["teachers"],
         queryFn: fetchAllTeachers
     });
@@ -168,6 +169,8 @@ const TeachersList = () => {
                         </Text>
                     )
                 }
+                onRefresh={refetch}
+                refreshing={isRefetching}
             />
         </View>
     );

@@ -1,40 +1,42 @@
-import {
-    turso
-} from "../../config/turso.js";
+import ExcelJS from "exceljs";
+import streamifier from "streamifier";
+
+import { turso } from "../../config/turso.js";
+import cloudinary from "../../config/cloudinary.js";
+import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 
 export const getMonthlyAttendanceReport = async ({
     course,
     classYear, // class year (eg: "Third")
     month,
     calendarYear,
-    studentId = null,
+    studentId = null
 }) => {
     try {
         if (!studentId) {
             if (!course || !classYear) {
                 throw new Error(
-                    "course and classYear are required when studentId is not provided",
+                    "course and classYear are required when studentId is not provided"
                 );
             }
         }
 
         if (!month || !calendarYear) {
-            throw new Error("course, classYear, month, calendarYear are required");
+            throw new Error(
+                "course, classYear, month, calendarYear are required"
+            );
         }
 
         const monthStr = String(month).padStart(2, "0");
         const yearStr = String(calendarYear);
 
         const studentFilterSQL = studentId
-        ? `AND ad.studentId = ? `: `AND a.course = ? AND a.year = ?`;
+            ? `AND ad.studentId = ? `
+            : `AND a.course = ? AND a.year = ?`;
 
         const args = studentId
-        ? [yearStr,
-            monthStr,
-            studentId]: [course,
-            classYear,
-            yearStr,
-            monthStr];
+            ? [yearStr, monthStr, studentId]
+            : [course, classYear, yearStr, monthStr];
 
         const result = await turso.execute({
             sql: `
@@ -78,7 +80,7 @@ export const getMonthlyAttendanceReport = async ({
 
             GROUP BY ad.studentId, a.date
 
-            -- 🔥 CRITICAL FIX: exclude days where no hours were conducted
+            -- exclude days where no hours were conducted
             HAVING NOT (
             COUNT(DISTINCT CASE
             WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
@@ -139,53 +141,132 @@ export const getMonthlyAttendanceReport = async ({
             GROUP BY studentId
             ORDER BY studentId;
             `,
-            args,
+            args
         });
 
         return result.rows;
-
     } catch (error) {
         console.log(error);
         return [];
     }
 };
 
+async function generateAttendanceExcel(data) {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Attendance");
 
+    sheet.columns = [
+        {
+            header: "Student ID",
+            key: "studentId",
+            width: 20
+        },
+        {
+            header: "Working Days",
+            key: "working_days"
+        },
+        {
+            header: "Present Days",
+            key: "present_days"
+        },
+        {
+            header: "Absent Days",
+            key: "absent_days"
+        },
+        {
+            header: "Percentage",
+            key: "attendance_percentage"
+        }
+    ];
 
-export const generateAttendanceReport = async (req, res) => {
+    data.forEach(row => sheet.addRow(row));
+
+    return await workbook.xlsx.writeBuffer();
+}
+
+export const generateXlSheet = async (req, res) => {
     try {
-        const {
-            course,
-            year: classYear,
-            month,
-            calendarYear
-        } = req.body;
+        const { course, year, month, calendarYear } = req.body;
+        const { userId: teacherId } = req.user;
 
-        const {
-            role,
-            userId
-        } = req.user;
+        if (!course || !year || !month || !calendarYear)
+            throw new Error("course, year, month, calendarYear are required");
+
+        const existDoc = await MonthlyReport.findOne({
+            calendarMonth: month,
+            calendarYear
+        });
+
+        if (existDoc)
+            return res.json({
+                success: false,
+                message: "Attendance report for this month already exist!"
+            });
 
         const data = await getMonthlyAttendanceReport({
             course,
-            classYear,
+            classYear: year,
             month,
-            calendarYear,
-            studentId: role === "student" ? userId: null
+            calendarYear
+        });
+        if (!data)
+            return res.json({
+                success: false,
+                message: "Failed to generate attendance report!"
+            });
+
+        const excelBuffer = await generateAttendanceExcel(data);
+
+        if (!excelBuffer)
+            return res.json({
+                success: false,
+                message: "Failed to generate exel-sheet!"
+            });
+
+        const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    resource_type: "raw",
+                    folder: "attendance",
+                    public_id: `attendance_${Date.now()}.xlsx`,
+                    format: "xlsx"
+                },
+                (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
+                }
+            );
+
+            streamifier.createReadStream(excelBuffer).pipe(uploadStream);
         });
 
-        res.json({
-            course,
-            classYear,
-            month,
-            calendarYear,
-            scope: role === "student" ? "STUDENT": "CLASS",
-            data
+        console.log(uploadResult);
+
+        if (uploadResult.secure_url) {
+            await MonthlyReport.create({
+                calendarYear,
+                calendarMonth: month,
+                course,
+                year,
+                secure_url: uploadResult.secure_url,
+                teacherId
+            });
+
+            return res.json({
+                success: true,
+                secure_url: uploadResult.secure_url
+            });
+        }
+
+        return res.json({
+            success: false,
+            message: "Failed to upload exel sheet to cloud!"
         });
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({
-            error: err.message || "Internal server error"
+            success: false,
+            message: "Internal server error"
         });
     }
 };

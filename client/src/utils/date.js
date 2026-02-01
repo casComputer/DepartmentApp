@@ -40,7 +40,6 @@ export const formatDate = timestamp => {
 
 export const isDatePassed = input => {
     if (!input) return null;
-
     let date;
 
     if (input instanceof Date) date = input;

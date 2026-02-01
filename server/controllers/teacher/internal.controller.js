@@ -1,15 +1,6 @@
 import Internal from '../../models/internalMark.js'
-import cloudinary from '../../config/cloudinary.js'
 
-const deleteFile = async (public_id)=> {
-    try {
-        await cloudinary.api.delete_resources([public_id], {
-            resource_type: "raw",
-        });
-    } catch(e) {
-        console.error('Error while deleting file: ', e)
-    }
-}
+import { deleteFile } from '../../utils/cloudinary.js'
 
 export const saveInternalMarkDetails = async(req, res)=> {
     const {

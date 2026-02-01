@@ -8,6 +8,7 @@ import {
   EditDpOptions,
 } from "@components/profile/ProfileComponents.jsx";
 import { TeacherOptions } from "@components/profile/TeacherOptions.jsx";
+import ParentExtra from "@components/profile/ParentExtra.jsx";
 
 import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import { uploadDp } from "@controller/common/profile.controller.js";
@@ -69,6 +70,7 @@ const Profile = () => {
           }
         />
         {role === "teacher" && <TeacherOptions />}
+        {role === "parent" && <ParentExtra />}
       </ScrollView>
 
       <EditDpOptions handleChangePic={handleChangePic} show={showDpOptions} />

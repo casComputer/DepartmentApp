@@ -1,13 +1,10 @@
 import Assignment from "../../models/assignment.js";
+import { deleteFile } from "../../utils/cloudinary.js";
+import { isDatePassed } from "../../utils/date.js";
 
 export const getAssignmentForStudent = async (req, res) => {
     try {
-        const {
-            course,
-            year,
-            page = 1,
-            limit = 10
-        } = req.body;
+        const { course, year, page = 1, limit = 10 } = req.body;
 
         if (!course || !year) {
             return res.json({
@@ -20,17 +17,20 @@ export const getAssignmentForStudent = async (req, res) => {
             course,
             year
         })
-        .sort({
-            timestamp: -1
-        })
-        .skip((page - 1) * limit)
-        .limit(limit);
+            .sort({
+                timestamp: -1
+            })
+            .skip((page - 1) * limit)
+            .limit(limit);
 
         const hasMore = assignments.length === limit;
-        const nextPage = hasMore ? page + 1: null;
+        const nextPage = hasMore ? page + 1 : null;
 
         res.status(200).json({
-            assignments, success: true, hasMore, nextPage
+            assignments,
+            success: true,
+            hasMore,
+            nextPage
         });
     } catch (error) {
         console.error("Error fetching assignments:", error);
@@ -42,34 +42,51 @@ export const getAssignmentForStudent = async (req, res) => {
 };
 
 export const saveAssignmentSubmissionDetails = async (req, res) => {
-    const {
-        secure_url: url,
-        format,
-        assignmentId
-    } = req.body;
-    const {
-        userId: studentId
-    } = req.user
+    const { secure_url: url, format, assignmentId } = req.body;
+
+    const { userId: studentId } = req.user;
 
     try {
-        if (!studentId || !assignmentId || !url || !format) {
+        if (!assignmentId || !url || !format) {
+            if (url) await deleteFile(url);
+
             return res.json({
                 message: "Missing required fields",
                 success: false
             });
         }
 
-        const existAssignment = await Assignment.findById(assignmentId)
+        const existAssignment = await Assignment.findById(assignmentId);
 
-        if (!existAssignment) return res.json({
-            success: false, message: 'Assignment not found!'
-        })
+        if (!existAssignment) {
+            await deleteFile();
+            return res.json({
+                success: false,
+                message: "Assignment not found!"
+            });
+        }
 
-        const isSubmitted = existAssignment?.submissions.some(submission => submission.studentId === studentId);
+        const isSubmitted = existAssignment?.submissions.some(
+            submission => submission.studentId === studentId
+        );
 
-        if (isSubmitted) return res.json({
-            success: false, message: 'Assignment already submitted!'
-        })
+        if (isSubmitted) {
+            await deleteFile();
+
+            return res.json({
+                success: false,
+                message: "Assignment already submitted!"
+            });
+        }
+        
+        if(isDatePassed(existAssignment.dueDate)){
+            await deleteFile();
+
+            return res.json({
+                success: false,
+                message: "Assignment deadline exceeded."
+            });
+        }
 
         const submission = {
             studentId,
@@ -87,9 +104,11 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
             success: true
         });
     } catch (error) {
+        await deleteFile();
         console.error(error);
         res.status(500).json({
-            success: false, message: "Internal server error"
+            success: false,
+            message: "Internal server error"
         });
     }
 };

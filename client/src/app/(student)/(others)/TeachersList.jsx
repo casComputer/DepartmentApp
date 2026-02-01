@@ -3,11 +3,13 @@ import {
     Text,
     Image,
     Dimensions,
+    TouchableOpacity,
     ScrollView,
-    ActivityIndicator,
+    ActivityIndicator
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 
 import Header from "@components/common/Header2.jsx";
 
@@ -15,7 +17,11 @@ import { fetchAllTeachers } from "@controller/student/teachers.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
+import { openPhone, openWhatsApp, openEmail } from "@utils/openApp.js";
+
 const { width: vw } = Dimensions.get("window");
+
+const iconSize = 18;
 
 const TeacherItem = ({ item, course, year }) => {
     return (
@@ -46,7 +52,7 @@ const TeacherItem = ({ item, course, year }) => {
             <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                className="w-full mt-1 text-center text-text-secondary font-semibold text-md"
+                className="w-full -mt-3 text-center text-text-secondary font-semibold text-md"
             >
                 @{item.teacherId}
             </Text>
@@ -59,16 +65,20 @@ const TeacherItem = ({ item, course, year }) => {
             </Text>
 
             {!!item.courses?.length && (
-                <View className="w-full mt-4">
-                    <Text className="text-text font-black text-3xl text-center pt-2">
-                        Courses
+                <View className="w-full mt-1">
+                    <Text className="text-text font-black text-2xl text-center pt-2">
+                        • COURSES •
                     </Text>
                     {item.courses?.map((c, index) => (
                         <Text
                             key={index}
                             numberOfLines={1}
                             adjustsFontSizeToFit
-                            className={`w-full text-center font-bold text-md ${c.course === course && c.year === year ? "text-text-secondary" : "text-text"} `}
+                            className={`w-full text-center font-bold text-md ${
+                                c.course === course && c.year === year
+                                    ? "text-text-secondary"
+                                    : "text-text"
+                            } `}
                         >
                             {c.year} {c.course} - {c.course_name}
                         </Text>
@@ -78,14 +88,47 @@ const TeacherItem = ({ item, course, year }) => {
 
             <View className="w-full">
                 {item.inCharge && (
-                    <Text className="text-text font-black text-2xl text-center pt-2">
+                    <Text className="text-text font-black text-xl text-center pt-2">
                         In Charge: {item.inCharge?.year} {item.inCharge?.course}
                     </Text>
                 )}
-
-                <Text className="text-blue-500 font-bold text-xl text-center">
-                    {item?.phone}
-                </Text>
+                {item?.email ? (
+                    <TouchableOpacity onPress={() => openEmail(item.email)}>
+                        <Text className="mt-1 text-blue-500 font-bold text-sm text-center">
+                            {item.email}
+                        </Text>
+                    </TouchableOpacity>
+                ) : null}
+                {item?.phone ? (
+                    <View className="mt-1 flex-row items-center justify-center gap-3">
+                        <TouchableOpacity onPress={() => openPhone(item.phone)}>
+                            <Text className="text-blue-500 font-bold text-xl text-center">
+                                {item.phone}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => openPhone(item.phone)}>
+                            <MaterialIcons
+                                name="call"
+                                size={iconSize}
+                                color="rgb(59, 130, 246)"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() =>
+                                openWhatsApp(
+                                    item.phone,
+                                    `Hai *${item.fullname}* 👋\n`
+                                )
+                            }
+                        >
+                            <FontAwesome
+                                name="whatsapp"
+                                size={iconSize}
+                                color="rgb(34, 197, 94)"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                ) : null}
             </View>
         </View>
     );
@@ -94,24 +137,24 @@ const TeacherItem = ({ item, course, year }) => {
 const TeachersList = () => {
     const { data, isLoading } = useQuery({
         queryKey: ["teachers"],
-        queryFn: fetchAllTeachers,
+        queryFn: fetchAllTeachers
     });
 
-    const course = useAppStore((state) => state.user.course);
-    const year = useAppStore((state) => state.user.year);
+    const course = useAppStore(state => state.user.course);
+    const year = useAppStore(state => state.user.year);
 
     const yourTeachers =
         data?.filter(
-            (teacher) =>
+            teacher =>
                 teacher.inCharge?.course === course &&
-                teacher.inCharge?.year === year,
+                teacher.inCharge?.year === year
         ) || [];
 
     const otherTeachers =
         data?.filter(
-            (teacher) =>
+            teacher =>
                 teacher.inCharge?.course !== course ||
-                teacher.inCharge?.year !== year,
+                teacher.inCharge?.year !== year
         ) || [];
 
     return (
@@ -121,6 +164,9 @@ const TeachersList = () => {
             className="bg-primary"
         >
             <Header />
+
+            {isLoading && <ActivityIndicator size="large" />}
+
             {yourTeachers.length ? (
                 <Text className="text-text mt-4 px-3 text-2xl font-black">
                     Your Teachers
@@ -135,7 +181,7 @@ const TeachersList = () => {
                     )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item) => item.teacherId}
+                    keyExtractor={item => item.teacherId}
                 />
             </View>
 
@@ -153,7 +199,7 @@ const TeachersList = () => {
                     )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item) => item.teacherId}
+                    keyExtractor={item => item.teacherId}
                 />
             </View>
         </ScrollView>

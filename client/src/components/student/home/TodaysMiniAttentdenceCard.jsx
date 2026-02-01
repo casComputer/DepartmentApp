@@ -1,13 +1,11 @@
-import {
-    useEffect
-} from 'react'
+import { useEffect } from "react";
 import {
     View,
     Text,
     TouchableOpacity,
     ActivityIndicator,
     FlatList,
-    Dimensions,
+    Dimensions
 } from "react-native";
 import Animated, {
     useAnimatedRef,
@@ -15,23 +13,15 @@ import Animated, {
     scrollTo,
     withTiming,
     withDelay,
-    useDerivedValue,
+    useDerivedValue
 } from "react-native-reanimated";
-import {
-    useQuery
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import {
-    getTodaysAttendanceReport
-} from "@controller/student/attendance.controller.js";
+import { getTodaysAttendanceReport } from "@controller/student/attendance.controller.js";
 
-import {
-    HOURS
-} from "@constants/ClassAndCourses.js";
+import { HOURS } from "@constants/ClassAndCourses.js";
 
-import {
-    useAppStore
-} from "@store/app.store.js";
+import { useAppStore } from "@store/app.store.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const CARD_WIDTH = SCREEN_WIDTH * 0.95;
@@ -40,59 +30,54 @@ const SIDE_SPACING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const today = new Date();
 const day = today.getDate();
 const weekday = today.toLocaleString("en-US", {
-    weekday: "long",
+    weekday: "long"
 });
 const month = today.toLocaleString("en-US", {
-    month: "long",
+    month: "long"
 });
 const year = today.getFullYear();
 
-const Bubble = ({
-    item, attendance
-}) => (
+const Bubble = ({ item, attendance }) => (
     <View
-        style={ {
+        style={{
             backgroundColor:
-            attendance?.[item.id] === "present"
-            ? "rgb(34, 197, 94)": attendance?.[item.id] === "absent"
-            ? "rgb(239, 68, 68)": "rgb(120, 129, 143)",
-            borderRadius: "50%",
+                attendance?.[item.id] === "present"
+                    ? "rgb(34, 197, 94)"
+                    : attendance?.[item.id] === "absent"
+                    ? "rgb(239, 68, 68)"
+                    : "rgb(120, 129, 143)",
+            borderRadius: "50%"
         }}
         className="w-8 h-8 justify-center items-center"
-        >
+    >
         <Text className="text-white font-black text-xl">{item.key}</Text>
     </View>
 );
 
-const MiniAttentdenceCard = ({
-    studentId = null
-}) => {
-    const {
-        data: attendance,
-        isLoading
-    } = useQuery( {
-            queryKey: ["todaysAttendanceReport", studentId],
-            queryFn: () => getTodaysAttendanceReport(studentId),
-        });
+const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
+    const { data: attendance, isLoading } = useQuery({
+        queryKey: ["todaysAttendanceReport", studentId],
+        queryFn: () => getTodaysAttendanceReport(studentId)
+    });
 
     return (
         <View
-            style={ {
-                width: studentId ? CARD_WIDTH: "100%",
-                marginRight: SIDE_SPACING * 2,
+            style={{
+                width: studentId && !isSingle ? CARD_WIDTH : "100%",
+                marginRight: SIDE_SPACING * 2
             }}
-            className={`${!studentId ? "px-3": "mt-0"}`}
-            >
+            className={`${!studentId || isSingle ? "px-2" : "mt-0"}`}
+        >
             <View
-                style={ { boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
+                style={{ boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
                 className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card "
-                >
+            >
                 {/* Top */}
                 {studentId ? (
                     <Text className="text-lg font-black text-text-secondary">
                         {studentId}
                     </Text>
-                ): null}
+                ) : null}
 
                 <View className="flex-row items-center my-4">
                     <Text className="text-5xl font-bold text-text">{day}</Text>
@@ -119,13 +104,13 @@ const MiniAttentdenceCard = ({
                             <Text className="text-2xl font-bold text-text">
                                 Holiday 🎉
                             </Text>
-                        ): (
-                            HOURS.map((item) => (
+                        ) : (
+                            HOURS.map(item => (
                                 <Bubble
                                     key={item.key}
                                     item={item}
                                     attendance={attendance}
-                                    />
+                                />
                             ))
                         )}
                         {isLoading && <ActivityIndicator size="large" />}
@@ -137,8 +122,8 @@ const MiniAttentdenceCard = ({
 };
 
 const MiniAttentdence = () => {
-    const role = useAppStore((state) => state.user.role);
-    const students = useAppStore((state) => state.user.students);
+    const role = useAppStore(state => state.user.role);
+    const students = useAppStore(state => state.user.students);
 
     const itemSize = CARD_WIDTH + SIDE_SPACING * 2;
     const maxOffset = itemSize * (students?.length - 1) ?? 0;
@@ -157,29 +142,29 @@ const MiniAttentdence = () => {
             50,
             withTiming(0, {
                 duration: 500
-                
             })
         );
-    },
-        [students]);
+    }, [students]);
 
     return (
         <View className="gap-4 mt-12">
-            {role === "student" ? (
-                <MiniAttentdenceCard />
-            ): (
-
+            {role === "student" || students.length === 1 ? (
+                <MiniAttentdenceCard
+                    studentId={students?.[0] ?? null}
+                    isSingle={true}
+                />
+            ) : (
                 <Animated.ScrollView
                     ref={scrollRef}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     snapToInterval={CARD_WIDTH + SIDE_SPACING * 2}
                     decelerationRate="fast"
-                    contentContainerStyle={ {
-                        paddingHorizontal: SIDE_SPACING,
+                    contentContainerStyle={{
+                        paddingHorizontal: SIDE_SPACING
                     }}
-                    >
-                    {students?.map((item) => (
+                >
+                    {students?.map(item => (
                         <MiniAttentdenceCard key={item} studentId={item} />
                     ))}
                 </Animated.ScrollView>

@@ -57,7 +57,7 @@ export const verifyParent = async (studentId, parentId) => {
                                       students: parent.students.map(student =>
                                           student.studentId === studentId
                                               ? {
-                                                    ...studentId,
+                                                    ...student,
                                                     isVerified: true
                                                 }
                                               : student
@@ -68,14 +68,16 @@ export const verifyParent = async (studentId, parentId) => {
                     }))
                 };
             });
-            ToastAndroid.show("verified", ToastAndroid.LONG);
         } else
             ToastAndroid.show(
-                data.message ?? "Failed to varify parent!",
+                data.message ?? "Failed to verify student for the parent!",
                 ToastAndroid.LONG
             );
     } catch (error) {
-        ToastAndroid.show("Failed to verify parent!", ToastAndroid.LONG);
+        ToastAndroid.show(
+            "Failed to verify student for the parent!",
+            ToastAndroid.LONG
+        );
     }
 };
 export const removeParent = async (studentId, parentId) => {
@@ -107,12 +109,16 @@ export const removeParent = async (studentId, parentId) => {
                     }))
                 };
             });
+        } else {
+            ToastAndroid.show(
+                data.message ?? "Failed to reject parent request!",
+                ToastAndroid.LONG
+            );
         }
+    } catch (error) {
         ToastAndroid.show(
-            data.message ?? "Failed to remove parent!",
+            "Failed to reject parent request!",
             ToastAndroid.LONG
         );
-    } catch (error) {
-        ToastAndroid.show("Failed to remove parent!", ToastAndroid.LONG);
     }
 };

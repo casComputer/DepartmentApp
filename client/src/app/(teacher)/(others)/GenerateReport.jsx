@@ -24,9 +24,11 @@ import { useAppStore } from "@store/app.store.js";
 import {
     downloadFile,
     checkFileExists,
-    openFileWithDefaultApp
+    openFileWithDefaultApp,
+    deleteIfExists
 } from "@utils/file.js";
 import { openFile, shareFile } from "@utils/generateReport.js";
+import confirm from "@utils/confirm.js";
 
 const ReportFileItem = ({
     icon,
@@ -155,16 +157,23 @@ const GenerateReport = () => {
         }
     };
 
-    const handleDeleteReport = async () => {
-        setDeleting(true);
-        const { success, message } = await deleteReport({
-            year,
-            course,
-            calendarMonth: date.getMonth(),
-            calendarYear: date.getFullYear()
+    const handleDeleteReport = () => {
+        confirm("Are you sure to delete this record ?", async () => {
+            setDeleting(true);
+            const { success, message } = await deleteReport({
+                year,
+                course,
+                calendarMonth: date.getMonth(),
+                calendarYear: date.getFullYear()
+            });
+            if (success) {
+                await deleteIfExists(null, result.pdf.filename + ".pdf");
+                await deleteIfExists(null, result.xl.filename + ".xlsx");
+
+                setResult({ message });
+            }
+            setDeleting(false);
         });
-        if (success) setResult({ message });
-        setDeleting(false);
     };
 
     return (
@@ -185,13 +194,17 @@ const GenerateReport = () => {
                     <Text className="text-yellow-300 text-md mt-4 font-bold text-center">
                         {result.message}
                     </Text>
-                    <TouchableOpacity disabled={deleting} onPress={handleDeleteReport}>
-                        <Text className="text-red-500 my-1 mb-3 text-xl font-black text-center">
-                            {
-                                deleting ? 'Deleting..' : 'Delete Report'
-                            }
-                        </Text>
-                    </TouchableOpacity>
+
+                    {(result.pdf || result.xl) && (
+                        <TouchableOpacity
+                            disabled={deleting}
+                            onPress={handleDeleteReport}
+                        >
+                            <Text className="text-red-500 my-1 mb-3 text-xl font-black text-center">
+                                {deleting ? "Deleting.." : "Delete Report"}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </>
             ) : null}
 
@@ -218,7 +231,7 @@ const GenerateReport = () => {
             )}
 
             <TouchableOpacity
-            disabled={generating}
+                disabled={generating}
                 className="py-5 bg-btn rounded-2xl mt-8 mx-3 justify-center items-center"
                 onPress={handleGeneration}
             >

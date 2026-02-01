@@ -145,7 +145,6 @@ export const getClassAttendance = async ({
 
 export const getAttendanceXl = async payload => {
     try {
-        console.log(payload);
         const { data } = await axios.post(
             "/attendance/monthly-report-excel",
             payload
@@ -155,7 +154,7 @@ export const getAttendanceXl = async payload => {
 
         if (data.success) {
             ToastAndroid.show("succsss", ToastAndroid.SHORT);
-            return data.secure_url;
+            return data;
         }
         ToastAndroid.show(
             data.message ?? "Failed to generate attendance report!",

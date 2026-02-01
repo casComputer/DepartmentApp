@@ -292,8 +292,10 @@ export const generateXlSheet = async (req, res) => {
             month,
             calendarYear
         });
+        
+        console.log(data)
 
-        if (!data || !data.length)
+        if (!data)
             return res.json({
                 success: false,
                 message: "Failed to generate attendance report!"

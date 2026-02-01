@@ -276,7 +276,7 @@ export const generateXlSheet = async (req, res) => {
             course
         });
 
-        let existDoc = false;
+         existDoc = false;
 
         if (existDoc)
             return res.json({

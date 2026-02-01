@@ -145,6 +145,7 @@ export const getClassAttendance = async ({
 
 export const getAttendanceXl = async payload => {
     try {
+        console.log(payload);
         const { data } = await axios.post(
             "/attendance/monthly-report-excel",
             payload

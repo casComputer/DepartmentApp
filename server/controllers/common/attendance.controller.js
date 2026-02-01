@@ -362,7 +362,8 @@ export const generateXlSheet = async (req, res) => {
             return res.json({
                 success: true,
                 xl_url,
-                pdf_url
+                pdf_url,
+                filename: `${monthNames[month]}-${calendarYear}-${year}-${course}`
             });
         }
 

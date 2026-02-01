@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import PDFDocument from "pdfkit";
 import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
@@ -184,6 +185,52 @@ async function generateAttendanceExcel(data) {
     return await workbook.xlsx.writeBuffer();
 }
 
+function generateAttendancePDF(data, meta = {}) {
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument({ margin: 40, size: "A4" });
+
+            const buffers = [];
+            doc.on("data", buffers.push.bind(buffers));
+            doc.on("end", () => {
+                resolve(Buffer.concat(buffers));
+            });
+
+            // Title
+            doc.fontSize(18)
+                .text("Monthly Attendance Report", { align: "center" })
+                .moveDown();
+
+            // Meta info
+            doc.fontSize(12)
+                .text(`Course: ${meta.course}`)
+                .text(`Year: ${meta.year}`)
+                .text(`Month: ${meta.month} ${meta.calendarYear}`)
+                .moveDown();
+
+            // Table headers
+            doc.fontSize(11).font("Helvetica-Bold");
+            doc.text("Student ID      Working  Present  Absent  %", {
+                underline: true
+            });
+            doc.moveDown(0.5);
+
+            doc.font("Helvetica");
+
+            // Table rows
+            data.forEach(row => {
+                doc.text(
+                    `${row.studentId}      ${row.working_days}      ${row.present_days}      ${row.absent_days}      ${row.attendance_percentage}%`
+                );
+            });
+
+            doc.end();
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
 export const generateXlSheet = async (req, res) => {
     try {
         const { course, year, month, calendarYear } = req.body;
@@ -205,6 +252,8 @@ export const generateXlSheet = async (req, res) => {
         if (existDoc)
             return res.json({
                 success: false,
+                xl_url: existDoc.xl_url,
+                pdf_url: existDoc.pdf_url,
                 message: "Attendance report for this month already exist!"
             });
 
@@ -228,11 +277,11 @@ export const generateXlSheet = async (req, res) => {
                 message: "Failed to generate exel-sheet!"
             });
 
-        const uploadResult = await new Promise((resolve, reject) => {
+        const { secure_url: xl_url } = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     resource_type: "raw",
-                    folder: "attendance",
+                    folder: "attendance/xl",
                     public_id: `attendance_${Date.now()}.xlsx`,
                     format: "xlsx"
                 },
@@ -245,27 +294,51 @@ export const generateXlSheet = async (req, res) => {
             streamifier.createReadStream(excelBuffer).pipe(uploadStream);
         });
 
-        console.log(uploadResult);
+        const pdfBuffer = await generateAttendancePDF(data, {
+            course,
+            year,
+            month,
+            calendarYear
+        });
 
-        if (uploadResult.secure_url) {
+        const { secure_url: pdf_url } = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    resource_type: "raw",
+                    folder: "attendance/pdf",
+                    public_id: `attendance_${Date.now()}.pdf`,
+                    format: "pdf"
+                },
+                (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
+                }
+            );
+
+            streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
+        });
+
+        if (xl_url && pdf_url) {
             await MonthlyReport.create({
                 calendarYear,
                 calendarMonth: month,
                 course,
                 year,
-                secure_url: uploadResult.secure_url,
+                xl_url,
+                pdf_url,
                 teacherId
             });
 
             return res.json({
                 success: true,
-                secure_url: uploadResult.secure_url
+                xl_url,
+                pdf_url
             });
         }
 
         return res.json({
             success: false,
-            message: "Failed to upload exel sheet to cloud!"
+            message: "Failed to upload exel sheet or pdf to cloud!"
         });
     } catch (error) {
         console.error(error);

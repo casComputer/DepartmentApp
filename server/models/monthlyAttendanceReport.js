@@ -17,7 +17,11 @@ const reportSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    secure_url: {
+    xl_url: {
+        type: String,
+        required: true
+    },
+    pdf_url: {
         type: String,
         required: true
     },

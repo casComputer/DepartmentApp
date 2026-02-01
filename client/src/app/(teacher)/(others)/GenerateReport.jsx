@@ -21,14 +21,15 @@ const GenerateReport = () => {
         date.getFullYear();
 
     const handleGeneration = async () => {
+        if (!year || !course || !date) return;
         const secure_url = await getAttendanceXl({
             course,
             year,
             month: date.getMonth(),
             calendarYear: date.getFullYear()
         });
-        
-        alert(secure_url)
+
+        console.log(secure_url);
     };
 
     return (

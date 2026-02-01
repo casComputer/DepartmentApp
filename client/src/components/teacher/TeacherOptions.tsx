@@ -67,6 +67,7 @@ const optionsData = [
         locaton: "/(teacher)/(others)/ExamResultSelector"
     },
     {
+        requiresInCharge: true,
         Icon: MaterialIcons,
         iconName: "grade",
         text: "Generate Attendance Report",

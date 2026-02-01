@@ -9,7 +9,7 @@ import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 export const getMonthlyAttendanceReport = async ({
     course,
     classYear, // class year (eg: "Third")
-    month,
+    month, // month must be in range of 1 ro 12
     calendarYear,
     studentId = null
 }) => {
@@ -27,13 +27,9 @@ export const getMonthlyAttendanceReport = async ({
                 "course, classYear, month, calendarYear are required"
             );
         }
-        
-        console.log(course, classYear, month, calendarYear);
 
         const monthStr = String(month).padStart(2, "0");
         const yearStr = String(calendarYear);
-        
-        console.log(monthStr, yearStr);
 
         const studentFilterSQL = studentId
             ? `AND ad.studentId = ? `
@@ -41,7 +37,7 @@ export const getMonthlyAttendanceReport = async ({
 
         const args = studentId
             ? [yearStr, monthStr, studentId]
-            : [ yearStr, monthStr, course, classYear];
+            : [yearStr, monthStr, course, classYear];
 
         const result = await turso.execute({
             sql: `
@@ -280,7 +276,7 @@ export const generateXlSheet = async (req, res) => {
             course
         });
 
-         existDoc = false;
+        existDoc = false;
 
         if (existDoc)
             return res.json({
@@ -293,16 +289,14 @@ export const generateXlSheet = async (req, res) => {
         const data = await getMonthlyAttendanceReport({
             course,
             classYear: year,
-            month,
+            month: month + 1, // this fn requires month in range of (1-12), but the actual month is in range (0-11)
             calendarYear
         });
-        
-        console.log(data)
 
-        if (!data)
+        if (!data || !data.length)
             return res.json({
                 success: false,
-                message: "Failed to generate attendance report!"
+                message: `unable to find attendance records for ${monthNames[month]}-${calendarYear}}`
             });
 
         const excelBuffer = await generateAttendanceExcel(data);

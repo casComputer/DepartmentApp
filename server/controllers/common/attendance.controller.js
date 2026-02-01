@@ -27,9 +27,13 @@ export const getMonthlyAttendanceReport = async ({
                 "course, classYear, month, calendarYear are required"
             );
         }
+        
+        console.log(course, classYear, month, calendarYear);
 
         const monthStr = String(month).padStart(2, "0");
         const yearStr = String(calendarYear);
+        
+        console.log(monthStr, yearStr);
 
         const studentFilterSQL = studentId
             ? `AND ad.studentId = ? `

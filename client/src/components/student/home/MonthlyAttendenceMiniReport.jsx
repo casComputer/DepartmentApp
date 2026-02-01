@@ -44,6 +44,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
         queryKey: ["OverallAttendenceReport", studentId],
         queryFn: () => getOverallAttendenceReport(studentId)
     });
+    
 
     const role = useAppStore(state => state.user.role);
 
@@ -52,6 +53,12 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
     const totalClassesSoFar = report?.summary?.totalClassesSoFar ?? 0;
     const ongoingDays = report?.time_analysis?.ongoingDays ?? 0;
 
+    const handlePress = ()=>{
+        if(!totalClassesSoFar) return
+        
+        router.push("(student)/(others)/AttendanceSummary")
+    }
+    
     return (
         <TouchableOpacity
             style={{
@@ -60,7 +67,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                 boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)"
             }}
             disabled={role === "parent"}
-            onPress={() => router.push("(student)/(others)/AttendanceSummary")}
+            onPress={handlePress}
             activeOpacity={0.75}
             className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 bg-card"
         >

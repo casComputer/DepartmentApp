@@ -150,17 +150,26 @@ export const getAttendanceXl = async payload => {
             payload
         );
 
-        if (data.success) {
-            ToastAndroid.show("succsss", ToastAndroid.SHORT);
-            return data;
-        }
+        if (data.success) return data;
+
         ToastAndroid.show(
             data.message ?? "Failed to generate attendance report!",
             ToastAndroid.LONG
         );
-        return {
-            succsss: false
+
+        if (data.filename) {
+            return {
+                success: true,
+                pdf_url: data.pdf_url,
+                xl_url: data.xl_url,
+                filename: data.filename,
+                message: data.message,
+            };
         }
+
+        return {
+            success: false
+        };
     } catch (error) {
         console.error(error);
         ToastAndroid.show(
@@ -168,7 +177,7 @@ export const getAttendanceXl = async payload => {
             ToastAndroid.LONG
         );
         return {
-            succsss: false
-        }
+            success: false
+        };
     }
 };

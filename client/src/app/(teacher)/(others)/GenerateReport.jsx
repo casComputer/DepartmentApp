@@ -23,11 +23,17 @@ const GenerateReport = () => {
         (date.getMonth() + 1).toString().padStart(2, "0") +
         "-" +
         date.getFullYear();
-        
+
     const handleGeneration = async () => {
         if (!year || !course || !date) return;
 
-        const { success, pdf_url, xl_url, filename } = await getAttendanceXl({
+        const {
+            success,
+            pdf_url,
+            xl_url,
+            filename,
+            message = ""
+        } = await getAttendanceXl({
             course,
             year,
             month: date.getMonth(),
@@ -37,11 +43,6 @@ const GenerateReport = () => {
         if (success) {
             const existPdf = await checkFileExists(filename + ".pdf");
             const existXl = await checkFileExists(filename + ".xlsx");
-
-            console.log(
-                await checkFileExists(filename + ".xlsx"),
-                await checkFileExists(filename)
-            );
 
             setResult({
                 pdf: {
@@ -53,7 +54,8 @@ const GenerateReport = () => {
                     url: xl_url,
                     filename: filename,
                     exists: existXl.exists
-                }
+                },
+                message
             });
         }
     };
@@ -93,14 +95,14 @@ const GenerateReport = () => {
             await downloadFile(
                 result.pdf?.url,
                 "pdf",
-                result.pdf?.filename+'.pdf',
+                result.pdf?.filename + ".pdf",
                 true
             );
         else if (type === "xl")
             await downloadFile(
                 result.xl?.url,
                 "xlsx",
-                result.xl?.filename+'.xlsx',
+                result.xl?.filename + ".xlsx",
                 true
             );
     };
@@ -117,6 +119,19 @@ const GenerateReport = () => {
                     Change Date
                 </Text>
             </TouchableOpacity>
+
+            {result.message ? (
+                <>
+                    <Text className="text-red-300 text-md mt-4 font-bold text-center">
+                        {result.message}
+                    </Text>
+                    <TouchableOpacity>
+                        <Text className="text-red-500 my-1 mb-3 text-xl font-black text-center">
+                            Delete Report
+                        </Text>
+                    </TouchableOpacity>
+                </>
+            ) : null}
 
             {result.pdf?.url && (
                 <View className="mt-3 flex-row items-center justify-between py-3 px-4">

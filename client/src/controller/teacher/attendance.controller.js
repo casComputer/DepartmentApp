@@ -150,8 +150,6 @@ export const getAttendanceXl = async payload => {
             payload
         );
 
-        console.log(data);
-
         if (data.success) {
             ToastAndroid.show("succsss", ToastAndroid.SHORT);
             return data;
@@ -160,11 +158,17 @@ export const getAttendanceXl = async payload => {
             data.message ?? "Failed to generate attendance report!",
             ToastAndroid.LONG
         );
+        return {
+            succsss: false
+        }
     } catch (error) {
         console.error(error);
         ToastAndroid.show(
             "Failed to generate attendance report!",
             ToastAndroid.LONG
         );
+        return {
+            succsss: false
+        }
     }
 };

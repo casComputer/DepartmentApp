@@ -29,6 +29,8 @@ export const checkFileExists = async filename => {
             const decoded = decodeURIComponent(uri);
             return decoded.endsWith("/" + filename);
         });
+        
+        console.log(files);
 
         if (foundUri) return { exists: true, foundUri };
         else return { exists: false };
@@ -62,7 +64,7 @@ export const saveFile = async (
     const mimetype = getMimeType(format);
 
     const dirUri = await ensureDirectoryPermission();
-    if (!dirUri) return false
+    if (!dirUri) return { success: false }
 
     await deleteIfExists(dirUri, filename);
 
@@ -82,11 +84,11 @@ export const saveFile = async (
         });
 
         if (autoOpen) openFileWithDefaultApp(fileUri, mimetype);
-        return true
+        if (!dirUri) return { success: true, fileUri, localUri }
     } catch (err) {
         ToastAndroid.show("Failed to save file!", ToastAndroid.LONG);
         console.log("SAVE ERROR:", err);
-        return false
+        return { success: false }
     }
 };
 
@@ -103,7 +105,7 @@ export const downloadFile = async (
     if (exists) {
         format = getMimeType(format);
         if(autoOpen) openFileWithDefaultApp(foundUri, format);
-        return true
+        return { success: true, fileUri: foundUri, }
     } else {
         const result = await FileSystem.downloadAsync(
             url,

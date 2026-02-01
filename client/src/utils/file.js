@@ -16,12 +16,14 @@ import {
     open in default app for viewing 
 */
 
+// REMOVED FILEURI RETURNS, IS APP NOT BREAKS AFTER TESTING, CAN REMOVE COMMENTED LINES
+
 export const checkFileExists = async (
     filename,
     localDir = FileSystem.documentDirectory
 ) => {
     let contentUri = null;
-    let fileUri = null;
+    // let fileUri = null;
 
     try {
         const dirUri = getSystemStorageUri();
@@ -40,19 +42,20 @@ export const checkFileExists = async (
         }
     } catch (e) {}
 
-    try {
-        const localPath = localDir + filename;
-        const info = await FileSystem.getInfoAsync(localPath);
+    // try {
+    //     const localPath = localDir + filename;
+    //     const info = await FileSystem.getInfoAsync(localPath);
 
-        if (info.exists) {
-            fileUri = info.uri;
-        }
-    } catch (e) {}
+    //     if (info.exists) {
+    //         fileUri = info.uri;
+    //     }
+    // } catch (e) {}
 
     return {
-        exists: Boolean(contentUri || fileUri),
-        contentUri,
-        fileUri
+        // exists: Boolean(contentUri || fileUri),
+        exists: Boolean(contentUri),
+        contentUri
+        // fileUri
     };
 };
 
@@ -79,7 +82,7 @@ export const saveFile = async (
         await Sharing.shareAsync(localUri);
         return {
             success: true,
-            fileUri: localUri,
+            // fileUri: localUri,
             contentUri: null
         };
     }
@@ -105,6 +108,10 @@ export const saveFile = async (
         await FileSystem.writeAsStringAsync(contentUri, base64, {
             encoding: FileSystem.EncodingType.Base64
         });
+        
+        await FileSystem.deleteAsync(localPath, {
+                idempotent: true
+            });
 
         if (autoOpen) {
             await openFileWithDefaultApp(contentUri, mimetype);
@@ -112,7 +119,7 @@ export const saveFile = async (
 
         return {
             success: true,
-            fileUri: localUri, // file://
+            // fileUri: localUri, // file://
             contentUri // content://
         };
     } catch (err) {
@@ -129,23 +136,16 @@ export const downloadFile = async (
     autoOpen = true
 ) => {
     if (!filename) filename = url.split("/").at(-1);
-    console.log("downloading..");
 
-    const { exists, fileUri, contentUri } = await checkFileExists(filename);
-
+    const { exists, contentUri } = await checkFileExists(filename);
     const mimeType = getMimeType(format);
-    
-    console.log(exists, contentUri);
 
     if (exists && contentUri) {
-        // ✅ open SAF file, not local cache
-        if (autoOpen && contentUri) {
+        if (autoOpen && contentUri) 
             await openFileWithDefaultApp(contentUri, mimeType);
-        }
-
+        
         return {
             success: true,
-            fileUri,
             contentUri
         };
     }
@@ -158,8 +158,11 @@ export const downloadFile = async (
     return saveFile(result.uri, filename, format, autoOpen);
 };
 
-export const deleteIfExists = async (dirUri, filename) => {
+export const deleteIfExists = async (dirUri, filename, localDir = FileSystem.documentDirectory) => {
     try {
+        let deleted = false;
+        if (!dirUri) dirUri = await ensureDirectoryPermission();
+
         const files =
             await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
 
@@ -168,11 +171,29 @@ export const deleteIfExists = async (dirUri, filename) => {
             return decoded.endsWith("/" + filename);
         });
 
-        if (foundUri)
+        if (foundUri) {
             await FileSystem.StorageAccessFramework.deleteAsync(foundUri);
+            deleted = true;
+        }
     } catch (e) {
         console.log("Delete check error:", e);
     }
+    
+    try {
+        const localPath = localDir + filename;
+        const info = await FileSystem.getInfoAsync(localPath);
+
+        if (info.exists) {
+            await FileSystem.deleteAsync(localPath, {
+                idempotent: true
+            });
+            deleted = true;
+        }
+    } catch (e) {
+        console.log("Local delete error:", e);
+    }
+
+    return deleted;
 };
 
 export const ensureDirectoryPermission = async () => {

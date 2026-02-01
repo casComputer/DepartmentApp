@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+    View,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+    Image,
+    ActivityIndicator
+} from "react-native";
+import * as Sharing from "expo-sharing";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { FontAwesome6, Octicons, FontAwesome } from "@icons";
 
@@ -10,10 +18,12 @@ import { getAttendanceXl } from "@controller/teacher/attendance.controller.js";
 import { useAppStore } from "@store/app.store.js";
 
 import { downloadFile, checkFileExists } from "@utils/file.js";
+import getMimeType from "@utils/getMimeType.js";
 
 const GenerateReport = () => {
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
+    const [generating, setGenerating] = useState(false);
     const [result, setResult] = useState({});
 
     const course = useAppStore(state => state.user.in_charge_course);
@@ -26,6 +36,7 @@ const GenerateReport = () => {
 
     const handleGeneration = async () => {
         if (!year || !course || !date) return;
+        setGenerating(true);
 
         const {
             success,
@@ -39,6 +50,7 @@ const GenerateReport = () => {
             month: date.getMonth(),
             calendarYear: date.getFullYear()
         });
+        setGenerating(false);
 
         if (success) {
             const existPdf = await checkFileExists(filename + ".pdf");
@@ -107,6 +119,35 @@ const GenerateReport = () => {
             );
     };
 
+    const shareFile = async type => {
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (!isAvailable) {
+            ToastAndroid.show(
+                "Sharing is not available on this device",
+                ToastAndroid.SHORT
+            );
+            return;
+        }
+
+        if (type === "pdf") {
+            const mimeType = getMimeType("pdf");
+            const { foundUri } = await checkFileExists(
+                result.pdf.filename + ".pdf"
+            );
+
+            if (foundUri) {
+                await Sharing.shareAsync(foundUri, {
+                    mimeType: "audio/mpeg",
+                    dialogTitle: "Share via WhatsApp"
+                });
+            } else
+                ToastAndroid.show(
+                    "Unable to share the file",
+                    ToastAndroid.SHORT
+                );
+        }
+    };
+
     return (
         <ScrollView className="grow bg-primary">
             <Header title={"Generate Report"} />
@@ -135,13 +176,9 @@ const GenerateReport = () => {
 
             {result.pdf?.url && (
                 <View className="mt-3 flex-row items-center justify-between py-3 px-4">
-                    <View className="flex-row items-center w-[90%]">
+                    <View className="flex-row items-center w-[75%]">
                         <FontAwesome6 name="file-pdf" size={25} />
-                        <Text
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="w-[85%] text-text font-bold pl-2"
-                        >
+                        <Text className="w-full text-text font-bold pl-2">
                             {result.pdf?.filename}.pdf
                         </Text>
                     </View>
@@ -150,22 +187,30 @@ const GenerateReport = () => {
                             <Octicons name="download" size={24} />
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={() => openFile("pdf")}>
-                            <Text className="text-blue-500 text-lg font-bold">
-                                Open
-                            </Text>
-                        </TouchableOpacity>
+                        <View className="flex-row items-center gap-3">
+                            <TouchableOpacity onPress={() => shareFile("pdf")}>
+                                <Text className="text-green-500 text-lg font-bold">
+                                    Share
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => openFile("pdf")}>
+                                <Text className="text-blue-500 text-lg font-bold">
+                                    Open
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </View>
             )}
+
             {result.xl?.url && (
                 <View className="flex-row items-center justify-between py-3 px-4">
-                    <View className="flex-row items-center w-[90%]">
+                    <View className="flex-row items-center w-[75%]">
                         <FontAwesome name="file-excel-o" size={24} />
                         <Text
                             numberOfLines={1}
                             adjustsFontSizeToFit
-                            className="w-[85%] text-text font-bold pl-3"
+                            className="w-full text-text font-bold pl-3"
                         >
                             {result.xl?.filename}.xlsx
                         </Text>
@@ -175,22 +220,37 @@ const GenerateReport = () => {
                             <Octicons name="download" size={24} />
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={() => openFile("xl")}>
-                            <Text className="text-blue-500 text-lg font-bold">
-                                Open
-                            </Text>
-                        </TouchableOpacity>
+                        <View className="flex-row items-center gap-3">
+                            <TouchableOpacity onPress={() => shareFile("xl")}>
+                                <Text className="text-green-500 text-lg font-bold">
+                                    Share
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => openFile("xl")}>
+                                <Text className="text-blue-500 text-lg font-bold">
+                                    Open
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </View>
             )}
 
             <TouchableOpacity
-                className="py-5 bg-btn rounded-2xl mt-8 mx-3"
+                className="py-5 bg-btn rounded-2xl mt-8 mx-3 justify-center items-center"
                 onPress={handleGeneration}
             >
                 <Text className="text-xl font-bold text-center text-text">
-                    Generate Report
+                    {generating ? "Generating" : "Generate"} Report
                 </Text>
+                {generating && (
+                    <ActivityIndicator
+                        style={{
+                            position: "absolute",
+                            right: "20%"
+                        }}
+                    />
+                )}
             </TouchableOpacity>
             {showPicker && (
                 <DateTimePickerAndroid

@@ -37,7 +37,7 @@ export const getMonthlyAttendanceReport = async ({
 
         const args = studentId
             ? [yearStr, monthStr, studentId]
-            : [course, classYear, yearStr, monthStr];
+            : [ yearStr, monthStr, course, classYear];
 
         const result = await turso.execute({
             sql: `

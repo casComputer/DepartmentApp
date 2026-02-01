@@ -2,7 +2,9 @@ import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
 import streamifier from "streamifier";
 
-import { turso } from "../../config/turso.js";
+import {
+    turso
+} from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 
@@ -32,12 +34,15 @@ export const getMonthlyAttendanceReport = async ({
         const yearStr = String(calendarYear);
 
         const studentFilterSQL = studentId
-            ? `AND ad.studentId = ? `
-            : `AND a.course = ? AND a.year = ?`;
+        ? `AND ad.studentId = ? `: `AND a.course = ? AND a.year = ?`;
 
         const args = studentId
-            ? [yearStr, monthStr, studentId]
-            : [course, classYear, yearStr, monthStr];
+        ? [yearStr,
+            monthStr,
+            studentId]: [course,
+            classYear,
+            yearStr,
+            monthStr];
 
         const result = await turso.execute({
             sql: `
@@ -156,72 +161,83 @@ async function generateAttendanceExcel(data) {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Attendance");
 
-    sheet.columns = [
+    sheet.columns = [{
+        header: " Student ID",
+        key: "studentId"
+    },
         {
-            header: "Student ID",
-            key: "studentId",
-            width: 20
-        },
-        {
-            header: "Working Days",
+            header: " Working Days",
             key: "working_days"
         },
         {
-            header: "Present Days",
+            header: " Present Days",
             key: "present_days"
         },
         {
-            header: "Absent Days",
+            header: " Absent Days",
             key: "absent_days"
         },
         {
-            header: "Percentage",
+            header: " Percentage",
             key: "attendance_percentage"
-        }
-    ];
+        }];
 
-    data.forEach(row => sheet.addRow(row));
+    data.forEach(row => sheet.addRow({
+        ...row, studentId: ` ${row.studentId}`
+    }));
+
+    sheet.columns.forEach(column => {
+        let maxLength = 0;
+        column.eachCell(cell => {
+            const cellValue = cell.value ? cell.value.toString(): "";
+            maxLength = Math.max(maxLength, cellValue.length);
+        });
+        column.width = maxLength + 2;
+    });
 
     return await workbook.xlsx.writeBuffer();
 }
 
-function generateAttendancePDF(data, meta = {}) {
+function generateAttendancePDF(data, meta = {
+    course,
+    year,
+    month,
+    calendarYear
+}) {
     return new Promise((resolve, reject) => {
         try {
-            const doc = new PDFDocument({ margin: 40, size: "A4" });
+            const doc = new PDFDocument( {
+                size: 'A4'
+            });
+
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            const calendarMonth = monthNames[month];
 
             const buffers = [];
             doc.on("data", buffers.push.bind(buffers));
-            doc.on("end", () => {
-                resolve(Buffer.concat(buffers));
-            });
+            doc.on("end", () => resolve(Buffer.concat(buffers)));
 
-            // Title
-            doc.fontSize(18)
-                .text("Monthly Attendance Report", { align: "center" })
-                .moveDown();
+            doc.fontSize(14);
+            doc.font('Times-Roman');
 
-            // Meta info
-            doc.fontSize(12)
-                .text(`Course: ${meta.course}`)
-                .text(`Year: ${meta.year}`)
-                .text(`Month: ${meta.month} ${meta.calendarYear}`)
-                .moveDown();
-
-            // Table headers
-            doc.fontSize(11).font("Helvetica-Bold");
-            doc.text("Student ID      Working  Present  Absent  %", {
-                underline: true
-            });
-            doc.moveDown(0.5);
-
-            doc.font("Helvetica");
-
-            // Table rows
-            data.forEach(row => {
-                doc.text(
-                    `${row.studentId}      ${row.working_days}      ${row.present_days}      ${row.absent_days}      ${row.attendance_percentage}%`
-                );
+            doc
+            .text(`Attendance Report for ${year} ${course} – ${calendarMonth} ${calendarYear}`)
+            .table({
+                rowStyles: [30],
+                data: [
+                    [
+                        'StudentId',
+                        'Working Days',
+                        'Present Days',
+                        'Absent Days',
+                        'Percentage'
+                    ],
+                    ...data.map(item => Object.values(item))
+                ]
             });
 
             doc.end();
@@ -233,14 +249,21 @@ function generateAttendancePDF(data, meta = {}) {
 
 export const generateXlSheet = async (req, res) => {
     try {
-        const { course, year=2026, month=0, calendarYear } = req.body;
-        const { userId: teacherId } = req.user;
+        const {
+            course,
+            year = 2026,
+            month = 0,
+            calendarYear
+        } = req.body;
+        const {
+            userId: teacherId
+        } = req.user;
 
         if (!course || !calendarYear)
             return res.json({
-                success: false,
-                message: "course, year, month, calendarYear are required!"
-            });
+            success: false,
+            message: "course, year, month, calendarYear are required!"
+        });
 
         const existDoc = await MonthlyReport.findOne({
             calendarMonth: month,
@@ -251,11 +274,11 @@ export const generateXlSheet = async (req, res) => {
 
         if (existDoc)
             return res.json({
-                success: false,
-                xl_url: existDoc.xl_url,
-                pdf_url: existDoc.pdf_url,
-                message: `Attendance report for ${month}-${year} already exist!`
-            });
+            success: false,
+            xl_url: existDoc.xl_url,
+            pdf_url: existDoc.pdf_url,
+            message: `Attendance report for ${month}-${year} already exist!`
+        });
 
         const data = await getMonthlyAttendanceReport({
             course,
@@ -265,34 +288,36 @@ export const generateXlSheet = async (req, res) => {
         });
         if (!data)
             return res.json({
-                success: false,
-                message: "Failed to generate attendance report!"
-            });
+            success: false,
+            message: "Failed to generate attendance report!"
+        });
 
         const excelBuffer = await generateAttendanceExcel(data);
 
         if (!excelBuffer)
             return res.json({
-                success: false,
-                message: "Failed to generate exel-sheet!"
-            });
-
-        const { secure_url: xl_url } = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                {
-                    resource_type: "raw",
-                    folder: "attendance/xl",
-                    public_id: `attendance_${Date.now()}.xlsx`,
-                    format: "xlsx"
-                },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
-
-            streamifier.createReadStream(excelBuffer).pipe(uploadStream);
+            success: false,
+            message: "Failed to generate exel-sheet!"
         });
+
+        const {
+            secure_url: xl_url
+        } = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: "raw",
+                        folder: "attendance/xl",
+                        public_id: `attendance_${Date.now()}.xlsx`,
+                        format: "xlsx"
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+
+                streamifier.createReadStream(excelBuffer).pipe(uploadStream);
+            });
 
         const pdfBuffer = await generateAttendancePDF(data, {
             course,
@@ -301,22 +326,25 @@ export const generateXlSheet = async (req, res) => {
             calendarYear
         });
 
-        const { secure_url: pdf_url } = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                {
-                    resource_type: "raw",
-                    folder: "attendance/pdf",
-                    public_id: `attendance_${Date.now()}.pdf`,
-                    format: "pdf"
-                },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
+        const {
+            secure_url: pdf_url
+        } = await new Promise((resolve,
+                reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: "raw",
+                        folder: "attendance/pdf",
+                        public_id: `attendance_${Date.now()}.pdf`,
+                        format: "pdf"
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
 
-            streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
-        });
+                streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
+            });
 
         if (xl_url && pdf_url) {
             await MonthlyReport.create({

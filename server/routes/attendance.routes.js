@@ -18,8 +18,7 @@ import {
 } from "../controllers/student/attendance.controller.js";
 
 import {
-    generateXlSheet,
-    generateAttendanceReport
+    generateXlSheet
 } from "../controllers/common/attendance.controller.js";
 
 router.post("/save", authorize("teacher", "admin"), save);

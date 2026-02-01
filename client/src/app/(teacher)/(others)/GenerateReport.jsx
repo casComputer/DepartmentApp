@@ -75,6 +75,7 @@ const GenerateReport = () => {
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [result, setResult] = useState({});
 
     const course = useAppStore(state => state.user.in_charge_course);
@@ -184,9 +185,11 @@ const GenerateReport = () => {
                     <Text className="text-yellow-300 text-md mt-4 font-bold text-center">
                         {result.message}
                     </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity disabled={deleting} onPress={handleDeleteReport}>
                         <Text className="text-red-500 my-1 mb-3 text-xl font-black text-center">
-                            Delete Report
+                            {
+                                deleting ? 'Deleting..' : 'Delete Report'
+                            }
                         </Text>
                     </TouchableOpacity>
                 </>
@@ -215,6 +218,7 @@ const GenerateReport = () => {
             )}
 
             <TouchableOpacity
+            disabled={generating}
                 className="py-5 bg-btn rounded-2xl mt-8 mx-3 justify-center items-center"
                 onPress={handleGeneration}
             >

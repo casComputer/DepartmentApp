@@ -223,6 +223,8 @@ function generateAttendancePDF(
 
             doc.fontSize(14);
             doc.font("Times-Roman");
+            
+            console.log(data);
 
             doc
             .text(

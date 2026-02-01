@@ -14,6 +14,7 @@ import notesRoutes from "./routes/notes.routes.js";
 import fileRoutes from "./routes/file.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 // import data from "./cron/attendance.js";
 
@@ -30,9 +31,12 @@ app.use(cors( {
     origin: "*", credentials: true
 }));
 
+app.use("/sample", dashboardRoutes);
+
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/admin", authorize("admin"), adminRoutes);
+app.use("/dashboard", authorize("admin"), dashboardRoutes);
 
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);

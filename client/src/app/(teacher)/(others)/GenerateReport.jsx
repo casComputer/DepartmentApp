@@ -5,20 +5,71 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    ActivityIndicator
+    ActivityIndicator,
+    ToastAndroid
 } from "react-native";
-import * as Sharing from "expo-sharing";
+
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { FontAwesome6, Octicons, FontAwesome } from "@icons";
 
 import Header from "@components/common/Header";
 
-import { getAttendanceXl } from "@controller/teacher/attendance.controller.js";
+import {
+    getAttendanceXl,
+    deleteReport
+} from "@controller/teacher/attendance.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
-import { downloadFile, checkFileExists } from "@utils/file.js";
-import getMimeType from "@utils/getMimeType.js";
+import {
+    downloadFile,
+    checkFileExists,
+    openFileWithDefaultApp
+} from "@utils/file.js";
+import { openFile, shareFile } from "@utils/generateReport.js";
+
+const ReportFileItem = ({
+    icon,
+    filename,
+    exists,
+    onDownload,
+    onOpen,
+    onShare
+}) => {
+    return (
+        <View className="flex-row items-center justify-between py-3 px-4">
+            <View className="flex-row items-center w-[75%]">
+                {icon}
+                <Text
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    className="w-full text-text font-bold pl-3"
+                >
+                    {filename}
+                </Text>
+            </View>
+
+            {!exists ? (
+                <TouchableOpacity onPress={onDownload}>
+                    <Octicons name="download" size={24} />
+                </TouchableOpacity>
+            ) : (
+                <View className="flex-row items-center gap-3">
+                    <TouchableOpacity onPress={onShare}>
+                        <Text className="text-green-500 text-lg font-bold">
+                            Share
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onOpen}>
+                        <Text className="text-blue-500 text-lg font-bold">
+                            Open
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+        </View>
+    );
+};
 
 const GenerateReport = () => {
     const [date, setDate] = useState(new Date());
@@ -50,7 +101,6 @@ const GenerateReport = () => {
             month: date.getMonth(),
             calendarYear: date.getFullYear()
         });
-        setGenerating(false);
 
         if (success) {
             const existPdf = await checkFileExists(filename + ".pdf");
@@ -60,41 +110,43 @@ const GenerateReport = () => {
                 pdf: {
                     url: pdf_url,
                     filename: filename,
-                    exists: existPdf.exists
+                    exists: existPdf.exists && existPdf.contentUri
                 },
                 xl: {
                     url: xl_url,
                     filename: filename,
-                    exists: existXl.exists
+                    exists: existXl.exists && existXl.contentUri
                 },
                 message
             });
         }
+        setGenerating(false);
     };
 
     const handleDownload = async type => {
+        ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
         if (type === "pdf" && result.pdf?.url?.trim()) {
-            const done = await downloadFile(
+            const downloadRes = await downloadFile(
                 result.pdf?.url,
                 "pdf",
                 result.pdf?.filename + ".pdf",
                 false
             );
 
-            if (done)
+            if (downloadRes.success && downloadRes.contentUri)
                 setResult(p => ({
                     ...p,
                     pdf: { ...p.pdf, exists: true }
                 }));
         } else if (type === "xl" && result.xl?.url?.trim()) {
-            const done = await downloadFile(
+            const downloadRes = await downloadFile(
                 result.xl?.url,
                 "xlsx",
                 result.xl?.filename + ".xlsx",
                 false
             );
 
-            if (done)
+            if (downloadRes.success && downloadRes.contentUri)
                 setResult(p => ({
                     ...p,
                     xl: { ...p.xl, exists: true }
@@ -102,50 +154,16 @@ const GenerateReport = () => {
         }
     };
 
-    const openFile = async type => {
-        if (type === "pdf")
-            await downloadFile(
-                result.pdf?.url,
-                "pdf",
-                result.pdf?.filename + ".pdf",
-                true
-            );
-        else if (type === "xl")
-            await downloadFile(
-                result.xl?.url,
-                "xlsx",
-                result.xl?.filename + ".xlsx",
-                true
-            );
-    };
-
-    const shareFile = async type => {
-        const isAvailable = await Sharing.isAvailableAsync();
-        if (!isAvailable) {
-            ToastAndroid.show(
-                "Sharing is not available on this device",
-                ToastAndroid.SHORT
-            );
-            return;
-        }
-
-        if (type === "pdf") {
-            const mimeType = getMimeType("pdf");
-            const { foundUri } = await checkFileExists(
-                result.pdf.filename + ".pdf"
-            );
-
-            if (foundUri) {
-                await Sharing.shareAsync(foundUri, {
-                    mimeType: "audio/mpeg",
-                    dialogTitle: "Share via WhatsApp"
-                });
-            } else
-                ToastAndroid.show(
-                    "Unable to share the file",
-                    ToastAndroid.SHORT
-                );
-        }
+    const handleDeleteReport = async () => {
+        setDeleting(true);
+        const { success, message } = await deleteReport({
+            year,
+            course,
+            calendarMonth: date.getMonth(),
+            calendarYear: date.getFullYear()
+        });
+        if (success) setResult({ message });
+        setDeleting(false);
     };
 
     return (
@@ -163,7 +181,7 @@ const GenerateReport = () => {
 
             {result.message ? (
                 <>
-                    <Text className="text-red-300 text-md mt-4 font-bold text-center">
+                    <Text className="text-yellow-300 text-md mt-4 font-bold text-center">
                         {result.message}
                     </Text>
                     <TouchableOpacity>
@@ -175,65 +193,25 @@ const GenerateReport = () => {
             ) : null}
 
             {result.pdf?.url && (
-                <View className="mt-3 flex-row items-center justify-between py-3 px-4">
-                    <View className="flex-row items-center w-[75%]">
-                        <FontAwesome6 name="file-pdf" size={25} />
-                        <Text className="w-full text-text font-bold pl-2">
-                            {result.pdf?.filename}.pdf
-                        </Text>
-                    </View>
-                    {!result.pdf?.exists ? (
-                        <TouchableOpacity onPress={() => handleDownload("pdf")}>
-                            <Octicons name="download" size={24} />
-                        </TouchableOpacity>
-                    ) : (
-                        <View className="flex-row items-center gap-3">
-                            <TouchableOpacity onPress={() => shareFile("pdf")}>
-                                <Text className="text-green-500 text-lg font-bold">
-                                    Share
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => openFile("pdf")}>
-                                <Text className="text-blue-500 text-lg font-bold">
-                                    Open
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
+                <ReportFileItem
+                    icon={<FontAwesome6 name="file-pdf" size={25} />}
+                    filename={`${result.pdf.filename}.pdf`}
+                    exists={result.pdf.exists}
+                    onDownload={() => handleDownload("pdf")}
+                    onOpen={() => openFile("pdf", result.pdf.filename)}
+                    onShare={() => shareFile("pdf", result.pdf.filename)}
+                />
             )}
 
             {result.xl?.url && (
-                <View className="flex-row items-center justify-between py-3 px-4">
-                    <View className="flex-row items-center w-[75%]">
-                        <FontAwesome name="file-excel-o" size={24} />
-                        <Text
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="w-full text-text font-bold pl-3"
-                        >
-                            {result.xl?.filename}.xlsx
-                        </Text>
-                    </View>
-                    {!result.xl?.exists ? (
-                        <TouchableOpacity onPress={() => handleDownload("xl")}>
-                            <Octicons name="download" size={24} />
-                        </TouchableOpacity>
-                    ) : (
-                        <View className="flex-row items-center gap-3">
-                            <TouchableOpacity onPress={() => shareFile("xl")}>
-                                <Text className="text-green-500 text-lg font-bold">
-                                    Share
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => openFile("xl")}>
-                                <Text className="text-blue-500 text-lg font-bold">
-                                    Open
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
+                <ReportFileItem
+                    icon={<FontAwesome name="file-excel-o" size={24} />}
+                    filename={`${result.xl.filename}.xlsx`}
+                    exists={result.xl.exists}
+                    onDownload={() => handleDownload("xl")}
+                    onOpen={() => openFile("xl", result.xl.filename)}
+                    onShare={() => shareFile("xl", result.xl.filename)}
+                />
             )}
 
             <TouchableOpacity

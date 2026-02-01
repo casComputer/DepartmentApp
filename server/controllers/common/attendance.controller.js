@@ -4,6 +4,7 @@ import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
+import { deleteFile, getPublicIdFromUrl } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 
 export const getMonthlyAttendanceReport = async ({
@@ -375,6 +376,83 @@ export const generateXlSheet = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Internal server error"
+        });
+    }
+};
+
+export const deleteReport = async (req, res) => {
+    try {
+        const { course, year, calendarMonth, calendarYear } = req.body;
+        const { userId: teacherId, role } = req.user;
+
+        if (!course || !year || calendarMonth == null || !calendarYear)
+            return res.json({
+                success: false,
+                message: "missing required parameters!"
+            });
+
+        let existDocs = [];
+
+        if (role === "teacher") {
+            existDocs = await MonthlyReport.findAll({
+                course,
+                year,
+                calendarYear,
+                calendarMonth,
+                teacherId
+            });
+        } else if (role === "admin") {
+            existDocs = await MonthlyReport.findAll({
+                course,
+                year,
+                calendarYear,
+                calendarMonth
+            });
+        }
+
+        if (!existDocs || !existDocs.length)
+            return res.json({
+                success: false,
+                message: `Unable to find report for ${year} ${course} - ${monthNames[calendarMonth]} ${calendarYear}`
+            });
+
+        const deletions = existDocs.map(async report => {
+            const pdf_public_id =
+                report.pdf_public_id ?? getPublicIdFromUrl(report.pdf_url);
+            const xl_public_id =
+                report.xl_public_id ?? getPublicIdFromUrl(report.xl_url);
+
+            if (!pdf_public_id || !xl_public_id) 
+                throw new Error(`Missing public_id for report ${report._id}`);
+            
+            await Promise.all([
+                deleteFile(pdf_public_id),
+                deleteFile(xl_public_id)
+            ]);
+
+            await MonthlyReport.findByIdAndDelete(report._id);
+        });
+
+        try {
+            await Promise.all(deletions);
+
+            return res.json({
+                success: true,
+                message: "Reports deleted successfully"
+            });
+        } catch (err) {
+            console.error(err);
+
+            return res.status(500).json({
+                success: false,
+                message: "Failed to delete one or more reports. Contact admin."
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error!"
         });
     }
 };

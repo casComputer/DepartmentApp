@@ -163,7 +163,7 @@ export const getAttendanceXl = async payload => {
                 pdf_url: data.pdf_url,
                 xl_url: data.xl_url,
                 filename: data.filename,
-                message: data.message,
+                message: data.message
             };
         }
 
@@ -179,5 +179,32 @@ export const getAttendanceXl = async payload => {
         return {
             success: false
         };
+    }
+};
+
+export const deleteReport = async payload => {
+    try {
+        const { data } = await axios.post("/attendance/deleteReport", payload);
+
+        if (data.success)
+            return {
+                success: true,
+                message:
+                    "Old reports deleted. You can now generate fresh reports."
+            };
+
+        ToastAndroid.show(
+            data.message ?? "Failed to delete attendance report!",
+            ToastAndroid.LONG
+        );
+
+        return { success: false };
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show(
+            "Failed to delete attendance report!",
+            ToastAndroid.LONG
+        );
+        return { success: false };
     }
 };

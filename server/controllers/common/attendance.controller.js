@@ -285,8 +285,8 @@ export const generateXlSheet = async (req, res) => {
             year,
             course
         });
-        
-        existDoc = false 🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥
+
+        existDoc = false // 🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥
 
         if (existDoc)
             return res.json({

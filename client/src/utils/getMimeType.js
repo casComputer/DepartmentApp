@@ -3,6 +3,7 @@ const getMimeType = (format) => {
   if (!format) return "application/octet-stream";
 
   if (format === "pdf") return "application/pdf";
+  if (format === "xlsx") return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
   // Common image formats
   const imageTypes = {

@@ -9,6 +9,8 @@ import { getAttendanceXl } from "@controller/teacher/attendance.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
+import { downloadFile, checkFileExists } from "@utils/file.js";
+
 const GenerateReport = () => {
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
@@ -21,7 +23,7 @@ const GenerateReport = () => {
         (date.getMonth() + 1).toString().padStart(2, "0") +
         "-" +
         date.getFullYear();
-
+        
     const handleGeneration = async () => {
         if (!year || !course || !date) return;
 
@@ -32,7 +34,75 @@ const GenerateReport = () => {
             calendarYear: date.getFullYear()
         });
 
-        if (success) setResult({ pdf_url, xl_url, filename });
+        if (success) {
+            const existPdf = await checkFileExists(filename + ".pdf");
+            const existXl = await checkFileExists(filename + ".xlsx");
+
+            console.log(
+                await checkFileExists(filename + ".xlsx"),
+                await checkFileExists(filename)
+            );
+
+            setResult({
+                pdf: {
+                    url: pdf_url,
+                    filename: filename,
+                    exists: existPdf.exists
+                },
+                xl: {
+                    url: xl_url,
+                    filename: filename,
+                    exists: existXl.exists
+                }
+            });
+        }
+    };
+
+    const handleDownload = async type => {
+        if (type === "pdf" && result.pdf?.url?.trim()) {
+            const done = await downloadFile(
+                result.pdf?.url,
+                "pdf",
+                result.pdf?.filename + ".pdf",
+                false
+            );
+
+            if (done)
+                setResult(p => ({
+                    ...p,
+                    pdf: { ...p.pdf, exists: true }
+                }));
+        } else if (type === "xl" && result.xl?.url?.trim()) {
+            const done = await downloadFile(
+                result.xl?.url,
+                "xlsx",
+                result.xl?.filename + ".xlsx",
+                false
+            );
+
+            if (done)
+                setResult(p => ({
+                    ...p,
+                    xl: { ...p.xl, exists: true }
+                }));
+        }
+    };
+
+    const openFile = async type => {
+        if (type === "pdf")
+            await downloadFile(
+                result.pdf?.url,
+                "pdf",
+                result.pdf?.filename+'.pdf',
+                true
+            );
+        else if (type === "xl")
+            await downloadFile(
+                result.xl?.url,
+                "xlsx",
+                result.xl?.filename+'.xlsx',
+                true
+            );
     };
 
     return (
@@ -48,30 +118,54 @@ const GenerateReport = () => {
                 </Text>
             </TouchableOpacity>
 
-            {result.pdf_url && (
-                <View className="flex-row items-center justify-around">
-                    <FontAwesome6 name="file-pdf" size={24} />
-                    <Text
-                        numberOfLines={1}
-                        adjustsFontSizeToFit
-                        className="w-[85%] text-text font-bold"
-                    >
-                        {filename}.pdf
-                    </Text>
-                    <Octicons name="download" size={24} />
+            {result.pdf?.url && (
+                <View className="mt-3 flex-row items-center justify-between py-3 px-4">
+                    <View className="flex-row items-center w-[90%]">
+                        <FontAwesome6 name="file-pdf" size={25} />
+                        <Text
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            className="w-[85%] text-text font-bold pl-2"
+                        >
+                            {result.pdf?.filename}.pdf
+                        </Text>
+                    </View>
+                    {!result.pdf?.exists ? (
+                        <TouchableOpacity onPress={() => handleDownload("pdf")}>
+                            <Octicons name="download" size={24} />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => openFile("pdf")}>
+                            <Text className="text-blue-500 text-lg font-bold">
+                                Open
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             )}
-            {result.xl_url && (
-                <View className="flex-row items-center justify-around">
-                    <FontAwesome name="file-excel-o" size={24} color="black" />
-                    <Text
-                        numberOfLines={1}
-                        adjustsFontSizeToFit
-                        className="w-[85%] text-text font-bold"
-                    >
-                        {filename}.xlsx
-                    </Text>
-                    <Octicons name="download" size={24} />
+            {result.xl?.url && (
+                <View className="flex-row items-center justify-between py-3 px-4">
+                    <View className="flex-row items-center w-[90%]">
+                        <FontAwesome name="file-excel-o" size={24} />
+                        <Text
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            className="w-[85%] text-text font-bold pl-3"
+                        >
+                            {result.xl?.filename}.xlsx
+                        </Text>
+                    </View>
+                    {!result.xl?.exists ? (
+                        <TouchableOpacity onPress={() => handleDownload("xl")}>
+                            <Octicons name="download" size={24} />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => openFile("xl")}>
+                            <Text className="text-blue-500 text-lg font-bold">
+                                Open
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             )}
 

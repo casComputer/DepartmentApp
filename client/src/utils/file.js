@@ -5,7 +5,10 @@ import * as Linking from "expo-linking";
 import { Platform, ToastAndroid } from "react-native";
 
 import getMimeType from "@utils/getMimeType.js";
-import { getSystemStorageUri, saveSystemStorageUri } from "@storage/app.storage.js";
+import {
+    getSystemStorageUri,
+    saveSystemStorageUri
+} from "@storage/app.storage.js";
 
 /*
     calling downloadFile will automatically download,
@@ -16,9 +19,9 @@ import { getSystemStorageUri, saveSystemStorageUri } from "@storage/app.storage.
 export const checkFileExists = async filename => {
     try {
         let dirUri = getSystemStorageUri();
-        
-        if(!dirUri) return { exists: false };
-        
+
+        if (!dirUri) return { exists: false };
+
         const files =
             await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
 
@@ -30,7 +33,6 @@ export const checkFileExists = async filename => {
         if (foundUri) return { exists: true, foundUri };
         else return { exists: false };
     } catch (error) {
-        
         return { exists: false };
     }
 };
@@ -43,11 +45,16 @@ export const openFileWithDefaultApp = async (uri, mimeType) => {
             type: mimeType
         });
     } catch (err) {
-        ToastAndroid.show("Error opening file:", ToastAndroid.LONG)
+        ToastAndroid.show("Error opening file:", ToastAndroid.LONG);
     }
 };
 
-export const saveFile = async (localUri, filename, format) => {
+export const saveFile = async (
+    localUri,
+    filename,
+    format,
+    autoOpen = false
+) => {
     if (Platform.OS !== "android") {
         return Sharing.shareAsync(localUri);
     }
@@ -55,7 +62,7 @@ export const saveFile = async (localUri, filename, format) => {
     const mimetype = getMimeType(format);
 
     const dirUri = await ensureDirectoryPermission();
-    if (!dirUri) return;
+    if (!dirUri) return false
 
     await deleteIfExists(dirUri, filename);
 
@@ -74,27 +81,35 @@ export const saveFile = async (localUri, filename, format) => {
             encoding: FileSystem.EncodingType.Base64
         });
 
-        openFileWithDefaultApp(fileUri, mimetype);
+        if (autoOpen) openFileWithDefaultApp(fileUri, mimetype);
+        return true
     } catch (err) {
-        ToastAndroid.show("Failed to save file!", ToastAndroid.LONG)
+        ToastAndroid.show("Failed to save file!", ToastAndroid.LONG);
         console.log("SAVE ERROR:", err);
+        return false
     }
 };
 
-export const downloadFile = async (url, format, filename="") => {
-    if(!filename) filename = url.split("/").at(-1);
+export const downloadFile = async (
+    url,
+    format,
+    filename = "",
+    autoOpen = true
+) => {
+    if (!filename) filename = url.split("/").at(-1);
 
     const { exists, foundUri } = await checkFileExists(filename);
 
     if (exists) {
         format = getMimeType(format);
-        openFileWithDefaultApp(foundUri, format);
+        if(autoOpen) openFileWithDefaultApp(foundUri, format);
+        return true
     } else {
         const result = await FileSystem.downloadAsync(
             url,
             FileSystem.documentDirectory + filename
         );
-        saveFile(result.uri, filename, format, url);
+        return saveFile(result.uri, filename, format, autoOpen);
     }
 };
 

@@ -269,21 +269,20 @@ export const generateXlSheet = async (req, res) => {
                 message: "course, year, month, calendarYear are required!"
             });
 
-        let existDoc = await MonthlyReport.findOne({
+        const existDoc = await MonthlyReport.findOne({
             calendarMonth: month,
             calendarYear,
             year,
             course
         });
 
-        existDoc = false;
-
         if (existDoc)
             return res.json({
                 success: false,
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
-                message: `Attendance report for ${monthNames[month]}-${year} already exist!`
+                filename: `${monthNames[month]}-${calendarYear}-${year}-${course}`,
+                message: `Attendance report for ${monthNames[month]}-${year} already exist!\nDelte it to generate new report.`
             });
 
         const data = await getMonthlyAttendanceReport({

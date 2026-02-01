@@ -182,9 +182,12 @@ async function generateAttendanceExcel(data) {
             key: "attendance_percentage"
         }];
 
-    data.forEach(row => sheet.addRow({
-        ...row, studentId: ` ${row.studentId}`
-    }));
+    data.forEach(row =>
+        sheet.addRow({
+            ...row,
+            studentId: ` ${row.studentId}`
+        })
+    );
 
     sheet.columns.forEach(column => {
         let maxLength = 0;
@@ -199,16 +202,23 @@ async function generateAttendanceExcel(data) {
 }
 
 const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
 ];
 
-function generateAttendancePDF(
-    data,
-    {
-        course, year, month, calendarYear
-    }
-) {
+function generateAttendancePDF(data, {
+    course, year, month, calendarYear
+}) {
     return new Promise((resolve, reject) => {
         try {
             const doc = new PDFDocument( {
@@ -223,26 +233,24 @@ function generateAttendancePDF(
 
             doc.fontSize(14);
             doc.font("Times-Roman");
-            
+
             console.log(data);
 
-            doc
-            .text(
+            doc.text(
                 `Attendance Report for ${year} ${course} – ${calendarMonth} ${calendarYear}`
-            )
-            .table({
-                rowStyles: [30],
-                data: [
-                    [
-                        "StudentId",
-                        "Working Days",
-                        "Present Days",
-                        "Absent Days",
-                        "Percentage"
-                    ],
-                    ...data.map(item => Object.values(item))
-                ]
-            });
+            ).table({
+                    rowStyles: [30],
+                    data: [
+                        [
+                            "StudentId",
+                            "Working Days",
+                            "Present Days",
+                            "Absent Days",
+                            "Percentage"
+                        ],
+                        ...data.map(item => Object.values(item))
+                    ]
+                });
 
             doc.end();
         } catch (err) {
@@ -255,7 +263,7 @@ export const generateXlSheet = async (req, res) => {
     try {
         const {
             course,
-            year = 2026,
+            year,
             month = 0,
             calendarYear
         } = req.body;
@@ -263,18 +271,22 @@ export const generateXlSheet = async (req, res) => {
             userId: teacherId
         } = req.user;
 
-        if (!course || !calendarYear)
+        if (!course || !year || !calendarYear)
             return res.json({
             success: false,
             message: "course, year, month, calendarYear are required!"
         });
 
-        const existDoc = await MonthlyReport.findOne({
+        console.log(course, year, month, calendarYear)
+
+        let existDoc = await MonthlyReport.findOne({
             calendarMonth: month,
             calendarYear,
             year,
             course
         });
+        
+        existDoc = false 🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥
 
         if (existDoc)
             return res.json({
@@ -290,11 +302,14 @@ export const generateXlSheet = async (req, res) => {
             month,
             calendarYear
         });
-        if (!data)
+
+        if (!data || !data.length)
             return res.json({
             success: false,
             message: "Failed to generate attendance report!"
         });
+
+        console.log('\n\ndata: ', data, '\n\n')
 
         const excelBuffer = await generateAttendanceExcel(data);
 

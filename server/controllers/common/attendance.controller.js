@@ -233,10 +233,10 @@ function generateAttendancePDF(data, meta = {}) {
 
 export const generateXlSheet = async (req, res) => {
     try {
-        const { course, year, month, calendarYear } = req.body;
+        const { course, year=2026, month=0, calendarYear } = req.body;
         const { userId: teacherId } = req.user;
 
-        if (!course || !year || !month || !calendarYear)
+        if (!course || !calendarYear)
             return res.json({
                 success: false,
                 message: "course, year, month, calendarYear are required!"
@@ -254,7 +254,7 @@ export const generateXlSheet = async (req, res) => {
                 success: false,
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
-                message: "Attendance report for this month already exist!"
+                message: `Attendance report for ${month}-${year} already exist!`
             });
 
         const data = await getMonthlyAttendanceReport({

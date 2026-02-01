@@ -194,7 +194,9 @@ export const generateXlSheet = async (req, res) => {
 
         const existDoc = await MonthlyReport.findOne({
             calendarMonth: month,
-            calendarYear
+            calendarYear,
+            year,
+            course
         });
 
         if (existDoc)

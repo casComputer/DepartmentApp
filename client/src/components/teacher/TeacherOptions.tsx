@@ -70,7 +70,8 @@ const optionsData = [
         Icon: MaterialIcons,
         iconName: "grade",
         text: "Generate Attendance Report",
-        locaton: "/(teacher)/(others)/GenerateReport"
+        locaton: "/(teacher)/(others)/GenerateReport",
+        fullWidth: true
     }
 ];
 
@@ -82,7 +83,7 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
     return (
         <TouchableOpacity
             onPress={() => handlePress(locaton)}
-            className="flex-1 bg-card flex-row items-center gap-4 my-1 py-6 px-6 rounded-2xl"
+            className="flex-1 bg-card flex-row items-center gap-4 m-1 py-6 px-6 rounded-2xl"
             style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
         >
             <Icon
@@ -118,10 +119,13 @@ const TeacherOptions = () => {
             numColumns={2}
             keyExtractor={item => item.text}
             estimatedItemSize={90}
+            overrideItemLayout={(layout, item) => {
+                if (item.fullWidth) layout.span = 2
+            }}
             contentContainerStyle={{
                 paddingBottom: 110,
                 paddingTop: 30,
-                paddingHorizontal: 6
+                paddingHorizontal: 4,
             }}
             renderItem={({ item }) => (
                 <Option

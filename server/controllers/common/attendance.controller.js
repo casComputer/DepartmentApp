@@ -307,7 +307,7 @@ export const generateXlSheet = async (req, res) => {
                 message: "Failed to generate exel-sheet!"
             });
 
-        const { secure_url: xl_url } = await new Promise((resolve, reject) => {
+        const { secure_url: xl_url, public_id: xl_public_id } = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     resource_type: "raw",
@@ -331,7 +331,7 @@ export const generateXlSheet = async (req, res) => {
             calendarYear
         });
 
-        const { secure_url: pdf_url } = await new Promise((resolve, reject) => {
+        const { secure_url: pdf_url, public_id: pdf_public_id } = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     resource_type: "raw",
@@ -356,6 +356,8 @@ export const generateXlSheet = async (req, res) => {
                 year,
                 xl_url,
                 pdf_url,
+                xl_public_id,
+                pdf_public_id,
                 teacherId
             });
 

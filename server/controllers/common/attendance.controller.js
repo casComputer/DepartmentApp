@@ -394,7 +394,7 @@ export const deleteReport = async (req, res) => {
         let existDocs = [];
 
         if (role === "teacher") {
-            existDocs = await MonthlyReport.findAll({
+            existDocs = await MonthlyReport.find({
                 course,
                 year,
                 calendarYear,
@@ -402,7 +402,7 @@ export const deleteReport = async (req, res) => {
                 teacherId
             });
         } else if (role === "admin") {
-            existDocs = await MonthlyReport.findAll({
+            existDocs = await MonthlyReport.find({
                 course,
                 year,
                 calendarYear,
@@ -422,9 +422,9 @@ export const deleteReport = async (req, res) => {
             const xl_public_id =
                 report.xl_public_id ?? getPublicIdFromUrl(report.xl_url);
 
-            if (!pdf_public_id || !xl_public_id) 
+            if (!pdf_public_id || !xl_public_id)
                 throw new Error(`Missing public_id for report ${report._id}`);
-            
+
             await Promise.all([
                 deleteFile(pdf_public_id),
                 deleteFile(xl_public_id)

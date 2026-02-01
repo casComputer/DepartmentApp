@@ -282,7 +282,7 @@ export const generateXlSheet = async (req, res) => {
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
                 filename: `${monthNames[month]}-${calendarYear}-${year}-${course}`,
-                message: `Attendance report for ${monthNames[month]}-${year} already exist!\nDelte it to generate new report.`
+                message: `Attendance report for ${monthNames[month]}-${calendarYear} already exist!\nDelete it to generate new report.`
             });
 
         const data = await getMonthlyAttendanceReport({

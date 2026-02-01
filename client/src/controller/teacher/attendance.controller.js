@@ -142,3 +142,29 @@ export const getClassAttendance = async ({
         ToastAndroid.show("Failed to fetch attendance", ToastAndroid.LONG);
     }
 };
+
+export const getAttendanceXl = async payload => {
+    try {
+        const { data } = await axios.post(
+            "/attendance/monthly-report-excel",
+            payload
+        );
+
+        console.log(data);
+
+        if (data.success) {
+            ToastAndroid.show("succsss", ToastAndroid.SHORT);
+            return data.secure_url;
+        }
+        ToastAndroid.show(
+            data.message ?? "Failed to generate attendance report!",
+            ToastAndroid.LONG
+        );
+    } catch (error) {
+        console.error(error);
+        ToastAndroid.show(
+            "Failed to generate attendance report!",
+            ToastAndroid.LONG
+        );
+    }
+};

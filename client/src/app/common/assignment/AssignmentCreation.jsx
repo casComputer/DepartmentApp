@@ -7,7 +7,6 @@ import {
     ToastAndroid
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 
 import Header from "@components/common/Header2.jsx";

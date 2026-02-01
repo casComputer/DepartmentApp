@@ -190,7 +190,10 @@ export const generateXlSheet = async (req, res) => {
         const { userId: teacherId } = req.user;
 
         if (!course || !year || !month || !calendarYear)
-            throw new Error("course, year, month, calendarYear are required");
+            return res.json({
+                success: false,
+                message: "course, year, month, calendarYear are required!"
+            });
 
         const existDoc = await MonthlyReport.findOne({
             calendarMonth: month,

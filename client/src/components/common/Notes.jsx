@@ -81,7 +81,7 @@ const Notes = ({
 
             <FlashList
                 data={data?.notes}
-                renderItem={({ item }) => <FolderItem item={item} />}
+                renderItem={({ item }) => <FolderItem item={item} role={role} />}
                 ListHeaderComponent={isPending && <ActivityIndicator />}
                 ListEmptyComponent={
                 !isPending && (

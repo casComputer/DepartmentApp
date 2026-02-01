@@ -1,8 +1,4 @@
-import {
-    useRef,
-    useState,
-    useEffect
-} from "react";
+import { useRef, useState, useEffect } from "react";
 import {
     TouchableOpacity,
     View,
@@ -19,29 +15,14 @@ import Animated, {
     withSpring,
     runOnJS
 } from "react-native-reanimated";
-import {
-    router,
-    usePathname
-} from "expo-router";
-import {
-    Feather,
-    Entypo,
-    MaterialIcons as Material
-} from "@icons";
+import { router, usePathname } from "expo-router";
+import { Feather, Entypo, MaterialIcons as Material } from "@icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import {
-    getColorFromString
-} from "@utils/colors.js";
-import {
-    handleDocumentPick,
-    handleUpload
-} from "@utils/file.upload.js";
+import { getColorFromString } from "@utils/colors.js";
+import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
-import {
-    downloadFile,
-    checkFileExists
-} from "@utils/file.js";
+import { downloadFile, checkFileExists } from "@utils/file.js";
 import confirm from "@utils/confirm.js";
 
 import {
@@ -49,24 +30,17 @@ import {
     deleteNotes
 } from "@controller/teacher/notes.controller.js";
 
-import {
-    useAppStore,
-    useMultiSelectionList
-} from "@store/app.store.js";
+import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
 
 const AnimatedTouchableOpacity =
-Animated.createAnimatedComponent(TouchableOpacity);
+    Animated.createAnimatedComponent(TouchableOpacity);
 const AnimatedFeather = Animated.createAnimatedComponent(Feather);
 
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 
-const {
-    height: vh
-} = Dimensions.get("window");
+const { height: vh } = Dimensions.get("window");
 
-export const FloatingAddButton = ({
-    parentId
-}) => {
+export const FloatingAddButton = ({ parentId }) => {
     const isOpened = useRef(false);
 
     const rounded = useSharedValue(18);
@@ -110,9 +84,11 @@ export const FloatingAddButton = ({
     }));
 
     const animatedIconStyle = useAnimatedStyle(() => ({
-        transform: [{
-            rotate: angle.value
-        }]
+        transform: [
+            {
+                rotate: angle.value
+            }
+        ]
     }));
 
     const handleCreateFolder = () => {
@@ -135,11 +111,7 @@ export const FloatingAddButton = ({
 
         setGlobalProgress(1);
 
-        const {
-            secure_url,
-            format,
-            public_id
-        } = await handleUpload(
+        const { secure_url, format, public_id } = await handleUpload(
             asset,
             "note",
             setGlobalProgress
@@ -163,18 +135,18 @@ export const FloatingAddButton = ({
 
     return (
         <View
-            style={ { bottom: vh * 0.15 }}
+            style={{ bottom: vh * 0.15 }}
             className="absolute right-8 bottom-10 items-center"
-            >
+        >
             <Animated.View
                 style={extraViewAnim}
                 className="gap-3 items-center justify-end py-3"
-                >
+            >
                 {parentId && (
                     <TouchableOpacity
                         onPress={handleUploadPress}
                         className="justify-center items-center"
-                        >
+                    >
                         <Text className="text-xl font-bold dark:text-white">
                             Upload
                         </Text>
@@ -184,7 +156,7 @@ export const FloatingAddButton = ({
                 <TouchableOpacity
                     onPress={handleCreateFolder}
                     className="justify-center items-center"
-                    >
+                >
                     <Text className="text-xl font-bold dark:text-white">
                         Folder
                     </Text>
@@ -195,13 +167,13 @@ export const FloatingAddButton = ({
                 style={floatingAnim}
                 className="bg-btn justify-center items-center "
                 onPress={handlePress}
-                >
+            >
                 <AnimatedFeather
                     style={animatedIconStyle}
                     name="plus"
                     size={35}
                     className="dark:text-white"
-                    />
+                />
             </AnimatedTouchableOpacity>
         </View>
     );
@@ -210,9 +182,7 @@ export const FloatingAddButton = ({
 const toggleMultiSelectionList = useMultiSelectionList.getState().toggle;
 const clearMultiSelectionList = useMultiSelectionList.getState().clear;
 
-export const FolderItem = ({
-    item
-}) => {
+export const FolderItem = ({ item, role }) => {
     const color = getColorFromString(item.name);
 
     const isExistsInMultiSelectList = useMultiSelectionList(state =>
@@ -225,8 +195,9 @@ export const FolderItem = ({
 
     if (!isFolder && item.fileUrl) {
         url =
-        item.format === "pdf"
-        ? getPdfPreviewUrl(item.fileUrl): item.fileUrl;
+            item.format === "pdf"
+                ? getPdfPreviewUrl(item.fileUrl)
+                : item.fileUrl;
     }
 
     const openFile = async () => {
@@ -245,14 +216,14 @@ export const FolderItem = ({
                 params: {
                     folderId: item._id,
                     course: item.course,
-                    year: item.year,
-
+                    year: item.year
                 }
             });
         } else openFile();
     };
 
     const onLongPress = () => {
+        if (role !== "teacher" || role !== "admin") return;
         toggleMultiSelectionList(item._id);
     };
     return (
@@ -260,9 +231,9 @@ export const FolderItem = ({
             onLongPress={onLongPress}
             onPress={handlePress}
             className={`mx-2 my-2 flex-1 h-[170px] rounded-xl ${
-            isExistsInMultiSelectList ? "bg-card-selected": "bg-card"
+                isExistsInMultiSelectList ? "bg-card-selected" : "bg-card"
             }`}
-            >
+        >
             <View className="h-[40px] px-2 mt-3 flex-row justify-between items-start">
                 <View className="flex-row items-center gap-2">
                     {isFolder && (
@@ -273,7 +244,7 @@ export const FolderItem = ({
                         // adjustsFontSizeToFit
                         className="flex-1 text-[12px] font-bold text-text"
                         numberOfLines={2}
-                        >
+                    >
                         {item.name}
                     </Text>
                 </View>
@@ -282,26 +253,24 @@ export const FolderItem = ({
             <View className="flex-1 w-full justify-center items-center">
                 {isFolder ? (
                     <MaterialIcons name="folder" size={110} color={color} />
-                ): (
+                ) : (
                     <Image
-                        source={ { uri: url }}
-                        style={ {
+                        source={{ uri: url }}
+                        style={{
                             width: "90%",
                             height: 110,
                             marginTop: -5,
                             borderRadius: 4,
                             opacity: 0.8
                         }}
-                        />
+                    />
                 )}
             </View>
         </Pressable>
     );
 };
 
-export const SelectingHeader = ({
-    handleSelectAll, handleOpenInBrowser
-}) => {
+export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
     const count = useMultiSelectionList(state => state.list.length);
 
     const translateY = useSharedValue(-100);
@@ -312,9 +281,11 @@ export const SelectingHeader = ({
     }, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{
-            translateY: translateY.value
-        }]
+        transform: [
+            {
+                translateY: translateY.value
+            }
+        ]
     }));
 
     const handlePressDismiss = () => {
@@ -332,7 +303,7 @@ export const SelectingHeader = ({
         <Animated.View
             style={animatedStyle}
             className="w-full mt-6 flex-row items-center justify-between py-4 px-4"
-            >
+        >
             <View className="flex-row gap-3 items-center">
                 <TouchableOpacity onPress={handlePressDismiss}>
                     <Entypo name="cross" size={ICON_SIZE} />

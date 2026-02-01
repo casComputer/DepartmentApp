@@ -1,35 +1,25 @@
 import axios from "@utils/axios.js";
 
-import {
-    ToastAndroid
-} from "react-native";
+import { ToastAndroid } from "react-native";
 
-import {
-    useTeacherStore
-} from "@store/teacher.store.js";
-import {
-    useAppStore
-} from "@store/app.store.js";
+import { useTeacherStore } from "@store/teacher.store.js";
+import { useAppStore } from "@store/app.store.js";
 
-import {
-    saveStudentsCount
-} from "@utils/storage.js";
+import { saveStudentsCount } from "@utils/storage.js";
 
-export const assignRollByGroup = async ({
-    students, year, course
-}) => {
+export const assignRollByGroup = async ({ students, year, course }) => {
     try {
-        students = students.map((st) => st.students).flat();
+        students = students.map(st => st.students).flat();
 
         const res = await axios.post("/student/assignGroupedRollNo", {
             students,
             year,
-            course,
+            course
         });
         if (res.data?.success) {
             const updates = {},
-            updated = res.data?.updated || [];
-            updated.forEach((s) => {
+                updated = res.data?.updated || [];
+            updated.forEach(s => {
                 updates[s.studentId] = s.rollno;
             });
 
@@ -37,11 +27,12 @@ export const assignRollByGroup = async ({
 
             ToastAndroid.show(
                 `Successfully assigned roll numbers to ${res.data?.updated?.length} students.` +
-                `${
-                res.data?.failed?.length > 0
-                ? ` Failed: ${res.data.failed.length}`: ""
-                }`,
-                ToastAndroid.SHORT,
+                    `${
+                        res.data?.failed?.length > 0
+                            ? ` Failed: ${res.data.failed.length}`
+                            : ""
+                    }`,
+                ToastAndroid.SHORT
             );
         }
     } catch (error) {
@@ -50,21 +41,24 @@ export const assignRollByGroup = async ({
     }
 };
 
-export const assignRollAlphabetically = async ({
-    course, year
-}) => {
+export const assignRollAlphabetically = async ({ course, year }) => {
     try {
-        const res = await axios.post("/student/autoAssignRollNoAlphabetically", {
-            course,
-            year,
-        });
+        const res = await axios.post(
+            "/student/autoAssignRollNoAlphabetically",
+            {
+                course,
+                year
+            }
+        );
         if (res.data?.success) {
-            res.data?.students.forEach((s) =>
-                useTeacherStore.getState().updateStudentRollNo(s.studentId, s.rollno),
+            res.data?.students.forEach(s =>
+                useTeacherStore
+                    .getState()
+                    .updateStudentRollNo(s.studentId, s.rollno)
             );
             ToastAndroid.show(
                 "Roll numbers assigned successfully",
-                ToastAndroid.SHORT,
+                ToastAndroid.SHORT
             );
         }
     } catch (error) {
@@ -73,35 +67,35 @@ export const assignRollAlphabetically = async ({
     }
 };
 
-export const verifyMultipleStudents = async (students) => {
+export const verifyMultipleStudents = async students => {
     try {
-        const allVerified = students.every((s) => s.is_verified);
+        const allVerified = students.every(s => s.is_verified);
 
         if (allVerified) {
             return ToastAndroid.show(
                 "Students were already verified!",
-                ToastAndroid.SHORT,
+                ToastAndroid.SHORT
             );
         }
 
-        students = students.map((s) => s.userId);
+        students = students.map(s => s.userId);
         if (!students)
             return ToastAndroid.show(
-            "Currently you no students!",
-            ToastAndroid.SHORT,
-        );
+                "Currently you no students!",
+                ToastAndroid.SHORT
+            );
 
         const res = await axios.post("/student/verifyMultipleStudents", {
-            students,
+            students
         });
 
         if (res.data.success) {
-            students.forEach((id) => {
+            students.forEach(id => {
                 useTeacherStore.getState().verifyStudent(id);
             });
             ToastAndroid.show(
                 `${students.length} students verified`,
-                ToastAndroid.SHORT,
+                ToastAndroid.SHORT
             );
         }
     } catch (error) {
@@ -110,22 +104,20 @@ export const verifyMultipleStudents = async (students) => {
     }
 };
 
-export const saveStudentDetails = async ({
-    studentId, rollno
-}) => {
+export const saveStudentDetails = async ({ studentId, rollno }) => {
     try {
         rollno = parseInt(rollno, 10);
         if (!studentId || !rollno || rollno == 0 || rollno < 0) {
             ToastAndroid.show(
                 "Please Provide a valid roll number!",
-                ToastAndroid.SHORT,
+                ToastAndroid.SHORT
             );
             return;
         }
 
         const res = await axios.post("/student/saveStudentDetails", {
             studentId,
-            rollno,
+            rollno
         });
 
         if (res.data.success) {
@@ -135,14 +127,14 @@ export const saveStudentDetails = async ({
             ToastAndroid.show(res.data?.message, ToastAndroid.LONG);
         }
     } catch (error) {
-        console.error("Error while saving Student: ", error);
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+        ToastAndroid.show(
+            error.response?.data?.message ?? "Something went wrong!",
+            ToastAndroid.LONG
+        );
     }
 };
 
-export const verifyStudent = async ({
-    studentId
-}) => {
+export const verifyStudent = async ({ studentId }) => {
     try {
         const res = await axios.post("/student/verifyStudent", {
             studentId
@@ -157,24 +149,20 @@ export const verifyStudent = async ({
     }
 };
 
-export const cancelStudentVerification = async ({
-    studentId
-}) => {
+export const cancelStudentVerification = async ({ studentId }) => {
     try {
         ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
 
         const res = await axios.post("/student/cancelStudentVerification", {
-            studentId,
+            studentId
         });
         if (res.data.success) {
             useTeacherStore.getState().removeStudent(studentId);
             ToastAndroid.show("Removed student", ToastAndroid.SHORT);
-
-            
         } else {
             ToastAndroid.show(
                 `Student couldn't removed: ${res.data?.message} `,
-                ToastAndroid.SHORT,
+                ToastAndroid.SHORT
             );
         }
     } catch (error) {
@@ -184,22 +172,20 @@ export const cancelStudentVerification = async ({
 };
 
 // note: use this when current user is a class teacher
-export const fetchStudentsByClassTeacher = async ({
-    setStatus
-}) => {
+export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
     try {
-        const {
-            data
-        } = await axios.get("/student/fetchStudentsByClassTeacher");
+        const { data } = await axios.get(
+            "/student/fetchStudentsByClassTeacher"
+        );
 
         if (data?.success) {
             useAppStore.getState().updateUser({
                 in_charge_course: data?.course,
-                in_charge_year: data?.year,
+                in_charge_year: data?.year
             });
 
             useTeacherStore.setState({
-                students: data.students,
+                students: data.students
             });
 
             setStatus("HAS_STUDENTS");
@@ -212,29 +198,28 @@ export const fetchStudentsByClassTeacher = async ({
             });
             useAppStore.getState().updateUser({
                 in_charge_course: "",
-                in_charge_year: "",
+                in_charge_year: ""
             });
             setStatus("NO_CLASS_ASSIGNED");
             return null;
         }
 
         useTeacherStore.setState({
-            students: [],
+            students: []
         });
 
         useAppStore.getState().updateUser({
             in_charge_course: data?.course,
-            in_charge_year: data?.year,
+            in_charge_year: data?.year
         });
 
         setStatus("CLASS_EMPTY");
 
         return {
             course: data.course,
-            year: data.year,
+            year: data.year
         };
     } catch (error) {
-
         setStatus("ERROR");
 
         ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);

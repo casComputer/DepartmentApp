@@ -114,6 +114,21 @@ export const removeParent = async (req, res) => {
             [parentId, studentId]
         );
 
+        const { rows } = await turso.execute(
+            "select 1 from parent_child WHERE parentId = ?",
+            [parentId]
+        );
+
+        if (!rows || !rows.length) {
+            await turso.execute(
+                `
+                DELETE FROM users
+                    WHERE userId = ? AND role = 'parent'
+                `,
+                [parentId]
+            );
+        }
+
         res.json({
             success: true
         });

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -10,15 +10,19 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
+import { useAppStore } from "@store/app.store.js";
+
 const ICONS_SIZE = 35;
 const optionsData = [
     {
         Icon: MaterialCommunityIcons,
         iconName: "account-group-outline",
         text: "Students",
-        locaton: "/(teacher)/(others)/ManageStudents"
+        locaton: "/(teacher)/(others)/ManageStudents",
+        requiresInCharge: true
     },
     {
+        requiresInCharge: true,
         Icon: MaterialCommunityIcons,
         iconName: "human-male-female-child",
         text: "Parents",
@@ -44,11 +48,19 @@ const optionsData = [
     },
     {
         Icon: MaterialIcons,
+        iconName: "grade",
+        text: "Internal Marks",
+        locaton: "/(teacher)/(others)/InternalMark"
+    },
+    {
+        requiresInCharge: true,
+        Icon: MaterialIcons,
         iconName: "currency-rupee",
         text: "Fees",
         locaton: "/common/fees/Selector"
     },
     {
+        requiresInCharge: true,
         Icon: Entypo,
         iconName: "text-document",
         text: "Results",
@@ -57,21 +69,20 @@ const optionsData = [
     {
         Icon: MaterialIcons,
         iconName: "grade",
-        text: "Internal Marks",
-        locaton: "/(teacher)/(others)/InternalMark"
+        text: "Generate Attendance Report",
+        locaton: "/(teacher)/(others)/GenerateReport"
     }
 ];
 
+const handlePress = locaton => {
+    if (!locaton) return;
+    router.push(locaton as any);
+};
 const Option = ({ Icon, iconName, text = "", locaton }) => {
-    const handlePress = () => {
-        if (!locaton) return;
-        router.push(locaton as any);
-    };
-
     return (
         <TouchableOpacity
-            onPress={handlePress}
-            className="bg-card flex-row items-center gap-4 my-1 py-6 px-6 rounded-2xl"
+            onPress={() => handlePress(locaton)}
+            className="flex-1 bg-card flex-row items-center gap-4 my-1 py-6 px-6 rounded-2xl"
             style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
         >
             <Icon
@@ -93,9 +104,25 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
 };
 
 const TeacherOptions = () => {
+    const isInCharge = useAppStore(
+        state => state.user.in_charge_course && state.user.in_charge_year
+    );
+
+    const filteredOptions = optionsData.filter(
+        opt => !opt.requiresInCharge || isInCharge
+    );
+
     return (
         <FlashList
-            data={optionsData}
+            data={filteredOptions}
+            numColumns={2}
+            keyExtractor={item => item.text}
+            estimatedItemSize={90}
+            contentContainerStyle={{
+                paddingBottom: 110,
+                paddingTop: 30,
+                paddingHorizontal: 6
+            }}
             renderItem={({ item }) => (
                 <Option
                     Icon={item.Icon}
@@ -104,13 +131,6 @@ const TeacherOptions = () => {
                     locaton={item.locaton}
                 />
             )}
-            showsVerticalScrollIndicator={false}
-            
-            contentContainerStyle={{
-                paddingBottom: 110,
-                paddingTop: 30,
-                paddingHorizontal: 6
-            }}
         />
     );
 };

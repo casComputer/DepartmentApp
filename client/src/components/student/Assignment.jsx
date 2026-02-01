@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useAppStore } from "@store/app.store.js";
+import { isDatePassed } from "@utils/date.js";
 
 const Status = ({ status, is_submitted }) => {
     if (status === "accepted") {
@@ -39,6 +40,8 @@ export const AssignmentRenderItem = ({ item }) => {
     const status =
         item?.submissions?.find(submission => submission?.studentId === userId)
             ?.status || "_";
+            
+    const isExpired = isDatePassed(item.dueDate)
 
     return (
         <TouchableOpacity
@@ -53,28 +56,29 @@ export const AssignmentRenderItem = ({ item }) => {
                     }
                 })
             }
-            disabled={is_submitted && status !== "rejected"}
+            disabled={
+                isExpired ||
+                (is_submitted && status !== "rejected")
+            }
             activeOpacity={0.7}
-            className="p-4 rounded-3xl dark:bg-zinc-900 my-2"
+            className="p-4 rounded-3xl bg-card my-2"
             style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
         >
             <View className="flex-row py-2 justify-between items-center">
-                <Text className="font-black opacity-50 text-mg dark:text-white">
+                <Text className="font-black opacity-50 text-mg text-text">
                     {item.teacherId}
                 </Text>
 
                 <Status status={status} is_submitted={is_submitted} />
             </View>
-            <Text className="text-xl font-black dark:text-white">
-                {item.topic}
-            </Text>
-            <Text className="text-gray-600 font-bold text-lg pl-3 dark:text-white">
+            <Text className="text-xl font-black text-text">{item.topic}</Text>
+            <Text className="font-bold text-lg pl-3 text-text/80">
                 {item.description}
             </Text>
-            <Text className="text-xl font-black mt-3 dark:text-white">
+            <Text className="text-xl font-black mt-3 text-text">
                 {item.year} {item.course}
             </Text>
-            <Text className="font-black text-lg dark:text-white">
+            <Text className={`font-black text-lg ${isExpired ? 'text-red-500' : 'text-text'}`}>
                 Due Date:
                 {new Date(item.dueDate).toLocaleDateString()}
             </Text>

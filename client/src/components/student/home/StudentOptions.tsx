@@ -12,46 +12,46 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
-const ICONS_SIZE = 35;
+const ICONS_SIZE = 30;
 
 const optionsData = [
     {
         Icon: SimpleLineIcons,
         iconName: "note",
         text: "Attendance",
-        locaton: "/(student)/(others)/MonthlyReport",
+        locaton: "/(student)/(others)/MonthlyReport"
     },
     {
         Icon: SimpleLineIcons,
         iconName: "notebook",
         text: "Assignment",
-        locaton: "/(student)/(others)/Assignment",
+        locaton: "/(student)/(others)/Assignment"
     },
     {
         Icon: FontAwesome6,
         iconName: "hand-holding-dollar",
         text: "Fees",
-        locaton: "/(student)/(others)/Fees",
+        locaton: "/(student)/(others)/Fees"
     },
     {
         Icon: AntDesign,
         iconName: "file-search",
         text: "Exam Results",
-        locaton: "/(student)/(others)/ExamResult",
+        locaton: "/(student)/(others)/ExamResult"
     },
     {
         Icon: Feather,
         iconName: "check-circle",
         text: "Internal Marks",
-        locaton: "",
+        locaton: ""
     },
 
     {
         Icon: Octicons,
         iconName: "person",
         text: "Teachers",
-        locaton: "/(student)/(others)/TeachersList",
-    },
+        locaton: "/(student)/(others)/TeachersList"
+    }
 ];
 
 const Option = ({ Icon, iconName, text = "", locaton }) => {
@@ -80,8 +80,8 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
 
 const StudentOptions = () => {
     return (
-        <View className="px-3 mt-5">
-            <View className="bg-card rounded-3xl py-5">
+        <View className="px-2 mt-5">
+            <View className="bg-card rounded-3xl py-3">
                 <FlashList
                     data={optionsData}
                     renderItem={({ item }) => (
@@ -93,7 +93,7 @@ const StudentOptions = () => {
                         />
                     )}
                     numColumns={3}
-                    style={{ paddingHorizontal: 12 }}
+                    style={{ paddingHorizontal: 8 }}
                 />
             </View>
         </View>

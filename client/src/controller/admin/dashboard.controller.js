@@ -11,3 +11,15 @@ export const fetchCloudinaryStats = async () => {
         return {};
     }
 };
+
+export const fetchTursoStats = async () => {
+    try {
+        const { data } = await axios.get("/dashboard/turso");
+
+        if (data.success) return data.stats;
+        else return {};
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+};

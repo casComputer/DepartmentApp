@@ -59,7 +59,7 @@ const Signup = () => {
     const passwordRef = useRef<TextInput>(null);
 
     const handleSubmit = async () => {
-        if (username.trim()?.length <= 5) {
+        if (username.trim()?.length < 4) {
             setMessage({
                 type: "error",
                 message: "username is too short"
@@ -170,7 +170,7 @@ const Signup = () => {
                     <TextInput
                         ref={usernameRef}
                         className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl dark:text-white ${
-                            username.trim().length > 5
+                            username.trim().length >= 5
                                 ? "border-green-500"
                                 : "border-black dark:border-white"
                         }`}

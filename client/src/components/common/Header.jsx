@@ -16,7 +16,7 @@ const Header = ({
 
     return (
         <View
-            style={{ marginTop: insets.top }}
+            style={{ marginTop: insets.top + 5 }}
             className="flex-row items-center px-2 pb-2 w-full justify-between"
         >
             <View className="flex-1 flex-row items-center">

@@ -42,7 +42,7 @@ const Signin = () => {
     const passwordRef = useRef();
 
     const handleSubmit = async () => {
-        if (username.trim()?.length <= 5) {
+        if (username.trim()?.length < 5) {
             setMessage({
                 type: "error",
                 message: "username is too short",

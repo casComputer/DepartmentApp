@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
 import { View, Text, StyleSheet, useColorScheme } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import Animated, {
     useSharedValue,
     withTiming,
-    useAnimatedProps
+    useAnimatedProps, useDerivedValue
 } from "react-native-reanimated";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -31,16 +30,16 @@ const CircularProgress = ({
 
     const theme = useColorScheme();
 
-    useEffect(() => {
-        strokeDashoffset.value = animated
-            ? withTiming(
-                  circumference -
-                      (normalizedProgress / maxProgress) * circumference,
-                  { duration: 1000 }
-              )
-            : circumference -
-              (normalizedProgress / maxProgress) * circumference;
-    }, [progress]);
+    useDerivedValue(() => {
+    const offset =
+        circumference -
+        (normalizedProgress / maxProgress) * circumference;
+
+    strokeDashoffset.value = animated
+        ? withTiming(offset, { duration: 1000 })
+        : offset;
+}, [animated, normalizedProgress, maxProgress, circumference]);
+
 
     // Animated props for the circle
     const animatedProps = useAnimatedProps(() => ({

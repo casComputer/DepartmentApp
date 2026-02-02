@@ -11,7 +11,7 @@ import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
 import { Uniwind } from "uniwind";
 
-import ProgressBar from "@components/common/ProgressBar.jsx";
+import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
@@ -61,7 +61,7 @@ export default function RootLayout() {
                     <Layout userId={userId} role={role} />
                 </QueryClientProvider>
             </KeyboardProvider>
-            <ProgressBar />
+            <GlobalProgress />
         </View>
     );
 }

@@ -8,12 +8,10 @@ const router = express.Router();
 router.get("/cloudinary", async (req, res) => {
     try {
         const usage = await cloudinary.api.usage();
-        const folders = await cloudinary.api.root_folders();
-
+    
         res.json({
             success: true,
-            usage,
-            folders
+            usage
         });
     } catch (error) {
         console.error("Error while fetching cloudinary stats: ", error);

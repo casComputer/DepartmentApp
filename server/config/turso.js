@@ -17,3 +17,4 @@ export const tursoStats = statsClient({
     org: PRIMARY_DATABASE_ORGANISATION,
     token: PRIMARY_DATABASE_ADMIN_TOKEN
 });
+

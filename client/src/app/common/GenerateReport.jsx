@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     Image,
     ActivityIndicator,
-    ToastAndroid
+    ToastAndroid,
 } from "react-native";
 
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
@@ -17,7 +17,7 @@ import Toggle from "@components/common/Toggle";
 
 import {
     getAttendanceXl,
-    deleteReport
+    deleteReport,
 } from "@controller/teacher/attendance.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
@@ -26,7 +26,7 @@ import {
     downloadFile,
     checkFileExists,
     openFileWithDefaultApp,
-    deleteIfExists
+    deleteIfExists,
 } from "@utils/file.js";
 import { openFile, shareFile } from "@utils/generateReport.js";
 import confirm from "@utils/confirm.js";
@@ -37,7 +37,7 @@ const ReportFileItem = ({
     exists,
     onDownload,
     onOpen,
-    onShare
+    onShare,
 }) => {
     return (
         <View className="flex-row items-center justify-between py-3 px-4">
@@ -74,22 +74,38 @@ const ReportFileItem = ({
     );
 };
 
-const Selector = ({ dateText, setShowPicker}) => {
+const Selector = ({ dateText, setShowPicker, toggler, setToggler }) => {
+    console.log(toggler);
+
     return (
         <View className="px-3">
-            
-            <Toggle text1={"month"} text2={'sem'} />
-            
-            
+            <Toggle text1={"month"} text2={"sem"} onChange={setToggler} />
+
             <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
                 GENERATE ATTENDANCE REPORT FOR {dateText}
             </Text>
 
-            <TouchableOpacity onPress={() => setShowPicker(true)}>
-                <Text className="text-xl font-bold text-center text-blue-500">
-                    Change Date
-                </Text>
-            </TouchableOpacity>
+            {toggler === 0 ? (
+                <TouchableOpacity onPress={() => setShowPicker(true)}>
+                    <Text className="text-xl font-bold text-center text-blue-500">
+                        Change Date
+                    </Text>
+                </TouchableOpacity>
+            ) : (
+                <View className="flex-row items-center justify-center gap-15 mt-2">
+                    <TouchableOpacity onPress={() => setShowPicker(true)}>
+                        <Text className="text-xl font-bold text-center text-blue-500">
+                            Start Date
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => setShowPicker(true)}>
+                        <Text className="text-xl font-bold text-center text-blue-500">
+                            End Date
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 };
@@ -100,9 +116,10 @@ const GenerateReport = () => {
     const [generating, setGenerating] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [result, setResult] = useState({});
+    const [toggler, setToggler] = useState(0);
 
-    const course = useAppStore(state => state.user.in_charge_course);
-    const year = useAppStore(state => state.user.in_charge_year);
+    const course = useAppStore((state) => state.user.in_charge_course);
+    const year = useAppStore((state) => state.user.in_charge_year);
 
     const dateText =
         (date.getMonth() + 1).toString().padStart(2, "0") +
@@ -118,12 +135,12 @@ const GenerateReport = () => {
             pdf_url,
             xl_url,
             filename,
-            message = ""
+            message = "",
         } = await getAttendanceXl({
             course,
             year,
             month: date.getMonth(),
-            calendarYear: date.getFullYear()
+            calendarYear: date.getFullYear(),
         });
 
         if (success) {
@@ -134,46 +151,46 @@ const GenerateReport = () => {
                 pdf: {
                     url: pdf_url,
                     filename: filename,
-                    exists: existPdf.exists && existPdf.contentUri
+                    exists: existPdf.exists && existPdf.contentUri,
                 },
                 xl: {
                     url: xl_url,
                     filename: filename,
-                    exists: existXl.exists && existXl.contentUri
+                    exists: existXl.exists && existXl.contentUri,
                 },
-                message
+                message,
             });
         }
         setGenerating(false);
     };
 
-    const handleDownload = async type => {
+    const handleDownload = async (type) => {
         ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
         if (type === "pdf" && result.pdf?.url?.trim()) {
             const downloadRes = await downloadFile(
                 result.pdf?.url,
                 "pdf",
                 result.pdf?.filename + ".pdf",
-                false
+                false,
             );
 
             if (downloadRes.success && downloadRes.contentUri)
-                setResult(p => ({
+                setResult((p) => ({
                     ...p,
-                    pdf: { ...p.pdf, exists: true }
+                    pdf: { ...p.pdf, exists: true },
                 }));
         } else if (type === "xl" && result.xl?.url?.trim()) {
             const downloadRes = await downloadFile(
                 result.xl?.url,
                 "xlsx",
                 result.xl?.filename + ".xlsx",
-                false
+                false,
             );
 
             if (downloadRes.success && downloadRes.contentUri)
-                setResult(p => ({
+                setResult((p) => ({
                     ...p,
-                    xl: { ...p.xl, exists: true }
+                    xl: { ...p.xl, exists: true },
                 }));
         }
     };
@@ -185,7 +202,7 @@ const GenerateReport = () => {
                 year,
                 course,
                 calendarMonth: date.getMonth(),
-                calendarYear: date.getFullYear()
+                calendarYear: date.getFullYear(),
             });
             if (success) {
                 await deleteIfExists(null, result.pdf.filename + ".pdf");
@@ -201,7 +218,12 @@ const GenerateReport = () => {
         <ScrollView className="grow bg-primary">
             <Header title={"Generate Report"} />
 
-            <Selector dateText={dateText} setShowPicker={setShowPicker} />
+            <Selector
+                toggler={toggler}
+                setToggler={setToggler}
+                dateText={dateText}
+                setShowPicker={setShowPicker}
+            />
 
             {result.message ? (
                 <>
@@ -256,7 +278,7 @@ const GenerateReport = () => {
                     <ActivityIndicator
                         style={{
                             position: "absolute",
-                            right: "20%"
+                            right: "20%",
                         }}
                     />
                 )}

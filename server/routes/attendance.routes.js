@@ -18,7 +18,7 @@ import {
 } from "../controllers/student/attendance.controller.js";
 
 import {
-    generateXlSheet,
+    generateReport,
     deleteReport
 } from "../controllers/common/attendance.controller.js";
 
@@ -69,7 +69,7 @@ router.post(
 router.post(
     "/monthly-report-excel",
     authorize("teacher", "admin"),
-    generateXlSheet
+    generateReport
 );
 
 router.post("/deleteReport", authorize("teacher", "admin"), deleteReport);

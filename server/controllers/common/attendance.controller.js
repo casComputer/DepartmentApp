@@ -278,9 +278,21 @@ export const generateReport = async (req, res) => {
         if (existDoc) {
             const samePeriod = startMonth === endMonth && startYear === endYear;
 
+            console.log("samePeriod ", samePeriod);
+            console.log(
+                startMonth,
+                startYear,
+                endMonth,
+                endYear,
+                Number(startMonth),
+                monthNames[startMonth],
+                monthNames[Number(startMonth)]
+            );
+
             const filename = samePeriod
                 ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
                 : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
+            console.log("filename ", filename);
 
             return res.json({
                 success: false,

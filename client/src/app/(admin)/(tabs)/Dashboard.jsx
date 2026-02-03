@@ -6,8 +6,10 @@ import CircularProgress from "@components/common/CircularProgress.jsx";
 
 import {
     fetchCloudinaryStats,
-    fetchTursoStats,
+    fetchTursoStats
 } from "@controller/admin/dashboard.controller.js";
+
+import { formatUsage } from "@utils/formateTursoStats.js";
 
 const CloudinaryStats = ({ stats = {} }) => {
     return (
@@ -57,7 +59,13 @@ const CloudinaryStats = ({ stats = {} }) => {
 };
 
 const TursoStats = ({ stats = {} }) => {
-    stats = stats.usage ?? {};
+    const { reads, writes, storage } = formatUsage({
+        rows_read: stats.usage?.rows_read ?? 0,
+        rows_written: stats.usage?.rows_written ?? 0,
+        storage_bytes: stats.usage?.storage_bytes ?? 0
+    });
+
+    console.log(reads, writes, storage);
 
     return (
         <View className="px-3 bg-card py-5 mx-2 rounded-2xl mt-5">
@@ -65,16 +73,48 @@ const TursoStats = ({ stats = {} }) => {
                 Database Storage
             </Text>
             <View className="pl-2 py-4">
-                <Text className="text-md font-semibold text-text">
-                    Rows Read: {stats.rows_read}
-                </Text>
-                <Text className="text-md font-semibold text-text">
-                    Rows Write: {stats.rows_written}
-                </Text>
 
-                <Text className="text-md font-semibold text-text">
-                    Storage Used: {stats.storage_bytes}
-                </Text>
+
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-md font-semibold text-text">
+                        Rows Read
+                    </Text>
+                    <View className="flex-row items-center justify-end gap-2">
+                        
+                    <ProgressBar progress={reads.progress} width={"50%"} />
+                    <Text className="text-md font-semibold text-text">
+                        {reads.text}
+                    </Text>
+                    </View>
+                </View>
+                
+
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-md font-semibold text-text">
+                        Storage Usage
+                    </Text>
+                    <View className="flex-row items-center justify-end gap-2">
+                        
+                    <ProgressBar progress={storage.progress} width={"50%"} />
+                    <Text className="text-md font-semibold text-text">
+                        {storage.text}
+                    </Text>
+                    </View>
+                </View>
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-md font-semibold text-text ">
+                        Storage Usage
+                    </Text>
+                    <View className="flex-row items-center justify-end gap-2">
+                        
+                    <ProgressBar progress={storage.progress} width={"50%"} />
+                    <Text className="text-md font-semibold text-text">
+                        {storage.text}
+                    </Text>
+                    </View>
+                </View>
+
+
             </View>
         </View>
     );
@@ -83,12 +123,12 @@ const TursoStats = ({ stats = {} }) => {
 const Dashboard = () => {
     const { data: cloudinaryStats, isLoading: cloudinaryLoading } = useQuery({
         queryKey: ["cloudinaryStats"],
-        queryFn: fetchCloudinaryStats,
+        queryFn: fetchCloudinaryStats
     });
 
     const { data: tursoStats, isLoading: tursoLoading } = useQuery({
         queryKey: ["tursoStats"],
-        queryFn: fetchTursoStats,
+        queryFn: fetchTursoStats
     });
 
     return (

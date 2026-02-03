@@ -7,12 +7,13 @@ import {
     ActivityIndicator,
     ToastAndroid
 } from "react-native";
-
+import * as Haptics from "expo-haptics";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { FontAwesome6, Octicons, FontAwesome } from "@icons";
 
 import Header from "@components/common/Header";
-import Toggle from "@components/common/Toggle";
+
+import { ReportFileItem, Selector } from "@components/teacher/GenerateReport";
 
 import {
     getAttendanceXl,
@@ -34,86 +35,6 @@ const formatMonthYear = date =>
     `${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}-${date.getFullYear()}`;
-
-const ReportFileItem = ({
-    icon,
-    filename,
-    exists,
-    onDownload,
-    onOpen,
-    onShare
-}) => (
-    <View className="flex-row items-center justify-between py-3 px-4">
-        <View className="flex-row items-center w-[75%]">
-            {icon}
-            <Text
-                numberOfLines={2}
-                adjustsFontSizeToFit
-                className="w-[95%] text-text font-bold pl-3"
-            >
-                {filename}
-            </Text>
-        </View>
-
-        {!exists ? (
-            <TouchableOpacity onPress={onDownload}>
-                <Octicons name="download" size={24} />
-            </TouchableOpacity>
-        ) : (
-            <View className="flex-row items-center gap-3">
-                <TouchableOpacity onPress={onShare}>
-                    <Text className="text-green-500 text-lg font-bold">
-                        Share
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onOpen}>
-                    <Text className="text-blue-500 text-lg font-bold">
-                        Open
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        )}
-    </View>
-);
-
-const Selector = ({
-    toggler,
-    setToggler,
-    dateText,
-    onSinglePress,
-    onStartPress,
-    onEndPress
-}) => (
-    <View className="px-3">
-        <Toggle text1={"month"} text2={"sem"} onChange={setToggler} />
-
-        <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
-            GENERATE ATTENDANCE REPORT FOR {dateText}
-        </Text>
-
-        {toggler === 0 ? (
-            <TouchableOpacity onPress={onSinglePress}>
-                <Text className="text-xl font-bold text-center text-blue-500">
-                    Change Month
-                </Text>
-            </TouchableOpacity>
-        ) : (
-            <View className="flex-row items-center justify-center gap-15">
-                <TouchableOpacity onPress={onStartPress}>
-                    <Text className="text-xl font-bold text-blue-500">
-                        Start Month
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={onEndPress}>
-                    <Text className="text-xl font-bold text-blue-500">
-                        End Month
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        )}
-    </View>
-);
 
 const GenerateReport = () => {
     const [startDate, setStartDate] = useState(new Date());
@@ -162,8 +83,6 @@ const GenerateReport = () => {
             success,
             pdf_url,
             xl_url,
-            pdf_public_id,
-            xl_public_id,
             filename,
             message = "",
             startYear: startYearRes,
@@ -179,12 +98,10 @@ const GenerateReport = () => {
             setResult({
                 pdf: {
                     url: pdf_url,
-                    publicId: pdf_public_id,
                     exists: existPdf.exists && existPdf.contentUri
                 },
                 xl: {
                     url: xl_url,
-                    publicId: xl_public_id,
                     exists: existXl.exists && existXl.contentUri
                 },
                 filename,
@@ -224,6 +141,7 @@ const GenerateReport = () => {
     };
 
     const handleDeleteReport = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
         confirm("Are you sure to delete this record ?", async () => {
             setDeleting(true);
 
@@ -232,13 +150,13 @@ const GenerateReport = () => {
                 course,
                 startMonth: result.startMonth,
                 endMonth: result.endMonth,
-                pdf_public_id: result.pdf?.publicId,
-                xl_public_id: report.xl?.publicId
+                startYear: result.startYear,
+                endYear: result.endYear,
             });
 
             if (success) {
-                await deleteFileEverywhere(result.pdf?.filename + ".pdf");
-                await deleteFileEverywhere(result.xl?.filename + ".xlsx");
+                await deleteFileEverywhere(result.filename + ".pdf");
+                await deleteFileEverywhere(result.filename + ".xlsx");
                 setResult({ message });
             }
 

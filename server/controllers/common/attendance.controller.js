@@ -4,7 +4,7 @@ import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
-import { deleteFile, getPublicIdFromUrl } from "../../utils/cloudinary.js";
+import { deleteFile } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 
 const monthNames = [
@@ -339,7 +339,7 @@ function generateAttendancePDF(
             const title =
                 startMonth === endMonth && startYear === endYear
                     ? `${monthNames[startMonth]} ${startYear}`
-                    : `${monthNames[startMonth]} ${startYear} → ${monthNames[endMonth]} ${endYear}`;
+                    : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
 
             doc.fontSize(18)
                 .font("Helvetica-Bold")
@@ -406,15 +406,13 @@ export const generateReport = async (req, res) => {
             const filename = samePeriod
                 ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
                 : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
-                
+
             return res.json({
                 success: false,
                 message: `Attendance report for this range already exists!`,
                 filename,
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
-                xl_public_id: existDoc.xl_public_id,
-                pdf_public_id: existDoc.pdf_public_id,
                 startYear,
                 startMonth,
                 endYear,
@@ -512,8 +510,6 @@ export const generateReport = async (req, res) => {
             filename,
             xl_url,
             pdf_url,
-            xl_public_id,
-            pdf_public_id,
             startYear,
             startMonth,
             endYear,

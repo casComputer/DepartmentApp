@@ -6,7 +6,8 @@ import {
     Pressable,
     Dimensions,
     Image,
-    ToastAndroid
+    ToastAndroid,
+    ActivityIndicator
 } from "react-native";
 import Animated, {
     withTiming,
@@ -18,6 +19,7 @@ import Animated, {
 import { router, usePathname } from "expo-router";
 import { Feather, Entypo, MaterialIcons as Material } from "@icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Haptics from "expo-haptics";
 
 import { getColorFromString } from "@utils/colors.js";
 import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
@@ -44,12 +46,15 @@ export const FloatingAddButton = ({ parentId }) => {
     const isOpened = useRef(false);
 
     const rounded = useSharedValue(18);
-    const height = useSharedValue(0);
+    const opacity = useSharedValue(0);
     const angle = useSharedValue("0deg");
     const size = useSharedValue(80);
+    const translateY = useSharedValue(50);
+    const btnScale = useSharedValue(0);
 
     const handlePress = () => {
         if (!parentId) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
             return router.push({
                 pathname: "common/CreateNoteFolder",
                 params: {
@@ -59,16 +64,33 @@ export const FloatingAddButton = ({ parentId }) => {
         }
 
         if (isOpened?.current) {
-            height.value = withTiming(0);
+            translateY.value = withTiming(100, {
+                duration: 400
+            });
+            opacity.value = withTiming(0, {
+                duration: 300
+            });
+            btnScale.value = withSpring(0);
             rounded.value = withSpring(18);
-            angle.value = withTiming("0deg");
+            angle.value = withTiming("0deg", {
+                duration: 500
+            });
             size.value = withSpring(80);
             isOpened.current = false;
         } else {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
             rounded.value = withSpring(50);
             size.value = withSpring(50);
-            angle.value = withTiming("45deg");
-            height.value = withSpring(100);
+            angle.value = withTiming("45deg", {
+                duration: 500
+            });
+            opacity.value = withTiming(1, {
+                duration: 300
+            });
+            btnScale.value = withSpring(1);
+            translateY.value = withTiming(0, {
+                duration: 400
+            });
             isOpened.current = true;
         }
     };
@@ -80,7 +102,13 @@ export const FloatingAddButton = ({ parentId }) => {
     }));
 
     const extraViewAnim = useAnimatedStyle(() => ({
-        height: height.value
+        opacity: opacity.value,
+        height: 100,
+        transform: [{ translateY: translateY.value }]
+    }));
+
+    const buttonScaleStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: btnScale.value }]
     }));
 
     const animatedIconStyle = useAnimatedStyle(() => ({
@@ -135,7 +163,7 @@ export const FloatingAddButton = ({ parentId }) => {
 
     return (
         <View
-            style={{ bottom: vh * 0.15 }}
+            style={{ bottom: vh * 0.2 }}
             className="absolute right-8 bottom-10 items-center"
         >
             <Animated.View
@@ -143,29 +171,31 @@ export const FloatingAddButton = ({ parentId }) => {
                 className="gap-3 items-center justify-end py-3"
             >
                 {parentId && (
-                    <TouchableOpacity
+                    <AnimatedTouchableOpacity
+                        style={buttonScaleStyle}
                         onPress={handleUploadPress}
-                        className="justify-center items-center"
+                        className="justify-center items-center bg-btn rounded-2xl"
                     >
-                        <Text className="text-xl font-bold dark:text-white">
+                        <Text className="text-xl font-bold text-text-secondary px-4 py-1">
                             Upload
                         </Text>
-                    </TouchableOpacity>
+                    </AnimatedTouchableOpacity>
                 )}
 
-                <TouchableOpacity
+                <AnimatedTouchableOpacity
+                    style={buttonScaleStyle}
                     onPress={handleCreateFolder}
-                    className="justify-center items-center"
+                    className="justify-center items-center bg-btn rounded-2xl"
                 >
-                    <Text className="text-xl font-bold dark:text-white">
+                    <Text className="text-xl font-bold text-text-secondary px-4 py-1">
                         Folder
                     </Text>
-                </TouchableOpacity>
+                </AnimatedTouchableOpacity>
             </Animated.View>
 
             <AnimatedTouchableOpacity
                 style={floatingAnim}
-                className="bg-btn justify-center items-center "
+                className="bg-btn justify-center items-center"
                 onPress={handlePress}
             >
                 <AnimatedFeather
@@ -183,6 +213,8 @@ const toggleMultiSelectionList = useMultiSelectionList.getState().toggle;
 const clearMultiSelectionList = useMultiSelectionList.getState().clear;
 
 export const FolderItem = ({ item, role }) => {
+    const [downloading, setDownloading] = useState(false);
+
     const color = getColorFromString(item.name);
 
     const isExistsInMultiSelectList = useMultiSelectionList(state =>
@@ -201,10 +233,12 @@ export const FolderItem = ({ item, role }) => {
     }
 
     const openFile = async () => {
-        let message = "Opening " + item.name ?? "file";
-        ToastAndroid.show(`${message}`, ToastAndroid.SHORT);
+        if (downloading) return;
 
+        ToastAndroid.show("Please wait..", ToastAndroid.SHORT);
+        setDownloading(true);
         await downloadFile(item.fileUrl, item.format, item.name);
+        setDownloading(false);
     };
 
     const handlePress = () => {
@@ -223,7 +257,7 @@ export const FolderItem = ({ item, role }) => {
     };
 
     const onLongPress = () => {
-        if (role !== "teacher" || role !== "admin") return;
+        if (role !== "teacher" && role !== "admin") return;
         toggleMultiSelectionList(item._id);
     };
     return (
@@ -254,16 +288,26 @@ export const FolderItem = ({ item, role }) => {
                 {isFolder ? (
                     <MaterialIcons name="folder" size={110} color={color} />
                 ) : (
-                    <Image
-                        source={{ uri: url }}
-                        style={{
-                            width: "90%",
-                            height: 110,
-                            marginTop: -5,
-                            borderRadius: 4,
-                            opacity: 0.8
-                        }}
-                    />
+                    <>
+                        <Image
+                            source={{ uri: url }}
+                            style={{
+                                width: "90%",
+                                height: 110,
+                                marginTop: -5,
+                                borderRadius: 4,
+                                opacity: 0.8
+                            }}
+                        />
+                        {downloading && (
+                            <ActivityIndicator
+                                size={"large"}
+                                style={{
+                                    position: "absolute"
+                                }}
+                            />
+                        )}
+                    </>
                 )}
             </View>
         </Pressable>

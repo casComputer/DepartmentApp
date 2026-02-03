@@ -22,6 +22,131 @@ const monthNames = [
     "December"
 ];
 
+export const getAttendanceReportByDateRange = async ({
+    course,
+    classYear,
+    startDate, // YYYY-MM-DD
+    endDate, // YYYY-MM-DD
+    studentId = null
+}) => {
+    try {
+        if (!studentId && (!course || !classYear)) {
+            throw new Error(
+                "course and classYear are required when studentId is not provided"
+            );
+        }
+
+        if (!startDate || !endDate) {
+            throw new Error("startDate and endDate are required");
+        }
+
+        const studentFilterSQL = studentId
+            ? `AND ad.studentId = ?`
+            : `AND a.course = ? AND a.year = ?`;
+
+        const args = studentId
+            ? [startDate, endDate, studentId]
+            : [startDate, endDate, course, classYear];
+
+        const result = await turso.execute({
+            sql: `
+            WITH daily_sections AS (
+                SELECT
+                    ad.studentId,
+                    a.date,
+
+                    COUNT(DISTINCT CASE
+                        WHEN a.hour IN ('First','Second','Third')
+                        THEN a.hour END
+                    ) AS first_total,
+
+                    COUNT(DISTINCT CASE
+                        WHEN a.hour IN ('Fourth','Fifth')
+                        THEN a.hour END
+                    ) AS second_total,
+
+                    SUM(CASE
+                        WHEN a.hour IN ('First','Second','Third')
+                        AND ad.status IN ('present','late')
+                        THEN 1 ELSE 0 END
+                    ) AS first_present,
+
+                    SUM(CASE
+                        WHEN a.hour IN ('Fourth','Fifth')
+                        AND ad.status IN ('present','late')
+                        THEN 1 ELSE 0 END
+                    ) AS second_present
+
+                FROM attendance_details ad
+                JOIN attendance a
+                ON ad.attendanceId = a.attendanceId
+
+                WHERE a.date BETWEEN ? AND ?
+                ${studentFilterSQL}
+
+                GROUP BY ad.studentId, a.date
+
+                HAVING COUNT(DISTINCT CASE
+                    WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
+                    THEN a.hour END
+                ) > 0
+            ),
+
+            daily_attendance AS (
+                SELECT
+                    studentId,
+                    date,
+                    CASE
+                        WHEN first_total > 0 AND second_total > 0 THEN
+                            CASE
+                                WHEN first_present = first_total
+                                AND second_present = second_total THEN 1.0
+                                WHEN first_present < first_total
+                                AND second_present < second_total THEN 0.0
+                                ELSE 0.5
+                            END
+
+                        WHEN first_total > 0 AND second_total = 0 THEN
+                            CASE
+                                WHEN first_present = first_total THEN 1.0
+                                WHEN first_present = 0 THEN 0.0
+                                ELSE 0.5
+                            END
+
+                        WHEN first_total = 0 AND second_total > 0 THEN
+                            CASE
+                                WHEN second_present = second_total THEN 1.0
+                                WHEN second_present = 0 THEN 0.0
+                                ELSE 0.5
+                            END
+                        ELSE NULL
+                    END AS attendance_value
+                FROM daily_sections
+            )
+
+            SELECT
+                studentId,
+                COUNT(attendance_value) AS working_days,
+                SUM(attendance_value) AS present_days,
+                COUNT(attendance_value) - SUM(attendance_value) AS absent_days,
+                ROUND(
+                    (SUM(attendance_value) * 100.0) / COUNT(attendance_value),
+                    2
+                ) AS attendance_percentage
+            FROM daily_attendance
+            GROUP BY studentId
+            ORDER BY studentId;
+            `,
+            args
+        });
+
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+};
+
 export const getMonthlyAttendanceReport = async ({
     course,
     classYear, // class year (eg: "Third")
@@ -278,22 +403,10 @@ export const generateReport = async (req, res) => {
         if (existDoc) {
             const samePeriod = startMonth === endMonth && startYear === endYear;
 
-            console.log("samePeriod ", samePeriod);
-            console.log(
-                startMonth,
-                startYear,
-                endMonth,
-                endYear,
-                Number(startMonth),
-                monthNames[startMonth],
-                monthNames[Number(startMonth)]
-            );
-
             const filename = samePeriod
                 ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
                 : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
-            console.log("filename ", filename);
-
+                
             return res.json({
                 success: false,
                 message: `Attendance report for this range already exists!`,
@@ -309,22 +422,22 @@ export const generateReport = async (req, res) => {
             });
         }
 
-        // Aggregate attendance data for all months in the range
-        let aggregatedData = [];
-        for (let y = startYear; y <= endYear; y++) {
-            let mStart = y === startYear ? startMonth : 0;
-            let mEnd = y === endYear ? endMonth : 11;
+        const startDate = `${startYear}-${String(startMonth + 1).padStart(2, "0")}-01`;
 
-            for (let m = mStart; m <= mEnd; m++) {
-                const data = await getMonthlyAttendanceReport({
-                    course,
-                    classYear: year,
-                    month: m + 1, // helper expects 1-12
-                    calendarYear: y
-                });
-                aggregatedData.push(...data);
-            }
-        }
+        const endDate = new Date(
+            endYear,
+            endMonth + 1,
+            0 // last day of month
+        )
+            .toISOString()
+            .slice(0, 10);
+
+        const aggregatedData = await getAttendanceReportByDateRange({
+            course,
+            classYear: year,
+            startDate,
+            endDate
+        });
 
         if (!aggregatedData.length) {
             return res.json({

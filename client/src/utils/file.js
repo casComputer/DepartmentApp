@@ -109,7 +109,7 @@ export const saveFile = async (
                 filename,
                 mimeType
             );
-
+            
         await FileSystem.writeAsStringAsync(contentUri, base64, {
             encoding: FileSystem.EncodingType.Base64
         });
@@ -144,11 +144,11 @@ export const downloadFile = async (
 
         // Already exists?
         const existing = await checkFileExists(filename);
-        if (existing.exists) {
+        if (existing.exists && existing.contentUri) {
             if (autoOpen && existing.contentUri) {
                 await openFileWithDefaultApp(existing.contentUri, mimeType);
             }
-
+            
             return {
                 success: true,
                 fileUri: existing.fileUri,

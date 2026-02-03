@@ -47,9 +47,9 @@ const ReportFileItem = ({
         <View className="flex-row items-center w-[75%]">
             {icon}
             <Text
-                numberOfLines={1}
+                numberOfLines={2}
                 adjustsFontSizeToFit
-                className="w-full text-text font-bold pl-3"
+                className="w-[95%] text-text font-bold pl-3"
             >
                 {filename}
             </Text>
@@ -205,9 +205,11 @@ const GenerateReport = () => {
         const file = type === "pdf" ? result.pdf : result.xl;
         if (!file?.url) return;
 
+        const ext = type === "pdf" ? "pdf" : "xlsx";
+
         const res = await downloadFile(
             file.url,
-            type === "pdf" ? "pdf" : "xlsx",
+            ext,
             `${result.filename}.${ext}`,
             false
         );
@@ -217,7 +219,8 @@ const GenerateReport = () => {
                 ...p,
                 [type]: { ...p[type], exists: true }
             }));
-        }
+        } else
+            ToastAndroid.show("Failed to download file!", ToastAndroid.SHORT);
     };
 
     const handleDeleteReport = () => {
@@ -286,7 +289,7 @@ const GenerateReport = () => {
 
             {result.pdf?.url && (
                 <ReportFileItem
-                    icon={<FontAwesome6 name="file-pdf" size={25} />}
+                    icon={<FontAwesome6 name="file-pdf" size={24} />}
                     filename={`${result.filename}.pdf`}
                     exists={result.pdf.exists}
                     onDownload={() => handleDownload("pdf")}

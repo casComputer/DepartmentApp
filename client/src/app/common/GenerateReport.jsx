@@ -162,8 +162,14 @@ const GenerateReport = () => {
             success,
             pdf_url,
             xl_url,
+            pdf_public_id,
+            xl_public_id,
             filename,
-            message = ""
+            message = "",
+            startYear: startYearRes,
+            endYear: endYearRes,
+            startMonth: startMonthRes,
+            endMonth: endMonthRes
         } = await getAttendanceXl(payload);
 
         if (success) {
@@ -173,15 +179,20 @@ const GenerateReport = () => {
             setResult({
                 pdf: {
                     url: pdf_url,
-                    filename,
+                    publicId: pdf_public_id,
                     exists: existPdf.exists && existPdf.contentUri
                 },
                 xl: {
                     url: xl_url,
-                    filename,
+                    publicId: xl_public_id,
                     exists: existXl.exists && existXl.contentUri
                 },
-                message
+                filename,
+                message,
+                startYear: startYearRes,
+                endYear: endYearRes,
+                startMonth: startMonthRes,
+                endMonth: endMonthRes
             });
         }
 
@@ -192,19 +203,14 @@ const GenerateReport = () => {
         ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
 
         const file = type === "pdf" ? result.pdf : result.xl;
-
         if (!file?.url) return;
-
-        const ext = type === "pdf" ? "pdf" : "xlsx";
 
         const res = await downloadFile(
             file.url,
-            ext,
-            `${file.filename}.${ext}`,
+            type === "pdf" ? "pdf" : "xlsx",
+            `${result.filename}.${ext}`,
             false
         );
-
-        console.log(res);
 
         if (res.success && res.contentUri) {
             setResult(p => ({
@@ -221,8 +227,10 @@ const GenerateReport = () => {
             const { success, message } = await deleteReport({
                 year,
                 course,
-                calendarMonth: startDate.getMonth(),
-                calendarYear: startDate.getFullYear()
+                startMonth: result.startMonth,
+                endMonth: result.endMonth,
+                pdf_public_id: result.pdf?.publicId,
+                xl_public_id: report.xl?.publicId
             });
 
             if (success) {
@@ -279,22 +287,22 @@ const GenerateReport = () => {
             {result.pdf?.url && (
                 <ReportFileItem
                     icon={<FontAwesome6 name="file-pdf" size={25} />}
-                    filename={`${result.pdf.filename}.pdf`}
+                    filename={`${result.filename}.pdf`}
                     exists={result.pdf.exists}
                     onDownload={() => handleDownload("pdf")}
-                    onOpen={() => openFile("pdf", result.pdf.filename)}
-                    onShare={() => shareFile("pdf", result.pdf.filename)}
+                    onOpen={() => openFile("pdf", result.filename)}
+                    onShare={() => shareFile("pdf", result.filename)}
                 />
             )}
 
             {result.xl?.url && (
                 <ReportFileItem
                     icon={<FontAwesome name="file-excel-o" size={24} />}
-                    filename={`${result.xl.filename}.xlsx`}
+                    filename={`${result.filename}.xlsx`}
                     exists={result.xl.exists}
                     onDownload={() => handleDownload("xl")}
-                    onOpen={() => openFile("xl", result.xl.filename)}
-                    onShare={() => shareFile("xl", result.xl.filename)}
+                    onOpen={() => openFile("xl", result.filename)}
+                    onShare={() => shareFile("xl", result.filename)}
                 />
             )}
 

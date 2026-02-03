@@ -276,12 +276,24 @@ export const generateReport = async (req, res) => {
         });
 
         if (existDoc) {
+            const samePeriod = startMonth === endMonth && startYear === endYear;
+
+            const filename = samePeriod
+                ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
+                : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
+
             return res.json({
                 success: false,
                 message: `Attendance report for this range already exists!`,
+                filename,
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
-                filename: `${existDoc.startMonth}-${existDoc.startYear}_to_${existDoc.endMonth}-${existDoc.endYear}-${year}-${course}`
+                xl_public_id: existDoc.xl_public_id,
+                pdf_public_id: existDoc.pdf_public_id,
+                startYear,
+                startMonth,
+                endYear,
+                endMonth
             });
         }
 

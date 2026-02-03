@@ -6,8 +6,8 @@ import { storage } from "./storage";
 import { clearUser } from "@storage/user.storage.js";
 
 let url = "https://dc-connect.onrender.com";
-url = "http://192.168.0.132:3000"; // 5g
-url = "http://192.168.20.51:3000"; // scopus
+// url = "http://192.168.0.132:3000"; // 5g
+// url = "http://192.168.20.51:3000"; // scopus
 
 console.log(url);
 

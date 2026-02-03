@@ -7,25 +7,40 @@ import cloudinary from "../../config/cloudinary.js";
 import { deleteFile, getPublicIdFromUrl } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
 
+const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+
 export const getMonthlyAttendanceReport = async ({
     course,
     classYear, // class year (eg: "Third")
     month, // month must be in range of 1 ro 12
     calendarYear,
-    studentId = null,
+    studentId = null
 }) => {
     try {
         if (!studentId) {
             if (!course || !classYear) {
                 throw new Error(
-                    "course and classYear are required when studentId is not provided",
+                    "course and classYear are required when studentId is not provided"
                 );
             }
         }
 
         if (month == null || !calendarYear) {
             throw new Error(
-                "course, classYear, month, calendarYear are required",
+                "course, classYear, month, calendarYear are required"
             );
         }
 
@@ -143,7 +158,7 @@ export const getMonthlyAttendanceReport = async ({
                 GROUP BY studentId
                 ORDER BY studentId;
                 `,
-            args,
+            args
         });
 
         return result.rows;
@@ -152,21 +167,6 @@ export const getMonthlyAttendanceReport = async ({
         return [];
     }
 };
-
-const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-];
 
 // ------------------ EXCEL ------------------
 
@@ -179,16 +179,16 @@ async function generateAttendanceExcel(data) {
         { header: " Working Days", key: "working_days" },
         { header: " Present Days", key: "present_days" },
         { header: " Absent Days", key: "absent_days" },
-        { header: " Percentage", key: "attendance_percentage" },
+        { header: " Percentage", key: "attendance_percentage" }
     ];
 
-    data.forEach((row) =>
-        sheet.addRow({ ...row, studentId: ` ${row.studentId}` }),
+    data.forEach(row =>
+        sheet.addRow({ ...row, studentId: ` ${row.studentId}` })
     );
 
-    sheet.columns.forEach((column) => {
+    sheet.columns.forEach(column => {
         let maxLength = 0;
-        column.eachCell((cell) => {
+        column.eachCell(cell => {
             const cellValue = cell.value ? cell.value.toString() : "";
             maxLength = Math.max(maxLength, cellValue.length);
         });
@@ -202,7 +202,7 @@ async function generateAttendanceExcel(data) {
 
 function generateAttendancePDF(
     data,
-    { course, year, startMonth, endMonth, startYear, endYear },
+    { course, year, startMonth, endMonth, startYear, endYear }
 ) {
     return new Promise((resolve, reject) => {
         try {
@@ -219,7 +219,7 @@ function generateAttendancePDF(
             doc.fontSize(18)
                 .font("Helvetica-Bold")
                 .text(`Attendance Report for ${year} ${course} – ${title}`, {
-                    align: "center",
+                    align: "center"
                 })
                 .moveDown()
                 .fontSize(14)
@@ -232,10 +232,10 @@ function generateAttendancePDF(
                             "Working Days",
                             "Present Days",
                             "Absent Days",
-                            "Percentage",
+                            "Percentage"
                         ],
-                        ...data.map((item) => Object.values(item)),
-                    ],
+                        ...data.map(item => Object.values(item))
+                    ]
                 });
 
             doc.end();
@@ -247,7 +247,7 @@ function generateAttendancePDF(
 
 // ------------------ GENERATE XL/PDF ------------------
 
-export const generateXlSheet = async (req, res) => {
+export const generateReport = async (req, res) => {
     try {
         const { course, year, startMonth, endMonth, startYear, endYear } =
             req.body;
@@ -255,12 +255,12 @@ export const generateXlSheet = async (req, res) => {
 
         if (
             [course, year, startMonth, endMonth, startYear, endYear].some(
-                (v) => v == null,
+                v => v == null
             )
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required parameters!",
+                message: "Missing required parameters!"
             });
         }
 
@@ -272,7 +272,7 @@ export const generateXlSheet = async (req, res) => {
             endMonth,
             startYear,
             endYear,
-            teacherId,
+            teacherId
         });
 
         if (existDoc) {
@@ -281,7 +281,7 @@ export const generateXlSheet = async (req, res) => {
                 message: `Attendance report for this range already exists!`,
                 xl_url: existDoc.xl_url,
                 pdf_url: existDoc.pdf_url,
-                filename: `${existDoc.startMonth}-${existDoc.startYear}_to_${existDoc.endMonth}-${existDoc.endYear}-${year}-${course}`,
+                filename: `${existDoc.startMonth}-${existDoc.startYear}_to_${existDoc.endMonth}-${existDoc.endYear}-${year}-${course}`
             });
         }
 
@@ -296,7 +296,7 @@ export const generateXlSheet = async (req, res) => {
                     course,
                     classYear: year,
                     month: m + 1, // helper expects 1-12
-                    calendarYear: y,
+                    calendarYear: y
                 });
                 aggregatedData.push(...data);
             }
@@ -305,7 +305,7 @@ export const generateXlSheet = async (req, res) => {
         if (!aggregatedData.length) {
             return res.json({
                 success: false,
-                message: "No attendance records found for the selected range.",
+                message: "No attendance records found for the selected range."
             });
         }
 
@@ -316,7 +316,7 @@ export const generateXlSheet = async (req, res) => {
             startMonth,
             endMonth,
             startYear,
-            endYear,
+            endYear
         });
 
         // Upload Excel
@@ -327,9 +327,9 @@ export const generateXlSheet = async (req, res) => {
                         resource_type: "raw",
                         folder: "attendance/xl",
                         public_id: `attendance_${Date.now()}.xlsx`,
-                        format: "xlsx",
+                        format: "xlsx"
                     },
-                    (err, result) => (err ? reject(err) : resolve(result)),
+                    (err, result) => (err ? reject(err) : resolve(result))
                 );
                 streamifier.createReadStream(excelBuffer).pipe(uploadStream);
             });
@@ -342,9 +342,9 @@ export const generateXlSheet = async (req, res) => {
                         resource_type: "raw",
                         folder: "attendance/pdf",
                         public_id: `attendance_${Date.now()}.pdf`,
-                        format: "pdf",
+                        format: "pdf"
                     },
-                    (err, result) => (err ? reject(err) : resolve(result)),
+                    (err, result) => (err ? reject(err) : resolve(result))
                 );
                 streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
             });
@@ -361,14 +361,26 @@ export const generateXlSheet = async (req, res) => {
             xl_public_id,
             pdf_url,
             pdf_public_id,
-            teacherId,
+            teacherId
         });
+
+        const samePeriod = startMonth === endMonth && startYear === endYear;
+
+        const filename = samePeriod
+            ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
+            : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
 
         return res.json({
             success: true,
+            filename,
             xl_url,
             pdf_url,
-            filename: `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`,
+            xl_public_id,
+            pdf_public_id,
+            startYear,
+            startMonth,
+            endYear,
+            endMonth
         });
     } catch (error) {
         console.error(error);
@@ -388,12 +400,12 @@ export const deleteReport = async (req, res) => {
 
         if (
             [course, year, startMonth, endMonth, startYear, endYear].some(
-                (v) => v == null,
+                v => v == null
             )
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required parameters!",
+                message: "Missing required parameters!"
             });
         }
 
@@ -403,7 +415,7 @@ export const deleteReport = async (req, res) => {
             startMonth,
             endMonth,
             startYear,
-            endYear,
+            endYear
         };
 
         if (role === "teacher") query.teacherId = teacherId;
@@ -413,7 +425,7 @@ export const deleteReport = async (req, res) => {
         if (!existDoc) {
             return res.json({
                 success: false,
-                message: "No report found for this range.",
+                message: "No report found for this range."
             });
         }
 
@@ -423,12 +435,12 @@ export const deleteReport = async (req, res) => {
         await Promise.all([
             deleteFile(pdf_public_id),
             deleteFile(xl_public_id),
-            MonthlyReport.findByIdAndDelete(existDoc._id),
+            MonthlyReport.findByIdAndDelete(existDoc._id)
         ]);
 
         return res.json({
             success: true,
-            message: "Report deleted successfully.",
+            message: "Report deleted successfully."
         });
     } catch (error) {
         console.error(error);

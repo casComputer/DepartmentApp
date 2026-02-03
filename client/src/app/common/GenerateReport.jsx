@@ -5,7 +5,7 @@ import {
     ScrollView,
     TouchableOpacity,
     ActivityIndicator,
-    ToastAndroid,
+    ToastAndroid
 } from "react-native";
 
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
@@ -16,21 +16,24 @@ import Toggle from "@components/common/Toggle";
 
 import {
     getAttendanceXl,
-    deleteReport,
+    deleteReport
 } from "@controller/teacher/attendance.controller.js";
 
 import { useAppStore } from "@store/app.store.js";
 
-import { downloadFile, checkFileExists, deleteIfExists } from "@utils/file.js";
+import {
+    downloadFile,
+    checkFileExists,
+    deleteFileEverywhere,
+    downloadToSAF
+} from "@utils/file.js";
 import { openFile, shareFile } from "@utils/generateReport.js";
 import confirm from "@utils/confirm.js";
 
-/* ----------------------------- helpers ----------------------------- */
-
-const formatMonthYear = (date) =>
-    `${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getFullYear()}`;
-
-/* -------------------------- small components ------------------------ */
+const formatMonthYear = date =>
+    `${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getFullYear()}`;
 
 const ReportFileItem = ({
     icon,
@@ -38,7 +41,7 @@ const ReportFileItem = ({
     exists,
     onDownload,
     onOpen,
-    onShare,
+    onShare
 }) => (
     <View className="flex-row items-center justify-between py-3 px-4">
         <View className="flex-row items-center w-[75%]">
@@ -79,7 +82,7 @@ const Selector = ({
     dateText,
     onSinglePress,
     onStartPress,
-    onEndPress,
+    onEndPress
 }) => (
     <View className="px-3">
         <Toggle text1={"month"} text2={"sem"} onChange={setToggler} />
@@ -95,7 +98,7 @@ const Selector = ({
                 </Text>
             </TouchableOpacity>
         ) : (
-            <View className="flex-row items-center justify-center gap-15 mt-2">
+            <View className="flex-row items-center justify-center gap-15">
                 <TouchableOpacity onPress={onStartPress}>
                     <Text className="text-xl font-bold text-blue-500">
                         Start Month
@@ -112,8 +115,6 @@ const Selector = ({
     </View>
 );
 
-/* ---------------------------- main screen --------------------------- */
-
 const GenerateReport = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -126,15 +127,13 @@ const GenerateReport = () => {
     const [result, setResult] = useState({});
     const [toggler, setToggler] = useState(0);
 
-    const course = useAppStore((state) => state.user.in_charge_course);
-    const year = useAppStore((state) => state.user.in_charge_year);
+    const course = useAppStore(state => state.user.in_charge_course);
+    const year = useAppStore(state => state.user.in_charge_year);
 
     const dateText =
         toggler === 0
             ? formatMonthYear(startDate)
             : `${formatMonthYear(startDate)} → ${formatMonthYear(endDate)}`;
-
-    /* ----------------------- generate report ------------------------ */
 
     const handleGeneration = async () => {
         if (!year || !course) return;
@@ -148,7 +147,7 @@ const GenerateReport = () => {
                       startMonth: startDate.getMonth(),
                       startYear: startDate.getFullYear(),
                       endMonth: startDate.getMonth(),
-                      endYear: startDate.getFullYear(),
+                      endYear: startDate.getFullYear()
                   }
                 : {
                       course,
@@ -156,7 +155,7 @@ const GenerateReport = () => {
                       startMonth: startDate.getMonth(),
                       startYear: startDate.getFullYear(),
                       endMonth: endDate.getMonth(),
-                      endYear: endDate.getFullYear(),
+                      endYear: endDate.getFullYear()
                   };
 
         const {
@@ -164,7 +163,7 @@ const GenerateReport = () => {
             pdf_url,
             xl_url,
             filename,
-            message = "",
+            message = ""
         } = await getAttendanceXl(payload);
 
         if (success) {
@@ -175,23 +174,21 @@ const GenerateReport = () => {
                 pdf: {
                     url: pdf_url,
                     filename,
-                    exists: existPdf.exists && existPdf.contentUri,
+                    exists: existPdf.exists && existPdf.contentUri
                 },
                 xl: {
                     url: xl_url,
                     filename,
-                    exists: existXl.exists && existXl.contentUri,
+                    exists: existXl.exists && existXl.contentUri
                 },
-                message,
+                message
             });
         }
 
         setGenerating(false);
     };
 
-    /* ------------------------- download ----------------------------- */
-
-    const handleDownload = async (type) => {
+    const handleDownload = async type => {
         ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
 
         const file = type === "pdf" ? result.pdf : result.xl;
@@ -204,18 +201,18 @@ const GenerateReport = () => {
             file.url,
             ext,
             `${file.filename}.${ext}`,
-            false,
+            false
         );
 
+        console.log(res);
+
         if (res.success && res.contentUri) {
-            setResult((p) => ({
+            setResult(p => ({
                 ...p,
-                [type]: { ...p[type], exists: true },
+                [type]: { ...p[type], exists: true }
             }));
         }
     };
-
-    /* --------------------------- delete ----------------------------- */
 
     const handleDeleteReport = () => {
         confirm("Are you sure to delete this record ?", async () => {
@@ -225,20 +222,18 @@ const GenerateReport = () => {
                 year,
                 course,
                 calendarMonth: startDate.getMonth(),
-                calendarYear: startDate.getFullYear(),
+                calendarYear: startDate.getFullYear()
             });
 
             if (success) {
-                await deleteIfExists(null, result.pdf?.filename + ".pdf");
-                await deleteIfExists(null, result.xl?.filename + ".xlsx");
+                await deleteFileEverywhere(result.pdf?.filename + ".pdf");
+                await deleteFileEverywhere(result.xl?.filename + ".xlsx");
                 setResult({ message });
             }
 
             setDeleting(false);
         });
     };
-
-    /* ------------------------------ UI ------------------------------ */
 
     return (
         <ScrollView className="grow bg-primary">

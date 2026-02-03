@@ -2,7 +2,10 @@ import { ToastAndroid } from "react-native";
 
 import axios from "@utils/axios.js";
 import queryClient from "@utils/queryClient.js";
-import { deleteIfExists, ensureDirectoryPermission } from "@utils/file.js";
+import {
+    deleteFileEverywhere,
+    ensureDirectoryPermission
+} from "@utils/file.js";
 
 import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
 import { setNotes } from "@storage/app.storage.js";
@@ -96,7 +99,6 @@ export const uploadFileDetails = async data => {
                 data.parentId,
                 queryClient.getQueryData(["notes", file.parentId])
             );
-
         } else
             ToastAndroid.show(
                 res.data.message ?? "Failed to Uplaod file data!",
@@ -116,7 +118,7 @@ export const deleteNotes = async () => {
         const noteIds = useMultiSelectionList.getState().list;
         if (noteIds?.length <= 0) return;
 
-        ToastAndroid.show("please wait...", ToastAndroid.SHORT);
+        ToastAndroid.show("please wait...", ToastAndroid.LONG);
 
         const res = await axios.post("/notes/delete", { noteIds, teacherId });
 
@@ -136,20 +138,16 @@ export const deleteNotes = async () => {
             });
 
             useMultiSelectionList.getState().clear();
-            
-            const dirUri = await ensureDirectoryPermission();
-            if (dirUri && fileNotes.length > 0) {
-                for (let file of fileNotes) {
-                    
-                    deleteIfExists(dirUri, file.name)
-                }
-            }
 
-        } else
+            if (fileNotes.length > 0)
+                for (let file of fileNotes)
+                    await deleteFileEverywhere(file.name);
+        } else{
             ToastAndroid.show(
                 res.data.message ?? "Failed to delete file!",
                 ToastAndroid.LONG
             );
+        }
     } catch (error) {
         console.error(error);
         ToastAndroid.show("Failed to delete file!", ToastAndroid.LONG);

@@ -4,7 +4,6 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    Image,
     ActivityIndicator,
     ToastAndroid,
 } from "react-native";
@@ -22,14 +21,16 @@ import {
 
 import { useAppStore } from "@store/app.store.js";
 
-import {
-    downloadFile,
-    checkFileExists,
-    openFileWithDefaultApp,
-    deleteIfExists,
-} from "@utils/file.js";
+import { downloadFile, checkFileExists, deleteIfExists } from "@utils/file.js";
 import { openFile, shareFile } from "@utils/generateReport.js";
 import confirm from "@utils/confirm.js";
+
+/* ----------------------------- helpers ----------------------------- */
+
+const formatMonthYear = (date) =>
+    `${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getFullYear()}`;
+
+/* -------------------------- small components ------------------------ */
 
 const ReportFileItem = ({
     icon,
@@ -38,81 +39,88 @@ const ReportFileItem = ({
     onDownload,
     onOpen,
     onShare,
-}) => {
-    return (
-        <View className="flex-row items-center justify-between py-3 px-4">
-            <View className="flex-row items-center w-[75%]">
-                {icon}
-                <Text
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    className="w-full text-text font-bold pl-3"
-                >
-                    {filename}
-                </Text>
-            </View>
-
-            {!exists ? (
-                <TouchableOpacity onPress={onDownload}>
-                    <Octicons name="download" size={24} />
-                </TouchableOpacity>
-            ) : (
-                <View className="flex-row items-center gap-3">
-                    <TouchableOpacity onPress={onShare}>
-                        <Text className="text-green-500 text-lg font-bold">
-                            Share
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={onOpen}>
-                        <Text className="text-blue-500 text-lg font-bold">
-                            Open
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
-    );
-};
-
-const Selector = ({ dateText, setShowPicker, toggler, setToggler }) => {
-    console.log(toggler);
-
-    return (
-        <View className="px-3">
-            <Toggle text1={"month"} text2={"sem"} onChange={setToggler} />
-
-            <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
-                GENERATE ATTENDANCE REPORT FOR {dateText}
+}) => (
+    <View className="flex-row items-center justify-between py-3 px-4">
+        <View className="flex-row items-center w-[75%]">
+            {icon}
+            <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                className="w-full text-text font-bold pl-3"
+            >
+                {filename}
             </Text>
+        </View>
 
-            {toggler === 0 ? (
-                <TouchableOpacity onPress={() => setShowPicker(true)}>
-                    <Text className="text-xl font-bold text-center text-blue-500">
-                        Change Date
+        {!exists ? (
+            <TouchableOpacity onPress={onDownload}>
+                <Octicons name="download" size={24} />
+            </TouchableOpacity>
+        ) : (
+            <View className="flex-row items-center gap-3">
+                <TouchableOpacity onPress={onShare}>
+                    <Text className="text-green-500 text-lg font-bold">
+                        Share
                     </Text>
                 </TouchableOpacity>
-            ) : (
-                <View className="flex-row items-center justify-center gap-15 mt-2">
-                    <TouchableOpacity onPress={() => setShowPicker(true)}>
-                        <Text className="text-xl font-bold text-center text-blue-500">
-                            Start Date
-                        </Text>
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={onOpen}>
+                    <Text className="text-blue-500 text-lg font-bold">
+                        Open
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        )}
+    </View>
+);
 
-                    <TouchableOpacity onPress={() => setShowPicker(true)}>
-                        <Text className="text-xl font-bold text-center text-blue-500">
-                            End Date
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
-    );
-};
+const Selector = ({
+    toggler,
+    setToggler,
+    dateText,
+    onSinglePress,
+    onStartPress,
+    onEndPress,
+}) => (
+    <View className="px-3">
+        <Toggle text1={"month"} text2={"sem"} onChange={setToggler} />
+
+        <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
+            GENERATE ATTENDANCE REPORT FOR {dateText}
+        </Text>
+
+        {toggler === 0 ? (
+            <TouchableOpacity onPress={onSinglePress}>
+                <Text className="text-xl font-bold text-center text-blue-500">
+                    Change Month
+                </Text>
+            </TouchableOpacity>
+        ) : (
+            <View className="flex-row items-center justify-center gap-15 mt-2">
+                <TouchableOpacity onPress={onStartPress}>
+                    <Text className="text-xl font-bold text-blue-500">
+                        Start Month
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={onEndPress}>
+                    <Text className="text-xl font-bold text-blue-500">
+                        End Month
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        )}
+    </View>
+);
+
+/* ---------------------------- main screen --------------------------- */
 
 const GenerateReport = () => {
-    const [date, setDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+
     const [showPicker, setShowPicker] = useState(false);
+    const [activePicker, setActivePicker] = useState(null); // single | start | end
+
     const [generating, setGenerating] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [result, setResult] = useState({});
@@ -122,13 +130,34 @@ const GenerateReport = () => {
     const year = useAppStore((state) => state.user.in_charge_year);
 
     const dateText =
-        (date.getMonth() + 1).toString().padStart(2, "0") +
-        "-" +
-        date.getFullYear();
+        toggler === 0
+            ? formatMonthYear(startDate)
+            : `${formatMonthYear(startDate)} → ${formatMonthYear(endDate)}`;
+
+    /* ----------------------- generate report ------------------------ */
 
     const handleGeneration = async () => {
-        if (!year || !course || !date) return;
+        if (!year || !course) return;
         setGenerating(true);
+
+        const payload =
+            toggler === 0
+                ? {
+                      course,
+                      year,
+                      startMonth: startDate.getMonth(),
+                      startYear: startDate.getFullYear(),
+                      endMonth: startDate.getMonth(),
+                      endYear: startDate.getFullYear(),
+                  }
+                : {
+                      course,
+                      year,
+                      startMonth: startDate.getMonth(),
+                      startYear: startDate.getFullYear(),
+                      endMonth: endDate.getMonth(),
+                      endYear: endDate.getFullYear(),
+                  };
 
         const {
             success,
@@ -136,12 +165,7 @@ const GenerateReport = () => {
             xl_url,
             filename,
             message = "",
-        } = await getAttendanceXl({
-            course,
-            year,
-            month: date.getMonth(),
-            calendarYear: date.getFullYear(),
-        });
+        } = await getAttendanceXl(payload);
 
         if (success) {
             const existPdf = await checkFileExists(filename + ".pdf");
@@ -150,69 +174,71 @@ const GenerateReport = () => {
             setResult({
                 pdf: {
                     url: pdf_url,
-                    filename: filename,
+                    filename,
                     exists: existPdf.exists && existPdf.contentUri,
                 },
                 xl: {
                     url: xl_url,
-                    filename: filename,
+                    filename,
                     exists: existXl.exists && existXl.contentUri,
                 },
                 message,
             });
         }
+
         setGenerating(false);
     };
 
+    /* ------------------------- download ----------------------------- */
+
     const handleDownload = async (type) => {
         ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
-        if (type === "pdf" && result.pdf?.url?.trim()) {
-            const downloadRes = await downloadFile(
-                result.pdf?.url,
-                "pdf",
-                result.pdf?.filename + ".pdf",
-                false,
-            );
 
-            if (downloadRes.success && downloadRes.contentUri)
-                setResult((p) => ({
-                    ...p,
-                    pdf: { ...p.pdf, exists: true },
-                }));
-        } else if (type === "xl" && result.xl?.url?.trim()) {
-            const downloadRes = await downloadFile(
-                result.xl?.url,
-                "xlsx",
-                result.xl?.filename + ".xlsx",
-                false,
-            );
+        const file = type === "pdf" ? result.pdf : result.xl;
 
-            if (downloadRes.success && downloadRes.contentUri)
-                setResult((p) => ({
-                    ...p,
-                    xl: { ...p.xl, exists: true },
-                }));
+        if (!file?.url) return;
+
+        const ext = type === "pdf" ? "pdf" : "xlsx";
+
+        const res = await downloadFile(
+            file.url,
+            ext,
+            `${file.filename}.${ext}`,
+            false,
+        );
+
+        if (res.success && res.contentUri) {
+            setResult((p) => ({
+                ...p,
+                [type]: { ...p[type], exists: true },
+            }));
         }
     };
+
+    /* --------------------------- delete ----------------------------- */
 
     const handleDeleteReport = () => {
         confirm("Are you sure to delete this record ?", async () => {
             setDeleting(true);
+
             const { success, message } = await deleteReport({
                 year,
                 course,
-                calendarMonth: date.getMonth(),
-                calendarYear: date.getFullYear(),
+                calendarMonth: startDate.getMonth(),
+                calendarYear: startDate.getFullYear(),
             });
-            if (success) {
-                await deleteIfExists(null, result.pdf.filename + ".pdf");
-                await deleteIfExists(null, result.xl.filename + ".xlsx");
 
+            if (success) {
+                await deleteIfExists(null, result.pdf?.filename + ".pdf");
+                await deleteIfExists(null, result.xl?.filename + ".xlsx");
                 setResult({ message });
             }
+
             setDeleting(false);
         });
     };
+
+    /* ------------------------------ UI ------------------------------ */
 
     return (
         <ScrollView className="grow bg-primary">
@@ -222,10 +248,21 @@ const GenerateReport = () => {
                 toggler={toggler}
                 setToggler={setToggler}
                 dateText={dateText}
-                setShowPicker={setShowPicker}
+                onSinglePress={() => {
+                    setActivePicker("single");
+                    setShowPicker(true);
+                }}
+                onStartPress={() => {
+                    setActivePicker("start");
+                    setShowPicker(true);
+                }}
+                onEndPress={() => {
+                    setActivePicker("end");
+                    setShowPicker(true);
+                }}
             />
 
-            {result.message ? (
+            {result.message && (
                 <>
                     <Text className="text-yellow-300 text-md mt-4 font-bold text-center">
                         {result.message}
@@ -242,7 +279,7 @@ const GenerateReport = () => {
                         </TouchableOpacity>
                     )}
                 </>
-            ) : null}
+            )}
 
             {result.pdf?.url && (
                 <ReportFileItem
@@ -274,25 +311,43 @@ const GenerateReport = () => {
                 <Text className="text-xl font-bold text-center text-text">
                     {generating ? "Generating" : "Generate"} Report
                 </Text>
+
                 {generating && (
                     <ActivityIndicator
-                        style={{
-                            position: "absolute",
-                            right: "20%",
-                        }}
+                        style={{ position: "absolute", right: "20%" }}
                     />
                 )}
             </TouchableOpacity>
+
             {showPicker && (
                 <DateTimePickerAndroid
                     mode="date"
+                    value={activePicker === "end" ? endDate : startDate}
                     onChange={(event, selectedDate) => {
                         setShowPicker(false);
-                        if (event.type === "set" && selectedDate) {
-                            setDate(selectedDate);
+                        if (event.type !== "set" || !selectedDate) return;
+
+                        if (activePicker === "single") {
+                            setStartDate(selectedDate);
+                            setEndDate(selectedDate);
                         }
+
+                        if (activePicker === "start") {
+                            setStartDate(selectedDate);
+                            if (selectedDate > endDate) {
+                                setEndDate(selectedDate);
+                            }
+                        }
+
+                        if (
+                            activePicker === "end" &&
+                            selectedDate >= startDate
+                        ) {
+                            setEndDate(selectedDate);
+                        }
+
+                        setActivePicker(null);
                     }}
-                    value={date}
                 />
             )}
         </ScrollView>

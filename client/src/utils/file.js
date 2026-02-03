@@ -7,7 +7,7 @@ import { Platform, ToastAndroid } from "react-native";
 import getMimeType from "@utils/getMimeType.js";
 import {
     getSystemStorageUri,
-    saveSystemStorageUri
+    saveSystemStorageUri,
 } from "@storage/app.storage.js";
 
 /*
@@ -20,7 +20,7 @@ import {
 
 export const checkFileExists = async (
     filename,
-    localDir = FileSystem.documentDirectory
+    localDir = FileSystem.documentDirectory,
 ) => {
     let contentUri = null;
     // let fileUri = null;
@@ -31,11 +31,11 @@ export const checkFileExists = async (
         if (dirUri) {
             const files =
                 await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                    dirUri
+                    dirUri,
                 );
 
             contentUri =
-                files.find(uri => {
+                files.find((uri) => {
                     const decoded = decodeURIComponent(uri);
                     return decoded.endsWith("/" + filename);
                 }) ?? null;
@@ -54,7 +54,7 @@ export const checkFileExists = async (
     return {
         // exists: Boolean(contentUri || fileUri),
         exists: Boolean(contentUri),
-        contentUri
+        contentUri,
         // fileUri
     };
 };
@@ -64,7 +64,7 @@ export const openFileWithDefaultApp = async (uri, mimeType) => {
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
             data: uri,
             flags: 1, // FLAG_GRANT_READ_URI_PERMISSION
-            type: mimeType
+            type: mimeType,
         });
     } catch (err) {
         ToastAndroid.show("Error opening file:", ToastAndroid.LONG);
@@ -75,7 +75,7 @@ export const saveFile = async (
     localUri,
     filename,
     format,
-    autoOpen = false
+    autoOpen = false,
 ) => {
     // iOS: still keep file:// only
     if (Platform.OS !== "android") {
@@ -83,7 +83,7 @@ export const saveFile = async (
         return {
             success: true,
             // fileUri: localUri,
-            contentUri: null
+            contentUri: null,
         };
     }
 
@@ -95,23 +95,23 @@ export const saveFile = async (
 
     try {
         const base64 = await FileSystem.readAsStringAsync(localUri, {
-            encoding: FileSystem.EncodingType.Base64
+            encoding: FileSystem.EncodingType.Base64,
         });
 
         const contentUri =
             await FileSystem.StorageAccessFramework.createFileAsync(
                 dirUri,
                 filename,
-                mimetype
+                mimetype,
             );
 
         await FileSystem.writeAsStringAsync(contentUri, base64, {
-            encoding: FileSystem.EncodingType.Base64
+            encoding: FileSystem.EncodingType.Base64,
         });
-        
+
         await FileSystem.deleteAsync(localPath, {
-                idempotent: true
-            });
+            idempotent: true,
+        });
 
         if (autoOpen) {
             await openFileWithDefaultApp(contentUri, mimetype);
@@ -120,7 +120,7 @@ export const saveFile = async (
         return {
             success: true,
             // fileUri: localUri, // file://
-            contentUri // content://
+            contentUri, // content://
         };
     } catch (err) {
         ToastAndroid.show("Failed to save file!", ToastAndroid.LONG);
@@ -133,7 +133,7 @@ export const downloadFile = async (
     url,
     format,
     filename = "",
-    autoOpen = true
+    autoOpen = true,
 ) => {
     if (!filename) filename = url.split("/").at(-1);
 
@@ -141,32 +141,36 @@ export const downloadFile = async (
     const mimeType = getMimeType(format);
 
     if (exists && contentUri) {
-        if (autoOpen && contentUri) 
+        if (autoOpen && contentUri)
             await openFileWithDefaultApp(contentUri, mimeType);
-        
+
         return {
             success: true,
-            contentUri
+            contentUri,
         };
     }
 
     const result = await FileSystem.downloadAsync(
         url,
-        FileSystem.documentDirectory + filename
+        FileSystem.documentDirectory + filename,
     );
 
     return saveFile(result.uri, filename, format, autoOpen);
 };
 
-export const deleteIfExists = async (dirUri, filename, localDir = FileSystem.documentDirectory) => {
+export const deleteIfExists = async (
+    dirUri,
+    filename,
+    localDir = FileSystem.documentDirectory,
+) => {
+    let deleted = false;
     try {
-        let deleted = false;
         if (!dirUri) dirUri = await ensureDirectoryPermission();
 
         const files =
             await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
 
-        const foundUri = files.find(uri => {
+        const foundUri = files.find((uri) => {
             const decoded = decodeURIComponent(uri);
             return decoded.endsWith("/" + filename);
         });
@@ -178,14 +182,14 @@ export const deleteIfExists = async (dirUri, filename, localDir = FileSystem.doc
     } catch (e) {
         console.log("Delete check error:", e);
     }
-    
+
     try {
         const localPath = localDir + filename;
         const info = await FileSystem.getInfoAsync(localPath);
 
         if (info.exists) {
             await FileSystem.deleteAsync(localPath, {
-                idempotent: true
+                idempotent: true,
             });
             deleted = true;
         }
@@ -213,14 +217,14 @@ export const ensureDirectoryPermission = async () => {
     }
 };
 
-export const openFileInBrowser = async url => {
+export const openFileInBrowser = async (url) => {
     const supported = await Linking.canOpenURL(url);
     if (supported) {
         await Linking.openURL(url);
     } else {
         ToastAndroid.show(
             `Don't know how to open this URL: ${url}`,
-            ToastAndroid.LONG
+            ToastAndroid.LONG,
         );
     }
 };

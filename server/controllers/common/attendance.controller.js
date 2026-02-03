@@ -12,20 +12,20 @@ export const getMonthlyAttendanceReport = async ({
     classYear, // class year (eg: "Third")
     month, // month must be in range of 1 ro 12
     calendarYear,
-    studentId = null
+    studentId = null,
 }) => {
     try {
         if (!studentId) {
             if (!course || !classYear) {
                 throw new Error(
-                    "course and classYear are required when studentId is not provided"
+                    "course and classYear are required when studentId is not provided",
                 );
             }
         }
 
         if (month == null || !calendarYear) {
             throw new Error(
-                "course, classYear, month, calendarYear are required"
+                "course, classYear, month, calendarYear are required",
             );
         }
 
@@ -143,7 +143,7 @@ export const getMonthlyAttendanceReport = async ({
                 GROUP BY studentId
                 ORDER BY studentId;
                 `,
-            args
+            args,
         });
 
         return result.rows;
@@ -152,52 +152,6 @@ export const getMonthlyAttendanceReport = async ({
         return [];
     }
 };
-
-async function generateAttendanceExcel(data) {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Attendance");
-
-    sheet.columns = [
-        {
-            header: " Student ID",
-            key: "studentId"
-        },
-        {
-            header: " Working Days",
-            key: "working_days"
-        },
-        {
-            header: " Present Days",
-            key: "present_days"
-        },
-        {
-            header: " Absent Days",
-            key: "absent_days"
-        },
-        {
-            header: " Percentage",
-            key: "attendance_percentage"
-        }
-    ];
-
-    data.forEach(row =>
-        sheet.addRow({
-            ...row,
-            studentId: ` ${row.studentId}`
-        })
-    );
-
-    sheet.columns.forEach(column => {
-        let maxLength = 0;
-        column.eachCell(cell => {
-            const cellValue = cell.value ? cell.value.toString() : "";
-            maxLength = Math.max(maxLength, cellValue.length);
-        });
-        column.width = maxLength + 2;
-    });
-
-    return await workbook.xlsx.writeBuffer();
-}
 
 const monthNames = [
     "January",
@@ -211,33 +165,65 @@ const monthNames = [
     "September",
     "October",
     "November",
-    "December"
+    "December",
 ];
 
-function generateAttendancePDF(data, { course, year, month, calendarYear }) {
+// ------------------ EXCEL ------------------
+
+async function generateAttendanceExcel(data) {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Attendance");
+
+    sheet.columns = [
+        { header: " Student ID", key: "studentId" },
+        { header: " Working Days", key: "working_days" },
+        { header: " Present Days", key: "present_days" },
+        { header: " Absent Days", key: "absent_days" },
+        { header: " Percentage", key: "attendance_percentage" },
+    ];
+
+    data.forEach((row) =>
+        sheet.addRow({ ...row, studentId: ` ${row.studentId}` }),
+    );
+
+    sheet.columns.forEach((column) => {
+        let maxLength = 0;
+        column.eachCell((cell) => {
+            const cellValue = cell.value ? cell.value.toString() : "";
+            maxLength = Math.max(maxLength, cellValue.length);
+        });
+        column.width = maxLength + 2;
+    });
+
+    return await workbook.xlsx.writeBuffer();
+}
+
+// ------------------ PDF ------------------
+
+function generateAttendancePDF(
+    data,
+    { course, year, startMonth, endMonth, startYear, endYear },
+) {
     return new Promise((resolve, reject) => {
         try {
-            const doc = new PDFDocument({
-                size: "A4"
-            });
-
-            const calendarMonth = monthNames[month];
-
+            const doc = new PDFDocument({ size: "A4" });
             const buffers = [];
             doc.on("data", buffers.push.bind(buffers));
             doc.on("end", () => resolve(Buffer.concat(buffers)));
 
+            const title =
+                startMonth === endMonth && startYear === endYear
+                    ? `${monthNames[startMonth]} ${startYear}`
+                    : `${monthNames[startMonth]} ${startYear} → ${monthNames[endMonth]} ${endYear}`;
+
             doc.fontSize(18)
                 .font("Helvetica-Bold")
-                .text(
-                    `Attendance Report for ${year} ${course} – ${calendarMonth} ${calendarYear}`,
-                    {
-                        align: "center"
-                    }
-                )
-                .font("Times-Roman")
-                .fontSize(14)
+                .text(`Attendance Report for ${year} ${course} – ${title}`, {
+                    align: "center",
+                })
                 .moveDown()
+                .fontSize(14)
+                .font("Times-Roman")
                 .table({
                     rowStyles: [30],
                     data: [
@@ -246,10 +232,10 @@ function generateAttendancePDF(data, { course, year, month, calendarYear }) {
                             "Working Days",
                             "Present Days",
                             "Absent Days",
-                            "Percentage"
+                            "Percentage",
                         ],
-                        ...data.map(item => Object.values(item))
-                    ]
+                        ...data.map((item) => Object.values(item)),
+                    ],
                 });
 
             doc.end();
@@ -259,202 +245,195 @@ function generateAttendancePDF(data, { course, year, month, calendarYear }) {
     });
 }
 
+// ------------------ GENERATE XL/PDF ------------------
+
 export const generateXlSheet = async (req, res) => {
     try {
-        const { course, year, month, calendarYear } = req.body;
+        const { course, year, startMonth, endMonth, startYear, endYear } =
+            req.body;
         const { userId: teacherId } = req.user;
 
-        if (month == null || !course || !year || !calendarYear)
-            return res.json({
+        if (
+            [course, year, startMonth, endMonth, startYear, endYear].some(
+                (v) => v == null,
+            )
+        ) {
+            return res.status(400).json({
                 success: false,
-                message: "course, year, month, calendarYear are required!"
-            });
-
-        const existDoc = await MonthlyReport.findOne({
-            calendarMonth: month,
-            calendarYear,
-            year,
-            course
-        });
-
-        if (existDoc)
-            return res.json({
-                success: false,
-                xl_url: existDoc.xl_url,
-                pdf_url: existDoc.pdf_url,
-                filename: `${monthNames[month]}-${calendarYear}-${year}-${course}`,
-                message: `Attendance report for ${monthNames[month]}-${calendarYear} already exist!\nDelete it to generate new report.`
-            });
-
-        const data = await getMonthlyAttendanceReport({
-            course,
-            classYear: year,
-            month: month + 1, // this fn requires month in range of (1-12), but the actual month is in range (0-11)
-            calendarYear
-        });
-
-        if (!data || !data.length)
-            return res.json({
-                success: false,
-                message: `unable to find attendance records for ${monthNames[month]}-${calendarYear}}`
-            });
-
-        const excelBuffer = await generateAttendanceExcel(data);
-
-        if (!excelBuffer)
-            return res.json({
-                success: false,
-                message: "Failed to generate exel-sheet!"
-            });
-
-        const { secure_url: xl_url, public_id: xl_public_id } = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                {
-                    resource_type: "raw",
-                    folder: "attendance/xl",
-                    public_id: `attendance_${Date.now()}.xlsx`,
-                    format: "xlsx"
-                },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
-
-            streamifier.createReadStream(excelBuffer).pipe(uploadStream);
-        });
-
-        const pdfBuffer = await generateAttendancePDF(data, {
-            course,
-            year,
-            month,
-            calendarYear
-        });
-
-        const { secure_url: pdf_url, public_id: pdf_public_id } = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                {
-                    resource_type: "raw",
-                    folder: "attendance/pdf",
-                    public_id: `attendance_${Date.now()}.pdf`,
-                    format: "pdf"
-                },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
-
-            streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
-        });
-
-        if (xl_url && pdf_url) {
-            await MonthlyReport.create({
-                calendarYear,
-                calendarMonth: month,
-                course,
-                year,
-                xl_url,
-                pdf_url,
-                xl_public_id,
-                pdf_public_id,
-                teacherId
-            });
-
-            return res.json({
-                success: true,
-                xl_url,
-                pdf_url,
-                filename: `${monthNames[month]}-${calendarYear}-${year}-${course}`
+                message: "Missing required parameters!",
             });
         }
 
+        // Check if report already exists for this range
+        const existDoc = await MonthlyReport.findOne({
+            course,
+            year,
+            startMonth,
+            endMonth,
+            startYear,
+            endYear,
+            teacherId,
+        });
+
+        if (existDoc) {
+            return res.json({
+                success: false,
+                message: `Attendance report for this range already exists!`,
+                xl_url: existDoc.xl_url,
+                pdf_url: existDoc.pdf_url,
+                filename: `${existDoc.startMonth}-${existDoc.startYear}_to_${existDoc.endMonth}-${existDoc.endYear}-${year}-${course}`,
+            });
+        }
+
+        // Aggregate attendance data for all months in the range
+        let aggregatedData = [];
+        for (let y = startYear; y <= endYear; y++) {
+            let mStart = y === startYear ? startMonth : 0;
+            let mEnd = y === endYear ? endMonth : 11;
+
+            for (let m = mStart; m <= mEnd; m++) {
+                const data = await getMonthlyAttendanceReport({
+                    course,
+                    classYear: year,
+                    month: m + 1, // helper expects 1-12
+                    calendarYear: y,
+                });
+                aggregatedData.push(...data);
+            }
+        }
+
+        if (!aggregatedData.length) {
+            return res.json({
+                success: false,
+                message: "No attendance records found for the selected range.",
+            });
+        }
+
+        const excelBuffer = await generateAttendanceExcel(aggregatedData);
+        const pdfBuffer = await generateAttendancePDF(aggregatedData, {
+            course,
+            year,
+            startMonth,
+            endMonth,
+            startYear,
+            endYear,
+        });
+
+        // Upload Excel
+        const { secure_url: xl_url, public_id: xl_public_id } =
+            await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: "raw",
+                        folder: "attendance/xl",
+                        public_id: `attendance_${Date.now()}.xlsx`,
+                        format: "xlsx",
+                    },
+                    (err, result) => (err ? reject(err) : resolve(result)),
+                );
+                streamifier.createReadStream(excelBuffer).pipe(uploadStream);
+            });
+
+        // Upload PDF
+        const { secure_url: pdf_url, public_id: pdf_public_id } =
+            await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: "raw",
+                        folder: "attendance/pdf",
+                        public_id: `attendance_${Date.now()}.pdf`,
+                        format: "pdf",
+                    },
+                    (err, result) => (err ? reject(err) : resolve(result)),
+                );
+                streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
+            });
+
+        // Save report document
+        await MonthlyReport.create({
+            startMonth,
+            endMonth,
+            startYear,
+            endYear,
+            year,
+            course,
+            xl_url,
+            xl_public_id,
+            pdf_url,
+            pdf_public_id,
+            teacherId,
+        });
+
         return res.json({
-            success: false,
-            message: "Failed to upload exel sheet or pdf to cloud!"
+            success: true,
+            xl_url,
+            pdf_url,
+            filename: `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        return res
+            .status(500)
+            .json({ success: false, message: "Internal server error" });
     }
 };
 
+// ------------------ DELETE ------------------
+
 export const deleteReport = async (req, res) => {
     try {
-        const { course, year, calendarMonth, calendarYear } = req.body;
+        const { course, year, startMonth, endMonth, startYear, endYear } =
+            req.body;
         const { userId: teacherId, role } = req.user;
 
-        if (!course || !year || calendarMonth == null || !calendarYear)
-            return res.json({
+        if (
+            [course, year, startMonth, endMonth, startYear, endYear].some(
+                (v) => v == null,
+            )
+        ) {
+            return res.status(400).json({
                 success: false,
-                message: "missing required parameters!"
-            });
-
-        let existDocs = [];
-
-        if (role === "teacher") {
-            existDocs = await MonthlyReport.find({
-                course,
-                year,
-                calendarYear,
-                calendarMonth,
-                teacherId
-            });
-        } else if (role === "admin") {
-            existDocs = await MonthlyReport.find({
-                course,
-                year,
-                calendarYear,
-                calendarMonth
+                message: "Missing required parameters!",
             });
         }
 
-        if (!existDocs || !existDocs.length)
+        const query = {
+            course,
+            year,
+            startMonth,
+            endMonth,
+            startYear,
+            endYear,
+        };
+
+        if (role === "teacher") query.teacherId = teacherId;
+
+        const existDoc = await MonthlyReport.findOne(query);
+
+        if (!existDoc) {
             return res.json({
                 success: false,
-                message: `Unable to find report for ${year} ${course} - ${monthNames[calendarMonth]} ${calendarYear}`
+                message: "No report found for this range.",
             });
+        }
 
-        const deletions = existDocs.map(async report => {
-            const pdf_public_id =
-                report.pdf_public_id ?? getPublicIdFromUrl(report.pdf_url);
-            const xl_public_id =
-                report.xl_public_id ?? getPublicIdFromUrl(report.xl_url);
+        const pdf_public_id = existDoc.pdf_public_id;
+        const xl_public_id = existDoc.xl_public_id;
 
-            if (!pdf_public_id || !xl_public_id)
-                throw new Error(`Missing public_id for report ${report._id}`);
+        await Promise.all([
+            deleteFile(pdf_public_id),
+            deleteFile(xl_public_id),
+            MonthlyReport.findByIdAndDelete(existDoc._id),
+        ]);
 
-            await Promise.all([
-                deleteFile(pdf_public_id),
-                deleteFile(xl_public_id)
-            ]);
-
-            await MonthlyReport.findByIdAndDelete(report._id);
+        return res.json({
+            success: true,
+            message: "Report deleted successfully.",
         });
-
-        try {
-            await Promise.all(deletions);
-
-            return res.json({
-                success: true,
-                message: "Reports deleted successfully"
-            });
-        } catch (err) {
-            console.error(err);
-
-            return res.status(500).json({
-                success: false,
-                message: "Failed to delete one or more reports. Contact admin."
-            });
-        }
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error!"
-        });
+        return res
+            .status(500)
+            .json({ success: false, message: "Internal server error!" });
     }
 };

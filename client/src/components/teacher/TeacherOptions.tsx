@@ -71,7 +71,7 @@ const optionsData = [
         Icon: MaterialIcons,
         iconName: "grade",
         text: "Generate Attendance Report",
-        locaton: "/(teacher)/(others)/GenerateReport",
+        locaton: "/common/GenerateReport",
         fullWidth: true
     }
 ];

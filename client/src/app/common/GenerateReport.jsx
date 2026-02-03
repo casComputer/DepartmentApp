@@ -13,6 +13,7 @@ import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { FontAwesome6, Octicons, FontAwesome } from "@icons";
 
 import Header from "@components/common/Header";
+import Toggle from "@components/common/Toggle";
 
 import {
     getAttendanceXl,
@@ -69,6 +70,26 @@ const ReportFileItem = ({
                     </TouchableOpacity>
                 </View>
             )}
+        </View>
+    );
+};
+
+const Selector = ({ dateText, setShowPicker}) => {
+    return (
+        <View className="px-3">
+            
+            <Toggle text1={"month"} text2={'sem'} />
+            
+            
+            <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
+                GENERATE ATTENDANCE REPORT FOR {dateText}
+            </Text>
+
+            <TouchableOpacity onPress={() => setShowPicker(true)}>
+                <Text className="text-xl font-bold text-center text-blue-500">
+                    Change Date
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -179,15 +200,8 @@ const GenerateReport = () => {
     return (
         <ScrollView className="grow bg-primary">
             <Header title={"Generate Report"} />
-            <Text className="text-xl font-black mt-3 px-4 text-center text-text-secondary">
-                GENERATE ATTENDANCE REPORT FOR {dateText}
-            </Text>
 
-            <TouchableOpacity onPress={() => setShowPicker(true)}>
-                <Text className="text-xl font-bold text-center text-blue-500">
-                    Change Date
-                </Text>
-            </TouchableOpacity>
+            <Selector dateText={dateText} setShowPicker={setShowPicker} />
 
             {result.message ? (
                 <>

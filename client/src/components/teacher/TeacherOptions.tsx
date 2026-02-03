@@ -120,6 +120,7 @@ const TeacherOptions = () => {
             numColumns={2}
             keyExtractor={item => item.text}
             estimatedItemSize={90}
+            showsVerticalScrollIndicator={false}
             overrideItemLayout={(layout, item) => {
                 if (item.fullWidth) layout.span = 2
             }}

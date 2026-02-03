@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
-    withTiming,
+    withTiming
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics"
+import * as Haptics from "expo-haptics";
 
 const TOGGLE_WIDTH = 140;
 const TOGGLE_HEIGHT = 35;
@@ -15,17 +15,17 @@ const Toggle = ({ text1 = "1", text2 = "2", onChange }) => {
     const left = useSharedValue(0);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const handleToggle = (index) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+    const handleToggle = index => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         left.value = withTiming(index * BUTTON_WIDTH, {
-            duration: 200,
+            duration: 400
         });
         setActiveIndex(index);
-        onChange(index)
+        onChange(index);
     };
 
     const animatedTogglerStyle = useAnimatedStyle(() => ({
-        left: left.value,
+        left: left.value
     }));
 
     return (
@@ -75,14 +75,14 @@ const styles = StyleSheet.create({
         height: TOGGLE_HEIGHT,
         borderRadius: 26,
         flexDirection: "row",
-        alignSelf: "flex-end",
+        alignSelf: "flex-end"
     },
     inner: {
         width: BUTTON_WIDTH,
         height: "100%",
         borderRadius: 22,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     toggler: {
         position: "absolute",
@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
         height: "100%",
         borderRadius: 22,
         justifyContent: "center",
-        alignItems: "center",
-    },
+        alignItems: "center"
+    }
 });
 
 export default Toggle;

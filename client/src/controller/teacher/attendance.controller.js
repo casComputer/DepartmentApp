@@ -150,6 +150,7 @@ export const getAttendanceXl = async payload => {
             payload
         );
 
+        console.log(data);
         if (data.success) return data;
 
         ToastAndroid.show(
@@ -159,11 +160,8 @@ export const getAttendanceXl = async payload => {
 
         if (data.filename) {
             return {
-                success: true,
-                pdf_url: data.pdf_url,
-                xl_url: data.xl_url,
-                filename: data.filename,
-                message: data.message
+                ...data,
+                success: true
             };
         }
 

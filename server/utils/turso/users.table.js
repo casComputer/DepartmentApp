@@ -60,7 +60,7 @@ turso.execute(`
     course TEXT,
     year TEXT,
     hour TEXT NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, // not changes this to new datatype in db.
     date TEXT NOT NULL,
     updated_timestamp TEXT,
     updated_by TEXT,

@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import * as Notifications from "expo-notifications";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
@@ -15,6 +16,14 @@ import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false
+    })
+});
 
 const Layout = ({ userId, role }) => (
     <Stack
@@ -52,6 +61,14 @@ export default function RootLayout() {
     const theme = useColorScheme();
 
     const { userId, role } = useAppStore(state => state?.user) ?? {};
+
+    useEffect(() => {
+        registerForPushNotifications().then(token => {
+            if (token) {
+                console.log("Expo token:", token);
+            }
+        });
+    }, []);
 
     return (
         <View className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary">

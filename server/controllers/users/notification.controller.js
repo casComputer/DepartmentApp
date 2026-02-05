@@ -26,7 +26,9 @@ export const getUserNotifications = async (req, res) => {
         const { course = "", year = "", page = 1, limit = 10 } = req.body;
         const { userId, role } = req.user;
 
-        const skip = (page - 1) * limit;
+        const pageNum = Number(page);
+        const limitNum = Number(limit);
+        const skip = (pageNum - 1) * limitNum;
 
         const notifications = await Notification.find({
             $or: [
@@ -35,21 +37,24 @@ export const getUserNotifications = async (req, res) => {
                     target: "class",
                     yearCourse: `${year}-${course}`
                 },
-                { userIds: userId }
+                { userIds: { $in: [userId] } }
             ]
         })
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit)
+            .limit(limitNum)
             .lean();
+
+        const hasMore = notifications.length === limitNum;
 
         res.json({
             success: true,
-            hasMore: notifications.length === limit,
-            nextPage: hasMore ? page + 1 : null,
+            hasMore,
+            nextPage: hasMore ? pageNum + 1 : null,
             notifications
         });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

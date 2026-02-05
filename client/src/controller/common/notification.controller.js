@@ -54,9 +54,11 @@ export async function registerForPushNotificationsAsync() {
 
 const addNotificationToken = async token => {
     try {
-        axios.post("/users/addNotificationToken", {
+        const { data } =  await axios.post("/user/addNotificationToken", {
             token
         });
+        
+        console.log('response: ', data);
     } catch (error) {
         console.error(error);
     }
@@ -66,7 +68,7 @@ export const fetchNotifications = async page => {
     try {
         const { course = "", year = "" } = useAppStore.getState().user ?? {};
 
-        const { data } = await axios.post("/users/getUserNotifications", {
+        const { data } = await axios.post("/user/getUserNotifications", {
             page,
             limit: 15,
             course,

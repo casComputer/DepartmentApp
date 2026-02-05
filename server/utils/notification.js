@@ -39,7 +39,7 @@ export const sendPushNotificationToClassStudents = async ({
     year,
     title = "",
     body = "",
-    data = "{}",
+    data = {},
     image = null
 }) => {
     try {
@@ -61,7 +61,7 @@ export const sendPushNotificationToClassStudents = async ({
         await Notification.create({
             title,
             body,
-            data,
+            data: JSON.stringify(data),
             target: "class",
             yearCourse: `${year}-${course}`,
             image
@@ -80,7 +80,7 @@ export const sendNotificationForListOfUsers = async ({
     users = [],
     title = "",
     body = "",
-    data = "{}",
+    data = {},
     image = null
 }) => {
     try {
@@ -99,7 +99,7 @@ export const sendNotificationForListOfUsers = async ({
         await Notification.create({
             title,
             body,
-            data,
+            data: JSON.stringify(data),
             target: "userIds",
             userIds: users,
             image

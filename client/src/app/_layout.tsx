@@ -12,8 +12,7 @@ import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
 
-import {registerForPushNotificationsAsync} from '@controller/common/notification.controller.js'
-
+import { registerForPushNotificationsAsync } from "@controller/common/notification.controller.js";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
@@ -66,12 +65,8 @@ export default function RootLayout() {
     const { userId, role } = useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then(token => {
-            if (token) {
-                console.log("Expo token:", token);
-            }
-        });
-    }, []);
+        if (userId && role) registerForPushNotificationsAsync();
+    }, [userId, role]);
 
     return (
         <View className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary">

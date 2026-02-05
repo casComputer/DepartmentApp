@@ -524,7 +524,7 @@ export const generateReport = async (req, res) => {
             body: `Attendance Report For ${filename
                 ?.trim()
                 ?.join(" ")} Is Now Available.`,
-            data: JSON.stringify(notificationData),
+            data: notificationData,
             image: getPreviewUrl(pdf_url) ?? null
         });
 

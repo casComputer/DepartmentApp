@@ -6,7 +6,13 @@ import Notification from "../models/notification.js";
 const expo = new Expo();
 
 // Before/After calling this fn, make sure that the notification details are inserted into db.
-export async function sendPushNotification(pushToken, title, body, data) {
+export async function sendPushNotification(
+    pushToken,
+    title,
+    body,
+    data,
+    image
+) {
     if (!Expo.isExpoPushToken(pushToken)) {
         console.error("Invalid Expo push token");
         return;
@@ -19,7 +25,8 @@ export async function sendPushNotification(pushToken, title, body, data) {
             title,
             body,
             data,
-            color: "#adfbf2"
+            color: "#f97bb0",
+            image
         }
     ];
 
@@ -56,15 +63,14 @@ export const sendPushNotificationToClassStudents = async ({
         );
 
         for (const student of students)
-            await sendPushNotification(student.token, title, body, data);
+            await sendPushNotification(student.token, title, body, data, image);
 
         await Notification.create({
             title,
             body,
             data: JSON.stringify(data),
             target: "class",
-            yearCourse: `${year}-${course}`,
-            image
+            yearCourse: `${year}-${course}`
         });
         return true;
     } catch (error) {
@@ -86,24 +92,28 @@ export const sendNotificationForListOfUsers = async ({
     try {
         if (!users.length) return true;
 
-        const { rows: users } = await turso.execute(
-            `
-        SELECT token FROM users WHERE userId IN (?)
-    `,
-            [course, year, users]
+        const placeholders = users.map(() => "?").join(",");
+
+        const { rows } = await turso.execute(
+            `SELECT token FROM users WHERE userId IN (${placeholders})`,
+            [...users]
         );
 
-        for (const user of users)
-            await sendPushNotification(user.token, title, body, data);
-
-        await Notification.create({
+        const notificationRes = await Notification.create({
             title,
             body,
             data: JSON.stringify(data),
             target: "userIds",
-            userIds: users,
-            image
+            userIds: users
         });
+
+        data = {
+            ...data,
+            _id: notificationRes._id.toString()
+        };
+        for (const user of rows)
+            await sendPushNotification(user.token, title, body, data, image);
+
         return true;
     } catch (error) {
         console.error(

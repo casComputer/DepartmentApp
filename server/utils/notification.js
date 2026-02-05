@@ -55,7 +55,7 @@ export const sendPushNotificationToClassStudents = async ({
         );
 
         for (const student of students)
-            await sendPushNotificationsAsync(student.token, title, body, data);
+            await sendPushNotification(student.token, title, body, data);
 
         await Notification.create({
             title,

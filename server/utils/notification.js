@@ -39,7 +39,8 @@ export const sendPushNotificationToClassStudents = async ({
     year,
     title = "",
     body = "",
-    data = {}
+    data = {},
+    image = null
 }) => {
     try {
         if (!course || !year) {
@@ -62,7 +63,8 @@ export const sendPushNotificationToClassStudents = async ({
             body,
             data: JSON.stringify(data ?? {}),
             target: "class",
-            yearCourse: `${year}-${course}`
+            yearCourse: `${year}-${course}`,
+            image
         });
         return true;
     } catch (error) {

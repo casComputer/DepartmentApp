@@ -4,9 +4,10 @@ import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
+import getPreviewUrl from "../../utils/previewUrl.js";
 import { deleteFile } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
-import { sendPushNotificationToClassStudents} from '../../utils/notification.js'
+import { sendPushNotificationToClassStudents } from "../../utils/notification.js";
 
 const monthNames = [
     "January",
@@ -509,12 +510,22 @@ export const generateReport = async (req, res) => {
             ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
             : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
 
+        const notificationData = {
+            pdf_url,
+            filename,
+            teacherId,
+            type: "ATTENDANCE_REPORT_GENERATION"
+        };
+
         sendPushNotificationToClassStudents({
             course,
             year,
             title: "Attendance Report Generated",
-            body: `Attendance Report For ${filename} Is Now Available.`,
-            
+            body: `Attendance Report For ${filename
+                ?.trim()
+                ?.join(" ")} Is Now Available.`,
+            data: JSON.stringify(notificationData),
+            image: getPreviewUrl(pdf_url) ?? null
         });
 
         return res.json({

@@ -522,8 +522,9 @@ export const generateReport = async (req, res) => {
             year,
             title: "Attendance Report Generated",
             body: `Attendance Report For ${filename
-                ?.trim()
+                ?.split("-")
                 ?.join(" ")} Is Now Available.`,
+
             data: notificationData,
             image: getPreviewUrl(pdf_url) ?? null
         });

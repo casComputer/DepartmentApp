@@ -33,7 +33,7 @@ export const saveAttendance = async ({
             router.back();
         } else {
             ToastAndroid.show(
-                response.data.message ?? "Failed to save attendance",
+                response.data.message ?? "🟥 Failed to save attendance",
                 ToastAndroid.LONG
             );
             return false;
@@ -41,11 +41,10 @@ export const saveAttendance = async ({
         return true;
     } catch (err) {
         ToastAndroid.show(
-            err?.response?.data?.message ?? "Failed to save attendance",
+            err?.response?.data?.message ?? "🟥 Failed to save attendance!",
             ToastAndroid.LONG
         );
-        router.back();
-
+        
         return false;
     }
 };

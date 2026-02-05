@@ -6,6 +6,7 @@ import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
 import { deleteFile } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
+import { sendPushNotificationToClassStudents} from '../../utils/notification.js'
 
 const monthNames = [
     "January",

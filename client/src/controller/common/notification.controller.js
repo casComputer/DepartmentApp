@@ -62,14 +62,31 @@ const addNotificationToken = async token => {
     }
 };
 
-export const fetchNotifications = async () => {
+export const fetchNotifications = async page => {
     try {
-        const { course='', year='' } = useAppStore.getState().user ?? {};
-        
-        const { data } = await axios.post('/users/')
-        
-        
+        const { course = "", year = "" } = useAppStore.getState().user ?? {};
+
+        const { data } = await axios.post("/users/getUserNotifications", {
+            page,
+            limit: 15,
+            course,
+            year
+        });
+
+        if (data.success) return data;
+        return {
+            success: false,
+            nextPage: null,
+            hasMore: false,
+            notifications: []
+        };
     } catch (error) {
         console.error(error);
+        return {
+            success: false,
+            nextPage: null,
+            hasMore: false,
+            notifications: []
+        };
     }
 };

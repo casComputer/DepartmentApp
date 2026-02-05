@@ -1,5 +1,5 @@
 import Notification from "../../models/notification.js";
-import { turso } from "../config/turso.js";
+import { turso } from "../../config/turso.js";
 
 export const addNotificationToken = async (req, res) => {
     try {

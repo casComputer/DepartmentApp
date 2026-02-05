@@ -420,7 +420,10 @@ export const generateReport = async (req, res) => {
             });
         }
 
-        const startDate = `${startYear}-${String(startMonth + 1).padStart(2, "0")}-01`;
+        const startDate = `${startYear}-${String(startMonth + 1).padStart(
+            2,
+            "0"
+        )}-01`;
 
         const endDate = new Date(
             endYear,
@@ -504,6 +507,14 @@ export const generateReport = async (req, res) => {
         const filename = samePeriod
             ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
             : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
+
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "Attendance Report Generated",
+            body: `Attendance Report For ${filename} Is Now Available.`,
+            
+        });
 
         return res.json({
             success: true,

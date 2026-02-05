@@ -1,16 +1,19 @@
 import "../../global.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack, router, Redirect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
+import { Uniwind } from "uniwind";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
-import { Uniwind } from "uniwind";
+
+import {registerForPushNotificationsAsync} from '@controller/common/notification.controller.js'
+
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
@@ -63,7 +66,7 @@ export default function RootLayout() {
     const { userId, role } = useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
-        registerForPushNotifications().then(token => {
+        registerForPushNotificationsAsync().then(token => {
             if (token) {
                 console.log("Expo token:", token);
             }

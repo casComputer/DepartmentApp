@@ -9,6 +9,7 @@ turso.execute(`
     email TEXT,
     phone TEXT,
     about TEXT,
+    token TEXT,
 
     role TEXT NOT NULL CHECK(role IN('admin', 'teacher', 'student', 'parent')),
 

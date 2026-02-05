@@ -4,6 +4,7 @@ import cors from "cors";
 import "./config/mongoose.js";
 
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import studentRoutes from "./routes/student.routes.js";
@@ -27,14 +28,16 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(cors( {
-    origin: "*", credentials: true
-}));
-
-app.use("/sample", dashboardRoutes);
+app.use(
+    cors({
+        origin: "*",
+        credentials: true
+    })
+);
 
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
+app.use("/user", userRoutes);
 app.use("/admin", authorize("admin"), adminRoutes);
 app.use("/dashboard", authorize("admin"), dashboardRoutes);
 
@@ -50,7 +53,8 @@ app.use("/fees", feesRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
-        message: "Route not found"
+        message: "Route not found",
+        success: false
     });
 });
 

@@ -1,1 +1,2 @@
 export const HOURS_PER_DAY = 5
+export const ATTENDANCE_UPDATE_LIMIT_MINUTES=20

@@ -39,7 +39,7 @@ export const sendPushNotificationToClassStudents = async ({
     year,
     title = "",
     body = "",
-    data = {},
+    data = "{}",
     image = null
 }) => {
     try {
@@ -61,9 +61,47 @@ export const sendPushNotificationToClassStudents = async ({
         await Notification.create({
             title,
             body,
-            data: JSON.stringify(data ?? {}),
+            data,
             target: "class",
             yearCourse: `${year}-${course}`,
+            image
+        });
+        return true;
+    } catch (error) {
+        console.error(
+            "Error while sending notification to class students: ",
+            error
+        );
+        return false;
+    }
+};
+
+export const sendNotificationForListOfUsers = async ({
+    users = [],
+    title = "",
+    body = "",
+    data = "{}",
+    image = null
+}) => {
+    try {
+        if (!users.length) return true;
+
+        const { rows: users } = await turso.execute(
+            `
+        SELECT token FROM users WHERE userId IN (?)
+    `,
+            [course, year, users]
+        );
+
+        for (const user of users)
+            await sendPushNotification(user.token, title, body, data);
+
+        await Notification.create({
+            title,
+            body,
+            data,
+            target: "userIds",
+            userIds: users,
             image
         });
         return true;

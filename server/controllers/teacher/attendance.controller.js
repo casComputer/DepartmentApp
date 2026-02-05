@@ -7,6 +7,10 @@ import cloudinary from "../../config/cloudinary.js";
 import { getMonthlyAttendanceReport } from "../../controllers/common/attendance.controller.js";
 import { ATTENDANCE_UPDATE_LIMIT_MINUTES as UPDATE_LIMIT_MINUTES } from "../../constants/constants.js";
 
+import {
+    sendNotificationForListOfUsers
+} from '../../utils/notification.js'
+
 const buildDetailRows = (attendanceId, attendance) =>
     attendance.map(s => ({
         attendanceId,

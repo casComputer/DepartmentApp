@@ -170,7 +170,6 @@ export const save = async (req, res) => {
         await tx.commit();
         
         const notificationData = {
-            
                 type: "ATTENDANCE_TAKEN_ALERT"
         }
 
@@ -178,7 +177,7 @@ export const save = async (req, res) => {
             users: attendance.filter(s => !s.present),
             title: "attendance Taken",
             body: `Attendance was now taken, reach class within ${UPDATE_LIMIT_MINUTES} mins.`,
-            data: JSON.parse(notificationData)
+            data: JSON.stringify(notificationData)
             
         });
 

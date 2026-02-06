@@ -1,6 +1,15 @@
-const getPreviewUrl = url => {
+const getPreviewUrl = (url, type) => {
     if (!url) return "";
+    if (!url.endsWith(".pdf")) return url; // fallback (icons, etc.)
 
+    if (type === "raw") {
+        if (url.endsWith(".pdf")) {
+            return url.replace(
+                "/image/upload/",
+                "/image/upload/pg_1,f_jpg,w_600,q_auto/"
+            );
+        }
+    }
     if (url.endsWith(".pdf")) {
         return url
             .replace("/raw/upload/", "/image/upload/")
@@ -9,8 +18,6 @@ const getPreviewUrl = url => {
                 "/image/upload/pg_1,f_jpg,w_600,q_auto/"
             );
     }
-
-    return url; // fallback (icons, etc.)
 };
 
-export default getPreviewUrl
+export default getPreviewUrl;

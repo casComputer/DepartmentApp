@@ -20,15 +20,22 @@ export async function sendPushNotification(
 
     console.log(image);
 
+    const payloadData = JSON.parse(
+        JSON.stringify({
+            ...data
+        })
+    );
+
     const messages = [
         {
             to: pushToken,
             sound: "default",
+            channelId: "default",
             title,
             body,
-            data,
+            data: payloadData,
             color: "#f97bb0",
-            image
+            image: image || null
         }
     ];
 
@@ -59,7 +66,7 @@ export const sendPushNotificationToClassStudents = async ({
 
         const { rows: students } = await turso.execute(
             `
-        SELECT token FROM users u JOIN students s ON s.userId = u.userId WHERE s.course = ? AND s.year = ? AND u.role = 'student'
+        SELECT u.token FROM users u JOIN students s ON s.userId = u.userId WHERE s.course = ? AND s.year = ? AND u.role = 'student' AND u.token IS NOT NULL
     `,
             [course, year]
         );
@@ -75,11 +82,14 @@ export const sendPushNotificationToClassStudents = async ({
         data = {
             ...data,
             _id: notificationRes._id.toString(),
-            image: image ?? ''
+            image
         };
-
-        for (const student of students)
-            await sendPushNotification(student.token, title, body, data, image);
+        
+        await Promise.all(
+            students.map(s =>
+                sendPushNotification(s.token, title, body, data, image)
+            )
+        );
 
         return true;
     } catch (error) {
@@ -104,8 +114,11 @@ export const sendNotificationForListOfUsers = async ({
         const placeholders = users.map(() => "?").join(",");
 
         const { rows } = await turso.execute(
-            `SELECT token FROM users WHERE userId IN (${placeholders})`,
-            [...users]
+            `SELECT token 
+                 FROM users 
+                 WHERE userId IN (${placeholders}) 
+                   AND token IS NOT NULL`,
+            users
         );
 
         const notificationRes = await Notification.create({
@@ -119,15 +132,23 @@ export const sendNotificationForListOfUsers = async ({
         data = {
             ...data,
             _id: notificationRes._id.toString(),
-            image: image ?? ''
+            image
         };
-        for (const user of rows)
-            await sendPushNotification(user.token, title, body, data, image);
+
+        const validTokens = rows
+            .map(u => u.token)
+            .filter(t => Expo.isExpoPushToken(t));
+
+        await Promise.all(
+            validTokens.map(token =>
+                sendPushNotification(token, title, body, data, image)
+            )
+        );
 
         return true;
     } catch (error) {
         console.error(
-            "Error while sending notification to class students: ",
+            "Error while sending notification to users list: ",
             error
         );
         return false;

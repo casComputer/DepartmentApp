@@ -17,6 +17,8 @@ export async function sendPushNotification(
         console.error("Invalid Expo push token");
         return;
     }
+    
+    console.log(image);
 
     const messages = [
         {

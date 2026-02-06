@@ -172,7 +172,7 @@ export const save = async (req, res) => {
         };
 
         sendNotificationForListOfUsers({
-            users: attendance.filter(s => !s.present),
+            users: attendance.filter(s => !s.present.studentId),
             title: "attendance Taken",
             body: `Attendance was now taken, reach class within ${UPDATE_LIMIT_MINUTES} mins.`,
             data: notificationData

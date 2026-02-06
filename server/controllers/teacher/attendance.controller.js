@@ -20,8 +20,6 @@ const buildDetailRows = (attendanceId, attendance) =>
 const insertAttendanceDetails = async (tx, rows) => {
     if (!rows.length) return;
 
-    console.log(rows);
-
     const placeholders = rows.map(() => "(?, ?, ?, ?)").join(", ");
     const values = rows.flatMap(r => [
         r.attendanceId,
@@ -172,7 +170,8 @@ export const save = async (req, res) => {
         };
 
         sendNotificationForListOfUsers({
-            users: attendance.filter(s => !s.present)?.map(s => s.studentId) ?? [],
+            users:
+                attendance.filter(s => !s.present)?.map(s => s.userId) ?? [],
             title: "attendance Taken",
             body: `Attendance was now taken, reach class within ${UPDATE_LIMIT_MINUTES} mins.`,
             data: notificationData

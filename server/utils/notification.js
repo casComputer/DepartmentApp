@@ -35,9 +35,8 @@ export async function sendPushNotification(
             body,
             data: payloadData,
             color: "#f97bb0",
-            image: image || null,
             richContent: {
-                image: "https://imgs.search.brave.com/O7GIiq8z0su_KJFnYdguWHDNwBIKvoSKyc4COe8dbq4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvbGV0/dGVyLXMtd2l0aC1i/bHVlLWZsb3dlci1m/cHhsNDRlNHhkMTd4/cXNkLmpwZw"
+                image: image || null
             }
         }
     ];
@@ -84,8 +83,7 @@ export const sendPushNotificationToClassStudents = async ({
 
         data = {
             ...data,
-            _id: notificationRes._id.toString(),
-            image
+            _id: notificationRes._id.toString()
         };
 
         await Promise.all(
@@ -134,8 +132,7 @@ export const sendNotificationForListOfUsers = async ({
 
         data = {
             ...data,
-            _id: notificationRes._id.toString(),
-            image
+            _id: notificationRes._id.toString()
         };
 
         const validTokens = rows

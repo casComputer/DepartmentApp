@@ -12,28 +12,27 @@ const NotificationSchema = new mongoose.Schema(
 
         data: String,
 
-
         target: [
             {
                 type: String,
-                enum: ["all", "teacher", "student", "parent", "admin", "class", 'userIds'],
+                enum: [
+                    "all",
+                    "teacher",
+                    "student",
+                    "parent",
+                    "admin",
+                    "class",
+                    "userIds"
+                ],
                 required: true
             }
         ],
-        
+
         yearCourse: String, // is taget is class
 
-        userIds: [
-            {
-                type: String
-            }
-        ],
+        userIds: [String],
 
-        reads: [
-            {
-                type: String
-            }
-        ],
+        reads: [String],
 
         createdAt: {
             type: Date,

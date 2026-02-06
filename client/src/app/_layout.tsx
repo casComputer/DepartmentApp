@@ -48,7 +48,9 @@ const Layout = ({ userId, role }) => (
             <Stack.Screen name="(admin)/(tabs)" />
         </Stack.Protected>
 
-        <Stack.Protected guard={userId !== "" && role === "teacher"}>
+        <Stack.Protected
+            guard={userId !== "" && (role === "teacher" || role === "admin")}
+        >
             <Stack.Screen name="(teacher)/(tabs)" />
             <Stack.Screen name="(teacher)/(others)" />
         </Stack.Protected>

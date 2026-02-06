@@ -35,7 +35,10 @@ export async function sendPushNotification(
             body,
             data: payloadData,
             color: "#f97bb0",
-            image: image || null
+            image: image || null,
+            richContent: {
+                image: "https://imgs.search.brave.com/O7GIiq8z0su_KJFnYdguWHDNwBIKvoSKyc4COe8dbq4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvbGV0/dGVyLXMtd2l0aC1i/bHVlLWZsb3dlci1m/cHhsNDRlNHhkMTd4/cXNkLmpwZw"
+            }
         }
     ];
 
@@ -84,7 +87,7 @@ export const sendPushNotificationToClassStudents = async ({
             _id: notificationRes._id.toString(),
             image
         };
-        
+
         await Promise.all(
             students.map(s =>
                 sendPushNotification(s.token, title, body, data, image)

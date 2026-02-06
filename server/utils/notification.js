@@ -17,7 +17,7 @@ export async function sendPushNotification(
         console.error("Invalid Expo push token");
         return;
     }
-    
+
     console.log(image);
 
     const messages = [
@@ -64,16 +64,23 @@ export const sendPushNotificationToClassStudents = async ({
             [course, year]
         );
 
-        for (const student of students)
-            await sendPushNotification(student.token, title, body, data, image);
-
-        await Notification.create({
+        const notificationRes = await Notification.create({
             title,
             body,
             data: JSON.stringify(data),
             target: "class",
             yearCourse: `${year}-${course}`
         });
+
+        data = {
+            ...data,
+            _id: notificationRes._id.toString(),
+            image: image ?? ''
+        };
+
+        for (const student of students)
+            await sendPushNotification(student.token, title, body, data, image);
+
         return true;
     } catch (error) {
         console.error(
@@ -111,7 +118,8 @@ export const sendNotificationForListOfUsers = async ({
 
         data = {
             ...data,
-            _id: notificationRes._id.toString()
+            _id: notificationRes._id.toString(),
+            image: image ?? ''
         };
         for (const user of rows)
             await sendPushNotification(user.token, title, body, data, image);

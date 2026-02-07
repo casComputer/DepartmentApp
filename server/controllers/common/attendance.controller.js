@@ -526,7 +526,7 @@ export const generateReport = async (req, res) => {
                 ?.join(" ")} Is Now Available.`,
 
             data: notificationData,
-            image: getPreviewUrl(pdf_url) ?? null
+            image: getPreviewUrl(pdf_url, 'raw') ?? null
         });
 
         return res.json({

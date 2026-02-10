@@ -1,6 +1,11 @@
 import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
-export const registerForPushNotificationsAsync = async () => {
+import { useAppStore } from "@store/app.store.js";
+import axios from "@utils/axios.js";
+
+export async function registerForPushNotificationsAsync() {
     let token;
 
     if (Platform.OS === "android") {
@@ -10,8 +15,8 @@ export const registerForPushNotificationsAsync = async () => {
                 name: "A channel is needed for the permissions prompt to appear",
                 importance: Notifications.AndroidImportance.MAX,
                 vibrationPattern: [0, 250, 250, 250],
-                lightColor: "#FF231F7C",
-            },
+                lightColor: "#FF231F7C"
+            }
         );
     }
 
@@ -26,9 +31,7 @@ export const registerForPushNotificationsAsync = async () => {
         alert("Failed to get push token for push notification!");
         return;
     }
-    // Learn more about projectId:
-    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    // EAS projectId is used here.
+   
     try {
         const projectId =
             Constants?.expoConfig?.extra?.eas?.projectId ??
@@ -46,5 +49,63 @@ export const registerForPushNotificationsAsync = async () => {
         token = `${e}`;
     }
 
+    try {
+        const projectId =
+            Constants?.expoConfig?.extra?.eas?.projectId ??
+            Constants?.easConfig?.projectId;
+        if (!projectId) {
+            throw new Error("Project ID not found");
+        }
+        token = (
+            await Notifications.getExpoPushTokenAsync({
+                projectId
+            })
+        ).data;
+        addNotificationToken(token);
+    } catch (e) {
+        token = `${e}`;
+    }
+
     return token;
+}
+
+const addNotificationToken = async token => {
+    try {
+        const { data } =  await axios.post("/user/addNotificationToken", {
+            token
+        });
+        
+        console.log('response: ', data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const fetchNotifications = async page => {
+    try {
+        const { course = "", year = "" } = useAppStore.getState().user ?? {};
+
+        const { data } = await axios.post("/user/getUserNotifications", {
+            page,
+            limit: 15,
+            course,
+            year
+        });
+
+        if (data.success) return data;
+        return {
+            success: false,
+            nextPage: null,
+            hasMore: false,
+            notifications: []
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            nextPage: null,
+            hasMore: false,
+            notifications: []
+        };
+    }
 };

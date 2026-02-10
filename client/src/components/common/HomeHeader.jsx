@@ -1,6 +1,7 @@
-import { View, Text } from "react-native";
+import { View, Text , TouchableOpacity} from "react-native";
 import { Ionicons } from "@icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from 'expo-router'
 
 const Header = () => {
     const insets = useSafeAreaInsets();
@@ -13,9 +14,9 @@ const Header = () => {
             <Text className="text-5xl font-black text-text-secondary">
                 DC-Connect
             </Text>
-            <View className="flex-row items-center gap-4 text-white">
+            <TouchableOpacity onPress={()=> router.push('/common/notification/NotificationList')} className="flex-row items-center gap-4 text-white">
                 <Ionicons name="notifications" size={24} />
-            </View>
+            </TouchableOpacity>
         </View>
     );
 };

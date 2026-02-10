@@ -13,7 +13,7 @@ const ICONS_SIZE = 35;
 
 const AdminOptions = () => {
     return (
-        <View className="px-3 mt-12 flex-1 gap-3">
+        <View className="px-3 mt-12 flex-1 gap-2 -mb-5">
             <TouchableOpacity
                 onPress={() => router.push("/(admin)/(others)/ManageTeachers")}
                 className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
@@ -35,31 +35,7 @@ const AdminOptions = () => {
             >
                 <Octicons name="log" size={ICONS_SIZE} />
                 <Text className="font-bold text-xl text-gray-700 dark:text-white ">
-                    Work Log
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() =>
-                    router.push("/common/attendance/AttendanceClassSelect")
-                }
-                className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
-                style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
-            >
-                <FontAwesome5 name="clipboard-list" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
-                    Attendance
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => router.push("/common/assignment/Assignment")}
-                className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
-                style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
-            >
-                <SimpleLineIcons name="notebook" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
-                    Assignment
+                    View Work Logs
                 </Text>
             </TouchableOpacity>
 

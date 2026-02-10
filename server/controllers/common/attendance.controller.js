@@ -4,8 +4,10 @@ import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
+import getPreviewUrl from "../../utils/previewUrl.js";
 import { deleteFile } from "../../utils/cloudinary.js";
 import MonthlyReport from "../../models/monthlyAttendanceReport.js";
+import { sendPushNotificationToClassStudents } from "../../utils/notification.js";
 
 const monthNames = [
     "January",
@@ -420,7 +422,10 @@ export const generateReport = async (req, res) => {
             });
         }
 
-        const startDate = `${startYear}-${String(startMonth + 1).padStart(2, "0")}-01`;
+        const startDate = `${startYear}-${String(startMonth + 1).padStart(
+            2,
+            "0"
+        )}-01`;
 
         const endDate = new Date(
             endYear,
@@ -504,6 +509,25 @@ export const generateReport = async (req, res) => {
         const filename = samePeriod
             ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
             : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
+
+        const notificationData = {
+            pdf_url,
+            filename,
+            teacherId,
+            type: "ATTENDANCE_REPORT_GENERATION"
+        };
+
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "Attendance Report Generated",
+            body: `Attendance Report For ${filename
+                ?.split("-")
+                ?.join(" ")} Is Now Available.`,
+
+            data: notificationData,
+            image: getPreviewUrl(pdf_url, 'raw') ?? null
+        });
 
         return res.json({
             success: true,

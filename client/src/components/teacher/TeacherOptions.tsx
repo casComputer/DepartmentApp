@@ -37,7 +37,7 @@ const optionsData = [
     {
         Icon: Octicons,
         iconName: "log",
-        text: "Work Log",
+        text: "Add Work Log",
         locaton: "/(teacher)/(others)/WorkLogSelection"
     },
     {

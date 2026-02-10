@@ -5,8 +5,9 @@ import { turso } from "../../config/turso.js";
 import cloudinary from "../../config/cloudinary.js";
 
 import { getMonthlyAttendanceReport } from "../../controllers/common/attendance.controller.js";
+import { ATTENDANCE_UPDATE_LIMIT_MINUTES as UPDATE_LIMIT_MINUTES } from "../../constants/constants.js";
 
-const UPDATE_LIMIT_MINUTES = 20;
+import { sendNotificationForListOfUsers } from "../../utils/notification.js";
 
 const buildDetailRows = (attendanceId, attendance) =>
     attendance.map(s => ({
@@ -18,8 +19,6 @@ const buildDetailRows = (attendanceId, attendance) =>
 
 const insertAttendanceDetails = async (tx, rows) => {
     if (!rows.length) return;
-
-    console.log(rows);
 
     const placeholders = rows.map(() => "(?, ?, ?, ?)").join(", ");
     const values = rows.flatMap(r => [
@@ -56,9 +55,6 @@ export const save = async (req, res) => {
 
     try {
         const { attendance, course, year, hour, attendanceId } = req.body;
-
-        console.log(attendance, course, year, attendanceId);
-
         const { userId, role } = req.user;
 
         if (!attendance?.length || !course || !year || !hour || !userId)
@@ -168,6 +164,18 @@ export const save = async (req, res) => {
         const detailRows = buildDetailRows(finalAttendanceId, attendance);
         await insertAttendanceDetails(tx, detailRows);
         await tx.commit();
+
+        const notificationData = {
+            type: "ATTENDANCE_TAKEN_ALERT"
+        };
+
+        sendNotificationForListOfUsers({
+            users:
+                attendance.filter(s => !s.present)?.map(s => s.userId) ?? [],
+            title: "attendance Taken",
+            body: `Attendance was now taken, reach class within ${UPDATE_LIMIT_MINUTES} mins.`,
+            data: notificationData
+        });
 
         return res.json({
             success: true,

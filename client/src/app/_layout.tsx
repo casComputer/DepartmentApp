@@ -6,23 +6,23 @@ import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
+import { Uniwind } from "uniwind";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
-import { Uniwind } from "uniwind";
+
+import { registerForPushNotificationsAsync } from "@controller/common/notification.controller.js";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
-import { registerForPushNotifications } from "@controller/common/notification.controller.js";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldPlaySound: true,
-        shouldSetBadge: false,
+        shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true
     })
@@ -49,7 +49,9 @@ const Layout = ({ userId, role }) => (
             <Stack.Screen name="(admin)/(tabs)" />
         </Stack.Protected>
 
-        <Stack.Protected guard={userId !== "" && role === "teacher"}>
+        <Stack.Protected
+            guard={userId !== "" && (role === "teacher" || role === "admin")}
+        >
             <Stack.Screen name="(teacher)/(tabs)" />
             <Stack.Screen name="(teacher)/(others)" />
         </Stack.Protected>
@@ -66,12 +68,8 @@ export default function RootLayout() {
     const { userId, role } = useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
-        registerForPushNotifications().then(token => {
-            if (token) {
-                console.log("Expo token:", token);
-            }
-        });
-    }, []);
+        if (userId && role) registerForPushNotificationsAsync();
+    }, [userId, role]);
 
     return (
         <View className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary">

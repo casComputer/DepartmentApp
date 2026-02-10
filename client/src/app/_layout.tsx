@@ -1,6 +1,6 @@
 import "../../global.css";
-import React from "react";
-import { Stack, router, Redirect } from "expo-router";
+import React, { useEffect } from "react";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, useColorScheme } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import { getUser } from "@storage/user.storage.js";
 import { Uniwind } from "uniwind";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
+import { registerForPushNotifications } from "@controller/common/notification.controller.js";
 
 Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
@@ -21,7 +22,9 @@ Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
         shouldPlaySound: true,
-        shouldSetBadge: false
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true
     })
 });
 

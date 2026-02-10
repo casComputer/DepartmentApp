@@ -17,9 +17,7 @@ export async function sendPushNotification(
         console.error("Invalid Expo push token");
         return;
     }
-
-    console.log(image);
-
+    
     const payloadData = JSON.parse(
         JSON.stringify({
             ...data
@@ -45,7 +43,8 @@ export async function sendPushNotification(
 
     for (const chunk of chunks) {
         try {
-            await expo.sendPushNotificationsAsync(chunk);
+            const response = await expo.sendPushNotificationsAsync(chunk);
+            console.log(response);
         } catch (error) {
             console.error(error);
         }

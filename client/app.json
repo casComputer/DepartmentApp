@@ -1,79 +1,89 @@
 {
-    "expo": {
-        "name": "DepartmentApp",
-        "slug": "DepartmentApp",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
-        "scheme": "departmentapp",
-        "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.cas.DepartmentApp"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "backgroundColor": "#E6F4FE",
-                "foregroundImage": "./assets/images/android-icon-foreground.png",
-                "backgroundImage": "./assets/images/android-icon-background.png",
-                "monochromeImage": "./assets/images/android-icon-monochrome.png"
-            },
-            "edgeToEdgeEnabled": true,
-            "predictiveBackGestureEnabled": false,
-            "package": "com.cas.DepartmentApp"
-        },
-        "web": {
-            "output": "static",
-            "favicon": "./assets/images/favicon.png"
-        },
-        "plugins": [
-            "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    "image": "./assets/images/splash-icon.png",
-                    "imageWidth": 200,
-                    "resizeMode": "contain",
-                    "backgroundColor": "#ffffff",
-                    "dark": {
-                        "backgroundColor": "#000000"
-                    }
-                }
-            ],
-            "expo-secure-store",
-            "expo-web-browser",
-            [
-                "@react-native-community/datetimepicker",
-                {
-                    "android": {
-                        "datePicker": {
-                            "colorAccent": {
-                                "light": "#000000"
-                            },
-                            "textColorPrimary": {
-                                "light": "#000000"
-                            }
-                        },
-                        "timePicker": {
-                            "background": { "light": "#ffffff" },
-                            "numbersBackgroundColor": { "light": "#ffffff" },
-                            "headerBackground": { "light": "#000000" },
-                            "numbersSelectorColor": { "light": "#000000" }
-                        }
-                    }
-                }
-            ]
-        ],
-        "experiments": {
-            "typedRoutes": true,
-            "reactCompiler": true
-        },
-        "extra": {
-            "router": {},
-            "eas": {
-                "projectId": "1a9aa900-0183-4519-8c92-bda476aef93d"
-            }
+  "expo": {
+    "name": "DC-Connect",
+    "slug": "dc-connect",
+    "scheme": "dc-connect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cas.dcConnect"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": true,
+      "package": "com.cas.dcConnect",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
         }
+      ],
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-notifications",
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#000000"
+              },
+              "textColorPrimary": {
+                "light": "#000000"
+              }
+            },
+            "timePicker": {
+              "background": {
+                "light": "#ffffff"
+              },
+              "numbersBackgroundColor": {
+                "light": "#ffffff"
+              },
+              "headerBackground": {
+                "light": "#000000"
+              },
+              "numbersSelectorColor": {
+                "light": "#000000"
+              }
+            }
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f05189f1-bebc-45bc-815c-aeb8df425e6c"
+      }
     }
+  }
 }

@@ -17,7 +17,7 @@ export async function sendPushNotification(
         console.error("Invalid Expo push token");
         return;
     }
-    
+
     const payloadData = JSON.parse(
         JSON.stringify({
             ...data
@@ -28,14 +28,13 @@ export async function sendPushNotification(
         {
             to: pushToken,
             sound: "default",
-            channelId: "default",
             title,
             body,
             data: payloadData,
             color: "#f97bb0",
-            richContent: {
-                image: image || ''
-            }
+            // richContent: {
+            //     image: image || ""
+            // }
         }
     ];
 

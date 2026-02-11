@@ -43,7 +43,7 @@ const optionsData = [
         Icon: Feather,
         iconName: "check-circle",
         text: "Internal Marks",
-        locaton: "/(student)/(others)/Internal"
+        locaton: "/(student)/(others)/InternalMark"
     },
 
     {

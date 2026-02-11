@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image,ActivityIndicator } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
@@ -51,6 +51,8 @@ const InternalMark = () => {
     });
 
     const internal = data?.pages?.flatMap(page => page.internal);
+    
+    console.log(internal, data);
 
     return (
         <View className="flex-1 bg-primary">
@@ -58,10 +60,12 @@ const InternalMark = () => {
             <FlashList
                 data={internal}
                 ListEmptyComponent={
-                    !isLoading && (
+                    !isLoading ? (
                         <Text className="text-lg font-bold text-text text-center mt-5">
                             No Internals Found!
                         </Text>
+                    ) : (
+                        <ActivityIndicator size="large" />
                     )
                 }
                 ListFooterComponent={

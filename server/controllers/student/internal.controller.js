@@ -21,7 +21,7 @@ export const getInternalMarks = async (req, res) => {
 
         res.json({
             success: true,
-            data: internals,
+            internals,
             nextPage: hasNextPage ? parsedPage + 1 : null
         });
     } catch (e) {

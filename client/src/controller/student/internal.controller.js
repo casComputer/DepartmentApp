@@ -11,10 +11,15 @@ export const fetchInternal = async page => {
             limit: 15,
             course
         });
+        
+        console.log(res.data);
 
         if (res.success) return res.data;
         else {
-            ToastAndroid.show("Failed to fetch internal!", ToastAndroid.LONG);
+            ToastAndroid.show(
+                res.data?.message ?? "Failed to fetch internal!",
+                ToastAndroid.LONG
+            );
             return {};
         }
     } catch (error) {

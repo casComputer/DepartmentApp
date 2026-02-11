@@ -9,15 +9,12 @@ export async function registerForPushNotificationsAsync() {
     let token;
 
     if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync(
-            "default",
-            {
-                name: "A channel is needed for the permissions prompt to appear",
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: "#FF231F7C"
-            }
-        );
+        await Notifications.setNotificationChannelAsync("default", {
+            name: "A channel is needed for the permissions prompt to appear",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#FF231F7C"
+        });
     }
 
     const { status: existingStatus } =
@@ -49,16 +46,18 @@ export async function registerForPushNotificationsAsync() {
         token = `${e}`;
     }
 
+    console.log(token);
+
     return token;
 }
 
 const addNotificationToken = async token => {
     try {
-        const { data } =  await axios.post("/user/addNotificationToken", {
+        const { data } = await axios.post("/user/addNotificationToken", {
             token
         });
-        
-        console.log('response: ', data);
+
+        console.log("response: ", data);
     } catch (error) {
         console.error(error);
     }

@@ -10,7 +10,7 @@ export async function registerForPushNotificationsAsync() {
 
     if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync(
-            "myNotificationChannel",
+            "default",
             {
                 name: "A channel is needed for the permissions prompt to appear",
                 importance: Notifications.AndroidImportance.MAX,

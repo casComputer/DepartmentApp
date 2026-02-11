@@ -24,7 +24,9 @@ Notifications.setNotificationHandler({
         shouldPlaySound: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
-        shouldShowList: true
+        shouldShowList: true,
+
+        shouldShowAlert: true // 🔥 REQUIRED on Android
     })
 });
 

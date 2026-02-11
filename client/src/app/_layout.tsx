@@ -25,12 +25,11 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
-
         shouldShowAlert: true // 🔥 REQUIRED on Android
     })
 });
 
-const Layout = ({ userId, role }) => (
+const Layout = ({ userId, role, is_verified }) => (
     <Stack
         screenOptions={{
             headerShown: false,
@@ -43,23 +42,31 @@ const Layout = ({ userId, role }) => (
             <Stack.Screen name="auth/Signup" />
         </Stack.Protected>
 
-        <Stack.Protected guard={userId !== "" && role === "student"}>
-            <Stack.Screen name="(student)/(tabs)" />
-            <Stack.Screen name="(student)/(others)" />
-        </Stack.Protected>
-        <Stack.Protected guard={userId !== "" && role === "admin"}>
-            <Stack.Screen name="(admin)/(tabs)" />
+        <Stack.Protected guard={is_verified}>
+            <Stack.Protected guard={userId !== "" && role === "student"}>
+                <Stack.Screen name="(student)/(tabs)" />
+                <Stack.Screen name="(student)/(others)" />
+            </Stack.Protected>
+            <Stack.Protected guard={userId !== "" && role === "admin"}>
+                <Stack.Screen name="(admin)/(tabs)" />
+            </Stack.Protected>
+
+            <Stack.Protected
+                guard={
+                    userId !== "" && (role === "teacher" || role === "admin")
+                }
+            >
+                <Stack.Screen name="(teacher)/(tabs)" />
+                <Stack.Screen name="(teacher)/(others)" />
+            </Stack.Protected>
+
+            <Stack.Protected guard={userId !== "" && role === "parent"}>
+                <Stack.Screen name="(parent)/(tabs)" />
+            </Stack.Protected>
         </Stack.Protected>
 
-        <Stack.Protected
-            guard={userId !== "" && (role === "teacher" || role === "admin")}
-        >
-            <Stack.Screen name="(teacher)/(tabs)" />
-            <Stack.Screen name="(teacher)/(others)" />
-        </Stack.Protected>
-
-        <Stack.Protected guard={userId !== "" && role === "parent"}>
-            <Stack.Screen name="(parent)/(tabs)" />
+        <Stack.Protected guard={!is_verified && userId}>
+            <Stack.Screen name="Waiting" />
         </Stack.Protected>
     </Stack>
 );
@@ -67,7 +74,8 @@ const Layout = ({ userId, role }) => (
 export default function RootLayout() {
     const theme = useColorScheme();
 
-    const { userId, role } = useAppStore(state => state?.user) ?? {};
+    const { userId, role, is_verified } =
+        useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
         if (userId && role) registerForPushNotificationsAsync();
@@ -78,7 +86,11 @@ export default function RootLayout() {
             <StatusBar style="auto" animated />
             <KeyboardProvider>
                 <QueryClientProvider client={queryClient}>
-                    <Layout userId={userId} role={role} />
+                    <Layout
+                        userId={userId}
+                        role={role}
+                        is_verified={is_verified}
+                    />
                 </QueryClientProvider>
             </KeyboardProvider>
             <GlobalProgress />

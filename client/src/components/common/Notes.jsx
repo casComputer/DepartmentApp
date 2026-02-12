@@ -85,7 +85,7 @@ const Notes = ({
                 ListHeaderComponent={isPending && <ActivityIndicator />}
                 ListEmptyComponent={
                 !isPending && (
-                    <Text className="mt-10 text-center text-xl font-bold dark:text-white">
+                    <Text className="mt-2 text-center text-xl font-bold dark:text-white">
                         {role === "teacher" || role === "admin"
                         ? "Click + to create a folder": "No study meterials yet!"}
                     </Text>

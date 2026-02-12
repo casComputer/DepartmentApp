@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     View,
     Text,
@@ -6,7 +6,8 @@ import {
     Dimensions,
     TextInput,
     ScrollView,
-    BackHandler
+    BackHandler,
+    FlatList
 } from "react-native";
 import Animated, {
     useSharedValue,
@@ -16,32 +17,51 @@ import Animated, {
     runOnJS
 } from "react-native-reanimated";
 import { router } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header.jsx";
 import Header2 from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
+
 import { COURSES, YEAR, HOURS } from "@constants/ClassAndCourses.js";
 import generateDateOptions from "@utils/generateDateOptions.js";
 import { saveWorklog } from "@controller/teacher/worklog.controller";
+
+import { useAppStore } from "@store/app.store.js";
 
 const dateOptions = generateDateOptions(4);
 const { width: vw } = Dimensions.get("window");
 
 /* ----------------------------- PAGE 2 ----------------------------- */
 
-const Page2 = ({ warning, handleSave }) => {
+const SuggestionItem = ({ item = {}, handlePress }) => (
+    <TouchableOpacity
+        onPress={() => handlePress(item.course_name)}
+        className="px-3 py-2 bg-card rounded-2xl"
+    >
+        <Text className="text-text font-bold text-lg">{item.course_name}</Text>
+    </TouchableOpacity>
+);
+
+const Page2 = ({ warning, handleSave, course = "", year = "" }) => {
     const [subject, setSubject] = useState("");
     const [topics, setTopics] = useState("");
     const [loading, setLoading] = useState(false);
+    const topicRef = useRef(null);
+
+    const courses = useAppStore(state => state.user?.courses);
 
     const handlePress = async () => {
         setLoading(true);
         const success = await handleSave({ subject, topics });
         setLoading(false);
 
-        if (success) {
-            router.back();
-        }
+        if (success) router.back();
+    };
+
+    const handleSuggestionSelect = course_name => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setSubject(course_name);
     };
 
     return (
@@ -55,15 +75,35 @@ const Page2 = ({ warning, handleSave }) => {
             )}
 
             <TextInput
-                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2 mt-14"
+                className="border mt-14 py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2"
                 placeholder="Subject"
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
                 value={subject}
                 onChangeText={setSubject}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => {
+                    topicRef.current?.focus();
+                }}
             />
 
+            <View className="flex-row flex-wrap gap-1">
+                {(
+                    courses?.filter(
+                        c => c.year === year && c.course === course
+                    ) ?? []
+                ).map((c, i) => (
+                    <SuggestionItem
+                        key={i}
+                        item={c}
+                        handlePress={handleSuggestionSelect}
+                    />
+                ))}
+            </View>
+
             <TextInput
-                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2"
+                ref={topicRef}
+                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 mt-8"
                 placeholder="Topics covered"
                 multiline
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
@@ -239,7 +279,12 @@ const WorkLogSelection = () => {
                 </View>
 
                 {/* ---------------- PAGE 2 ---------------- */}
-                <Page2 warning={page2Warning} handleSave={handleSave} />
+                <Page2
+                    warning={page2Warning}
+                    handleSave={handleSave}
+                    course={course?.id}
+                    year={year?.id}
+                />
             </Animated.View>
         </View>
     );

@@ -295,9 +295,10 @@ export const FolderItem = ({ item, role }) => {
                                 width: "90%",
                                 height: 110,
                                 marginTop: -5,
-                                borderRadius: 4,
+                                borderRadius: 8,
                                 opacity: 0.8
                             }}
+                            className="bg-card-selected"
                         />
                         {downloading && (
                             <ActivityIndicator

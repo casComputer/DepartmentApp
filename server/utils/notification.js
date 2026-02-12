@@ -32,9 +32,9 @@ export async function sendPushNotification(
             body,
             data: payloadData,
             color: "#f97bb0",
-            // richContent: {
-            //     image: image || ""
-            // }
+            richContent: {
+                image: image || ""
+            }
         }
     ];
 

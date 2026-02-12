@@ -68,6 +68,9 @@ const Layout = ({ userId, role, is_verified }) => (
         <Stack.Protected guard={!is_verified && userId}>
             <Stack.Screen name="Waiting" />
         </Stack.Protected>
+            <Stack.Screen name="common/ImageFullView" options={{
+            animation: "fade"
+        }} />
     </Stack>
 );
 

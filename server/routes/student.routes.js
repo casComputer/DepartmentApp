@@ -19,7 +19,8 @@ import {
 import {
     verifyStudent,
     verifyMultipleStudents,
-    cancelStudentVerification
+    cancelStudentVerification,
+    removeAllByClassTeacher
 } from "../controllers/student/verification.controller.js";
 
 import {
@@ -46,10 +47,13 @@ router.post("/autoAssignRollNoAlphabetically", authorize("teacher", "admin"), au
 
 router.post("/assignGroupedRollNo", authorize("teacher", "admin"), assignGroupedRollNo);
 
+router.post("/removeAllByClassTeacher", authorize("teacher", "admin"), removeAllByClassTeacher);
+
 router.post("/saveExamResultDetails", saveExamResultDetails);
 
 router.post("/checkExamResultUpload", authorize("student"), checkExamResultUpload);
 
 router.post("/getInternalMarks", authorize("student"), getInternalMarks);
+
 
 export default router;

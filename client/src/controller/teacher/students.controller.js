@@ -171,6 +171,27 @@ export const cancelStudentVerification = async ({ studentId }) => {
     }
 };
 
+export const removeAllStudents = async () => {
+    try {
+        const res = await axios.post("/student/removeAllByClassTeacher");
+        if (res.data.success) {
+            useTeacherStore.getState().clearStudents();
+            ToastAndroid.show(
+                "Students removed successfully",
+                ToastAndroid.SHORT
+            );
+        } else {
+            ToastAndroid.show(
+                `Student couldn't removed: ${res.data?.message ?? ""} `,
+                ToastAndroid.SHORT
+            );
+        }
+    } catch (error) {
+        console.error("Error while removing student: ", error);
+        ToastAndroid.show("Students couldn't removed", ToastAndroid.LONG);
+    }
+};
+
 // note: use this when current user is a class teacher
 export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
     try {

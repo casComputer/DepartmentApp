@@ -46,7 +46,7 @@ const RenderItem = ({ item }) => {
 
     return (
         <View
-            style={{ boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.5)" }}
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
             className="px-3 py-6 mt-2 bg-card rounded-3xl gap-2"
         >
             <View className="w-full flex-row items-start justify-between">

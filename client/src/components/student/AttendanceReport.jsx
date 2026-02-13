@@ -22,7 +22,7 @@ export const SelectYear = ({ setYear, year }) => {
             <TouchableOpacity onPress={() => handleChangeYear(-1)}>
                 <Feather name="chevron-left" size={24} />
             </TouchableOpacity>
-            <Text className="text-2xl font-bold dark:text-white ">{year}</Text>
+            <Text className="text-2xl font-bold text-text ">{year}</Text>
           
                 <TouchableOpacity style={{ opacity: hideArrowRight ? 0 : 1 }} disabled={hideArrowRight} onPress={() => handleChangeYear(1)}>
                     <Feather name="chevron-right" size={24} />
@@ -41,7 +41,7 @@ export const Chart = () => {
     });
 
     return (
-        <View>
+        <View >
             <Text className="text-text font-bold text-2xl text-center mt-8">
                 Yearly Report
             </Text>

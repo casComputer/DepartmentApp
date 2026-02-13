@@ -85,7 +85,7 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
         <TouchableOpacity
             onPress={() => handlePress(locaton)}
             className="flex-1 bg-card flex-row items-center gap-4 m-1 py-6 px-6 rounded-2xl"
-            style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
         >
             <Icon
                 name={iconName}

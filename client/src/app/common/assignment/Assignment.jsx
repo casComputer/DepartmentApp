@@ -32,8 +32,6 @@ const Assignment = () => {
 
     const allItems = data?.pages.flatMap(page => page.assignments) || [];
 
-    console.log(allItems[0]);
-
     return (
         <View className="flex-1 bg-primary">
             <Header title="Assignments" />

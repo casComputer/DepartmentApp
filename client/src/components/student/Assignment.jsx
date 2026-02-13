@@ -37,11 +37,14 @@ export const AssignmentRenderItem = ({ item }) => {
     const is_submitted = item?.submissions?.some(
         submission => submission?.studentId === userId
     );
-    const status =
-        item?.submissions?.find(submission => submission?.studentId === userId)
-            ?.status || "_";
-            
-    const isExpired = isDatePassed(item.dueDate)
+
+    const exists = item?.submissions?.find(
+        submission => submission?.studentId === userId
+    );
+
+    const status = exists?.status || "_";
+    const rejectionMessage = exists?.rejectionMessage ?? "";
+    const isExpired = isDatePassed(item.dueDate);
 
     return (
         <TouchableOpacity
@@ -52,17 +55,17 @@ export const AssignmentRenderItem = ({ item }) => {
                         assignmentId: item._id,
                         topic: item.topic,
                         description: item.description,
-                        dueDate: item.dueDate
+                        dueDate: item.dueDate,
+                        rejectionMessage,
+                        status,
+                        isExpired,
+                        is_submitted
                     }
                 })
             }
-            disabled={
-                isExpired ||
-                (is_submitted && status !== "rejected")
-            }
             activeOpacity={0.7}
-            className="p-4 rounded-3xl bg-card my-2"
-            style={{ boxShadow: "0 1px 3px rgba(0, 0, 0, 0.5)" }}
+            className="p-4 rounded-3xl bg-card my-2 border border-border"
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
         >
             <View className="flex-row py-2 justify-between items-center">
                 <Text className="font-black opacity-50 text-mg text-text">
@@ -78,7 +81,9 @@ export const AssignmentRenderItem = ({ item }) => {
             <Text className="text-xl font-black mt-3 text-text">
                 {item.year} {item.course}
             </Text>
-            <Text className={`font-black text-lg ${isExpired ? 'text-red-500' : 'text-text'}`}>
+            <Text
+                className={`font-black text-lg ${isExpired ? "text-red-500" : "text-text"}`}
+            >
                 Due Date:
                 {new Date(item.dueDate).toLocaleDateString()}
             </Text>

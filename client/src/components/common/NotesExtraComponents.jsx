@@ -202,7 +202,6 @@ export const FloatingAddButton = ({ parentId }) => {
                     style={animatedIconStyle}
                     name="plus"
                     size={35}
-                    className="dark:text-white"
                 />
             </AnimatedTouchableOpacity>
         </View>
@@ -264,7 +263,7 @@ export const FolderItem = ({ item, role }) => {
         <Pressable
             onLongPress={onLongPress}
             onPress={handlePress}
-            className={`mx-2 my-2 flex-1 h-[170px] rounded-xl ${
+            className={`mx-2 my-2 flex-1 h-[170px] rounded-xl border border-border ${
                 isExistsInMultiSelectList ? "bg-card-selected" : "bg-card"
             }`}
         >
@@ -353,7 +352,7 @@ export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
                 <TouchableOpacity onPress={handlePressDismiss}>
                     <Entypo name="cross" size={ICON_SIZE} />
                 </TouchableOpacity>
-                <Text className="text-xl font-bold dark:text-white">
+                <Text className="text-xl font-bold text-text">
                     Selected {count}
                 </Text>
             </View>

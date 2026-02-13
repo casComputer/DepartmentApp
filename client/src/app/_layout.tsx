@@ -16,7 +16,7 @@ import { registerForPushNotificationsAsync } from "@controller/common/notificati
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
-Uniwind.setTheme("system");
+// Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
 
 Notifications.setNotificationHandler({

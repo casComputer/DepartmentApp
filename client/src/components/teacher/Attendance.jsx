@@ -77,7 +77,7 @@ export const Options = ({ loading, isEditable }) => {
                     <Text className="font-bold text-xl text-text">syncing</Text>
                     <StyledActivityIndicator
                         size="16"
-                        className="text-black datk:text-white"
+                        className="text-text"
                     />
                 </View>
             )}
@@ -173,7 +173,7 @@ export const AttendanceHistoryRenderItem = ({
         <View className="w-full px-3 my-2">
             <View
                 className="w-full bg-card rounded-3xl px-5 py-6"
-                style={{ boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)" }}
+                style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
             >
                 <View className="flex-row justify-between items-center">
                     <Text className="text-xl font-black text-text">

@@ -10,7 +10,7 @@ const FloatingAddButton = ({ onPress }) => {
             className="bg-btn justify-center items-center absolute right-8 bottom-10 items-center px-7 py-6 rounded-xl"
             onPress={onPress}
         >
-            <Feather name="plus" size={35} className="dark:text-white" />
+            <Feather name="plus" size={35} />
         </TouchableOpacity>
     );
 };

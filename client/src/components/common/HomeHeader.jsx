@@ -14,7 +14,7 @@ const Header = () => {
             <Text className="text-5xl font-black text-text-secondary">
                 DC-Connect
             </Text>
-            <TouchableOpacity onPress={()=> router.push('/common/notification/NotificationList')} className="flex-row items-center gap-4 text-white">
+            <TouchableOpacity onPress={()=> router.push('/common/notification/NotificationList')} className="flex-row items-center gap-4">
                 <Ionicons name="notifications" size={24} />
             </TouchableOpacity>
         </View>

@@ -32,7 +32,7 @@ const Header = ({
                         />
                     </TouchableOpacity>
                 )}
-                <Text className="text-[8vw] font-bold dark:text-white max-w-[75%]" numberOfLines={2} adjustsFontSizeToFit>
+                <Text className="text-[8vw] font-bold text-text max-w-[75%]" numberOfLines={2} adjustsFontSizeToFit>
                     {title}
                 </Text>
             </View>

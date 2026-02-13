@@ -31,7 +31,7 @@ const AttendanceHistory = () => {
     const allItems = data?.pages?.flatMap(page => page.data);
 
     return (
-        <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-1 bg-primary">
             <Header title="History" isAbsolute={true} />
             {isLoading && <ActivityIndicator size={"large"} />}
             <FlashList

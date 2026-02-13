@@ -21,7 +21,7 @@ const GroupItem = ({ group, onDelete, onUpdate, getAvailableStudents }) => {
     return (
         <View
             className="w-full py-7 my-2 rounded-3xl bg-card"
-            style={{ boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.5)" }}
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
         >
             <Text className="font-bold text-3xl text-center text-text">
                 Group {group.id}

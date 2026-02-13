@@ -9,7 +9,7 @@ import { useAppStore } from "@store/app.store.js";
 
 const ShortSummary = ({ summary, time_analysis, projections }) => {
     return (
-        <View className="px-3 py-4 mt-8 gap-1 rounded-3xl mx-2 bg-card">
+        <View className="px-3 py-4 mt-8 gap-1 rounded-3xl mx-2 bg-card border border-border">
             <Text className="text-text text-2xl font-bold ">
                 ⚡Quick Overview
             </Text>

@@ -77,13 +77,13 @@ const CircularProgress = ({
 
             <View style={styles.textContainer}>
                 {fraction ? (
-                    <Text className="text-black dark:text-white">
+                    <Text className="text-text">
                         {fraction}
                     </Text>
                 ) : (
                     <Text
                         style={styles.text}
-                        className="text-black dark:text-white"
+                        className="text-text"
                     >
                         {normalizedProgress}
                         {showPercentage && "%"}
@@ -93,7 +93,7 @@ const CircularProgress = ({
             {extraText && (
                 <Text
                     style={styles.text}
-                    className="mt-3 text-black dark:text-white"
+                    className="mt-3 text-text"
                 >
                     Extra text
                 </Text>

@@ -64,12 +64,12 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
             style={{
                 width: !studentId || isSingle ? "100%" : CARD_WIDTH,
                 marginRight: !studentId || isSingle ? 0 : SIDE_SPACING * 2,
-                boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)"
+                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
             }}
             disabled={role === "parent"}
             onPress={handlePress}
             activeOpacity={0.75}
-            className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 bg-card"
+            className="mx-auto mt-5 rounded-3xl overflow-hidden p-5 bg-card border-border border"
         >
             {studentId ? (
                 <Text className="text-lg pl-4 pb-1 font-black text-text-secondary">
@@ -86,7 +86,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                     <Text
                         adjustsFontSizeToFit
                         numberOfLines={1}
-                        className="text-center text-lg font-semibold mt-4 dark:text-white"
+                        className="text-center text-lg font-semibold mt-4 text-text"
                     >
                         Attendance
                     </Text>
@@ -104,7 +104,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                     <Text
                         adjustsFontSizeToFit
                         numberOfLines={1}
-                        className="text-center text-lg font-semibold mt-4 dark:text-white"
+                        className="text-center text-lg font-semibold mt-4 text-text"
                     >
                         On Time
                     </Text>
@@ -124,7 +124,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                     <Text
                         adjustsFontSizeToFit
                         numberOfLines={1}
-                        className="text-center text-lg font-semibold mt-4 dark:text-white"
+                        className="text-center text-lg font-semibold mt-4 text-text"
                     >
                         Ongoing Days
                     </Text>

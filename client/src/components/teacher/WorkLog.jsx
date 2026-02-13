@@ -16,7 +16,7 @@ export const HistoryRenderItem = ({ item }) => {
     return (
         <View
             style={{
-                boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.5)"
+                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
             }}
             className="bg-card m-2 p-4 rounded-3xl"
         >

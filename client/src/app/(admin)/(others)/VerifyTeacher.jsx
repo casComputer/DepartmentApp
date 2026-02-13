@@ -118,7 +118,7 @@ const VerifyTeacher = () => {
 
     if (!user) {
         return (
-            <View className="flex-1 pt-12 px-3 bg-zinc-100">
+            <View className="flex-1 pt-12 px-3 bg-primary">
                 <Text className="text-center text-gray-900 text-xl mt-1">
                     Teacher not found
                 </Text>

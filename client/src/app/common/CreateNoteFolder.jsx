@@ -45,7 +45,7 @@ const CreateNote = () => {
             <Header onSave={handleSave} saving={saving} />
 
             <TextInput
-                className="mt-8 py-7 px-5 rounded-3xl font-semibold text-xl text-black border dark:text-white dark:border-zinc-500"
+                className="mt-8 py-7 px-5 rounded-3xl font-semibold text-xl text-text border dark:border-zinc-500"
                 placeholderTextColor="rgb(119,119,119)"
                 placeholder="Folder name"
                 value={folder}

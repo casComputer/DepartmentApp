@@ -27,7 +27,7 @@ export default function Index() {
 
                 {/* FOOTER */}
                 <View className="flex-1 items-center justify-center py-20">
-                    <Text className="text-lg text-zinc-900 font-bold text-center mt-8 dark:text-white">
+                    <Text className="text-lg text-text/700 font-bold text-center mt-8">
                         Already Have An Account 
                     </Text>
                     <TouchableOpacity

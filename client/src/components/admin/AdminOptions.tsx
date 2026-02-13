@@ -17,13 +17,13 @@ const AdminOptions = () => {
             <TouchableOpacity
                 onPress={() => router.push("/(admin)/(others)/ManageTeachers")}
                 className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
-                style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
+                style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
             >
                 <MaterialCommunityIcons
                     name="account-group-outline"
                     size={ICONS_SIZE}
                 />
-                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
+                <Text className="font-bold text-xl text-gray-700 text-text ">
                     Manage Teachers
                 </Text>
             </TouchableOpacity>
@@ -31,10 +31,10 @@ const AdminOptions = () => {
             <TouchableOpacity
                 onPress={() => router.push("/(admin)/(others)/WorkLogHistory")}
                 className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
-                style={{ boxShadow: "0px 1px 3px (0,0,0,0.5)" }}
+                style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
             >
                 <Octicons name="log" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
+                <Text className="font-bold text-xl text-gray-700 text-text ">
                     View Work Logs
                 </Text>
             </TouchableOpacity>
@@ -44,7 +44,7 @@ const AdminOptions = () => {
                 className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
             >
                 <MaterialIcons name="currency-rupee" size={ICONS_SIZE} />
-                <Text className="font-bold text-xl text-gray-700 dark:text-white ">
+                <Text className="font-bold text-xl text-gray-700 text-text ">
                     Manage Fees
                 </Text>
             </TouchableOpacity>

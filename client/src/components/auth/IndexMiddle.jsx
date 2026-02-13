@@ -47,7 +47,7 @@ const Button = ({ icon, text, role }) => {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="flex-1 font-bold text-md text-center text-white ">
+                    className="flex-1 font-bold text-md text-center text-text ">
                     {text}
                 </Text>
             </BlurView>

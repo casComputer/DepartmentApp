@@ -10,7 +10,7 @@ export const Chip = ({ isSelected, year, setSelected }) => (
     <Text
       adjustsFontSizeToFit
       numberOfLines={1}
-      className=" text-black font-bold text-center text-mg dark:text-white"
+      className="text-text font-bold text-center text-mg"
     >
       {year}
     </Text>
@@ -20,7 +20,7 @@ export const Chip = ({ isSelected, year, setSelected }) => (
 const StudentExtra = ({ course, setCourse, year, setYear }) => {
   return (
     <View className="flex-1">
-      <Text className="text-black font-bold text-xl dark:text-white">
+      <Text className="text-text font-bold text-xl">
         Year:
       </Text>
       <View className="flex-row justify-center items-center py-2 px-3 gap-5">
@@ -34,7 +34,7 @@ const StudentExtra = ({ course, setCourse, year, setYear }) => {
         ))}
       </View>
 
-      <Text className="text-black font-bold text-xl dark:text-white">
+      <Text className="text-text font-bold text-xl">
         Course:
       </Text>
       <View className="flex-row justify-center items-center pt-2 px-3 gap-5">

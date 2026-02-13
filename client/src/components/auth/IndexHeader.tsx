@@ -38,7 +38,7 @@ const Header = () => {
                 <Text
                     numberOfLines={2}
                     adjustsFontSizeToFit
-                    className="font-black text-6xl text-center dark:text-white">
+                    className="font-black text-6xl text-center text-text">
                     {isPrimaryText
                         ? "Welcome To DC-Connect"
                         : "DEPARTMENT OF COMPUTER"}

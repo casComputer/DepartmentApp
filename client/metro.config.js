@@ -46,6 +46,16 @@ module.exports = withUniwindConfig(config, {
         "forest-rust",
         "abyss-electric",
         "ink-bronze",
-        "carbon-mint"
+        "carbon-mint",
+        "velvet-noir",
+        "sapphire-luxury",
+        "champagne-noir",
+        "platinum-edge",
+        "graphite-amber",
+        "burgundy-depths",
+        "imperial-plum",
+        "espresso-gold",
+        "titanium-indigo",
+        "onyx-coral"
     ]
 });

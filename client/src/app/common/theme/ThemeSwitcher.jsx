@@ -8,7 +8,8 @@ import {
     cool,
     wildwood_series,
     mystic,
-    midnight_prestige
+    midnight_prestige,
+    sophisticated
 } from "@constants/themes";
 
 import { storage } from "@utils/storage.js";
@@ -26,13 +27,14 @@ const ThemeSwitcher = () => {
         { name: "cool", data: cool },
         { name: "wildwood_series", data: wildwood_series },
         { name: "mystic", data: mystic },
-        { name: "midnight_prestige", data: midnight_prestige }
+        { name: "midnight_prestige", data: midnight_prestige },
+        { name: "sophisticated", data: sophisticated }
     ];
 
     const handleChangeTheme = theme => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         Uniwind.setTheme(theme);
-        storage.set('theme', theme)
+        storage.set("theme", theme);
     };
 
     return (

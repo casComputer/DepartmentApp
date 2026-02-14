@@ -15,15 +15,15 @@ import {
     speedLimiter
 } from "../middleware/ratelimit.middleware.js";
 
-router.post("/signin", authLimiter, signinController);
+router.post("/signin", signinController);
 
-router.post("/signup", authLimiter, signupController);
+router.post("/signup", signupController);
 
-router.post("/refresh", speedLimiter, refreshAccessToken);
+router.post("/refresh", refreshAccessToken);
 
 router.post("/logout", logoutController);
 
-router.post("/getStudentsForParents", speedLimiter, async (req, res) => {
+router.post("/getStudentsForParents", async (req, res) => {
     try {
         const { course, year } = req.body;
 

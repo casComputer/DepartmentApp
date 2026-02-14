@@ -40,16 +40,19 @@ app.use(
 
 app.set("trust proxy", 1);
 
-app.use(apiLimiter);
+// app.use(apiLimiter);
 
 app.use("/", isServerRunning);
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 
 app.use("/user", userRoutes);
-app.get("/health", authorize("admin"), adminLimiter, checkHealth);
-app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
-app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);
+// app.get("/health", authorize("admin"), adminLimiter, checkHealth);
+// app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
+// app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);
+app.get("/health", authorize("admin"), checkHealth);
+app.use("/admin", authorize("admin"), adminRoutes);
+app.use("/dashboard", authorize("admin"), dashboardRoutes);
 
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);

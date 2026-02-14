@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 import { storage } from "./storage";
 import { clearUser } from "@storage/user.storage.js";
@@ -12,24 +13,39 @@ let url = "https://dc-connect.onrender.com";
 console.log(url);
 
 const api = axios.create({
-    baseURL: url,
+    baseURL: url
 });
 
 api.interceptors.request.use(
-    async (config) => {
+    async config => {
         const token = storage.getString("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => Promise.reject(error),
+    error => Promise.reject(error)
 );
 
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
+    response => response,
+    async error => {
         const originalReq = error.config;
+
+        if (error.response?.status === 429) {
+            const retryAfter = error.response.headers["retry-after"] || 60;
+            const message =
+                error.response.data?.error ||
+                "Too many requests. Please try again later.";
+
+            Alert.alert(
+                "Rate Limit Exceeded",
+                `${message}\n\nPlease wait ${retryAfter} seconds before trying again.`,
+                [{ text: "OK" }]
+            );
+
+            return Promise.reject(error);
+        }
 
         if (
             (error.response?.status === 403 ||
@@ -49,7 +65,7 @@ api.interceptors.response.use(
                 }
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {
-                    refreshToken,
+                    refreshToken
                 });
 
                 storage.set("accessToken", data.accessToken);
@@ -70,7 +86,7 @@ api.interceptors.response.use(
                 console.error(
                     "Refresh error:",
                     err.response?.status,
-                    err.message,
+                    err.message
                 );
 
                 // Only logout if refresh token is invalid/expired
@@ -92,7 +108,7 @@ api.interceptors.response.use(
         }
 
         return Promise.reject(error);
-    },
+    }
 );
 
 export default api;

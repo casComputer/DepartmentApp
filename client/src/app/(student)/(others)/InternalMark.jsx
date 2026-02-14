@@ -123,7 +123,7 @@ const InternalMark = () => {
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
-                className="px-1"
+                className="px-1 pt-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

@@ -45,9 +45,6 @@ export async function registerForPushNotificationsAsync() {
     } catch (e) {
         token = `${e}`;
     }
-
-    console.log(token);
-
     return token;
 }
 
@@ -56,8 +53,6 @@ const addNotificationToken = async token => {
         const { data } = await axios.post("/user/addNotificationToken", {
             token
         });
-
-        console.log("response: ", data);
     } catch (error) {
         console.error(error);
     }

@@ -90,7 +90,7 @@ const InternalMark = () => {
             className="bg-primary"
         >
             <Header onSave={handdleUploadFile} />
-            <TouchableOpacity onPress={()=> router.push("/(teacher)/(others)/InternalHistory")}><Text className="text-blue-500 text-2xl font-black px-4 pt-5">History</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=> router.push("/common/internal/InternalHistory")}><Text className="text-blue-500 text-2xl font-black px-4 pt-5">History</Text></TouchableOpacity>
 
             <View className="px-1">
                 <Select

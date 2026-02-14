@@ -32,6 +32,7 @@ const WorkLogHistory = () => {
 						}
 					/>
 				)}
+				className="pt-16"
 				contentContainerStyle={{ padding: 10, paddingBottom: 70 }}
 				showsVerticalScrollIndicator={false}
 				ListEmptyComponent={isLoading && <ActivityIndicator size='large' />}

@@ -105,7 +105,7 @@ const Signin = () => {
         >
             <Text
                 style={{ fontSize: vw * 0.2 }}
-                className="font-black text-text px-3"
+                className="font-black text-text-secondary px-3"
             >
                 SignIn
             </Text>
@@ -124,11 +124,11 @@ const Signin = () => {
                 </Text>
 
                 <TextInput
-                    className={`border py-6 px-5 text-xl font-bold rounded-full text-text 
+                    className={`border border-zinc-700 py-6 px-5 text-xl font-bold rounded-full text-text 
                          ${
                              message.type === "error" && username.length <= 5
                                  ? "border-red-500"
-                                 : "border-black dark:border-white"
+                                 : ""
                          }`}
                     ref={usernameRef}
                     placeholder="username"
@@ -144,7 +144,7 @@ const Signin = () => {
                 <View className="relative">
                     <TextInput
                         ref={passwordRef}
-                        className="border border-black py-6 px-5 text-xl font-bold text-text dark:border-white rounded-full"
+                        className="border border-zinc-700 py-6 px-5 text-xl font-bold text-text dark:border-white rounded-full"
                         placeholder="Password"
                         placeholderTextColor={"rgba(119,119,119,0.7)"}
                         autoCapitalize="none"
@@ -179,11 +179,11 @@ const Signin = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-green-400 py-5 w-full rounded-3xl mt-10"
+                    className="bg-btn py-5 w-full rounded-3xl mt-10"
                     onPress={handleSubmit}
                 >
                     <Text className="text-text font-black text-3xl text-center">
-                        Sign In
+                        SignIn
                     </Text>
                 </TouchableOpacity>
             </View>

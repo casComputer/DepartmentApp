@@ -116,7 +116,7 @@ const NotificationList = () => {
                 ItemSeparatorComponent={ItemSeparator}
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
-                className="px-2"
+                className="px-2 pr-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

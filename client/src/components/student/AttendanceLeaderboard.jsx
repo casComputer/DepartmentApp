@@ -69,7 +69,7 @@ export const AttendanceLeaderBoard = ({ comparison }) => {
         ] ?? [];
 
     return (
-        <View className="w-full py-4">
+        <View className="w-full pt-4">
             <Text className="text-text text-2xl font-bold px-3 mb-4">
                 Attendance Champions 🏆
             </Text>

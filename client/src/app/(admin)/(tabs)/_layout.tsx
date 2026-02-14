@@ -9,7 +9,7 @@ import {
     Icon,
     VectorIcon
 } from "expo-router/unstable-native-tabs";
-import { useColorScheme } from "react-native";
+import { useResolveClassNames } from "uniwind";
 
 export default function TabLayout() {
     const theme = useColorScheme();
@@ -17,12 +17,12 @@ export default function TabLayout() {
     return (
         <NativeTabs
             labelStyle={{
-                color: theme === "dark" ? "white" : "black",
+                color: styles.color,
                 fontWeight: "900",
                 fontSize: 14
             }}
             shadowColor={"black"}
-            backgroundColor={theme === "dark" ? "#1a120d" : "#ffece6"}
+            backgroundColor={styles["backgroundColor"]}
         >
             <NativeTabs.Trigger name="Home">
                 <Icon sf="house.fill" drawable="home" />

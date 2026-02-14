@@ -39,6 +39,7 @@ const ManageParents = () => {
                     paddingTop: 10,
                     paddingBottom: 80
                 }}
+                className="pt-16"
                 ListEmptyComponent={
                     isLoading ? (
                         <ActivityIndicator size="large" />

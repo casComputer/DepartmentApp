@@ -31,7 +31,7 @@ const WorkLogHistory = () => {
     const allItems = data?.pages?.flatMap(page => page?.data);
 
     return (
-        <View className="flex-1 bg-primary">
+        <View className="flex-1 bg-primary pt-16">
             <Header title={"History"} />
 
             {isLoading && !isFetchingNextPage && (

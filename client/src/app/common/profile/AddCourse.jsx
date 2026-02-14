@@ -110,7 +110,7 @@ const AddCourse = () => {
       className="bg-primary"
     >
       <Header title={"Add Course"} />
-      <View className="px-2">
+      <View className="px-2 pt-16">
         <Select title="Year" options={YEAR} selected={year} select={setYear} />
         <Select
           title="Course"

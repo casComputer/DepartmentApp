@@ -49,7 +49,7 @@ const Assignment = () => {
                 contentContainerStyle={{
                     paddingBottom: 100
                 }}
-                className="px-1"
+                className="px-1 pt-16"
                 ListHeaderComponent={
                     !isLoading && (
                         <ListHeaderComponent

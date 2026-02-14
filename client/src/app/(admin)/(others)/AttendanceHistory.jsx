@@ -44,9 +44,10 @@ const AttendanceHistory = () => {
                 }}
                 onEndReachedThreshold={0.5}
                 contentContainerStyle={{
-                    paddingTop: 40,
+                    
                     paddingBottom: 60
                 }}
+                className="pt-16"
                 ListEmptyComponent={
                     isFetchingNextPage && <ActivityIndicator size="small" />
                 }

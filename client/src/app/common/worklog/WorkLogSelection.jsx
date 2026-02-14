@@ -75,7 +75,7 @@ const Page2 = ({ warning, handleSave, course = "", year = "" }) => {
             )}
 
             <TextInput
-                className="border mt-14 py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 my-2"
+                className="border mt-14 py-6 px-5 text-xl font-bold rounded-3xl text-text border-border my-2"
                 placeholder="Subject"
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
                 value={subject}
@@ -103,7 +103,7 @@ const Page2 = ({ warning, handleSave, course = "", year = "" }) => {
 
             <TextInput
                 ref={topicRef}
-                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text dark:border-zinc-400 mt-8"
+                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text border-border mt-8"
                 placeholder="Topics covered"
                 multiline
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
@@ -235,9 +235,11 @@ const WorkLogSelection = () => {
                 <View style={{ width: vw }} className="px-3 grow">
                     <Header
                         title="Work Log"
-                        extraButton
-                        buttonTitle="Next"
-                        handlePress={handleNext}
+                        extraButton={true}
+                        handlePress={() =>
+                            router.push("/common/worklog/WorkLogHistory")
+                        }
+                        buttonTitle="History"
                     />
 
                     <ScrollView
@@ -245,20 +247,9 @@ const WorkLogSelection = () => {
                             flexGrow: 1,
                             paddingBottom: 250
                         }}
+                        className="pt-16"
                         showsVerticalScrollIndicator={false}
                     >
-                        <TouchableOpacity
-                            onPress={() =>
-                                router.push(
-                                    "/(teacher)/(others)/WorkLogHistory"
-                                )
-                            }
-                        >
-                            <Text className="text-blue-500 font-bold text-xl p-2 self-end">
-                                History
-                            </Text>
-                        </TouchableOpacity>
-
                         {page1Warning !== "" && (
                             <Text className="text-red-500 text-center text-lg mt-2">
                                 {page1Warning}
@@ -275,6 +266,11 @@ const WorkLogSelection = () => {
                             hour={hour}
                             setHour={setHour}
                         />
+                        <TouchableOpacity className="mt-5" onPress={handleNext}>
+                            <Text className="text-blue-500 font-black text-3xl text-center">
+                                Proceed
+                            </Text>
+                        </TouchableOpacity>
                     </ScrollView>
                 </View>
 

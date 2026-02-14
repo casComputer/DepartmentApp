@@ -46,7 +46,7 @@ export const AssignmentRenderItem = ({ item }) => (
         <Text className="text-xl font-black text-text">{item.topic}</Text>
         <Text
             numberOfLines={2}
-            className="text-text-secondary font-bold text-lg pl-3"
+            className="text-text/700 font-bold text-lg pl-3"
         >
             {item.description}
         </Text>

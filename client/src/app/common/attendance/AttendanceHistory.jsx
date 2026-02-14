@@ -75,6 +75,7 @@ const AttendanceHistory = () => {
                         )
                     )
                 }
+                className="pt-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

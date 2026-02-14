@@ -1,17 +1,14 @@
 import { ScrollView, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-
-import { useThemeStore } from "@store/app.store.js";
 
 import { Chart } from "@components/student/AttendanceReport.jsx";
 import Header from "@components/common/Header.jsx";
 import { AttendanceCalendar } from "@components/student/AttendanceCalendarReport.jsx";
 
 const MonthlyReport = () => {
-    const gradientColors = useThemeStore(state => state.gradientColors);
-
+    
     return (
-        <LinearGradient colors={gradientColors} className="flex-1">
+        <View className="flex-1">
+            <Header title={"Attendance Report"} />
             <ScrollView
                 contentInsetAdjustmentBehavior="automatic"
                 showsVerticalScrollIndicator={false}
@@ -19,13 +16,12 @@ const MonthlyReport = () => {
                 bounces
                 overScrollMode="always"
                 contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
-                className="bg-primary"
+                className="bg-primary pt-16"
             >
-                <Header title={"Attendance Report"} />
                 <AttendanceCalendar />
                 <Chart />
             </ScrollView>
-        </LinearGradient>
+        </View>
     );
 };
 

@@ -32,7 +32,7 @@ const Selector = () => {
                 handlePress={() => router.push("/common/fees/History")}
             />
 
-            <View className="px-2 mt-5">
+            <View className="px-2 mt-5 pt-16"  >
                 <Select
                     title="Year"
                     options={YEAR}

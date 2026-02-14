@@ -7,16 +7,17 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
 import { Uniwind } from "uniwind";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
 import { getUser } from "@storage/user.storage.js";
+import { storage } from "@utils/storage.js";
 
 import { registerForPushNotificationsAsync } from "@controller/common/notification.controller.js";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
-// Uniwind.setTheme("system");
 useAppStore.getState().hydrateUser(getUser());
 
 Notifications.setNotificationHandler({
@@ -25,7 +26,7 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
-        shouldShowAlert: true // 🔥 REQUIRED on Android
+        shouldShowAlert: true
     })
 });
 
@@ -68,14 +69,21 @@ const Layout = ({ userId, role, is_verified }) => (
         <Stack.Protected guard={!is_verified && userId}>
             <Stack.Screen name="Waiting" />
         </Stack.Protected>
-            <Stack.Screen name="common/ImageFullView" options={{
-            animation: "fade"
-        }} />
+        <Stack.Screen
+            name="common/ImageFullView"
+            options={{
+                animation: "fade"
+            }}
+        />
     </Stack>
 );
 
 export default function RootLayout() {
     const theme = useColorScheme();
+    const insets = useSafeAreaInsets();
+
+    const currTheme = storage.getString("theme");
+    Uniwind.setTheme(currTheme ?? "system");
 
     const { userId, role, is_verified } =
         useAppStore(state => state?.user) ?? {};
@@ -85,8 +93,14 @@ export default function RootLayout() {
     }, [userId, role]);
 
     return (
-        <View className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary">
-            <StatusBar style="auto" animated />
+        <View
+            style={{ paddingTop: insets.top }}
+            className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary"
+        >
+            <StatusBar
+                style={`${currTheme === "system" || currTheme === "light" ? "auto" : "light"}`}
+                animated
+            />
             <KeyboardProvider>
                 <QueryClientProvider client={queryClient}>
                     <Layout

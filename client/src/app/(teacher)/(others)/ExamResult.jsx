@@ -58,6 +58,7 @@ const ExamResult = () => {
 
             <FlashList
                 data={data}
+                className="pt-16"
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => <ResultItem item={item} />}
                 ListEmptyComponent={

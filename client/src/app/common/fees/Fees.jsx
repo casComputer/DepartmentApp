@@ -56,7 +56,7 @@ const Fees = () => {
                 onSave={handleSave}
                 saving={saving}
             />
-            <View className="px-2">
+            <View className="px-2 pt-16">
                 <Text className="mt-5 text-center text-red-500 font-bold text-md">
                     {errorMessage}
                 </Text>

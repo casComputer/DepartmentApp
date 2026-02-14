@@ -37,7 +37,7 @@ const AssignClass = () => {
         <View className="flex-1 bg-primary">
             <Header title="Assign Class" />
 
-            <View className="px-2">
+            <View className="px-2 pt-16">
                 <Select
                     title="Course"
                     options={COURSES}

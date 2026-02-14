@@ -4,7 +4,7 @@ import {
     cloudinaryStats,
     tursoStats,
     usersStats
-} from "../controller/dashboard.controller.js";
+} from "../controllers/dashboard.controller.js";
 
 const router = express.Router();
 

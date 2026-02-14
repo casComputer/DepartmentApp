@@ -10,7 +10,7 @@ const removeUser = useAppStore.getState().removeUser;
 
 const Settings = () => {
     return (
-        <View className="flex-1 bg-primary">
+        <View className="flex-1 bg-primary pt-16">
             <Header title={"Settings"} />
             <TouchableOpacity
                 onPress={() => router.push("/common/theme/ThemeSwitcher")}

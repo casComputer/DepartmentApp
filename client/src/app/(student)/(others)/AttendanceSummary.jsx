@@ -52,7 +52,7 @@ const AttendanceSummary = () => {
 
     return (
         <View className="flex-1 bg-primary">
-            <Header title="Attendance Summary" />
+            <Header />
             <LeaderBoard comparison={report?.comparison} />
 
             <ShortSummary

@@ -77,10 +77,8 @@ const WorkLogHistory = () => {
         });
 
     return (
-        <View className="flex-1 bg-primary">
+        <View className="flex-1 bg-primary pt-16">
             <Header title={"History"} />
-
-            {isLoading && <ActivityIndicator size={"large"} />}
 
             <FlashList
                 data={data?.pages?.flatMap(page => page?.data)}
@@ -90,6 +88,7 @@ const WorkLogHistory = () => {
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
+                className="pt-16"
                 contentContainerStyle={{
                     paddingBottom: 60,
                     paddingHorizontal: 5
@@ -100,9 +99,13 @@ const WorkLogHistory = () => {
                     ) : null
                 }
                 ListEmptyComponent={
-                    <Text className="text-text mt-5 font-bold text-center">
-                        No data available for this teacher!
-                    </Text>
+                    isLoading ? (
+                        <ActivityIndicator size={"large"} />
+                    ) : (
+                        <Text className="text-text mt-5 font-bold text-center">
+                            No data available for this teacher!
+                        </Text>
+                    )
                 }
                 showsVerticalScrollIndicator={false}
             />

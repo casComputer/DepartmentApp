@@ -52,6 +52,7 @@ const AttendanceClassHistory = () => {
                 contentContainerStyle={{
                     paddingBottom: 60
                 }}
+                className='pt-16'
                 ListEmptyComponent={
                     isLoading ? (
                         <ActivityIndicator size={"large"} />

@@ -1,26 +1,6 @@
 cancel teacher verification
 
-add rn responsive font lib
-likely to migrate from ToastAndroid
-
-option editable for editing attendence that taken within 10min
 delete all related attendence docs of a class when auto assign rollno
-
-leave taken chart in students
-
-show full name of students on assignment show page of teacher
-
-dont fetch submission details on assignment page,
-    only fetch at assignment fetch page.    
-    teachers assignment show page currently uses
-    static data
-    
-🟥 shared pages like attendance, assignment.. 
-    currently requires a teacherId, modify it to use 
-    (teacherId or adminId). otherwise admin's functionality
-    might breaks.
-    
-    
     
 unused packages:
     - @gorhom/bottom-sheet
@@ -28,7 +8,3 @@ unused packages:
     - expo-font
     - expo-image
     - expo-media-library
-
-🟥 review the need of seperate store for teacher and student rather than user store 
-    - del teacher storage file
-    - loading inCharge in two layout files

@@ -44,7 +44,7 @@ const ManageTeachers = () => {
                 keyExtractor={(item, index) =>
                 item?.userId ?? index
                 }
-                className={"px-2"}
+                className={"px-2 pt-16"}
                 contentContainerStyle={ { paddingBottom: 60 }}
                 renderItem={({ item }) => (
                     <TeacherItem

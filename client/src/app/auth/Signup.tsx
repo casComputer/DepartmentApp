@@ -8,18 +8,14 @@ import {
     useColorScheme,
     Dimensions
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Feather, AntDesign } from "@icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
-import { useThemeStore } from "../../store/app.store";
 import handleSignup from "../../controller/auth/auth.controller.js";
 
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
 import ParentExtra from "../../components/auth/ParentExtra.jsx";
-
-const gradientColors = useThemeStore.getState().gradientColors;
 
 const Message = ({ message }) => (
     <Text
@@ -148,8 +144,7 @@ const Signup = () => {
     };
 
     return (
-        <LinearGradient colors={gradientColors} style={{ flexGrow: 1 }}>
-            <KeyboardAwareScrollView
+<KeyboardAwareScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
@@ -262,7 +257,7 @@ const Signup = () => {
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
-        </LinearGradient>
+
     );
 };
 

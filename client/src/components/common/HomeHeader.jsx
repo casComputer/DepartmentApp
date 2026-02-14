@@ -8,8 +8,8 @@ const Header = () => {
 
     return (
         <View
-            style={{ paddingTop: insets.top + 20 }}
-            className="flex-row items-center justify-between px-4"
+            // style={{ paddingTop: insets.top + 20 }}
+            className="flex-row items-center justify-between px-4 pt-5"
         >
             <Text className="text-5xl font-black text-text-secondary">
                 DC-Connect

@@ -1,9 +1,13 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleShee, Dimensions } from "react-native";
 import { MaterialIcons } from "@icons";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ICON_SIZE = 26;
+
+const {
+    height:vh,
+} = Dimensions.get('window')
 
 const Header = ({
     title,
@@ -16,8 +20,9 @@ const Header = ({
 
     return (
         <View
-            style={{ marginTop: insets.top + 5 }}
-            className="flex-row items-center px-2 pb-2 w-full justify-between"
+            // style={{ marginTop: insets.top + 5 }}
+            
+            className="flex-row items-center px-2 h-16 justify-between absolute top-0 left-0 z-20  w-full"
         >
             <View className="flex-1 flex-row items-center">
                 {!disableBackBtn && (

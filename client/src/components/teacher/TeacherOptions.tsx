@@ -50,7 +50,7 @@ const optionsData = [
         Icon: MaterialIcons,
         iconName: "grade",
         text: "Internal Marks",
-        locaton: "/(teacher)/(others)/InternalMark"
+        locaton: "/common/internal/InternalMark"
     },
     {
         requiresInCharge: true,

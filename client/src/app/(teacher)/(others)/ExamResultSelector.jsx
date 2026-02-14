@@ -37,7 +37,6 @@ const ExamResult = () => {
             <Header />
 
             <View className="px-1">
-             
                 <Select
                     title="Course"
                     options={COURSES}

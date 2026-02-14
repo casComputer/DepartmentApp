@@ -56,6 +56,8 @@ const ManageStudents = () => {
     return (
         <View className="flex-1 bg-primary">
             <Header title={"Manage Students"} />
+            
+            <View className="pt-16" />
 
             <ListHeaderComponent
                 loading={status === "LOADING"}

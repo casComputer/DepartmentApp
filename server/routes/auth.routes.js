@@ -9,15 +9,22 @@ import signinController from "../controllers/auth/signin.controller.js";
 import { refreshAccessToken } from "../controllers/auth/refresh.controller.js";
 import logoutController from "../controllers/auth/logout.controller.js";
 
-router.post("/signin", signinController);
+import {
+    authLimiter,
+    adminLimiter,
+    uploadLimiter,
+    speedLimiter
+} from "../middleware/ratelimit.middleware.js";
 
-router.post("/signup", signupController);
+router.post("/signin", authLimiter, signinController);
 
-router.post("/refresh", refreshAccessToken);
+router.post("/signup", authLimiter, signupController);
+
+router.post("/refresh", speedLimiter, refreshAccessToken);
 
 router.post("/logout", logoutController);
 
-router.post("/getStudentsForParents", async (req, res) => {
+router.post("/getStudentsForParents", speedLimiter, async (req, res) => {
     try {
         const { course, year } = req.body;
 

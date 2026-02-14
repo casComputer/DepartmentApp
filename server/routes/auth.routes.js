@@ -12,7 +12,6 @@ import logoutController from "../controllers/auth/logout.controller.js";
 import {
     authLimiter,
     adminLimiter,
-    uploadLimiter,
     speedLimiter
 } from "../middleware/ratelimit.middleware.js";
 

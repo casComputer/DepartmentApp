@@ -42,10 +42,10 @@ app.set("trust proxy", 1);
 
 // app.use(apiLimiter);
 
-app.use("/", isServerRunning);
+app.get("/", isServerRunning);
+
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
-
 app.use("/user", userRoutes);
 // app.get("/health", authorize("admin"), adminLimiter, checkHealth);
 // app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);

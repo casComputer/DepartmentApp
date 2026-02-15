@@ -1,16 +1,22 @@
-import { View, Image, Text, TouchableOpacity , ActivityIndicator} from "react-native";
+import {
+    View,
+    Image,
+    Text,
+    TouchableOpacity,
+    ActivityIndicator
+} from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header.jsx";
-import {ItemSeparator} from "@components/common/ItemSeperatorDateComponent.jsx";
+import { ItemSeparator } from "@components/common/ItemSeperatorDateComponent.jsx";
 
 import { getHistory } from "@controller/teacher/internal.controller.js";
 
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import { openFileInBrowser } from "@utils/file.js";
 
-const Item = ({ item={} }) => {
+const Item = ({ item = {} }) => {
     let url = item.secure_url;
     if (item.format === "pdf") {
         url = getPdfPreviewUrl(url);
@@ -36,7 +42,6 @@ const Item = ({ item={} }) => {
 };
 
 const InternalHistory = () => {
-    
     const {
         data,
         fetchNextPage,
@@ -52,19 +57,16 @@ const InternalHistory = () => {
         getNextPageParam: lastPage =>
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
-    
-    console.log(data);
-    
-    const allItems = data?.pages.flatMap(page => page.internals) || [];
 
-    console.log(allItems);
+    const allItems = data?.pages.flatMap(page => page?.internals ?? []) ?? [];
+
     return (
         <View className="flex-1 bg-primary">
             <Header title={"History"} />
 
             <FlashList
                 data={allItems ?? []}
-                // keyExtractor={item => item._id}
+                keyExtractor={item => item._id}
                 className="pt-16 px-1"
                 renderItem={({ item }) => <Item item={item} />}
                 onEndReached={() => {
@@ -73,7 +75,7 @@ const InternalHistory = () => {
                 onEndReachedThreshold={0.5}
                 maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
                 contentContainerStyle={{
-                    paddingBottom: 100,
+                    paddingBottom: 100
                 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (

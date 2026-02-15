@@ -28,7 +28,7 @@ const AttendanceHistory = () => {
 
     if (isError) return <div>Error: {error.message}</div>;
 
-    const allItems = data?.pages?.flatMap(page => page.data);
+    const allItems = data?.pages?.flatMap(page => page?.data ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">
@@ -44,7 +44,6 @@ const AttendanceHistory = () => {
                 }}
                 onEndReachedThreshold={0.5}
                 contentContainerStyle={{
-                    
                     paddingBottom: 60
                 }}
                 className="pt-16"

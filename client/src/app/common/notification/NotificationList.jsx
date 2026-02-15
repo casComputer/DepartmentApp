@@ -92,7 +92,7 @@ const NotificationList = () => {
     });
 
     const notifications =
-        data?.pages?.flatMap(page => page.notifications) ?? [];
+        data?.pages?.flatMap(page => page?.notifications ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">

@@ -101,7 +101,7 @@ const InternalMark = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const internals = data?.pages?.flatMap(page => page.internals);
+    const internals = data?.pages?.flatMap(page => page?.internals ?? []) ?? []
 
     return (
         <View className="flex-1 bg-primary">

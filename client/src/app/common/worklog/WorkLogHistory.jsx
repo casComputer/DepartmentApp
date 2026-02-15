@@ -28,7 +28,7 @@ const WorkLogHistory = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const allItems = data?.pages?.flatMap(page => page?.data);
+    const allItems = data?.pages?.flatMap(page => page?.data ?? []) ??[];
 
     return (
         <View className="flex-1 bg-primary pt-16">

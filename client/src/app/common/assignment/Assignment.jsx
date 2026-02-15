@@ -31,15 +31,16 @@ const Assignment = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const allItems = data?.pages.flatMap(page => page.assignments) || [];
-
+    const allItems =
+        data?.pages?.flatMap(page => page?.assignments ?? []) ?? [];
+        
     return (
         <View className="flex-1 bg-primary">
             <Header title="Assignments" />
 
             <FlashList
                 data={allItems || []}
-                keyExtractor={item => item._id}
+                keyExtractor={item => item?._id}
                 renderItem={({ item }) => <AssignmentRenderItem item={item} />}
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -47,7 +48,7 @@ const Assignment = () => {
                 onEndReachedThreshold={0.5}
                 // maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
                 contentContainerStyle={{
-                    paddingBottom: 100,
+                    paddingBottom: 100
                 }}
                 ListHeaderComponent={
                     <ListHeaderComponent date={allItems[0]?.timestamp} />

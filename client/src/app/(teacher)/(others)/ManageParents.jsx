@@ -25,7 +25,7 @@ const ManageParents = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const parents = data?.pages?.flatMap(page => page?.parents);
+    const parents = data?.pages?.flatMap(page => page?.parents ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">

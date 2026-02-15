@@ -90,7 +90,7 @@ const History = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const fees = data?.pages?.flatMap(page => page.fees);
+    const fees = data?.pages?.flatMap(page => page?.fees ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">

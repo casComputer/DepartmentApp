@@ -28,7 +28,7 @@ export const fetchUserStats = async () => {
     try {
         const { data } = await axios.get("/dashboard/users");
 
-        if (data.success) return data.stats;
+        if (data.success) return data.users;
         else return {};
     } catch (error) {
         console.error(error);

@@ -6,7 +6,8 @@ import CircularProgress from "@components/common/CircularProgress.jsx";
 
 import {
     fetchCloudinaryStats,
-    fetchTursoStats, fetchUserStats
+    fetchTursoStats,
+    fetchUserStats
 } from "@controller/admin/dashboard.controller.js";
 
 import { formatUsage } from "@utils/formateTursoStats.js";
@@ -141,14 +142,59 @@ const UsersStats = () => {
         queryFn: fetchUserStats
     });
 
-    console.log(stats);
+    return (
+        <View className="border border-border px-3 bg-card py-5 mx-2 rounded-2xl mt-5">
+            <Text className="text-2xl font-black text-text-secondary">
+                Users
+            </Text>
+            <View className="pl-2 py-4 gap-1">
+                <View className="flex-row gap-2 items-center">
+                <Text className="font-semibold text-md text-text w-16">
+                    Teachers
+                </Text>
+                    <Text className="font-black text-lg text-text">
+                        {stats["teacher"].strength}
+                    </Text>
+                </View>
 
-    return <View></View>;
+                <View className="flex-row gap-2 items-center">
+                <Text className="font-semibold text-md text-text w-16">
+                    Students
+                </Text>
+                    <Text className="font-black text-lg text-text ">
+                        {stats["student"].strength}
+                    </Text>
+                </View>
+
+                <View className="flex-row gap-2 items-center">
+                <Text className="font-semibold text-md text-text w-16">
+                    Parents
+                </Text>
+                    <Text className="font-black text-lg text-text">
+                        {stats["parent"].strength}
+                    </Text>
+                </View>
+                
+                <View className="flex-row gap-2 items-center">
+                <Text className="font-semibold text-md text-text w-16">
+                    Admin
+                </Text>
+                    <Text className="font-black text-lg text-text">
+                        {stats["admin"].strength}
+                    </Text>
+                </View>
+            </View>
+        </View>
+    );
 };
 
 const Dashboard = () => {
     return (
-        <ScrollView className="grow bg-primary pt-8">
+        <ScrollView
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
+            className="bg-primary pt-5"
+            showsVerticalScrollIndicator={false}
+        >
             <CloudinaryStats />
             <TursoStats />
             <UsersStats />

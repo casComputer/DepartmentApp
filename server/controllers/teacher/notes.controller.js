@@ -1,7 +1,7 @@
 import Notes from "../../models/notes.js";
 import cloudinary from "../../config/cloudinary.js";
 
-const extractPublicIdFromUrl = (url) => {
+const extractPublicIdFromUrl = url => {
     try {
         if (!url) return null;
 
@@ -29,7 +29,7 @@ export const create = async (req, res) => {
         if (!name || !type || !teacherId) {
             return res.json({
                 success: false,
-                message: "Expected parameters were missing!",
+                message: "Expected parameters were missing!"
             });
         }
 
@@ -37,7 +37,7 @@ export const create = async (req, res) => {
             if (!parentId)
                 return res.json({
                     success: false,
-                    message: "Expected parameters were missing!",
+                    message: "Expected parameters were missing!"
                 });
 
             const exist = await Notes.findById(parentId);
@@ -45,7 +45,7 @@ export const create = async (req, res) => {
             if (!exist)
                 return res.json({
                     success: false,
-                    message: "Unable to locate the parent folder!",
+                    message: "Unable to locate the parent folder!"
                 });
 
             course = exist.course;
@@ -58,7 +58,7 @@ export const create = async (req, res) => {
             year,
             type,
             parentId,
-            teacherId,
+            teacherId
         });
 
         res.json({ success: true, note });
@@ -66,21 +66,15 @@ export const create = async (req, res) => {
         console.error(error);
         res.send(500).json({
             success: false,
-            message: "Internal server error!",
+            message: "Internal server error!"
         });
     }
 };
 
 export const upload = async (req, res) => {
     try {
-        const {
-            secure_url,
-            format,
-            size,
-            parentId,
-            filename,
-            publicId,
-        } = req.body;
+        const { secure_url, format, size, parentId, filename, publicId } =
+            req.body;
 
         const { userId: teacherId } = req.user;
 
@@ -95,7 +89,7 @@ export const upload = async (req, res) => {
         )
             return res.json({
                 success: false,
-                message: "Missing required parameters!",
+                message: "Missing required parameters!"
             });
 
         const parentDoc = await Notes.findById(parentId);
@@ -103,7 +97,7 @@ export const upload = async (req, res) => {
         if (!parentDoc)
             return res.json({
                 success: false,
-                message: "Failed to locate parent folder!",
+                message: "Failed to locate parent folder!"
             });
 
         const newDoc = await Notes.create({
@@ -116,7 +110,7 @@ export const upload = async (req, res) => {
             fileUrl: secure_url,
             format,
             size,
-            publicId,
+            publicId
         });
 
         res.json({ success: true, file: newDoc });
@@ -135,36 +129,36 @@ export const deleteNote = async (req, res) => {
         if (!Array.isArray(noteIds) || noteIds.length === 0 || !teacherId) {
             return res.json({
                 success: false,
-                message: "Missing required parameters!",
+                message: "Missing required parameters!"
             });
         }
 
         const validRoots = await Notes.find(
             { _id: { $in: noteIds }, teacherId },
-            { _id: 1, parentId: 1 },
+            { _id: 1, parentId: 1 }
         );
 
         if (validRoots.length === 0) {
             return res.json({
                 success: false,
-                message: "No valid notes to delete",
+                message: "No valid notes to delete"
             });
         }
 
-        const idsToDelete = new Set(validRoots.map((r) => r._id.toString()));
+        const idsToDelete = new Set(validRoots.map(r => r._id.toString()));
 
         for (const id of idsToDelete) {
             const children = await Notes.find({ parentId: id }, { _id: 1 });
 
-            children.forEach((c) => idsToDelete.add(c._id.toString()));
+            children.forEach(c => idsToDelete.add(c._id.toString()));
         }
 
         const fileNotes = await Notes.find(
             {
                 _id: { $in: [...idsToDelete] },
-                type: "file",
+                type: "file"
             },
-            { publicId: 1, fileUrl: 1, format: 1, name: 1 },
+            { publicId: 1, fileUrl: 1, format: 1, name: 1 }
         );
 
         const imageFormats = new Set(["jpg", "jpeg", "png", "webp"]);
@@ -175,7 +169,7 @@ export const deleteNote = async (req, res) => {
             "doc",
             "docx",
             "xls",
-            "xlsx",
+            "xlsx"
         ]);
 
         const imagePublicIds = [];
@@ -199,20 +193,20 @@ export const deleteNote = async (req, res) => {
         // Delete images
         if (imagePublicIds.length) {
             await cloudinary.api.delete_resources(imagePublicIds, {
-                resource_type: "image",
+                resource_type: "image"
             });
         }
 
         // Delete pdf/ppt/etc
         if (rawPublicIds.length) {
             await cloudinary.api.delete_resources(rawPublicIds, {
-                resource_type: "raw",
+                resource_type: "raw"
             });
         }
 
         // Delete DB records
         await Notes.deleteMany({
-            _id: { $in: [...idsToDelete] },
+            _id: { $in: [...idsToDelete] }
         });
 
         res.json({ success: true, validRoots, fileNotes });
@@ -224,27 +218,44 @@ export const deleteNote = async (req, res) => {
 
 export const fetchByTeacher = async (req, res) => {
     try {
-        const { parentId } = req.body;
+        const { parentId, page = 1, limit = 20 } = req.body;
 
         const { userId: teacherId } = req.user;
 
         if (!teacherId)
             return res.json({
                 success: false,
-                message: "teacher id is required!",
+                message: "teacher id is required!"
             });
+
+        const skip = (page - 1) * limit;
+
+        const totalCount = await Notes.countDocuments({
+            parentId,
+            teacherId
+        });
 
         const notes = await Notes.find({
             parentId,
-            teacherId,
-        });
+            teacherId
+        })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
 
-        res.json({ notes, success: true });
+        const hasMore = skip + notes.length < totalCount;
+
+        res.json({
+            notes,
+            success: true,
+            hasMore,
+            nextPage: hasMore ? page + 1 : null
+        });
     } catch (error) {
         console.error(error);
-        res.send(500).json({
+        res.status(500).json({
             success: false,
-            message: "Internal server error!",
+            message: "Internal server error!"
         });
     }
 };

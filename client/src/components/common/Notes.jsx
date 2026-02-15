@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
 
@@ -22,19 +22,59 @@ const Notes = ({ role }) => {
     const isSelecting = useMultiSelectionList(state => state.isSelecting());
     const { folder, folderId, course, year } = useLocalSearchParams();
 
-    const { data, isLoading } = useQuery({
+    const {
+        data,
+        isLoading,
+        isFetchingNextPage,
+        hasNextPage,
+        fetchNextPage,
+        refetch,
+        isRefetching
+    } = useInfiniteQuery({
         queryKey: ["notes", folderId ?? null],
-        queryFn:
-            role === "student" ? fetchNotesForStudent : fetchNotesForTeacher,
-        initialData: () =>
-            getNotes(folderId ?? "root") || {
-                notes: [],
-                success: true
+        queryFn: ({ pageParam = 1 }) => {
+            const fetchFn =
+                role === "student"
+                    ? fetchNotesForStudent
+                    : fetchNotesForTeacher;
+            return fetchFn(pageParam);
+        },
+        placeholderData: () => {
+            const cached = getNotes(folderId ?? "root");
+            if (cached?.notes) {
+                return {
+                    pages: [
+                        {
+                            notes: cached.notes,
+                            success: true,
+                            hasMore: true
+                        }
+                    ],
+                    pageParams: [1]
+                };
             }
+        }
     });
+
+    const allNotes = data?.pages?.flatMap(page => page?.notes ?? []) ?? [];
 
     const handleSelectAll = () => {
         replaceMultiSelectionList(data.notes.map(item => item._id));
+    };
+
+    const handleLoadMore = () => {
+        if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    };
+
+    const renderFooter = () => {
+        if (!isFetchingNextPage) return null;
+        return (
+            <View className="py-4">
+                <ActivityIndicator />
+            </View>
+        );
     };
 
     return (
@@ -45,9 +85,9 @@ const Notes = ({ role }) => {
             )}
 
             <FlashList
-                data={data?.notes}
+                data={allNotes ?? []}
                 renderItem={({ item }) => (
-                    <FolderItem item={item} role={role} />
+                    <FolderItem item={item ?? {}} role={role} />
                 )}
                 ListHeaderComponent={
                     year && course ? (
@@ -67,11 +107,17 @@ const Notes = ({ role }) => {
                         </Text>
                     )
                 }
+                onRefresh={refetch}
+                refreshing={isRefetching}
+                ListFooterComponent={renderFooter}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.5}
                 numColumns={2}
                 className={`${folder ? "pt-16" : ""} px-1`}
                 contentContainerStyle={{
                     paddingBottom: 120
                 }}
+                estimatedItemSize={100}
             />
 
             {(role === "teacher" || role === "admin") && (

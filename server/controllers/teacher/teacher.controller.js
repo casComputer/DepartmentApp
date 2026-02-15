@@ -1,15 +1,8 @@
 import { turso } from "../../config/turso.js";
 
 export const syncUser = async (req, res) => {
-    console.log("userId:", req.user.userId);
     try {
         const { userId } = req.user;
-
-        if (!userId)
-            return res.status(400).json({
-                message: "User ID is required.",
-                success: false
-            });
 
         const { rows } = await turso.execute(
             `SELECT

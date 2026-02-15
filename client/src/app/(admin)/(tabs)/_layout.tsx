@@ -10,9 +10,17 @@ import {
     VectorIcon
 } from "expo-router/unstable-native-tabs";
 import { useResolveClassNames } from "uniwind";
+import { useQuery } from "@tanstack/react-query";
+
+import { syncUser } from '@controller/teacher/teacher.controller.js'
 
 export default function TabLayout() {
-    const theme = useColorScheme();
+    const styles = useResolveClassNames("bg-primary text-color");
+
+    useQuery({
+        queryKey: ["syncUser"],
+        queryFn: syncUser
+    });
 
     return (
         <NativeTabs

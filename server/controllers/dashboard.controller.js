@@ -44,16 +44,14 @@ export const usersStats = async (req, res) => {
     try {
         const { rows } = await turso.execute(` 
             SELECT COUNT(userId) as strength, role FROM users GROUP BY role;
-      `);
+        `);
 
-        const users = new Map();
+        const users = {};
 
         rows.forEach(user => {
-            if (!teachersMap.has(user.role)) {
-                teachersMap.set(user.role, {
-                    strength: user.strength
-                });
-            }
+            users[user.role] = {
+                strength: user.strength
+            };
         });
 
         console.log(users);

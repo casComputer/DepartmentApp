@@ -24,7 +24,7 @@ const ExamResult = () => {
         }
 
         router.push({
-            pathname: "/(teacher)/(others)/ExamResult",
+            pathname: "/common/result/ExamResult",
             params: {
                 course: selectedCourse.id,
                 sem: selectedSem.id,

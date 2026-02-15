@@ -60,11 +60,10 @@ const optionsData = [
         locaton: "/common/fees/Selector"
     },
     {
-        requiresInCharge: true,
         Icon: Entypo,
         iconName: "text-document",
         text: "Results",
-        locaton: "/(teacher)/(others)/ExamResultSelector"
+        locaton: "/common/result/ExamResultSelector"
     },
     {
         requiresInCharge: true,

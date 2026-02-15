@@ -6,14 +6,18 @@ import CircularProgress from "@components/common/CircularProgress.jsx";
 
 import {
     fetchCloudinaryStats,
-    fetchTursoStats
+    fetchTursoStats, fetchUserStats
 } from "@controller/admin/dashboard.controller.js";
 
 import { formatUsage } from "@utils/formateTursoStats.js";
 
-const CloudinaryStats = ({ stats = {} }) => {
+const CloudinaryStats = () => {
+    const { data: stats = {} } = useQuery({
+        queryKey: ["cloudinaryStats"],
+        queryFn: fetchCloudinaryStats
+    });
     return (
-        <View className="px-3 bg-card py-5 mx-2 rounded-2xl">
+        <View className="border border-border px-3 bg-card py-5 mx-2 rounded-2xl">
             <Text className="text-2xl font-black text-text-secondary">
                 Cloud Storage
             </Text>
@@ -58,86 +62,96 @@ const CloudinaryStats = ({ stats = {} }) => {
     );
 };
 
-const TursoStats = ({ stats = {} }) => {
+const TursoStats = () => {
+    const { data: stats = {} } = useQuery({
+        queryKey: ["tursoStats"],
+        queryFn: fetchTursoStats
+    });
+
     const { reads, writes, storage } = formatUsage({
         rows_read: stats.usage?.rows_read ?? 0,
         rows_written: stats.usage?.rows_written ?? 0,
         storage_bytes: stats.usage?.storage_bytes ?? 0
     });
 
-    console.log(reads, writes, storage);
-
     return (
-        <View className="px-3 bg-card py-5 mx-2 rounded-2xl mt-5">
+        <View className="border border-border px-3 bg-card py-5 mx-2 rounded-2xl mt-5">
             <Text className="text-2xl font-black text-text-secondary">
                 Database Storage
             </Text>
-            <View className="pl-2 py-4">
-
-
+            <View className="pl-2 py-4 gap-1">
                 <View className="flex-row items-center justify-between">
                     <Text className="text-md font-semibold text-text">
                         Rows Read
                     </Text>
                     <View className="flex-row items-center justify-end gap-2">
-                        
-                    <ProgressBar progress={reads.progress} width={"50%"} />
-                    <Text className="text-md font-semibold text-text">
-                        {reads.text}
-                    </Text>
+                        <ProgressBar progress={reads.progress} width={"50%"} />
+                        <Text
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            className="text-md font-semibold text-text w-[20%]"
+                        >
+                            {reads.text}
+                        </Text>
                     </View>
                 </View>
-                
+
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-md font-semibold text-text">
+                        Rows Written
+                    </Text>
+                    <View className="flex-row items-center justify-end gap-2">
+                        <ProgressBar progress={writes.progress} width={"50%"} />
+                        <Text
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            className="text-md font-semibold text-text w-[20%]"
+                        >
+                            {writes.text}
+                        </Text>
+                    </View>
+                </View>
 
                 <View className="flex-row items-center justify-between">
                     <Text className="text-md font-semibold text-text">
                         Storage Usage
                     </Text>
                     <View className="flex-row items-center justify-end gap-2">
-                        
-                    <ProgressBar progress={storage.progress} width={"50%"} />
-                    <Text className="text-md font-semibold text-text">
-                        {storage.text}
-                    </Text>
+                        <ProgressBar
+                            progress={storage.progress}
+                            width={"50%"}
+                        />
+                        <Text
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            className="text-md font-semibold text-text w-[20%]"
+                        >
+                            {storage.text}
+                        </Text>
                     </View>
                 </View>
-                <View className="flex-row items-center justify-between">
-                    <Text className="text-md font-semibold text-text ">
-                        Storage Usage
-                    </Text>
-                    <View className="flex-row items-center justify-end gap-2">
-                        
-                    <ProgressBar progress={storage.progress} width={"50%"} />
-                    <Text className="text-md font-semibold text-text">
-                        {storage.text}
-                    </Text>
-                    </View>
-                </View>
-
-
             </View>
         </View>
     );
 };
 
+const UsersStats = () => {
+    const { data: stats = {} } = useQuery({
+        queryKey: ["userStats"],
+        queryFn: fetchUserStats
+    });
+
+    console.log(stats);
+
+    return <View></View>;
+};
+
 const Dashboard = () => {
-    const { data: cloudinaryStats, isLoading: cloudinaryLoading } = useQuery({
-        queryKey: ["cloudinaryStats"],
-        queryFn: fetchCloudinaryStats
-    });
-
-    const { data: tursoStats, isLoading: tursoLoading } = useQuery({
-        queryKey: ["tursoStats"],
-        queryFn: fetchTursoStats
-    });
-
     return (
-        <ScrollView className="grow bg-primary pt-12">
-            <CloudinaryStats
-                stats={cloudinaryStats}
-                loading={cloudinaryLoading}
-            />
-            <TursoStats stats={tursoStats} loading={tursoLoading} />
+        <ScrollView className="grow bg-primary pt-8">
+            <CloudinaryStats />
+            <TursoStats />
+            <UsersStats />
         </ScrollView>
     );
 };

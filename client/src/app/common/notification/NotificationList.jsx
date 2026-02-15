@@ -14,26 +14,8 @@ import { fetchNotifications } from "@controller/common/notification.controller.j
 import { downloadFile } from "@utils/file.js";
 
 const RenderItem = ({ item = {} }) => {
-    // console.log(item);
     const data = JSON.parse(item.data ?? "{}");
     const [downloading, setDownloading] = useState(false);
-
-    // {
-    //     "_id": "698bfe99278d1b34cc0528e9",
-    //     "body": "d Bca Is Now Available.",
-    //     "createdAt": "2026-02-11T03:59:21.354Z",
-    //     "data": "{
-    //         \"pdf_url\":\""
-    //         ,\"filename\":\"
-    //         ,\"teacherId\":\"femina\",
-    //         \"type\":\"ATTENDANCE_REPORT_GENERATION\"}"
-    //         , "expiresAt": "2026-02-25T03:59:21.354Z",
-    //         "reads": [],
-    //         "target": ["class"]
-    //         , "title": "Attendance Report Generated",
-    //         "userIds": [],
-    //         "yearCourse"
-    //         : "Third-Bca"}
 
     const handleDownload = async () => {
         if (downloading) return;
@@ -116,7 +98,7 @@ const NotificationList = () => {
                 ItemSeparatorComponent={ItemSeparator}
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
-                className="px-2 pr-16"
+                className="px-2 pt-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

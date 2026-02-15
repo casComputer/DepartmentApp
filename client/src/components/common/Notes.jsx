@@ -32,13 +32,9 @@ const Notes = ({ role }) => {
         isRefetching
     } = useInfiniteQuery({
         queryKey: ["notes", folderId ?? null],
-        queryFn: ({ pageParam = 1 }) => {
-            const fetchFn =
-                role === "student"
-                    ? fetchNotesForStudent
-                    : fetchNotesForTeacher;
-            return fetchFn(pageParam);
-        },
+        queryFn:
+            role === "student" ? fetchNotesForStudent : fetchNotesForTeacher,
+
         placeholderData: () => {
             const cached = getNotes(folderId ?? "root");
             if (cached?.notes) {
@@ -53,13 +49,16 @@ const Notes = ({ role }) => {
                     pageParams: [1]
                 };
             }
-        }
+        },
+        initialPageParam: 1,
+        getNextPageParam: lastPage =>
+            lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
     const allNotes = data?.pages?.flatMap(page => page?.notes ?? []) ?? [];
 
     const handleSelectAll = () => {
-        replaceMultiSelectionList(data.notes.map(item => item._id));
+        replaceMultiSelectionList(allNotes.map(item => item._id));
     };
 
     const handleLoadMore = () => {
@@ -87,7 +86,7 @@ const Notes = ({ role }) => {
             <FlashList
                 data={allNotes ?? []}
                 renderItem={({ item }) => (
-                    <FolderItem item={item ?? {}} role={role} />
+                    <FolderItem item={item} role={role} />
                 )}
                 ListHeaderComponent={
                     year && course ? (

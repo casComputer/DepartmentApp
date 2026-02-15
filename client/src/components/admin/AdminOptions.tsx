@@ -13,10 +13,10 @@ const ICONS_SIZE = 35;
 
 const AdminOptions = () => {
     return (
-        <View className="px-3 mt-12 flex-1 gap-2 -mb-5">
+        <View className="px-3 mt-12 flex-1 gap-2 -mb-6">
             <TouchableOpacity
                 onPress={() => router.push("/(admin)/(others)/ManageTeachers")}
-                className="flex-row items-center gap-4 px-6 py-7 rounded-3xl bg-card"
+                className="flex-row items-center gap-4 px-6 py-6 rounded-2xl bg-card"
                 style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
             >
                 <MaterialCommunityIcons

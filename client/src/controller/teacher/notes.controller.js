@@ -12,16 +12,15 @@ import { setNotes } from "@storage/app.storage.js";
 
 export const fetchNotes = async ({ queryKey, pageParam }) => {
     const parentId = queryKey[1] ?? null;
-
+    
     try {
         const res = await axios.post("/notes/fetchByTeacher", {
             parentId,
             page: pageParam,
             limit: 20
         });
-
+        
         if (!res.data?.success) {
-            throw new Error("Failed to fetch notes");
             ToastAndroid.show(
                 "Please connect to the internet 🛰️",
                 ToastAndroid.LONG
@@ -33,9 +32,8 @@ export const fetchNotes = async ({ queryKey, pageParam }) => {
                 success: false
             };
         }
-
+        
         setNotes(parentId ?? "root", res.data);
-
         return res.data;
     } catch (error) {
         if (error.message?.includes("Network Error")) {

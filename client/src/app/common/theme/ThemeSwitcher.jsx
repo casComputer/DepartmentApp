@@ -62,7 +62,7 @@ const ThemeSwitcher = () => {
                                     onPress={() => handleChangeTheme(t.name)}
                                     className={`w-[32%] py-3 rounded-xl items-center ${
                                         activeTheme === t.name
-                                            ? "bg-card-selected"
+                                            ? "bg-card-selected border border-border"
                                             : "bg-btn"
                                     }`}
                                 >

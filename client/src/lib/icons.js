@@ -9,7 +9,7 @@ for (const key in Icons) {
 
     styled[key] = props => {
         const { className, ...rest } = props;
-        return <Wrapped {...rest} className="text-black dark:text-white" />;
+        return <Wrapped {...rest} className="text-text" />;
     };
 
 }

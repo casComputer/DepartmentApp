@@ -8,18 +8,14 @@ import {
     useColorScheme,
     Dimensions
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Feather, AntDesign } from "@icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
-import { useThemeStore } from "../../store/app.store";
 import handleSignup from "../../controller/auth/auth.controller.js";
 
 import StudentExtra from "../../components/auth/StudentExtra.jsx";
 import ParentExtra from "../../components/auth/ParentExtra.jsx";
-
-const gradientColors = useThemeStore.getState().gradientColors;
 
 const Message = ({ message }) => (
     <Text
@@ -148,16 +144,15 @@ const Signup = () => {
     };
 
     return (
-        <LinearGradient colors={gradientColors} style={{ flexGrow: 1 }}>
-            <KeyboardAwareScrollView
+<KeyboardAwareScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
-                className="dark:bg-black"
+                className="bg-primary"
             >
                 <Text
                     style={{ fontSize: vw * 0.2 }}
-                    className="font-black dark:text-white px-3 mt-20"
+                    className="font-black text-text px-3 mt-20"
                 >
                     SignUp
                 </Text>
@@ -169,7 +164,7 @@ const Signup = () => {
 
                     <TextInput
                         ref={usernameRef}
-                        className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl dark:text-white ${
+                        className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
                             username.trim().length >= 5
                                 ? "border-green-500"
                                 : "border-black dark:border-white"
@@ -186,7 +181,7 @@ const Signup = () => {
                     <TextInput
                         ref={fullnameRef}
                         placeholder="fullname"
-                        className={`text-black border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl dark:text-white ${
+                        className={`text-text border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl ${
                             fullName?.trim()?.length > 5
                                 ? "border-green-500"
                                 : "border-black dark:border-white "
@@ -199,7 +194,7 @@ const Signup = () => {
                     <View className="relative">
                         <TextInput
                             ref={passwordRef}
-                            className={`text-black font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl dark:text-white ${
+                            className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl ${
                                 password.length > 5
                                     ? "border-green-500"
                                     : "border-black dark:border-white"
@@ -248,7 +243,7 @@ const Signup = () => {
                         className="bg-green-400 py-5 w-full rounded-3xl"
                         onPress={handleSubmit}
                     >
-                        <Text className="text-white font-black text-3xl text-center">
+                        <Text className="text-text font-black text-3xl text-center">
                             Sign Up
                         </Text>
                     </TouchableOpacity>
@@ -256,13 +251,13 @@ const Signup = () => {
                     <TouchableOpacity
                         onPress={() => router.replace("/auth/Signin")}
                     >
-                        <Text className="text-black text-xl text-center font-bold mt-3 dark:text-white">
+                        <Text className="text-text text-xl text-center font-bold mt-3">
                             Already have an account? SignIn
                         </Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
-        </LinearGradient>
+
     );
 };
 

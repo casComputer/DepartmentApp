@@ -1,17 +1,58 @@
+import { useState } from "react";
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import Header from "@components/common/Header";
+import {
+    ItemSeparator,
+    ListHeaderComponent
+} from "@components/common/ItemSeperatorDateComponent";
+
 import { fetchNotifications } from "@controller/common/notification.controller.js";
 
+import { downloadFile } from "@utils/file.js";
+
 const RenderItem = ({ item = {} }) => {
-    console.log(item);
     const data = JSON.parse(item.data ?? "{}");
+    const [downloading, setDownloading] = useState(false);
+
+    const handleDownload = async () => {
+        if (downloading) return;
+        setDownloading(true);
+
+        if (data.type === "ATTENDANCE_REPORT_GENERATION")
+            await downloadFile(data.pdf_url, "pdf", `${data.filename}.pdf`);
+
+        setDownloading(false);
+    };
 
     return (
-        <TouchableOpacity className="flex-row bg-card my-1 px-3">
-            <Text className="text-text font-black text-xl">{item.title}</Text>
+        <TouchableOpacity className="bg-card my-1 px-3 py-4 rounded-xl">
+            <View className="flex-row items-center justify-between">
+                <Text className="text-text font-black text-lg">
+                    {item.title}
+                </Text>
+                <Text className="text-text/60 font-semibold text-sm">
+                    {item.createdAt.split("T")[1].slice(0, 5)}
+                </Text>
+            </View>
+
+            <Text className="mt-2 text-text/80 font-semibold text-md max-w-[85%]">
+                {item.body}
+            </Text>
+
+            {data.type === "ATTENDANCE_REPORT_GENERATION" && (
+                <TouchableOpacity
+                    className="mt-2"
+                    disabled={downloading}
+                    onPress={handleDownload}
+                >
+                    <Text className="text-xl font-bold text-blue-500 text-center">
+                        {downloading ? "Downloading" : "Download File"}
+                    </Text>
+                </TouchableOpacity>
+            )}
         </TouchableOpacity>
     );
 };
@@ -33,7 +74,7 @@ const NotificationList = () => {
     });
 
     const notifications =
-        data?.pages?.flatMap(page => page.notifications) ?? [];
+        data?.pages?.flatMap(page => page?.notifications ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">
@@ -51,9 +92,13 @@ const NotificationList = () => {
                     !isLoading &&
                     isFetchingNextPage && <ActivityIndicator size={"large"} />
                 }
+                ListHeaderComponent={
+                    <ListHeaderComponent date={notifications[0]?.createdAt} />
+                }
+                ItemSeparatorComponent={ItemSeparator}
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
-                className="px-2"
+                className="px-2 pt-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

@@ -28,7 +28,6 @@ export async function sendPushNotification(
         {
             to: pushToken,
             sound: "default",
-            channelId: "default",
             title,
             body,
             data: payloadData,
@@ -39,21 +38,16 @@ export async function sendPushNotification(
         },
     ];
 
-    console.log(messages);
-
     const chunks = expo.chunkPushNotifications(messages);
 
     for (const chunk of chunks) {
         try {
             const response = await expo.sendPushNotificationsAsync(chunk);
-            console.log(response);
         } catch (error) {
             console.error(error);
         }
     }
 }
-
-console.log(await turso.execute("select * from users where userId='adwaith'"));
 
 export const sendPushNotificationToClassStudents = async ({
     course,
@@ -113,7 +107,6 @@ export const sendNotificationForListOfUsers = async ({
     image = null,
 }) => {
     try {
-        console.log(users, title, data, body, image);
         if (!users.length) return true;
 
         const placeholders = users.map(() => "?").join(",");
@@ -126,8 +119,6 @@ export const sendNotificationForListOfUsers = async ({
             users,
         );
 
-        console.log(rows);
-
         const notificationRes = await Notification.create({
             title,
             body,
@@ -135,8 +126,6 @@ export const sendNotificationForListOfUsers = async ({
             target: "userIds",
             userIds: users,
         });
-
-        console.log(notificationRes);
 
         data = {
             ...data,
@@ -146,8 +135,6 @@ export const sendNotificationForListOfUsers = async ({
         const validTokens = rows
             .map((u) => u.token)
             .filter((t) => Expo.isExpoPushToken(t));
-
-        console.log(validTokens);
 
         await Promise.all(
             validTokens.map((token) =>

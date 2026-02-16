@@ -3,44 +3,46 @@ import { ScrollView, View } from "react-native";
 
 import Header from "@components/common/Header";
 import Select from "@components/common/Select";
-import { AttendanceCalendar as Calendar } from
-  "@components/student/AttendanceCalendarReport";
+import { AttendanceCalendar as Calendar } from "@components/student/AttendanceCalendarReport";
 
 import { useAppStore } from "@store/app.store.js";
 
 const AttendanceCalendar = () => {
-  const studentsRaw = useAppStore(state => state.user.students);
+    const studentsRaw = useAppStore(state => state.user.students);
 
-  const students = studentsRaw?.map(st => ({
-    title: st,
-    id: st,
-  })) ?? [];
+    const students =
+        studentsRaw?.map(st => ({
+            title: st,
+            id: st
+        })) ?? [];
 
-  const [selected, setSelected] = useState({});
+    const [selected, setSelected] = useState({});
 
-  useEffect(() => {
-    if (students.length && !selected?.id) {
-      setSelected(students[0]);
+    useEffect(() => {
+        if (students.length && !selected?.id) {
+            setSelected(students[0]);
+        }
+    }, [students]);
+
+    if (!students.length || !selected.id) {
+        return <View className="grow bg-primary" />;
     }
-  }, [students]);
 
-  if (!students.length || !selected.id) {
-    return <View className="grow bg-primary" />;
-  }
+    return (
+        <ScrollView className="grow bg-primary">
+            <Header title="Attendance Calendar" />
 
-  return (
-    <ScrollView className="grow bg-primary">
-      <Header title="Attendance Calendar" />
+            <View className="pt-16">
+                <Select
+                    options={students}
+                    selected={selected}
+                    select={setSelected}
+                />
+            </View>
 
-      <Select
-        options={students}
-        selected={selected}
-        select={setSelected}
-      />
-
-      <Calendar studentId={selected.id ?? studentsRaw?.[0]} />
-    </ScrollView>
-  );
+            <Calendar studentId={selected.id ?? studentsRaw?.[0]} />
+        </ScrollView>
+    );
 };
 
 export default AttendanceCalendar;

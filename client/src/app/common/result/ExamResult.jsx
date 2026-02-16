@@ -36,7 +36,7 @@ const ResultItem = ({ item }) => {
                 onPress={() => openFileInBrowser(item.secure_url)}
                 className="bg-primary px-4 py-3 rounded-lg mt-3 w-full"
             >
-                <Text className="text-white font-bold text-center">
+                <Text className="text-text font-bold text-center">
                     Open in Browser
                 </Text>
             </TouchableOpacity>
@@ -48,7 +48,7 @@ const ExamResult = () => {
     const { course, sem } = useLocalSearchParams();
 
     const { data, isLoading } = useQuery({
-        queryKey: ["examResults"],
+        queryKey: ["examResults", course, sem],
         queryFn: () => fetchExamResult({ course, sem }),
     });
 
@@ -58,13 +58,14 @@ const ExamResult = () => {
 
             <FlashList
                 data={data}
+                className="pt-16"
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => <ResultItem item={item} />}
                 ListEmptyComponent={
                     isLoading ? (
                         <ActivityIndicator size="large" />
                     ) : (
-                        <Text className="text-white text-center text-lg mt-10">
+                        <Text className="text-text text-center text-lg mt-10">
                             No Results Found
                         </Text>
                     )

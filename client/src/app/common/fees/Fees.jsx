@@ -52,7 +52,6 @@ const Fees = () => {
     return (
         <View className="flex-1 bg-primary">
             <Header
-                title={"Fees Details"}
                 onSave={handleSave}
                 saving={saving}
             />

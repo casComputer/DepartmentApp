@@ -18,8 +18,8 @@ const RenderItem = ({ item }) => {
 
     return (
         <View
-            style={{ boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.5)" }}
-            className="px-3 py-6 mt-2 bg-card rounded-3xl gap-2"
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
+            className="px-3 py-6 mt-2 bg-card rounded-3xl gap-2 border border-border"
         >
             <Text className="text-text text-lg font-bold">{item?.details}</Text>
             <Text className="text-text text-xl font-bold">
@@ -72,7 +72,7 @@ const History = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const fees = data?.pages?.flatMap(page => page.fees);
+    const fees = data?.pages?.flatMap(page => page?.fees ?? []) ?? [];
 
     return (
         <View className="flex-1 bg-primary">
@@ -92,7 +92,7 @@ const History = () => {
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
-                className="px-2"
+                className="px-1 pt-16"
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 ListHeaderComponent={

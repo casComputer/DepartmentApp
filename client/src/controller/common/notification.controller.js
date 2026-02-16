@@ -9,15 +9,12 @@ export async function registerForPushNotificationsAsync() {
     let token;
 
     if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync(
-            "myNotificationChannel",
-            {
-                name: "A channel is needed for the permissions prompt to appear",
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: "#FF231F7C"
-            }
-        );
+        await Notifications.setNotificationChannelAsync("default", {
+            name: "A channel is needed for the permissions prompt to appear",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#FF231F7C",
+        });
     }
 
     const { status: existingStatus } =
@@ -31,7 +28,7 @@ export async function registerForPushNotificationsAsync() {
         alert("Failed to get push token for push notification!");
         return;
     }
-   
+
     try {
         const projectId =
             Constants?.expoConfig?.extra?.eas?.projectId ??
@@ -44,7 +41,6 @@ export async function registerForPushNotificationsAsync() {
                 projectId,
             })
         ).data;
-        console.log(token);
     } catch (e) {
         token = `${e}`;
     }
@@ -58,30 +54,27 @@ export async function registerForPushNotificationsAsync() {
         }
         token = (
             await Notifications.getExpoPushTokenAsync({
-                projectId
+                projectId,
             })
         ).data;
         addNotificationToken(token);
     } catch (e) {
         token = `${e}`;
     }
-
     return token;
 }
 
-const addNotificationToken = async token => {
+const addNotificationToken = async (token) => {
     try {
-        const { data } =  await axios.post("/user/addNotificationToken", {
-            token
+        const { data } = await axios.post("/user/addNotificationToken", {
+            token,
         });
-        
-        console.log('response: ', data);
     } catch (error) {
         console.error(error);
     }
 };
 
-export const fetchNotifications = async page => {
+export const fetchNotifications = async (page) => {
     try {
         const { course = "", year = "" } = useAppStore.getState().user ?? {};
 
@@ -89,7 +82,7 @@ export const fetchNotifications = async page => {
             page,
             limit: 15,
             course,
-            year
+            year,
         });
 
         if (data.success) return data;
@@ -97,7 +90,7 @@ export const fetchNotifications = async page => {
             success: false,
             nextPage: null,
             hasMore: false,
-            notifications: []
+            notifications: [],
         };
     } catch (error) {
         console.error(error);
@@ -105,7 +98,7 @@ export const fetchNotifications = async page => {
             success: false,
             nextPage: null,
             hasMore: false,
-            notifications: []
+            notifications: [],
         };
     }
 };

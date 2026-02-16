@@ -20,16 +20,16 @@ turso.execute(`
 
 turso.execute(`
     CREATE TABLE students (
-    userId TEXT NOT NULL,
+    userId TEXT NOT NULL unique,
 
     course TEXT CHECK (course IN ('Bca', 'Bsc')),
     year text check (year IN ('First', 'Second', 'Third', 'Fourth')),
     rollno integer default NULL,
 
-    UNIQUE (course, year, rollno),
+    UNIQUE (course, year, rollno, userId),
 
     foreign key (course, year) references classes(course, year) ON DELETE SET NULL,
-    foreign key (userId) references users(userId) ON DELETE CASCADE,
+    foreign key (userId) references users(userId) ON DELETE CASCADE
     );
     `);
 
@@ -61,12 +61,12 @@ turso.execute(`
     course TEXT,
     year TEXT,
     hour TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, // not changes this to new datatype in db.
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     date TEXT NOT NULL,
     updated_timestamp TEXT,
     updated_by TEXT,
 
-    teacherId TEXT NOT NULL,
+    teacherId TEXT,
 
     present_count INTEGER NOT NULL DEFAULT 0,
     absent_count INTEGER NOT NULL DEFAULT 0,
@@ -83,7 +83,7 @@ turso.execute(`
     REFERENCES classes(course, year),
 
     FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
-    FOREIGN KEY (updated_by) REFERENCES users(userId) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(userId) ON DELETE SET NULL
 
     );
     `);
@@ -135,10 +135,8 @@ turso.execute(`
 
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
-    FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
-
-
+    FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE CASCADE,
+    FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL
     );
     `);
 

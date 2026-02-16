@@ -43,7 +43,7 @@ const optionsData = [
         Icon: Feather,
         iconName: "check-circle",
         text: "Internal Marks",
-        locaton: ""
+        locaton: "/(student)/(others)/InternalMark"
     },
 
     {
@@ -70,7 +70,7 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
                 allowFontScaling={false}
                 adjustsFontSizeToFit
                 numberOfLines={1}
-                className="text-sm font-semibold text-center dark:text-white"
+                className="text-sm font-semibold text-center text-text"
             >
                 {text}
             </Text>
@@ -81,7 +81,9 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
 const StudentOptions = () => {
     return (
         <View className="px-2 mt-5">
-            <View className="bg-card rounded-3xl py-3">
+            <View className="bg-card border-border border rounded-3xl py-3" style={{
+                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
+            }}>
                 <FlashList
                     data={optionsData}
                     renderItem={({ item }) => (

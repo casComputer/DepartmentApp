@@ -101,11 +101,11 @@ const Signin = () => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             style={{ paddingBottom: 100 }}
-            className=" flex-1 pt-20 dark:bg-black"
+            className="flex-1 pt-20 bg-primary"
         >
             <Text
                 style={{ fontSize: vw * 0.2 }}
-                className="font-black dark:text-white px-3"
+                className="font-black text-text-secondary px-3"
             >
                 SignIn
             </Text>
@@ -124,11 +124,11 @@ const Signin = () => {
                 </Text>
 
                 <TextInput
-                    className={`border py-6 px-5 text-xl font-bold rounded-full dark:text-white 
+                    className={`border border-zinc-700 py-6 px-5 text-xl font-bold rounded-full text-text 
                          ${
                              message.type === "error" && username.length <= 5
                                  ? "border-red-500"
-                                 : "border-black dark:border-white"
+                                 : ""
                          }`}
                     ref={usernameRef}
                     placeholder="username"
@@ -144,7 +144,7 @@ const Signin = () => {
                 <View className="relative">
                     <TextInput
                         ref={passwordRef}
-                        className="border border-black py-6 px-5 text-xl font-bold dark:text-white dark:border-white rounded-full"
+                        className="border border-zinc-700 py-6 px-5 text-xl font-bold text-text dark:border-white rounded-full"
                         placeholder="Password"
                         placeholderTextColor={"rgba(119,119,119,0.7)"}
                         autoCapitalize="none"
@@ -164,7 +164,7 @@ const Signin = () => {
                     </TouchableOpacity>
                 </View>
 
-                <Text className="text-black font-bold text-2xl mt-5 dark:text-white px-3">
+                <Text className="text-text font-bold text-2xl mt-5 px-3">
                     Select role:
                 </Text>
                 <View className="flex-row justify-center items-center py-5 px-3 gap-5">
@@ -179,11 +179,11 @@ const Signin = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-green-400 py-5 w-full rounded-3xl mt-10"
+                    className="bg-btn py-5 w-full rounded-3xl mt-10"
                     onPress={handleSubmit}
                 >
-                    <Text className="text-white font-black text-3xl text-center">
-                        Sign In
+                    <Text className="text-text font-black text-3xl text-center">
+                        SignIn
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -9,7 +9,7 @@ const Header = ({ onSave, saving, disabled }) => {
     const insets = useSafeAreaInsets();
     return (
         <View
-            style={{ marginTop: insets.top }}
+            // style={{ marginTop: insets.top }}
             className="flex-row items-center justify-between pl-2 pr-3"
         >
             <TouchableOpacity

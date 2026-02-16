@@ -10,7 +10,7 @@ const Header = ({ title }) => {
 
   return (
     <View
-      style={{ marginTop: insets.top }}
+    //   style={{ marginTop: insets.top }}
       className="flex-row items-center px-1 w-full justify-between"
     >
       <Text

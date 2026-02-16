@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
 import {
     Label,
     NativeTabs,
@@ -8,20 +7,21 @@ import {
 } from "expo-router/unstable-native-tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Octicons, FontAwesome5 } from "@expo/vector-icons";
+import { useResolveClassNames } from "uniwind";
 
 export default function TabLayout() {
-    const theme = useColorScheme();
+    const styles = useResolveClassNames("bg-primary text-color");
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <NativeTabs
                 labelStyle={{
-                    color: theme === "dark" ? "white" : "black",
+                    color: styles.color,
                     fontWeight: "900",
                     fontSize: 14
                 }}
                 shadowColor={"black"}
-                backgroundColor={theme === "dark" ? "#1a120d" : "#ffece6"}
+                backgroundColor={styles["backgroundColor"]}
             >
                 <NativeTabs.Trigger name="Home">
                     <Label>Home</Label>

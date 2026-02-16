@@ -37,17 +37,16 @@ export const checkFileExists = async (
     try {
         const localPath = localDir + filename;
         const info = await FileSystem.getInfoAsync(localPath);
-        
+
         if (info.exists) fileUri = info.uri;
     } catch {}
-    
+
     return {
         exists: Boolean(contentUri || fileUri),
         contentUri,
         fileUri
     };
 };
-
 
 export const openFileWithDefaultApp = async (uri, mimeType) => {
     try {
@@ -109,7 +108,7 @@ export const saveFile = async (
                 filename,
                 mimeType
             );
-            
+
         await FileSystem.writeAsStringAsync(contentUri, base64, {
             encoding: FileSystem.EncodingType.Base64
         });
@@ -142,13 +141,12 @@ export const downloadFile = async (
         const mimeType = getMimeType(format);
         const localPath = FileSystem.documentDirectory + filename;
 
-        // Already exists?
         const existing = await checkFileExists(filename);
-        if (existing.exists && existing.contentUri) {
-            if (autoOpen && existing.contentUri) {
+        
+        if (existing.exists && existing.contentUri && existing.fileUri) {
+            if (autoOpen) 
                 await openFileWithDefaultApp(existing.contentUri, mimeType);
-            }
-            
+        
             return {
                 success: true,
                 fileUri: existing.fileUri,
@@ -168,7 +166,7 @@ export const downloadFile = async (
             contentUri: saved.contentUri
         };
     } catch (err) {
-        console.error("Download error:", err);
+        ToastAndroid.show("Failed to download file", ToastAndroid.SHORT);
         return { success: false };
     }
 };

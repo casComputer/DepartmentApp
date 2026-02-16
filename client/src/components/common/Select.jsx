@@ -5,7 +5,7 @@ const Select = ({ title, options, select, selected }) => {
     return (
         <View
             style={styles.shadow}
-            className="mt-5 px-2 py-4 bg-card rounded-3xl">
+            className="mt-5 px-2 py-4 bg-card border border-border rounded-3xl">
             {
                title ? 
             <Text className="text-[6vw] px-3 font-bold mb-3 text-text">
@@ -32,7 +32,7 @@ const Select = ({ title, options, select, selected }) => {
 
 const styles = StyleSheet.create({
     shadow: {
-        boxShadow: "0px 1px 5px rgba(0,0,0,0.5)"
+        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
     }
 });
 

@@ -10,37 +10,45 @@ import {
 import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
 import { setNotes } from "@storage/app.storage.js";
 
-export const fetchNotes = async ({ queryKey }) => {
+export const fetchNotes = async ({ queryKey, pageParam }) => {
     const parentId = queryKey[1] ?? null;
-    const teacherId = useAppStore.getState().user.userId;
-
-    if (!teacherId) return { notes: [], success: true };
-
+    
     try {
         const res = await axios.post("/notes/fetchByTeacher", {
-            teacherId,
-            parentId
+            parentId,
+            page: pageParam,
+            limit: 20
         });
-
+        
         if (!res.data?.success) {
-            throw new Error("Failed to fetch notes");
+            ToastAndroid.show(
+                "Please connect to the internet 🛰️",
+                ToastAndroid.LONG
+            );
+            return {
+                notes: [],
+                hasMore: false,
+                nextPage: null,
+                success: false
+            };
         }
-
+        
         setNotes(parentId ?? "root", res.data);
-
         return res.data;
     } catch (error) {
         if (error.message?.includes("Network Error")) {
-            if (!parentId)
-                ToastAndroid.show(
-                    "Please connect to the internet 🛰️",
-                    ToastAndroid.LONG
-                );
-            return getNotes(parentId ?? "root") ?? { notes: [], success: true };
-        }
+            ToastAndroid.show(
+                "Please connect to the internet 🛰️",
+                ToastAndroid.LONG
+            );
+        } else ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
 
-        ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
-        return { notes: [], success: true };
+        return {
+            notes: [],
+            hasMore: false,
+            nextPage: null,
+            success: false
+        };
     }
 };
 
@@ -142,7 +150,7 @@ export const deleteNotes = async () => {
             if (fileNotes.length > 0)
                 for (let file of fileNotes)
                     await deleteFileEverywhere(file.name);
-        } else{
+        } else {
             ToastAndroid.show(
                 res.data.message ?? "Failed to delete file!",
                 ToastAndroid.LONG

@@ -121,8 +121,7 @@ const signinController = async (req, res) => {
         }
 
         delete user.password;
-        console.log(user);
-
+   
         const tokens = generateTokens(user.userId, user.role);
         // await storeRefreshToken(user.userId, tokens.refreshToken);
 

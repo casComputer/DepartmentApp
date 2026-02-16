@@ -1,15 +1,21 @@
 import { turso } from "../../config/turso.js";
 
 export const syncUser = async (req, res) => {
-    console.log("userId:", req.user.userId);
     try {
         const { userId } = req.user;
 
-        if (!userId)
-            return res.status(400).json({
-                message: "User ID is required.",
+        const { rows: userRows } = await turso.execute(
+            "SELECT userId, is_verified FROM users WHERE userId = ? AND role = 'teacher' OR role = 'admin'",
+            [userId]
+        );
+
+        if (userRows.length === 0) {
+            return res.json({
+                message: "Teacher not found.",
+                type: "NOT_FOUND",
                 success: false
             });
+        }
 
         const { rows } = await turso.execute(
             `SELECT
@@ -35,7 +41,8 @@ export const syncUser = async (req, res) => {
                 year: row.year,
                 course: row.course,
                 course_name: row.course_name
-            }))
+            })), 
+            is_verified: userRows[0].is_verified
         });
     } catch (error) {
         console.error("Error syncing teacher:", error);

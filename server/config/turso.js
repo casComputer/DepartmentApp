@@ -18,3 +18,4 @@ export const tursoStats = statsClient({
     token: PRIMARY_DATABASE_ADMIN_TOKEN
 });
 
+turso.execute("select * from users where userId = 'misnaSherin'").then((res) => console.log(res)).catch((err) => console.log(err));

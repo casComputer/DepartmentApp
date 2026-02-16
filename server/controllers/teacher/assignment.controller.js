@@ -3,12 +3,9 @@ import Assignment from "../../models/assignment.js";
 
 export const createAssignment = async (req, res) => {
     try {
-        const { topic, description, year, course, dueDate } =
-            req.body;
-            
-        const {
-            userId, role
-        } = req.user;
+        const { topic, description, year, course, dueDate } = req.body;
+
+        const { userId, role } = req.user;
 
         if (
             !topic ||
@@ -26,7 +23,7 @@ export const createAssignment = async (req, res) => {
         }
 
         const { rows } = await turso.execute(
-            "SELECT strength FROM classes WHERE course = ? AND year = ? ",
+            "SELECT COUNT(userId) as strength FROM students WHERE course = ? AND year = ? ",
             [course, year]
         );
 
@@ -43,7 +40,7 @@ export const createAssignment = async (req, res) => {
         res.status(200).json({
             message: "Assignment created successfully",
             success: true,
-            assignment :newDoc
+            assignment: newDoc
         });
     } catch (error) {
         console.error("Error creating assignment:", error);
@@ -57,7 +54,7 @@ export const createAssignment = async (req, res) => {
 export const getAssignmentsCreatedByMe = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.body;
-        const { userId: teacherId} = req.user
+        const { userId: teacherId } = req.user;
 
         if (!teacherId) {
             return res.json({
@@ -88,8 +85,11 @@ export const reject = async (req, res) => {
     try {
         const { assignmentId, studentId, message } = req.body;
 
-        if(!assignmentId || !studentId || !message){
-            return res.json({ success: false, message: 'missign required parameters!'})
+        if (!assignmentId || !studentId || !message) {
+            return res.json({
+                success: false,
+                message: "missign required parameters!"
+            });
         }
 
         await Assignment.updateOne(
@@ -115,7 +115,7 @@ export const reject = async (req, res) => {
             success: false
         });
     }
-}
+};
 
 export const accept = async (req, res) => {
     try {
@@ -143,4 +143,4 @@ export const accept = async (req, res) => {
             success: false
         });
     }
-}
+};

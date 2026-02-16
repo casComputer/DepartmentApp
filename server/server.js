@@ -17,12 +17,15 @@ import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 
-// import data from "./cron/attendance.js";
-
 import {
     authenticateToken,
     authorize,
 } from "./middleware/authentication.middleware.js";
+import {
+    checkHealth,
+    isServerRunning
+} from "./controllers/server.controller.js";
+import { apiLimiter, adminLimiter } from "./middleware/ratelimit.middleware.js";
 
 const app = express();
 const PORT = 3000;
@@ -35,9 +38,19 @@ app.use(
     }),
 );
 
+app.set("trust proxy", 1);
+
+// app.use(apiLimiter);
+
+app.get("/", isServerRunning);
+
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/user", userRoutes);
+// app.get("/health", authorize("admin"), adminLimiter, checkHealth);
+// app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
+// app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);
+app.get("/health", authorize("admin"), checkHealth);
 app.use("/admin", authorize("admin"), adminRoutes);
 app.use("/dashboard", authorize("admin"), dashboardRoutes);
 
@@ -58,6 +71,23 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.use((err, req, res, next) => {
+    const errorResponse = {
+        success: false,
+        message:
+            process.env.NODE_ENV === "production"
+                ? "Internal server error"
+                : err.message
+    };
+
+    res.status(err.status || 500).json(errorResponse);
 });
+
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+// ✅ Export for Vercel
+export default app;

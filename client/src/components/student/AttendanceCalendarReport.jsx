@@ -57,7 +57,7 @@ const CalendarDatePicker = ({ loading, date, setDate }) => {
                 <Feather name="chevron-left" size={24} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                <Text className="text-2xl font-bold dark:text-white ">
+                <Text className="text-2xl font-bold text-text ">
                     {month} {year}
                 </Text>
             </TouchableOpacity>
@@ -101,7 +101,7 @@ export const AttendanceCalendar = ({ studentId = null }) => {
     });
 
     return (
-        <View className=" rounded-3xl bg-card p-2 mx-2 mt-5">
+        <View className="rounded-3xl bg-card border border-border p-2 mx-2 mt-5">
             <CalendarDatePicker
                 date={date}
                 setDate={setDate}

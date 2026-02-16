@@ -1,11 +1,9 @@
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
     Image,
     Text,
     TouchableOpacity,
-    useColorScheme,
     View
 } from "react-native";
 
@@ -20,7 +18,6 @@ const icons = {
 };
 
 const Button = ({ icon, text, role }) => {
-    const theme = useColorScheme();
 
     return (
         <TouchableOpacity
@@ -30,12 +27,13 @@ const Button = ({ icon, text, role }) => {
                     params: { userRole: role }
                 });
             }}
-            className={`overflow-hidden h-26 bg-zinc-800 rounded-3xl min-w-[43%] flex-row items-center ${
+            className={`overflow-hidden h-26  rounded-3xl min-w-[43%] flex-row items-center ${
                 role === "parent" ? "w-[50%]" : "flex-1"
             }`}>
             <BlurView
-                intensity={20}
+                intensity={60}
                 tint="dark"
+                blurMethod='dimezisBlurView'
                 className="w-full h-full flex-row items-center justify-center px-5 gap-2">
                 <Image
                     source={icons[icon]}
@@ -47,7 +45,7 @@ const Button = ({ icon, text, role }) => {
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="flex-1 font-bold text-md text-center text-white ">
+                    className="flex-1 font-bold text-md text-center text-text ">
                     {text}
                 </Text>
             </BlurView>

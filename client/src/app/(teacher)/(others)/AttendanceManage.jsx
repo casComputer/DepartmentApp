@@ -19,7 +19,7 @@ const AttendanceManage = () => {
                 onPress={() =>
                     router.push("/common/attendance/AttendanceClassSelect")
                 }
-                className="px-4 py-7 rounded-3xl bg-card"
+                className="px-4 py-7 rounded-3xl bg-card mt-16"
             >
                 <Text className="text-text font-bold text-xl">
                     Take Attendance

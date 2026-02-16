@@ -8,8 +8,7 @@ export const verifyStudent = async (req, res) => {
             "UPDATE users SET is_verified = true WHERE userId = ?",
             [studentId]
         );
-        
-        
+
         res.json({ success: true, message: "Student verified" });
     } catch (error) {
         console.error(error);
@@ -21,18 +20,18 @@ export const cancelStudentVerification = async (req, res) => {
     const { studentId } = req.body;
 
     try {
-    
-    	const {rows} = await turso.execute("SELECT * FROM students WHERE userId = ?", [studentId])
-    	const student = rows[0] || null
-    	
-    	if(!student) return res.json({ message: "student not found" , success: false })
-    	
-    	await turso.execute("UPDATE students SET rollno = null")
+        const { rows } = await turso.execute(
+            "SELECT * FROM students WHERE userId = ?",
+            [studentId]
+        );
+        const student = rows[0] || null;
 
+        if (!student)
+            return res.json({ message: "student not found", success: false });
 
-        await turso.execute("DELETE FROM users WHERE userId = ?", [
-            studentId
-        ]);
+        await turso.execute("UPDATE students SET rollno = null");
+
+        await turso.execute("DELETE FROM users WHERE userId = ?", [studentId]);
 
         res.json({ success: true, message: "Student deleted" });
     } catch (error) {
@@ -52,8 +51,6 @@ export const verifyMultipleStudents = async (req, res) => {
 
         const placeholders = students.map(() => "?").join(",");
 
-        console.log(students)
-
         const query = `
             UPDATE users 
             SET is_verified = true
@@ -72,4 +69,31 @@ export const verifyMultipleStudents = async (req, res) => {
     }
 };
 
+export const removeAllByClassTeacher = async (req, res) => {
+    try {
+        const { userId } = req.user;
 
+        const { rows } = await turso.execute(
+            `
+        DELETE FROM users
+            WHERE userId IN (
+                SELECT userId FROM students s
+                    JOIN classes c ON 
+                        s.year = c.year AND s.course = c.course
+                WHERE c.in_charge = ?
+            )
+        `,
+            [userId]
+        );
+
+        res.json({
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        });
+    }
+};

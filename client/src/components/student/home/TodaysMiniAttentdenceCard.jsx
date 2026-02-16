@@ -50,7 +50,7 @@ const Bubble = ({ item, attendance }) => (
         }}
         className="w-8 h-8 justify-center items-center"
     >
-        <Text className="text-white font-black text-xl">{item.key}</Text>
+        <Text className="text-text font-black text-xl">{item.key}</Text>
     </View>
 );
 
@@ -69,8 +69,8 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
             className={`${!studentId || isSingle ? "px-2" : "mt-0"}`}
         >
             <View
-                style={{ boxShadow: "0 3px 4px rgba(0, 0, 0, 0.5)" }}
-                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card "
+                style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
+                className="w-full rounded-3xl overflow-hidden p-8 py-6 bg-card border-border border"
             >
                 {/* Top */}
                 {studentId ? (
@@ -92,7 +92,7 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                 </View>
 
                 <View>
-                    <Text className="text-black text-xl font-semibold text-text">
+                    <Text className="text-text text-xl font-semibold">
                         Todays Attendance
                     </Text>
 

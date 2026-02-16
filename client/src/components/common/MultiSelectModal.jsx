@@ -60,7 +60,7 @@ const MultiSelectModal = ({
           onPress={handleDone}
           className="bg-btn py-4 mb-8 rounded-2xl"
         >
-          <Text className="text-white text-center text-xl font-bold">Done</Text>
+          <Text className="text-text text-center text-xl font-bold">Done</Text>
         </TouchableOpacity>
       </View>
     </Modal>

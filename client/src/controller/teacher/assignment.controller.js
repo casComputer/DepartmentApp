@@ -39,10 +39,15 @@ export const getAssignment = async ({ pageParam }) => {
             }
         );
 
-        if (response.data.success) {
+        if (response.data.success) 
             return response.data;
-        }
+        
+        console.log(response.data);
 
+        ToastAndroid.show(
+            response.data?.message ?? "Failed to fetch assignment",
+            ToastAndroid.LONG
+        );
         return response.data;
     } catch (error) {
         ToastAndroid.show("Failed to fetch assignment", ToastAndroid.LONG);
@@ -119,7 +124,11 @@ export const rejectAssignment = async (
     }
 };
 
-export const acceptAssignment = async (assignmentId, studentId , setAssignment) => {
+export const acceptAssignment = async (
+    assignmentId,
+    studentId,
+    setAssignment
+) => {
     try {
         const response = await axios.post("/assignment/accept", {
             assignmentId,
@@ -143,7 +152,7 @@ export const acceptAssignment = async (assignmentId, studentId , setAssignment) 
                 "Assignment submission accepted successfully.",
                 ToastAndroid.SHORT
             );
-            return
+            return;
         } else {
             ToastAndroid.show(response.data.message, ToastAndroid.LONG);
         }

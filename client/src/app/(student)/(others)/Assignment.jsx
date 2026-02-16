@@ -47,9 +47,9 @@ const Assignment = () => {
                 showsVerticalScrollIndicator={false}
                 onEndReachedThreshold={0.5}
                 contentContainerStyle={{
-                    paddingHorizontal: 16,
                     paddingBottom: 100
                 }}
+                className="px-1 pt-16"
                 ListHeaderComponent={
                     !isLoading && (
                         <ListHeaderComponent

@@ -6,6 +6,8 @@ import Animated, {
     useAnimatedProps, useDerivedValue
 } from "react-native-reanimated";
 
+import { useResolveClassNames } from 'uniwind'
+
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const CircularProgress = ({
@@ -15,10 +17,12 @@ const CircularProgress = ({
     maxProgress = 100,
     showPercentage = true,
     fraction = "",
-    strokeFillColor = "#4F46E5",
+    strokeFillColor, // #4F46E5
     animated = true,
     extraText = ""
 }) => {
+    const themeStyles = useResolveClassNames("bg-btn");
+
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
 
@@ -40,8 +44,6 @@ const CircularProgress = ({
         : offset;
 }, [animated, normalizedProgress, maxProgress, circumference]);
 
-
-    // Animated props for the circle
     const animatedProps = useAnimatedProps(() => ({
         strokeDashoffset: strokeDashoffset.value
     }));
@@ -60,7 +62,7 @@ const CircularProgress = ({
                 />
                 {/* Progress circle */}
                 <AnimatedCircle
-                    stroke={strokeFillColor}
+                    stroke={strokeFillColor ?? themeStyles?.backgroundColor}
                     fill="none"
                     cx={size / 2}
                     cy={size / 2}
@@ -77,13 +79,13 @@ const CircularProgress = ({
 
             <View style={styles.textContainer}>
                 {fraction ? (
-                    <Text className="text-black dark:text-white">
+                    <Text className="text-text">
                         {fraction}
                     </Text>
                 ) : (
                     <Text
                         style={styles.text}
-                        className="text-black dark:text-white"
+                        className="text-text"
                     >
                         {normalizedProgress}
                         {showPercentage && "%"}
@@ -93,7 +95,7 @@ const CircularProgress = ({
             {extraText && (
                 <Text
                     style={styles.text}
-                    className="mt-3 text-black dark:text-white"
+                    className="mt-3 text-text"
                 >
                     Extra text
                 </Text>

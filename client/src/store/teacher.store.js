@@ -77,9 +77,14 @@ export const useTeacherStore = create((set, get) => ({
             return { students: updated };
         }),
 
+    clearStudents: () =>
+        set(state => {
+            storage.set(STUDENT_KEY, JSON.stringify([]));
+            return { students: [] };
+        }),
+
     getVerifiedStudents: () => {
         const { students } = get();
         return students.filter(s => Boolean(s.is_verified));
-    },
-    
+    }
 }));

@@ -15,6 +15,9 @@ export const ItemSeparator = ({
     } else if (leadingItem.date && trailingItem.date) {
         leadingDate = formatDate(leadingItem.date);
         trailingDate = formatDate(trailingItem.date);
+    } else if (leadingItem.createdAt && trailingItem.createdAt){
+        leadingDate = formatDate(leadingItem.createdAt);
+        trailingDate = formatDate(trailingItem.createdAt);
     }
 
     if (!leadingDate || !trailingDate) return null;
@@ -22,7 +25,7 @@ export const ItemSeparator = ({
     if (leadingDate === trailingDate) return null;
 
     return (
-        <Text className="my-5 text-xl font-bold px-5 dark:text-white">
+        <Text className="my-5 text-xl font-bold px-5 text-text">
             {trailingDate}
         </Text>
     );
@@ -36,7 +39,7 @@ export const ListHeaderComponent = ({ date }) => {
     if (!fdate) return null;
 
     return (
-        <Text className="my-3 text-xl font-bold px-5 dark:text-white">
+        <Text className="my-3 text-xl font-bold px-5 text-text">
             {fdate}
         </Text>
     );

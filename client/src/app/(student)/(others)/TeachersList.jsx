@@ -26,7 +26,7 @@ const iconSize = 18;
 const TeacherItem = ({ item, course, year }) => {
     return (
         <View
-            className={`bg-card my-2 rounded-3xl p-4 justify-center items-center`}
+            className={`bg-card border border-border my-2 rounded-3xl p-4 justify-center items-center`}
             style={{ width: vw * 0.9, marginHorizontal: vw * 0.05 }}
         >
             <View className="bg-card-selected w-[100px] h-[100px] rounded-full overflow-hidden justify-center items-center">

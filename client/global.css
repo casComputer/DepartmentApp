@@ -3,32 +3,326 @@
 
 @layer theme {
     :root {
-        /* Dark theme variables */
         @variant dark {
             --color-primary: #1a120d;
-            --color-secondary: #000000;
-
             --color-card: #291d16;
             --color-card-selected: #412c1f;
-
             --color-btn: #763219;
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
+            --color-border: oklch(0 0 0 / 0%);
         }
 
-        /* Light theme variables */
         @variant light {
             --color-primary: #ffece6;
-            --color-secondary: #ffffff;
-
             --color-card: #ffffff;
             --color-card-selected: #fdc8b7;
-
             --color-btn: #fedbcc;
             --color-text: #000000;
             --color-text-secondary: #291d16;
+            --color-border: oklch(0 0 0 / 0%);
         }
 
         /* Premium theme variables */
+
+        @variant cocoa-ember {
+            --color-primary: #1a120d;
+            --color-card: #291d16;
+            --color-card-selected: #412c1f;
+            --color-btn: #763219;
+            --color-text: #ffffff;
+            --color-text-secondary: #fedbcc;
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant ocean {
+            --color-primary: oklch(0.25 0.05 220);
+            --color-card: oklch(0.3 0.06 215);
+            --color-card-selected: oklch(0.4 0.08 210);
+            --color-text: #ffffff;
+            --color-text-secondary: #fedbcc;
+            --color-btn: oklch(0.6 0.15 200);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant sunset {
+            --color-primary: oklch(0.3 0.08 30);
+            --color-card: oklch(0.35 0.1 25);
+            --color-card-selected: oklch(0.45 0.12 35);
+            --color-text: #ffffff;
+            --color-text-secondary: #fedbcc;
+            --color-btn: oklch(0.65 0.18 40);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant forest {
+            --color-primary: oklch(0.2 0.05 150);
+            --color-card: oklch(0.25 0.06 155);
+            --color-card-selected: oklch(0.35 0.08 150);
+            --color-text: #ffffff;
+            --color-text-secondary: #fedbcc;
+            --color-btn: oklch(0.55 0.15 145);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant high-contrast {
+            --color-primary: oklch(0 0 0);
+            --color-card: oklch(0.1 0 0);
+            --color-card-selected: oklch(0.25 0 0);
+            --color-text: #ffffff;
+            --color-text-secondary: #fedbcc;
+            --color-btn: oklch(0.7 0.25 60);
+            --color-border: oklch(1 0 0 / 30%);
+        }
+
+        @variant aurora {
+            --color-primary: oklch(0.28 0.08 280);
+            --color-card: oklch(0.32 0.09 275);
+            --color-card-selected: oklch(0.42 0.12 265);
+            --color-text: #ffffff;
+            --color-text-secondary: #cbd5ff;
+            --color-btn: oklch(0.65 0.2 260);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant arctic {
+            --color-primary: oklch(0.26 0.04 200);
+            --color-card: oklch(0.3 0.05 195);
+            --color-card-selected: oklch(0.38 0.07 190);
+            --color-text: #ffffff;
+            --color-text-secondary: #d6f4ff;
+            --color-btn: oklch(0.6 0.14 185);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant ember {
+            --color-primary: oklch(0.27 0.09 25);
+            --color-card: oklch(0.32 0.1 30);
+            --color-card-selected: oklch(0.42 0.13 35);
+            --color-text: #ffffff;
+            --color-text-secondary: #ffd6cc;
+            --color-btn: oklch(0.63 0.2 40);
+            --color-border: oklch(0 0 0 / 0%);
+        }
+
+        @variant earthy-rhythm {
+            --color-primary: oklch(0.15 0.02 25);
+            --color-card: oklch(0.22 0.03 30);
+            --color-card-selected: oklch(0.35 0.08 25);
+            --color-text: oklch(0.92 0.01 45);
+            --color-text-secondary: oklch(0.65 0.03 30);
+            --color-btn: oklch(0.58 0.18 28);
+            --color-border: oklch(1 0 0 / 8%);
+        }
+
+        @variant luxury-ember {
+            --color-primary: oklch(0.18 0.04 30);
+            --color-card: oklch(0.24 0.05 35);
+            --color-card-selected: oklch(0.3 0.07 40);
+            --color-text: oklch(0.95 0.02 45);
+            --color-text-secondary: oklch(0.75 0.08 40);
+            --color-btn: oklch(0.65 0.22 45);
+            --color-border: oklch(1 0 0 / 10%);
+        }
+
+        @variant midnight-moss {
+            --color-primary: oklch(0.12 0.02 160);
+            --color-card: oklch(0.18 0.03 165);
+            --color-card-selected: oklch(0.25 0.05 170);
+            --color-text: oklch(0.95 0.01 160);
+            --color-text-secondary: oklch(0.7 0.04 165);
+            --color-btn: oklch(0.72 0.15 150);
+            --color-border: oklch(1 0 0 / 5%);
+        }
+
+        @variant deep-amethyst {
+            --color-primary: oklch(0.14 0.04 290);
+            --color-card: oklch(0.2 0.05 295);
+            --color-card-selected: oklch(0.28 0.07 300);
+            --color-text: oklch(0.94 0.02 290);
+            --color-text-secondary: oklch(0.75 0.05 295);
+            --color-btn: oklch(0.68 0.21 310);
+            --color-border: oklch(1 0 0 / 8%);
+        }
+
+        @variant obsidian-gold {
+            --color-primary: oklch(0.11 0.01 60);
+            --color-card: oklch(0.17 0.02 65);
+            --color-card-selected: oklch(0.22 0.03 70);
+            --color-text: oklch(0.98 0.01 70);
+            --color-text-secondary: oklch(0.8 0.05 75);
+            --color-btn: oklch(0.82 0.16 85);
+            --color-border: oklch(1 0 0 / 12%);
+        }
+
+        @variant slate-crimson {
+            --color-primary: oklch(0.16 0.02 260);
+            --color-card: oklch(0.22 0.02 265);
+            --color-card-selected: oklch(0.28 0.03 270);
+            --color-text: oklch(0.92 0.01 260);
+            --color-text-secondary: oklch(0.72 0.02 265);
+            --color-btn: oklch(0.55 0.22 25);
+            --color-border: oklch(1 0 0 / 10%);
+        }
+
+        @variant basalt-cyan {
+            --color-primary: oklch(0.13 0.01 220);
+            --color-card: oklch(0.19 0.02 225);
+            --color-card-selected: oklch(0.25 0.03 230);
+            --color-text: oklch(0.96 0.01 220);
+            --color-text-secondary: oklch(0.78 0.05 210);
+            --color-btn: oklch(0.78 0.14 195);
+            --color-border: oklch(1 0 0 / 6%);
+        }
+
+        @variant charcoal-rose {
+            --color-primary: oklch(0.18 0.02 0);
+            --color-card: oklch(0.24 0.02 5);
+            --color-card-selected: oklch(0.3 0.04 10);
+            --color-text: oklch(0.94 0.01 10);
+            --color-text-secondary: oklch(0.74 0.06 15);
+            --color-btn: oklch(0.65 0.18 5);
+            --color-border: oklch(1 0 0 / 10%);
+        }
+
+        @variant forest-rust {
+            --color-primary: oklch(0.14 0.03 140);
+            --color-card: oklch(0.2 0.04 145);
+            --color-card-selected: oklch(0.26 0.05 150);
+            --color-text: oklch(0.93 0.02 140);
+            --color-text-secondary: oklch(0.76 0.04 90);
+            --color-btn: oklch(0.52 0.15 45);
+            --color-border: oklch(1 0 0 / 7%);
+        }
+
+        @variant abyss-electric {
+            --color-primary: oklch(0.1 0.04 270);
+            --color-card: oklch(0.16 0.05 275);
+            --color-card-selected: oklch(0.22 0.07 280);
+            --color-text: oklch(0.97 0.01 270);
+            --color-text-secondary: oklch(0.7 0.1 260);
+            --color-btn: oklch(0.62 0.28 260);
+            --color-border: oklch(1 0 0 / 15%);
+        }
+
+        @variant ink-bronze {
+            --color-primary: oklch(0.12 0.01 240);
+            --color-card: oklch(0.18 0.01 245);
+            --color-card-selected: oklch(0.24 0.02 250);
+            --color-text: oklch(0.95 0.02 70);
+            --color-text-secondary: oklch(0.72 0.06 75);
+            --color-btn: oklch(0.58 0.12 65);
+            --color-border: oklch(1 0 0 / 9%);
+        }
+
+        @variant carbon-mint {
+            --color-primary: oklch(0.15 0.01 180);
+            --color-card: oklch(0.21 0.01 185);
+            --color-card-selected: oklch(0.27 0.02 190);
+            --color-text: oklch(0.98 0.01 180);
+            --color-text-secondary: oklch(0.75 0.03 175);
+            --color-btn: oklch(0.85 0.14 165);
+            --color-border: oklch(1 0 0 / 5%);
+        }
+
+        @variant velvet-noir {
+            --color-primary: oklch(0.08 0.02 320);
+            --color-card: oklch(0.14 0.03 325);
+            --color-card-selected: oklch(0.2 0.05 330);
+            --color-text: oklch(0.96 0.01 320);
+            --color-text-secondary: oklch(0.78 0.06 315);
+            --color-btn: oklch(0.55 0.24 340);
+            --color-border: oklch(1 0 0 / 12%);
+        }
+
+        @variant sapphire-luxury {
+            --color-primary: oklch(0.1 0.05 250);
+            --color-card: oklch(0.16 0.06 255);
+            --color-card-selected: oklch(0.23 0.09 260);
+            --color-text: oklch(0.97 0.01 250);
+            --color-text-secondary: oklch(0.8 0.08 245);
+            --color-btn: oklch(0.7 0.2 240);
+            --color-border: oklch(1 0 0 / 14%);
+        }
+
+        @variant champagne-noir {
+            --color-primary: oklch(0.13 0.01 50);
+            --color-card: oklch(0.19 0.02 55);
+            --color-card-selected: oklch(0.26 0.04 60);
+            --color-text: oklch(0.96 0.02 50);
+            --color-text-secondary: oklch(0.82 0.08 55);
+            --color-btn: oklch(0.88 0.12 70);
+            --color-border: oklch(1 0 0 / 18%);
+        }
+
+        @variant platinum-edge {
+            --color-primary: oklch(0.17 0.005 220);
+            --color-card: oklch(0.23 0.008 225);
+            --color-card-selected: oklch(0.3 0.012 230);
+            --color-text: oklch(0.98 0.005 220);
+            --color-text-secondary: oklch(0.7 0.015 215);
+            --color-btn: oklch(0.92 0.08 200);
+            --color-border: oklch(1 0 0 / 20%);
+        }
+
+        @variant graphite-amber {
+            --color-primary: oklch(0.14 0.005 80);
+            --color-card: oklch(0.2 0.008 85);
+            --color-card-selected: oklch(0.27 0.012 90);
+            --color-text: oklch(0.95 0.01 80);
+            --color-text-secondary: oklch(0.77 0.06 75);
+            --color-btn: oklch(0.75 0.18 65);
+            --color-border: oklch(1 0 0 / 11%);
+        }
+
+        @variant burgundy-depths {
+            --color-primary: oklch(0.12 0.06 15);
+            --color-card: oklch(0.18 0.07 18);
+            --color-card-selected: oklch(0.25 0.1 20);
+            --color-text: oklch(0.94 0.02 15);
+            --color-text-secondary: oklch(0.76 0.08 12);
+            --color-btn: oklch(0.48 0.2 10);
+            --color-border: oklch(1 0 0 / 13%);
+        }
+
+        @variant imperial-plum {
+            --color-primary: oklch(0.11 0.05 310);
+            --color-card: oklch(0.17 0.06 315);
+            --color-card-selected: oklch(0.24 0.09 320);
+            --color-text: oklch(0.96 0.01 310);
+            --color-text-secondary: oklch(0.74 0.1 305);
+            --color-btn: oklch(0.62 0.25 320);
+            --color-border: oklch(1 0 0 / 16%);
+        }
+
+        @variant espresso-gold {
+            --color-primary: oklch(0.09 0.02 40);
+            --color-card: oklch(0.15 0.03 45);
+            --color-card-selected: oklch(0.21 0.05 50);
+            --color-text: oklch(0.97 0.01 45);
+            --color-text-secondary: oklch(0.84 0.1 60);
+            --color-btn: oklch(0.78 0.16 70);
+            --color-border: oklch(1 0 0 / 15%);
+        }
+
+        @variant titanium-indigo {
+            --color-primary: oklch(0.16 0.02 265);
+            --color-card: oklch(0.22 0.03 270);
+            --color-card-selected: oklch(0.29 0.05 275);
+            --color-text: oklch(0.93 0.01 265);
+            --color-text-secondary: oklch(0.68 0.08 260);
+            --color-btn: oklch(0.58 0.22 255);
+            --color-border: oklch(1 0 0 / 10%);
+        }
+
+        @variant onyx-coral {
+            --color-primary: oklch(0.1 0.01 0);
+            --color-card: oklch(0.16 0.01 5);
+            --color-card-selected: oklch(0.22 0.02 10);
+            --color-text: oklch(0.98 0.01 0);
+            --color-text-secondary: oklch(0.82 0.06 15);
+            --color-btn: oklch(0.68 0.2 20);
+            --color-border: oklch(1 0 0 / 14%);
+        }
     }
 }

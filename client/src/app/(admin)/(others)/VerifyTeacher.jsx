@@ -118,7 +118,7 @@ const VerifyTeacher = () => {
 
     if (!user) {
         return (
-            <View className="flex-1 pt-12 px-3 bg-zinc-100">
+            <View className="flex-1 pt-12 px-3 bg-primary">
                 <Text className="text-center text-gray-900 text-xl mt-1">
                     Teacher not found
                 </Text>
@@ -131,7 +131,7 @@ const VerifyTeacher = () => {
             <Header />
 
             {/* Image */}
-            <TouchableOpacity className="w-[60vw] h-[60vw] rounded-full bg-card self-center mt-10 justify-center items-center">
+            <TouchableOpacity className="pt-16 w-[60vw] h-[60vw] rounded-full bg-card self-center mt-10 justify-center items-center">
                 <Text className="text-[40vw] font-black text-center text-text-secondary">
                     {user.fullname?.slice(0, 1)}
                 </Text>

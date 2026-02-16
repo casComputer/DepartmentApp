@@ -167,6 +167,8 @@ const GenerateReport = () => {
     return (
         <ScrollView className="grow bg-primary">
             <Header title={"Generate Report"} />
+            
+            <View className='pt-16' />
 
             <Selector
                 toggler={toggler}

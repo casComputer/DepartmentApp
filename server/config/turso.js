@@ -18,4 +18,17 @@ export const tursoStats = statsClient({
     token: PRIMARY_DATABASE_ADMIN_TOKEN
 });
 
-turso.execute("select * from users where userId = 'misnaSherin'").then((res) => console.log(res)).catch((err) => console.log(err));
+turso.execute(`
+  SELECT
+    c.year  AS in_charge_year,
+    c.course AS in_charge_course,
+    tc.year  AS teaching_year,
+    tc.course AS teaching_course,
+    tc.course_name
+  FROM classes c
+  LEFT JOIN teacher_courses tc
+    ON tc.teacherId = c.in_charge
+  WHERE c.in_charge = 'femina'
+`)
+.then((res) => console.log(res.rows))
+.catch((err) => console.log(err));

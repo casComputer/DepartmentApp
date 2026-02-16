@@ -15,6 +15,7 @@ import { getUser } from "@storage/user.storage.js";
 import { storage } from "@utils/storage.js";
 
 import { registerForPushNotificationsAsync } from "@controller/common/notification.controller.js";
+import syncUser from "@controller/common/sync.controller.js";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
 
@@ -89,7 +90,9 @@ export default function RootLayout() {
         useAppStore((state) => state?.user) ?? {};
 
     useEffect(() => {
-        if (userId && role) registerForPushNotificationsAsync();
+        if (!userId || !role) return;
+        registerForPushNotificationsAsync();
+        syncUser(role);
     }, [userId, role]);
 
     return (
@@ -103,7 +106,11 @@ export default function RootLayout() {
             />
             <KeyboardProvider>
                 <QueryClientProvider client={queryClient}>
-                    <Layout userId={userId} role={role} is_verified={true} />
+                    <Layout
+                        userId={userId}
+                        role={role}
+                        is_verified={is_verified}
+                    />
                 </QueryClientProvider>
             </KeyboardProvider>
             <GlobalProgress />

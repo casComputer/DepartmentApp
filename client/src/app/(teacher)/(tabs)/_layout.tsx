@@ -12,9 +12,9 @@ import { useResolveClassNames } from "uniwind";
 import { syncUser } from "@controller/teacher/teacher.controller.js";
 
 export default function TabLayout() {
-    useEffect(() => {
-        syncUser();
-    }, []);
+    // useEffect(() => {
+    //     syncUser();
+    // }, []);
 
     const styles = useResolveClassNames("bg-primary text-color");
     

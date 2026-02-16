@@ -21,7 +21,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import {
     authenticateToken,
-    authorize
+    authorize,
 } from "./middleware/authentication.middleware.js";
 
 const app = express();
@@ -31,8 +31,8 @@ app.use(express.json());
 app.use(
     cors({
         origin: "*",
-        credentials: true
-    })
+        credentials: true,
+    }),
 );
 
 app.use("/auth", authRoutes);
@@ -54,7 +54,7 @@ app.use("/fees", feesRoutes);
 app.use((req, res) => {
     res.status(404).json({
         message: "Route not found",
-        success: false
+        success: false,
     });
 });
 

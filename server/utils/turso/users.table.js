@@ -29,7 +29,7 @@ turso.execute(`
     UNIQUE (course, year, rollno),
 
     foreign key (course, year) references classes(course, year) ON DELETE SET NULL,
-    foreign key (userId) references users(userId) ON DELETE CASCADE,
+    foreign key (userId) references users(userId) ON DELETE CASCADE
     );
     `);
 
@@ -66,7 +66,7 @@ turso.execute(`
     updated_timestamp TEXT,
     updated_by TEXT,
 
-    teacherId TEXT NOT NULL,
+    teacherId TEXT,
 
     present_count INTEGER NOT NULL DEFAULT 0,
     absent_count INTEGER NOT NULL DEFAULT 0,
@@ -83,7 +83,7 @@ turso.execute(`
     REFERENCES classes(course, year),
 
     FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
-    FOREIGN KEY (updated_by) REFERENCES users(userId) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(userId) ON DELETE SET NULL
 
     );
     `);
@@ -137,8 +137,6 @@ turso.execute(`
 
     FOREIGN KEY (teacherId) REFERENCES users(userId) ON DELETE SET NULL,
     FOREIGN KEY (year, course) REFERENCES classes(year, course) ON DELETE SET NULL,
-
-
     );
     `);
 

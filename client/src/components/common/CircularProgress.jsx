@@ -6,6 +6,8 @@ import Animated, {
     useAnimatedProps, useDerivedValue
 } from "react-native-reanimated";
 
+import { useResolveClassNames } from 'uniwind'
+
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const CircularProgress = ({
@@ -15,10 +17,12 @@ const CircularProgress = ({
     maxProgress = 100,
     showPercentage = true,
     fraction = "",
-    strokeFillColor = "#4F46E5",
+    strokeFillColor, // #4F46E5
     animated = true,
     extraText = ""
 }) => {
+    const themeStyles = useResolveClassNames("bg-btn");
+
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
 
@@ -40,8 +44,6 @@ const CircularProgress = ({
         : offset;
 }, [animated, normalizedProgress, maxProgress, circumference]);
 
-
-    // Animated props for the circle
     const animatedProps = useAnimatedProps(() => ({
         strokeDashoffset: strokeDashoffset.value
     }));
@@ -60,7 +62,7 @@ const CircularProgress = ({
                 />
                 {/* Progress circle */}
                 <AnimatedCircle
-                    stroke={strokeFillColor}
+                    stroke={strokeFillColor ?? themeStyles?.backgroundColor}
                     fill="none"
                     cx={size / 2}
                     cy={size / 2}

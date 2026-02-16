@@ -26,7 +26,7 @@ const ManageTeachers = () => {
                 data={teachers ?? []}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => item?.userId ?? index}
-                className="px-2 pt-16 opacity-10"
+                className="px-2 pt-16"
                 contentContainerStyle={{ paddingBottom: 60 }}
                 renderItem={({ item }) => (
                     <TeacherItem

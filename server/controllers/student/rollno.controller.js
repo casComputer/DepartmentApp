@@ -86,8 +86,12 @@ export const assignGroupedRollNo = async (req, res) => {
         const errors = [];
         const success = [];
 
+        console.log(students)
+
         for (const stu of students) {
             const { studentId, rollno } = stu;
+
+            console.log(stu)
 
             try {
                 await turso.execute(

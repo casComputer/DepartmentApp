@@ -8,28 +8,28 @@ import { clearUser } from "@storage/user.storage.js";
 
 let url = "https://dc-connect.onrender.com";
 // url = "http://192.168.0.132:3000"; // 5g
-// url = "http://10.63.31.11:3000";
+url = "http://10.63.31.11:3000";
 
 console.log(url);
 
 const api = axios.create({
-    baseURL: url
+    baseURL: url,
 });
 
 api.interceptors.request.use(
-    async config => {
+    async (config) => {
         const token = storage.getString("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    error => Promise.reject(error)
+    (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
-    response => response,
-    async error => {
+    (response) => response,
+    async (error) => {
         const originalReq = error.config;
 
         if (error.response?.status === 429) {
@@ -41,7 +41,7 @@ api.interceptors.response.use(
             Alert.alert(
                 "Rate Limit Exceeded",
                 `${message}\n\nPlease wait ${retryAfter} seconds before trying again.`,
-                [{ text: "OK" }]
+                [{ text: "OK" }],
             );
 
             return Promise.reject(error);
@@ -65,7 +65,7 @@ api.interceptors.response.use(
                 }
 
                 const { data } = await axios.post(`${url}/auth/refresh`, {
-                    refreshToken
+                    refreshToken,
                 });
 
                 storage.set("accessToken", data.accessToken);
@@ -86,7 +86,7 @@ api.interceptors.response.use(
                 console.error(
                     "Refresh error:",
                     err.response?.status,
-                    err.message
+                    err.message,
                 );
 
                 // Only logout if refresh token is invalid/expired
@@ -108,7 +108,7 @@ api.interceptors.response.use(
         }
 
         return Promise.reject(error);
-    }
+    },
 );
 
 export default api;

@@ -124,7 +124,7 @@ const Signin = () => {
                 </Text>
 
                 <TextInput
-                    className={`border border-zinc-700 py-6 px-5 text-xl font-bold rounded-full text-text 
+                    className={`border border-border py-6 px-5 text-xl font-bold rounded-full text-text 
                          ${
                              message.type === "error" && username.length <= 5
                                  ? "border-red-500"
@@ -144,7 +144,7 @@ const Signin = () => {
                 <View className="relative">
                     <TextInput
                         ref={passwordRef}
-                        className="border border-zinc-700 py-6 px-5 text-xl font-bold text-text dark:border-white rounded-full"
+                        className="border border-border py-6 px-5 text-xl font-bold text-text rounded-full"
                         placeholder="Password"
                         placeholderTextColor={"rgba(119,119,119,0.7)"}
                         autoCapitalize="none"

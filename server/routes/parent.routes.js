@@ -41,4 +41,46 @@ router.post("/fetchByClassTeacher", async (req, res) => {
     }
 });
 
+router.get("/sync", async (req, res) => {
+    try {
+        const { userId } = req.user;
+
+        const { rows } = await turso.execute(
+            `
+              SELECT 
+                  u.is_verified AS parent_verified,
+                  pc.studentId
+              FROM users u
+              LEFT JOIN parent_child pc 
+                  ON pc.parentId = u.userId 
+                  AND pc.is_verified = 1
+              WHERE u.userId = ?;
+              `,
+            [userId]
+        );
+
+        if (!rows?.length)
+            return res.json({
+                success: false,
+                message: "User not found!",
+                type: "NOT_FOUND"
+            });
+
+        const is_verified = rows[0]?.parent_verified;
+        const students = rows.map(r => r.studentId).filter(Boolean);
+
+        res.json({
+            success: true,
+            students,
+            is_verified
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+    }
+});
+
 export default router;

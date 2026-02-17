@@ -21,7 +21,9 @@ export const getTeachers = async (req, res) => {
             c.year AS in_charge_year
             FROM users u
             LEFT JOIN classes c ON c.in_charge = u.userId
-            WHERE u.role='teacher'`
+            WHERE u.role = 'teacher' OR u.role = 'admin'
+            ORDER BY u.fullname
+            `
         );
 
         res.json(result.rows);

@@ -85,15 +85,6 @@ export const useMultiSelectionList = create((set, get) => ({
     clear: () => set({ list: [] })
 }));
 
-export const useThemeStore = create(set => ({
-    gradientColors: [Color["orange"][100], "transparent", "transparent"],
-    secondaryGradientColors: [
-        Color["orange"][200],
-        "#ffffff",
-        Color["orange"][100]
-    ]
-}));
-
 export const usePromptStore = create((set) => ({
     visible: false,
     title: "",

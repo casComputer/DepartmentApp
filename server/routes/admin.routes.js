@@ -4,10 +4,13 @@ import {
     getTeachers,
     assignClass,
     verifyTeacher,
-    deleteTeacher
+    deleteTeacher,
 } from "../controllers/admin/teachers.controller.js";
 
-import { clearTable } from "../controllers/admin/table.controller.js"
+import {
+    clearTable,
+    clearAllUsers,
+} from "../controllers/admin/table.controller.js";
 
 const router = express.Router();
 
@@ -19,6 +22,8 @@ router.post("/verifyTeacher", verifyTeacher);
 
 router.post("/deleteTeacher", deleteTeacher);
 
-router.post('/clearTable', clearTable)
+router.post("/clearTable", clearTable);
+
+router.post("/clearAllUsers", clearAllUsers);
 
 export default router;

@@ -1,14 +1,8 @@
 import axios from "@utils/axios.js";
-import {
-    router
-} from "expo-router";
+import { router } from "expo-router";
 
-import {
-    useAdminStore
-} from "@store/admin.store.js";
-import {
-    ToastAndroid
-} from "react-native";
+import { useAdminStore } from "@store/admin.store.js";
+import { ToastAndroid } from "react-native";
 
 export const fetchTeachers = async () => {
     try {
@@ -24,11 +18,8 @@ export const fetchTeachers = async () => {
     }
 };
 
-export const assignClass = async ({
-    year, course, teacherId
-}) => {
+export const assignClass = async ({ year, course, teacherId }) => {
     try {
-
         const res = await axios.post("/admin/assignClass", {
             year: year.id,
             course: course.id,
@@ -37,13 +28,22 @@ export const assignClass = async ({
 
         if (res.data.success) {
             const setInCharge = useAdminStore.getState().setInCharge;
+            const userId = useAdminStore.getState().user.userId;
             setInCharge(teacherId, year.id, course.id);
+
+            if (teacherId === userId) {
+                const setInCharge = useAdminStore.getState().updateUser({
+                    in_charge_year: year.id,
+                    in_charge_course: course.id,
+                });
+            }
+
             router.back();
         } else
             ToastAndroid.show(
-            res.data.message ?? "failed to assign class",
-            ToastAndroid.LONG
-        );
+                res.data.message ?? "failed to assign class",
+                ToastAndroid.LONG,
+            );
     } catch (error) {
         console.error(error);
         ToastAndroid.show("failed to assign class", ToastAndroid.LONG);
@@ -53,33 +53,40 @@ export const assignClass = async ({
 export const verifyTeacher = async (teacherId) => {
     try {
         const res = await axios.post("/admin/verifyTeacher", {
-            teacherId
+            teacherId,
         });
 
         if (res.data.success) {
             const verifyTeacher = useAdminStore.getState().verifyTeacher;
             verifyTeacher(teacherId);
-        }
-        else ToastAndroid.show(res.data?.message ?? 'Failed to verify teacher', ToastAndroid.LONG)
+        } else
+            ToastAndroid.show(
+                res.data?.message ?? "Failed to verify teacher",
+                ToastAndroid.LONG,
+            );
     } catch (error) {
         console.error(error);
-        ToastAndroid.show('Failed to verify teacher', ToastAndroid.LONG)
+        ToastAndroid.show("Failed to verify teacher", ToastAndroid.LONG);
     }
 };
 
 export const cancelVerification = async (teacherId) => {
     try {
         const res = await axios.post("/admin/deleteTeacher", {
-            teacherId
+            teacherId,
         });
-        
-        if(res.data?.success)
+
+        if (res.data?.success)
             useAdminStore.getState().removeTeacher(teacherId);
-        else ToastAndroid.show(res.data?.message ?? 'Failed to remove teacher', ToastAndroid.LONG)
-        
+        else
+            ToastAndroid.show(
+                res.data?.message ?? "Failed to remove teacher",
+                ToastAndroid.LONG,
+            );
+
         return res.data.success;
     } catch (error) {
         console.error(error);
-        ToastAndroid.show('Failed to remove teacher', ToastAndroid.LONG)
+        ToastAndroid.show("Failed to remove teacher", ToastAndroid.LONG);
     }
 };

@@ -9,7 +9,7 @@ const Prompt = ({
     message = "",
     requireText,
     onConfirm,
-    onCancel
+    onCancel,
 }) => {
     const [value, setValue] = useState("");
 
@@ -20,7 +20,21 @@ const Prompt = ({
     if (!visible) return null;
 
     const handleConfirmPress = () => {
-        if (requireText && value !== requireText) return;
+        if (requireText) {
+            if (Array.isArray(requireText)) {
+                if (!requireText.includes(value)) {
+                    alert(
+                        `Please type one of the following: ${requireText.join(", ")}`,
+                    );
+                    return;
+                }
+            } else {
+                if (value !== requireText) {
+                    alert(`Please type "${requireText}" to confirm.`);
+                    return;
+                }
+            }
+        }
         onConfirm?.(value);
     };
 
@@ -40,7 +54,9 @@ const Prompt = ({
                         className="mt-2 px-3 py-4 rounded-xl border border-border bg-card text-text"
                         value={value}
                         onChangeText={setValue}
-                        placeholder={`Type ${requireText} to continue`}
+                        placeholder={`Type ${Array.isArray(requireText) ? requireText[0] : requireText}`}
+                        autoCapitalize="characters"
+                        onEndEditing={handleConfirmPress}
                     />
                 )}
 
@@ -72,7 +88,7 @@ const GlobalPrompt = () => {
             title={title}
             message={message}
             requireText={requireText}
-            onConfirm={value => {
+            onConfirm={(value) => {
                 onConfirm?.(value);
                 close();
             }}

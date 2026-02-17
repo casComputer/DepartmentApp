@@ -1,4 +1,3 @@
-import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import * as Haptics from "expo-haptics";
 
@@ -6,6 +5,7 @@ import Header from "@components/common/Header";
 import Prompt from "@components/common/Prompt";
 
 import { usePromptStore } from "@store/app.store";
+import { deleteAllDocsFromCollection } from "@controller/admin/table.controller";
 
 const MONGODB_DELETE_OPTIONS = [
     "assignments",
@@ -14,7 +14,7 @@ const MONGODB_DELETE_OPTIONS = [
     "attendance-reports",
     "notes",
     "notifications",
-    "records"
+    "records",
 ];
 
 const TURSO_DELETE_OPTIONS = [
@@ -23,9 +23,8 @@ const TURSO_DELETE_OPTIONS = [
     "parents",
     "attendance-records",
     "worklogs",
-    "fees-records",
+    "fees",
     "users",
-    "records"
 ];
 
 function toTitleCase(text) {
@@ -33,31 +32,49 @@ function toTitleCase(text) {
         .trim()
         .toLowerCase()
         .split(/\s+/)
-        .map(word => word[0]?.toUpperCase() + word.slice(1))
+        .map((word) => word[0]?.toUpperCase() + word.slice(1))
         .join(" ");
 }
 
+const deleteRecords = (value, db, option) => {
+    console.log("Records deleted", value, db, option);
+    deleteAllDocsFromCollection(option, db);
+};
+
+const handleDelete = (option, db, open) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+
+    let message = "This action cannot be undone.";
+    let requireText = "";
+
+    if (option === "students") {
+        requireText = [
+            "DELETE_ALL_STUDENTS",
+            "DELETE_FIRST_BCA_STUDENTS",
+            "DELETE_SECOND_BCA_STUDENTS",
+            `DELETE_THIRD_BCA_STUDENTS`,
+            "DELETE_FOURTH_BCA_STUDENTS",
+
+            "DELETE_FIRST_BSC_STUDENTS",
+            "DELETE_SECOND_BSC_STUDENTS",
+            "DELETE_THIRD_BSC_STUDENTS",
+            "DELETE_FOURTH_BSC_STUDENTS",
+        ];
+        message = `Enter DELETE_ALL_STUDENTS to remove all students.\n\nTo remove students from a specific class, enter DELETE_{YEAR}_{COURSE}_STUDENTS\n(e.g., DELETE_THIRD_BCA_STUDENTS)`;
+    } else {
+        requireText = `DELETE_ALL_${option.toUpperCase()?.split("-").join("_")}`;
+    }
+
+    open({
+        title: `Delete ${option}`,
+        message,
+        requireText,
+        onConfirm: (value) => deleteRecords(value, db, option),
+    });
+};
+
 const AdvancedSystemOperations = () => {
-    const { visible, title, message, requireText, onConfirm, close } =
-        usePromptStore();
-
     const { open } = usePromptStore();
-
-    const handleDelete = option => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-
-        let message = "This action cannot be undone.";
-
-        if (option === "students")
-            message =
-                `Enter DELETE_ALL_STUDENTS to remove all students.\n\nTo remove students from a specific class, enter DELETE_{YEAR}_{COURSE}_STUDENTS\n(e.g., DELETE_THIRD_BCA_STUDENTS)`
-        open({
-            title: `Delete ${option}`,
-            message,
-            requireText: "DELETE",
-            onConfirm: () => deleteRecords()
-        });
-    };
 
     return (
         <View className="flex-1 bg-primary px-2">
@@ -74,11 +91,13 @@ const AdvancedSystemOperations = () => {
                         • Mongodb •
                     </Text>
 
-                    {MONGODB_DELETE_OPTIONS.map(option => (
+                    {MONGODB_DELETE_OPTIONS.map((option) => (
                         <TouchableOpacity
                             key={option}
                             className="self-start"
-                            onPress={() => handleDelete(option, "mongodb")}
+                            onPress={() =>
+                                handleDelete(option, "mongodb", open)
+                            }
                         >
                             <Text
                                 className={`text-xl font-semibold text-text capitalize ${option === "records" && "font-black text-red-500 uppercase"}`}
@@ -91,16 +110,16 @@ const AdvancedSystemOperations = () => {
                         • Turso DB •
                     </Text>
 
-                    {TURSO_DELETE_OPTIONS.map(option => (
+                    {TURSO_DELETE_OPTIONS.map((option) => (
                         <TouchableOpacity
                             key={option}
                             className="self-start"
-                            onPress={() => handleDelete(option, "turso")}
+                            onPress={() => handleDelete(option, "turso", open)}
                         >
                             <Text
-                                className={`text-xl font-semibold text-text capitalize ${(option === "delete-users" || option === "delete-records") && "font-black text-red-500 uppercase"}`}
+                                className={`text-xl font-semibold text-text capitalize ${(option === "users" || option === "records") && "font-black text-red-500 uppercase"}`}
                             >
-                                Delete {option}
+                                Delete {option.split("-").join(" ")}
                             </Text>
                         </TouchableOpacity>
                     ))}

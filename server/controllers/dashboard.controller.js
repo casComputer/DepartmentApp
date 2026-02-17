@@ -22,12 +22,12 @@ export const cloudinaryStats = async (req, res) => {
 export const tursoStats = async () => {
     async (req, res) => {
         try {
-            const usageStatsWithDate =
+            const stats =
                 await tursoStatsClient.databases.usage("database");
 
             res.json({
                 success: true,
-                stats: usageStatsWithDate
+                stats
             });
         } catch (error) {
             console.error("Error while fetching turso stats: ", error);
@@ -67,3 +67,4 @@ export const usersStats = async (req, res) => {
         console.error(error);
     }
 };
+

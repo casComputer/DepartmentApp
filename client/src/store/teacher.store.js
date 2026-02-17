@@ -59,7 +59,7 @@ export const useTeacherStore = create((set, get) => ({
         set(state => {
             const updated = state.students.map(st => ({
                 ...st,
-                rollno: updates[st.studentId] ?? null
+                rollno: updates[st.userId] ?? null
             }));
 
             storage.set(STUDENT_KEY, JSON.stringify(updated));

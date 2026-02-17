@@ -4,13 +4,13 @@
 @layer theme {
     :root {
         @variant dark {
-            --color-primary: #1a120d;
-            --color-card: #291d16;
-            --color-card-selected: #412c1f;
-            --color-btn: #763219;
+            --color-primary: #0f0f0f;
+            --color-card: #1c1b1b;
+            --color-card-selected: #403e3f;
+            --color-btn: #757474;
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 20%);
         }
 
         @variant light {

@@ -10,40 +10,40 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
 
     const getAssignedMap = () => {
         const map = {};
-        groups.forEach(g => {
-            g.selectedStudents.forEach(id => (map[id] = g.id));
+        groups.forEach((g) => {
+            g.selectedStudents.forEach((id) => (map[id] = g.id));
         });
         return map;
     };
 
     // Compute available students for a specific group
-    const getAvailableStudents = groupId => {
+    const getAvailableStudents = (groupId) => {
         const assigned = getAssignedMap();
 
         return students.filter(
-            s => !assigned[s.studentId] || assigned[s.studentId] === groupId
+            (s) => !assigned[s.studentId] || assigned[s.studentId] === groupId,
         );
     };
 
     const updateGroup = (id, selectedIds) => {
-        setGroups(prev =>
-            prev.map(g =>
-                g.id === id ? { ...g, selectedStudents: selectedIds } : g
-            )
+        setGroups((prev) =>
+            prev.map((g) =>
+                g.id === id ? { ...g, selectedStudents: selectedIds } : g,
+            ),
         );
     };
 
-    const deleteGroup = id => {
-        setGroups(prev => prev.filter(g => g.id !== id));
+    const deleteGroup = (id) => {
+        setGroups((prev) => prev.filter((g) => g.id !== id));
     };
 
     const addGroup = () => {
-        setGroups(prev => [
+        setGroups((prev) => [
             ...prev,
             {
                 id: (prev.at(-1)?.id || 0) + 1,
-                selectedStudents: []
-            }
+                selectedStudents: [],
+            },
         ]);
     };
 
@@ -51,31 +51,47 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
         setLoading(true);
         let rollno = 1;
 
-        const sortedGroups = groups.map(group => {
-            // Filter students assigned to this group
+        const assignedStudentIds = new Set();
+        const sortedGroups = groups.map((group) => {
             const groupStudents = group.selectedStudents
-                .map(id => students.find(s => s.studentId === id))
+                .map((id) => students.find((s) => s.userId === id))
                 .filter(Boolean);
 
-            // Sort by fullname
+            groupStudents.forEach((s) => assignedStudentIds.add(s.userId));
+
             groupStudents.sort((a, b) => a.fullname.localeCompare(b.fullname));
 
-            // Assign roll numbers
-            const studentsWithrollno = groupStudents.map(s => ({
+            const studentsWithrollno = groupStudents.map((s) => ({
                 ...s,
-                rollno: rollno++
-            }));
+                rollno: rollno++,
+            }))
 
             return {
                 ...group,
-                students: studentsWithrollno
+                students: studentsWithrollno,
             };
         });
+
+        const unassignedStudents = students
+            .filter((s) => !assignedStudentIds.has(s.userId))
+            .sort((a, b) => a.fullname.localeCompare(b.fullname))
+            .map((s) => ({
+                ...s,
+                rollno: rollno++,
+            }));
+
+        if (unassignedStudents.length > 0) {
+            sortedGroups.push({
+                id: -1, // Special id for unassigned students
+                selectedStudents: unassignedStudents.map((s) => s.userId),
+                students: unassignedStudents,
+            });
+        }
 
         await assignRollByGroup({
             students: sortedGroups,
             course: inCharge.course,
-            year: inCharge.year
+            year: inCharge.year,
         });
         setLoading(false);
     };
@@ -88,7 +104,8 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
 
             <TouchableOpacity
                 onPress={addGroup}
-                className="self-start rounded-full bg-btn px-5 py-3 flex-row justify-center items-center gap-2 mb-8 ">
+                className="self-start rounded-full bg-btn px-5 py-3 flex-row justify-center items-center gap-2 mb-8 "
+            >
                 <Text className="font-bold text-3xl text-text">+</Text>
                 <Text className="font-bold text-lg text-text">
                     Create Group
@@ -108,7 +125,7 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
                 </>
             ) : (
                 <>
-                    {groups.map(g => (
+                    {groups.map((g) => (
                         <GroupItem
                             key={g.id}
                             group={g}
@@ -119,7 +136,8 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
                     ))}
                     <TouchableOpacity
                         onPress={handleSave}
-                        className="mt-5 rounded-full px-5">
+                        className="mt-5 rounded-full px-5"
+                    >
                         <Text className="font-semibold text-5xl text-center text-green-500">
                             Save
                         </Text>

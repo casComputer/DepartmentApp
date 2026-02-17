@@ -82,7 +82,7 @@ export const fetchAllTeachers = async (req, res) => {
             LEFT JOIN classes c ON u.userId = c.in_charge
             left JOIN teacher_courses tc ON u.userId = tc.teacherId
 
-            WHERE u.is_verified = 1 AND u.role = 'teacher'
+            WHERE u.is_verified = 1 AND u.role = 'teacher' OR u.role = 'admin'
             ORDER BY u.fullname ASC
         `);
 
@@ -139,3 +139,26 @@ export const fetchAllTeachers = async (req, res) => {
         });
     }
 };
+
+console.log(await turso.execute(`SELECT
+            u.userId as teacherId,
+            u.fullname,
+            u.dp,
+            u.phone,
+            u.about,
+            u.email,
+
+            tc.course,
+            tc.year,
+            tc.course_name,
+
+            c.course as in_charge_course,
+            c.year as in_charge_year
+
+            FROM users u
+
+            LEFT JOIN classes c ON u.userId = c.in_charge
+            left JOIN teacher_courses tc ON u.userId = tc.teacherId
+
+            WHERE u.is_verified = 1 AND u.role = 'teacher' OR u.role = 'admin'
+            ORDER BY u.fullname ASC`))

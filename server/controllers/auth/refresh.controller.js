@@ -33,13 +33,6 @@ export const refreshTokenRotation = async (req, res) => {
 
             await revokeRefreshToken(userId);
 
-            console.log(
-                "refreshing token for user ",
-                userId,
-                " with role ",
-                role
-            );
-
             const { accessToken, refreshToken: newRefreshToken } =
                 generateTokens(userId, role);
 

@@ -224,7 +224,7 @@ export const getAttandanceTakenByTeacher = async (req, res) => {
             hasMore
         });
     } catch (err) {
-        console.log("Error while fetching attendence: ", err);
+        console.error("Error while fetching attendence: ", err);
         res.status(500).json({
             message: "Internal server error",
             success: false
@@ -271,7 +271,7 @@ export const fetchStudentsForAttendance = async (req, res) => {
             message: "insternal server error",
             success: false
         });
-        console.log(
+        console.error(
             "error while fetching students details for attendance: ",
             err
         );
@@ -301,50 +301,7 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-        let query;
-        let params = [userId];
-
-        if (role === "teacher") {
-            query = `
-            SELECT c.course, c.year
-            FROM users u
-            JOIN classes c ON c.in_charge = u.userId
-            WHERE u.userId = ?
-            `;
-        } else if (role === "admin") {
-            query = `
-            SELECT 1
-            FROM admins
-            WHERE adminId = ?
-            LIMIT 1
-            `;
-        } else {
-            return res.json({
-                success: false,
-                message: "Invalid role"
-            });
-        }
-
-        const { rows: existUser } = await turso.execute(query, params);
-
-        if (existUser.length === 0) {
-            return res.json({
-                success: false,
-                message: "User does not exist"
-            });
-        }
-
-        if (role === "teacher") {
-            if (!existUser[0].course || !existUser[0].year)
-                return res.json({
-                    success: false,
-                    message: "You are not assigned to any class!"
-                });
-
-            course = existUser[0].course;
-            year = existUser[0].year;
-        }
-
+     
         const offset = (page - 1) * limit;
 
         const { rows: attendance } = await turso.execute(

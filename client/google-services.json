@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "813688735444",
+    "project_id": "dc-connect-fd635",
+    "storage_bucket": "dc-connect-fd635.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813688735444:android:b54803ff70ba92c4fc9d41",
+        "android_client_info": {
+          "package_name": "com.cas.dcConnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_NnT0x_eYQijiNKLx9K1py_CQ3sEkc4c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

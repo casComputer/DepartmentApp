@@ -25,7 +25,7 @@ export const getInternalMarks = async (req, res) => {
             nextPage: hasNextPage ? parsedPage + 1 : null
         });
     } catch (e) {
-        console.log("Error while fetching internal marks: ", e);
+        console.error("Error while fetching internal marks: ", e);
         res.json({
             success: false,
             message: "Internal Server Error!"

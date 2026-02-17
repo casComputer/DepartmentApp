@@ -42,8 +42,6 @@ export const getAssignment = async ({ pageParam }) => {
         if (response.data.success) 
             return response.data;
         
-        console.log(response.data);
-
         ToastAndroid.show(
             response.data?.message ?? "Failed to fetch assignment",
             ToastAndroid.LONG

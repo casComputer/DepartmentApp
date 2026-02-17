@@ -34,7 +34,7 @@ const syncUser = async (user) => {
         const { data } = await axios.get(`/${user}/sync`);
 
         if (data.success) {
-            if (user === "teacher" || role === "admin") handleTeacherData(data);
+            if (user === "teacher" || user === "admin") handleTeacherData(data);
             else if (user === "student") handleStudentData(data);
             else if (user === "parent") handleParentDaat(data);
         } else {

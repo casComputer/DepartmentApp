@@ -38,8 +38,6 @@ export const shareFile = async (type, filename) => {
         return;
     }
     
-    console.log(type, filename);
-
     if (type === "pdf") {
         const mimeType = getMimeType("pdf");
         const { fileUri } = await checkFileExists(filename + ".pdf");

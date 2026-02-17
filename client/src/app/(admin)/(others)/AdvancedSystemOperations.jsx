@@ -37,7 +37,6 @@ function toTitleCase(text) {
 }
 
 const deleteRecords = (value, db, option) => {
-    console.log("Records deleted", value, db, option);
     deleteAllDocsFromCollection(option, db);
 };
 

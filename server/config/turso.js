@@ -3,7 +3,8 @@ import "dotenv/config";
 import { createClient } from "@libsql/client/web";
 import { createClient as statsClient } from "@tursodatabase/api";
 
-import { third_bca as students } from "../constants/students.js";
+import { third_bsc as students } from "../constants/students.js";
+import { teachers } from "../constants/teachers.js";
 
 const PRIMARY_DATABASE_URL = process.env.PRIMARY_DATABASE_URL;
 const PRIMARY_DATABASE_TOKEN = process.env.PRIMARY_DATABASE_TOKEN;
@@ -59,8 +60,3 @@ const signupAllStudents = async () => {
         }
     }
 };
-
-
-// turso.execute("insert into users (userId, fullname, password, role ) values ('misnaSherin', 'Misna Sherin', '$2a$10$PMG4v0ZitB5p5rBuhXTAjOjA3JCc0biPWdvryC3/LauLi5HWu3h6S', 'admin')");
-
-// console.log(await turso.execute("select userId from students order by rollno"))

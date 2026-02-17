@@ -149,7 +149,6 @@ export const getAttendanceXl = async payload => {
             payload
         );
 
-        console.log(data);
         if (data.success) return data;
 
         if (data.filename) {

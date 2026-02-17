@@ -123,7 +123,6 @@ export const saveFile = async (
             contentUri // ← Android system
         };
     } catch (err) {
-        console.log("SAVE ERROR:", err);
         ToastAndroid.show("Failed to save file", ToastAndroid.LONG);
         return { success: false };
     }
@@ -194,7 +193,6 @@ export const deleteSAFIfExists = async (dirUri, filename) => {
             return true;
         }
     } catch (e) {
-        console.log("SAF delete error:", e);
     }
     return false;
 };
@@ -223,7 +221,6 @@ export const deleteFileEverywhere = async (
             }
         }
     } catch (e) {
-        console.log("SAF delete error:", e);
     }
 
     try {
@@ -235,7 +232,6 @@ export const deleteFileEverywhere = async (
             deleted = true;
         }
     } catch (e) {
-        console.log("Local delete error:", e);
     }
 
     return deleted;

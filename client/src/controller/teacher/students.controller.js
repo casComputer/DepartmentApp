@@ -5,21 +5,26 @@ import { ToastAndroid } from "react-native";
 import { useTeacherStore } from "@store/teacher.store.js";
 import { useAppStore } from "@store/app.store.js";
 
-import { saveStudentsCount } from "@utils/storage.js";
-
 export const assignRollByGroup = async ({ students, year, course }) => {
     try {
-        students = students.map(st => st.students).flat();
+        students = students
+            .map((st) => st.students)
+            .flat()
+            .map((s) => ({
+                studentId: s.userId,
+                rollno: s.rollno,
+            }));
 
         const res = await axios.post("/student/assignGroupedRollNo", {
             students,
             year,
-            course
+            course,
         });
+
         if (res.data?.success) {
             const updates = {},
                 updated = res.data?.updated || [];
-            updated.forEach(s => {
+            updated.forEach((s) => {
                 updates[s.studentId] = s.rollno;
             });
 
@@ -32,7 +37,7 @@ export const assignRollByGroup = async ({ students, year, course }) => {
                             ? ` Failed: ${res.data.failed.length}`
                             : ""
                     }`,
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
     } catch (error) {
@@ -47,18 +52,18 @@ export const assignRollAlphabetically = async ({ course, year }) => {
             "/student/autoAssignRollNoAlphabetically",
             {
                 course,
-                year
-            }
+                year,
+            },
         );
         if (res.data?.success) {
-            res.data?.students.forEach(s =>
+            res.data?.students.forEach((s) =>
                 useTeacherStore
                     .getState()
-                    .updateStudentRollNo(s.studentId, s.rollno)
+                    .updateStudentRollNo(s.studentId, s.rollno),
             );
             ToastAndroid.show(
                 "Roll numbers assigned successfully",
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
     } catch (error) {
@@ -67,35 +72,35 @@ export const assignRollAlphabetically = async ({ course, year }) => {
     }
 };
 
-export const verifyMultipleStudents = async students => {
+export const verifyMultipleStudents = async (students) => {
     try {
-        const allVerified = students.every(s => s.is_verified);
+        const allVerified = students.every((s) => s.is_verified);
 
         if (allVerified) {
             return ToastAndroid.show(
                 "Students were already verified!",
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
 
-        students = students.map(s => s.userId);
+        students = students.map((s) => s.userId);
         if (!students)
             return ToastAndroid.show(
                 "Currently you no students!",
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
 
         const res = await axios.post("/student/verifyMultipleStudents", {
-            students
+            students,
         });
 
         if (res.data.success) {
-            students.forEach(id => {
+            students.forEach((id) => {
                 useTeacherStore.getState().verifyStudent(id);
             });
             ToastAndroid.show(
                 `${students.length} students verified`,
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
     } catch (error) {
@@ -110,14 +115,14 @@ export const saveStudentDetails = async ({ studentId, rollno }) => {
         if (!studentId || !rollno || rollno == 0 || rollno < 0) {
             ToastAndroid.show(
                 "Please Provide a valid roll number!",
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
             return;
         }
 
         const res = await axios.post("/student/saveStudentDetails", {
             studentId,
-            rollno
+            rollno,
         });
 
         if (res.data.success) {
@@ -129,7 +134,7 @@ export const saveStudentDetails = async ({ studentId, rollno }) => {
     } catch (error) {
         ToastAndroid.show(
             error.response?.data?.message ?? "Something went wrong!",
-            ToastAndroid.LONG
+            ToastAndroid.LONG,
         );
     }
 };
@@ -137,7 +142,7 @@ export const saveStudentDetails = async ({ studentId, rollno }) => {
 export const verifyStudent = async ({ studentId }) => {
     try {
         const res = await axios.post("/student/verifyStudent", {
-            studentId
+            studentId,
         });
         if (res.data.success) {
             useTeacherStore.getState().verifyStudent(studentId);
@@ -154,7 +159,7 @@ export const cancelStudentVerification = async ({ studentId }) => {
         ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
 
         const res = await axios.post("/student/cancelStudentVerification", {
-            studentId
+            studentId,
         });
         if (res.data.success) {
             useTeacherStore.getState().removeStudent(studentId);
@@ -162,7 +167,7 @@ export const cancelStudentVerification = async ({ studentId }) => {
         } else {
             ToastAndroid.show(
                 `Student couldn't removed: ${res.data?.message} `,
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
     } catch (error) {
@@ -178,12 +183,12 @@ export const removeAllStudents = async () => {
             useTeacherStore.getState().clearStudents();
             ToastAndroid.show(
                 "Students removed successfully",
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         } else {
             ToastAndroid.show(
                 `Student couldn't removed: ${res.data?.message ?? ""} `,
-                ToastAndroid.SHORT
+                ToastAndroid.SHORT,
             );
         }
     } catch (error) {
@@ -196,17 +201,17 @@ export const removeAllStudents = async () => {
 export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
     try {
         const { data } = await axios.get(
-            "/student/fetchStudentsByClassTeacher"
+            "/student/fetchStudentsByClassTeacher",
         );
 
         if (data?.success) {
             useAppStore.getState().updateUser({
                 in_charge_course: data?.course,
-                in_charge_year: data?.year
+                in_charge_year: data?.year,
             });
 
             useTeacherStore.setState({
-                students: data.students
+                students: data.students,
             });
 
             setStatus("HAS_STUDENTS");
@@ -215,30 +220,30 @@ export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
 
         if (!data.course || !data.year) {
             useTeacherStore.setState({
-                students: []
+                students: [],
             });
             useAppStore.getState().updateUser({
                 in_charge_course: "",
-                in_charge_year: ""
+                in_charge_year: "",
             });
             setStatus("NO_CLASS_ASSIGNED");
             return null;
         }
 
         useTeacherStore.setState({
-            students: []
+            students: [],
         });
 
         useAppStore.getState().updateUser({
             in_charge_course: data?.course,
-            in_charge_year: data?.year
+            in_charge_year: data?.year,
         });
 
         setStatus("CLASS_EMPTY");
 
         return {
             course: data.course,
-            year: data.year
+            year: data.year,
         };
     } catch (error) {
         setStatus("ERROR");

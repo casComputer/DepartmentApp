@@ -2,13 +2,10 @@ import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
-import { use } from "react";
 
 export const syncUser = async () => {
     try {
         const { data } = await axios.get("/teacher/sync");
-
-        console.log(data);
 
         if (data.success) {
             const in_charge_course =
@@ -28,7 +25,6 @@ export const syncUser = async () => {
                 courses: data.courses ?? [],
             });
         } else {
-            console.log(data)
             if (data?.type === "NOT_FOUND") {
                 useAppStore.getState().removeUser();
                 useAppStore

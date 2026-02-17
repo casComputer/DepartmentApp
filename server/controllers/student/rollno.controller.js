@@ -56,7 +56,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
             students: updated,
         });
     } catch (err) {
-        console.log("Error while assigning roll numbers:", err);
+        console.error("Error while assigning roll numbers:", err);
         res.status(500).json({ error: "Internal error", success: false });
     }
 };
@@ -86,12 +86,8 @@ export const assignGroupedRollNo = async (req, res) => {
         const errors = [];
         const success = [];
 
-        console.log(students)
-
         for (const stu of students) {
             const { studentId, rollno } = stu;
-
-            console.log(stu)
 
             try {
                 await turso.execute(

@@ -10,8 +10,6 @@ let url = "https://dc-connect.onrender.com";
 // url = "http://192.168.0.132:3000"; // 5g
 url = "http://10.63.31.11:3000";
 
-console.log(url);
-
 const api = axios.create({
     baseURL: url,
 });
@@ -93,7 +91,6 @@ api.interceptors.response.use(
                 const status = err.response?.status;
 
                 if (status === 401 || status === 403) {
-                    console.log("Refresh token invalid → logging out");
                     storage.remove("accessToken");
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();
@@ -102,7 +99,6 @@ api.interceptors.response.use(
                 }
 
                 // Otherwise server/network error
-                console.log("Server or network issue → do NOT log out");
                 return Promise.reject(err);
             }
         }

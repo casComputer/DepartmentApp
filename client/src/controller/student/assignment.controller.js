@@ -41,7 +41,6 @@ export const getAssignment = async ({
         ToastAndroid.show(response.data?.message ?? "Failed to fetch assignments", ToastAndroid.LONG);
         return response.data ?? [];
     } catch (error) {
-        console.log(error)
         ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
         return []
     }

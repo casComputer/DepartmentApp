@@ -9,12 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useResolveClassNames } from "uniwind";
 
-import { syncUser } from "@controller/teacher/teacher.controller.js";
-
 export default function TabLayout() {
-    // useEffect(() => {
-    //     syncUser();
-    // }, []);
 
     const styles = useResolveClassNames("bg-primary text-color");
     

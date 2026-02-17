@@ -87,7 +87,7 @@ export const saveExamResultDetails = async (req, res) => {
         if (public_id)
             await deleteFile(public_id)
 
-        console.log("Error while saving exam result:", err);
+        console.error("Error while saving exam result:", err);
 
         return res.status(500).json({
             success: false,

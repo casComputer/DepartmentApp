@@ -17,6 +17,8 @@ const Attendance = () => {
     const isClassTeacher = useAppStore(
         state => !!(state.user.in_charge_year && state.user.in_charge_course)
     );
+    const in_charge_year = useAppStore(state => state.user.in_charge_year);
+    const in_charge_course = useAppStore(state => state.user.in_charge_course);
 
     const user = useAppStore(state => state.user);
 
@@ -52,9 +54,13 @@ const Attendance = () => {
                     <View className="flex-row justify-between items-center px-4 mt-2">
                         <TouchableOpacity
                             onPress={() =>
-                                router.push(
-                                    "/common/attendance/AttendanceClassHistory"
-                                )
+                                router.push({
+                                    pathname: "/common/attendance/AttendanceClassHistory",
+                                    params: {
+                                        year: in_charge_year,
+                                        course: in_charge_course
+                                    }
+                                })
                             }
                         >
                             <Text className="text-2xl text-blue-500 font-black">

@@ -29,10 +29,10 @@ const AttendanceClassHistory = () => {
         queryFn: ({ pageParam = 1 }) =>
             getClassAttendance({ pageParam, limit, course, year }),
         getNextPageParam: lastPage =>
-            lastPage.hasMore ? lastPage.nextPage : undefined
+            lastPage?.hasMore ? lastPage?.nextPage : undefined
     });
 
-    const allItems = data?.pages?.flatMap(page => page.attendance);
+    const allItems = data?.pages?.flatMap(page => page?.attendance);
 
     return (
         <View className="flex-1 bg-primary">

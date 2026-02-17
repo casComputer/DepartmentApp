@@ -290,7 +290,7 @@ export const getMonthlyAttendanceReport = async ({
 
         return result.rows;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return [];
     }
 };

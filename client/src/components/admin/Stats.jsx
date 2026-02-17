@@ -7,7 +7,7 @@ import CircularProgress from "@components/common/CircularProgress.jsx";
 import {
     fetchCloudinaryStats,
     fetchTursoStats,
-    fetchUserStats
+    fetchUserStats,
 } from "@controller/admin/dashboard.controller.js";
 
 import { formatUsage } from "@utils/formateTursoStats.js";
@@ -15,8 +15,9 @@ import { formatUsage } from "@utils/formateTursoStats.js";
 export const CloudinaryStats = () => {
     const { data: stats = {} } = useQuery({
         queryKey: ["cloudinaryStats"],
-        queryFn: fetchCloudinaryStats
+        queryFn: fetchCloudinaryStats,
     });
+
     return (
         <View className="border border-border px-3 bg-card py-5 rounded-2xl">
             <Text className="text-2xl font-black text-text-secondary">
@@ -64,14 +65,19 @@ export const CloudinaryStats = () => {
 
 export const TursoStats = () => {
     const { data: stats = {} } = useQuery({
-        queryKey: ["tursoStats"],
-        queryFn: fetchTursoStats
+        queryKey: ["tursoStats", 1],
+        queryFn: fetchTursoStats,
     });
 
     const { reads, writes, storage } = formatUsage({
-        rows_read: stats.usage?.rows_read ?? 0,
-        rows_written: stats.usage?.rows_written ?? 0,
-        storage_bytes: stats.usage?.storage_bytes ?? 0
+        objects: { usage: stats.usage?.rows_read ?? 0 },
+        requests: stats.usage?.rows_written ?? 0,
+        storage: {
+            usage: stats.usage?.storage_bytes ?? 0,
+            limit_bytes: 5 * 1024 ** 3,
+        },
+        derived_resources: 500_000_000, // optional
+        rate_limit_allowed: 10_000_000, // optional
     });
 
     return (
@@ -138,7 +144,7 @@ export const TursoStats = () => {
 export const UsersStats = () => {
     const { data: stats = {} } = useQuery({
         queryKey: ["userStats"],
-        queryFn: fetchUserStats
+        queryFn: fetchUserStats,
     });
 
     return (

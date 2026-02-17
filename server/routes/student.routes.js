@@ -91,9 +91,11 @@ router.get("/sync", authorize("student"), async (req, res) => {
         const { userId } = req.user;
         const { rows } = await turso.execute(`
             SELECT
-                s.is_verified, s.rollno, s.course, s.year from users u join students s on u.userId = s.userId
+                u.is_verified, s.rollno, s.course, s.year from users u join students s on u.userId = s.userId
             WHERE id = '${userId}'
         `);
+        
+        
 
         if (rows.length > 0) {
             const data = rows[0];

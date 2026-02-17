@@ -3,6 +3,9 @@ import { View, Text, TouchableOpacity } from "react-native";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header";
+import Prompt from "@components/common/Prompt";
+
+import { usePromptStore } from "@store/app.store";
 
 const MONGODB_DELETE_OPTIONS = [
     "assignments",
@@ -15,19 +18,45 @@ const MONGODB_DELETE_OPTIONS = [
 ];
 
 const TURSO_DELETE_OPTIONS = [
-    "delete-students",
-    "delete-teachers",
-    "delete-parents",
-    "delete-attendance-records",
-    "delete-worklogs",
-    "delete-fees-records",
-    "delete-users",
-    "delete-records"
+    "students",
+    "teachers",
+    "parents",
+    "attendance-records",
+    "worklogs",
+    "fees-records",
+    "users",
+    "records"
 ];
 
+function toTitleCase(text) {
+    return text
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .map(word => word[0]?.toUpperCase() + word.slice(1))
+        .join(" ");
+}
+
 const AdvancedSystemOperations = () => {
-    const handleDelete = () => {
+    const { visible, title, message, requireText, onConfirm, close } =
+        usePromptStore();
+
+    const { open } = usePromptStore();
+
+    const handleDelete = option => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+
+        let message = "This action cannot be undone.";
+
+        if (option === "students")
+            message =
+                `Enter DELETE_ALL_STUDENTS to remove all students.\n\nTo remove students from a specific class, enter DELETE_{YEAR}_{COURSE}_STUDENTS\n(e.g., DELETE_THIRD_BCA_STUDENTS)`
+        open({
+            title: `Delete ${option}`,
+            message,
+            requireText: "DELETE",
+            onConfirm: () => deleteRecords()
+        });
     };
 
     return (
@@ -49,7 +78,7 @@ const AdvancedSystemOperations = () => {
                         <TouchableOpacity
                             key={option}
                             className="self-start"
-                            onPress={() => handleDelete("assignments")}
+                            onPress={() => handleDelete(option, "mongodb")}
                         >
                             <Text
                                 className={`text-xl font-semibold text-text capitalize ${option === "records" && "font-black text-red-500 uppercase"}`}
@@ -66,17 +95,19 @@ const AdvancedSystemOperations = () => {
                         <TouchableOpacity
                             key={option}
                             className="self-start"
-                            onPress={() => handleDelete("assignments")}
+                            onPress={() => handleDelete(option, "turso")}
                         >
                             <Text
                                 className={`text-xl font-semibold text-text capitalize ${(option === "delete-users" || option === "delete-records") && "font-black text-red-500 uppercase"}`}
                             >
-                                {option.split("-").join(" ")}
+                                Delete {option}
                             </Text>
                         </TouchableOpacity>
                     ))}
                 </View>
             </View>
+
+            <Prompt />
         </View>
     );
 };

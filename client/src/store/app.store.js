@@ -93,3 +93,23 @@ export const useThemeStore = create(set => ({
         Color["orange"][100]
     ]
 }));
+
+export const usePromptStore = create((set) => ({
+    visible: false,
+    title: "",
+    message: "",
+    requireText: "",
+    onConfirm: null,
+
+    open: ({ title, message, requireText, onConfirm }) =>
+        set({
+            visible: true,
+            title,
+            message,
+            requireText,
+            onConfirm
+        }),
+
+    close: () =>
+        set({ visible: false })
+}));

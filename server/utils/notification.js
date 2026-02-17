@@ -11,7 +11,7 @@ export async function sendPushNotification(
     title,
     body,
     data,
-    image,
+    image
 ) {
     if (!Expo.isExpoPushToken(pushToken)) {
         console.error("Invalid Expo push token");
@@ -20,8 +20,8 @@ export async function sendPushNotification(
 
     const payloadData = JSON.parse(
         JSON.stringify({
-            ...data,
-        }),
+            ...data
+        })
     );
 
     const messages = [
@@ -33,9 +33,9 @@ export async function sendPushNotification(
             data: payloadData,
             color: "#f97bb0",
             richContent: {
-                ...(image ? { image } : {}),
-            },
-        },
+                ...(image ? { image } : {})
+            }
+        }
     ];
 
     const chunks = expo.chunkPushNotifications(messages);
@@ -55,7 +55,7 @@ export const sendPushNotificationToClassStudents = async ({
     title = "",
     body = "",
     data = {},
-    image = null,
+    image = null
 }) => {
     try {
         if (!course || !year) {
@@ -67,7 +67,7 @@ export const sendPushNotificationToClassStudents = async ({
             `
         SELECT u.token FROM users u JOIN students s ON s.userId = u.userId WHERE s.course = ? AND s.year = ? AND u.role = 'student' AND u.token IS NOT NULL
     `,
-            [course, year],
+            [course, year]
         );
 
         const notificationRes = await Notification.create({
@@ -75,25 +75,25 @@ export const sendPushNotificationToClassStudents = async ({
             body,
             data: JSON.stringify(data),
             target: "class",
-            yearCourse: `${year}-${course}`,
+            yearCourse: `${year}-${course}`
         });
 
         data = {
             ...data,
-            _id: notificationRes._id.toString(),
+            _id: notificationRes._id.toString()
         };
 
         await Promise.all(
-            students.map((s) =>
-                sendPushNotification(s.token, title, body, data, image),
-            ),
+            students.map(s =>
+                sendPushNotification(s.token, title, body, data, image)
+            )
         );
 
         return true;
     } catch (error) {
         console.error(
             "Error while sending notification to class students: ",
-            error,
+            error
         );
         return false;
     }
@@ -104,7 +104,7 @@ export const sendNotificationForListOfUsers = async ({
     title = "",
     body = "",
     data = {},
-    image = null,
+    image = null
 }) => {
     try {
         if (!users.length) return true;
@@ -116,7 +116,7 @@ export const sendNotificationForListOfUsers = async ({
                  FROM users 
                  WHERE userId IN (${placeholders}) 
                    AND token IS NOT NULL`,
-            users,
+            users
         );
 
         const notificationRes = await Notification.create({
@@ -124,30 +124,65 @@ export const sendNotificationForListOfUsers = async ({
             body,
             data: JSON.stringify(data),
             target: "userIds",
-            userIds: users,
+            userIds: users
         });
 
         data = {
             ...data,
-            _id: notificationRes._id.toString(),
+            _id: notificationRes._id.toString()
         };
 
         const validTokens = rows
-            .map((u) => u.token)
-            .filter((t) => Expo.isExpoPushToken(t));
+            .map(u => u.token)
+            .filter(t => Expo.isExpoPushToken(t));
 
         await Promise.all(
-            validTokens.map((token) =>
-                sendPushNotification(token, title, body, data, image),
-            ),
+            validTokens.map(token =>
+                sendPushNotification(token, title, body, data, image)
+            )
         );
 
         return true;
     } catch (error) {
         console.error(
             "Error while sending notification to users list: ",
-            error,
+            error
         );
         return false;
     }
+};
+
+export const sendPushNotificationToAllUsers = async (
+    title,
+    body,
+    data,
+    role
+) => {
+    const condition = role ? `AND role = ?` : "";
+
+    const { rows } = await turso.execute({
+        sql: `SELECT token 
+              FROM users 
+              WHERE token IS NOT NULL ${condition}`,
+        args: role ? [role] : []
+    });
+
+    await Notification.create({
+        title,
+        body,
+        data: JSON.stringify(data),
+        target: role || "all"
+    });
+
+    const validTokens = rows
+        .map(u => u.token)
+        .filter(t => Expo.isExpoPushToken(t));
+
+    if (validTokens.length === 0) return;
+
+    await Promise.all(
+        validTokens.map(token =>
+            sendPushNotification(token, title, body, data, "")
+        )
+    );
 };

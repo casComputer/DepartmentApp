@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
-
 const DueDate = ({ date, onChange }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
 

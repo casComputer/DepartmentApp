@@ -75,10 +75,7 @@ export const Options = ({ loading, isEditable }) => {
             {loading && (
                 <View className="flex-row justify-center items-center gap-1">
                     <Text className="font-bold text-xl text-text">syncing</Text>
-                    <StyledActivityIndicator
-                        size="16"
-                        className="text-text"
-                    />
+                    <StyledActivityIndicator size="16" className="text-text" />
                 </View>
             )}
 

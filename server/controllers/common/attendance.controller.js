@@ -25,10 +25,10 @@ const monthNames = [
 ];
 
 export const getAttendanceReportByDateRange = async ({
-    course='Bca',
-    classYear='First',
-    startDate="2026-02-01", // YYYY-MM-DD
-    endDate='2026-02-31', // YYYY-MM-DD
+    course,
+    classYear,
+    startDate, // YYYY-MM-DD
+    endDate, // YYYY-MM-DD
     studentId = null
 }) => {
     try {
@@ -526,7 +526,7 @@ export const generateReport = async (req, res) => {
                 ?.join(" ")} Is Now Available.`,
 
             data: notificationData,
-            image: getPreviewUrl(pdf_url, 'raw') ?? null
+            image: getPreviewUrl(pdf_url, "raw") ?? null
         });
 
         return res.json({

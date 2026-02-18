@@ -12,6 +12,7 @@ const handleTeacherData = (data) => {
 };
 
 const handleStudentData = (data) => {
+    console.log(data)
     useAppStore.getState().updateUser({
         rollno: data.rollno,
         course: data.course,
@@ -21,7 +22,7 @@ const handleStudentData = (data) => {
     });
 };
 
-const handleParentDaat = (data) => {
+const handleParentData = (data) => {
     useAppStore.getState().updateUser({
         is_verified: data.is_verified,
         students: data.students ?? [],
@@ -30,9 +31,12 @@ const handleParentDaat = (data) => {
 
 const syncUser = async (user) => {
     try {
+        console.log("syncing..")
         user = user === "admin" ? "teacher" : user;
         
         const { data } = await axios.get(`/${user}/sync`);
+
+        console.log(data)
         
         if (data.success) {
             if (user === "teacher" || user === "admin") handleTeacherData(data);
@@ -43,7 +47,7 @@ const syncUser = async (user) => {
             if (data?.type === "NOT_FOUND") useAppStore.getState().removeUser();
             ToastAndroid.show(
                 data?.message ?? "Failed to sync user data",
-                ToastAndroid.LONG,
+                ToastAndroid.LONG
             );
         }
 

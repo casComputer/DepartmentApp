@@ -1,5 +1,5 @@
 import ExcelJS from "exceljs";
-import PDFDocument from "pdfkit";
+import puppeteer from "puppeteer";
 import streamifier from "streamifier";
 
 import { turso } from "../../config/turso.js";
@@ -327,50 +327,97 @@ async function generateAttendanceExcel(data) {
 
 // ------------------ PDF ------------------
 
-function generateAttendancePDF(
-    data,
-    { course, year, startMonth, endMonth, startYear, endYear }
-) {
-    return new Promise((resolve, reject) => {
-        try {
-            const doc = new PDFDocument({ size: "A4" });
-            const buffers = [];
-            doc.on("data", buffers.push.bind(buffers));
-            doc.on("end", () => resolve(Buffer.concat(buffers)));
+async function generateAttendancePDF({
+  data,
+  course,
+  year,
+  startMonth,
+  endMonth,
+  startYear,
+  endYear
+}) {
+  const title =
+    startMonth === endMonth && startYear === endYear
+      ? `${monthNames[startMonth]} ${startYear}`
+      : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
 
-            const title =
-                startMonth === endMonth && startYear === endYear
-                    ? `${monthNames[startMonth]} ${startYear}`
-                    : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
+  const html = `
+    <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #444;
+            padding: 8px;
+            font-size: 18px;
+            text-align: center;
+          }
+          th {
+            background: #eee;
+          }
+          #title {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h2 id="title">Attendance Report for ${year} ${course} - ${title}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>StudentId</th>
+              <th>Working Days</th>
+              <th>Present Days</th>
+              <th>Absent Days</th>
+              <th>Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data
+              .map(
+                (item) => `
+                <tr>
+                  <td>${item.studentId}</td>
+                  <td>${item.working_days}</td>
+                  <td>${item.present_days}</td>
+                  <td>${item.absent_days}</td>
+                  <td>${item.attendance_percentage}%</td>
+                </tr>
+              `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `;
 
-            doc.fontSize(18)
-                .font("Helvetica-Bold")
-                .text(`Attendance Report for ${year} ${course} – ${title}`, {
-                    align: "center"
-                })
-                .moveDown()
-                .fontSize(14)
-                .font("Times-Roman")
-                .table({
-                    rowStyles: [30],
-                    data: [
-                        [
-                            "StudentId",
-                            "Working Days",
-                            "Present Days",
-                            "Absent Days",
-                            "Percentage"
-                        ],
-                        ...data.map(item => Object.values(item))
-                    ]
-                });
+  const browser = await puppeteer.launch({
+    headless: "new", // recommended for newer versions
+    args: ["--no-sandbox", "--disable-setuid-sandbox"] // required for many servers
+  });
 
-            doc.end();
-        } catch (err) {
-            reject(err);
-        }
-    });
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+
+  // ✅ Generate PDF as buffer (NO file path)
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    printBackground: true
+  });
+
+  await browser.close();
+
+  return pdfBuffer; // 👈 IMPORTANT
 }
+
 
 // ------------------ GENERATE XL/PDF ------------------
 
@@ -450,7 +497,8 @@ export const generateReport = async (req, res) => {
         }
 
         const excelBuffer = await generateAttendanceExcel(aggregatedData);
-        const pdfBuffer = await generateAttendancePDF(aggregatedData, {
+        const pdfBuffer = await generateAttendancePDF({
+            data: aggregatedData,
             course,
             year,
             startMonth,
@@ -606,3 +654,4 @@ export const deleteReport = async (req, res) => {
             .json({ success: false, message: "Internal server error!" });
     }
 };
+

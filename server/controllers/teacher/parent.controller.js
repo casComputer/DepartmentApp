@@ -83,6 +83,8 @@ export const verifyParent = async (req, res) => {
             [parentId, studentId]
         );
 
+        await turso.execute("UPDATE users SET is_verified = 1 WHERE userId = ?", [parentId])
+
         res.json({
             success: true
         });

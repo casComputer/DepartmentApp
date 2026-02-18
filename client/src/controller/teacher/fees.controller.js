@@ -12,8 +12,6 @@ export const create = async ({ course, year, details, amount, dueDate }) => {
             return false;
         }
 
-        ToastAndroid.show("please wait ⏳", ToastAndroid.SHORT);
-
         const res = await axios.post("/fees/create", {
             course,
             year,

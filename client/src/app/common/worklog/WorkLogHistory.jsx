@@ -28,15 +28,11 @@ const WorkLogHistory = () => {
             lastPage.hasMore ? lastPage.nextPage : undefined
     });
 
-    const allItems = data?.pages?.flatMap(page => page?.data ?? []) ??[];
+    const allItems = data?.pages?.flatMap(page => page?.data ?? []) ?? [];
 
     return (
-        <View className="flex-1 bg-primary pt-16">
+        <View className="flex-1 bg-primary">
             <Header title={"History"} />
-
-            {isLoading && !isFetchingNextPage && (
-                <ActivityIndicator size="large" />
-            )}
 
             <FlashList
                 data={allItems}
@@ -48,10 +44,9 @@ const WorkLogHistory = () => {
                 }}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
-                    paddingBottom: 60,
-                    paddingTop: 10,
-                    paddingHorizontal: 5
+                    paddingBottom: 60
                 }}
+                className="pt-16 px-1"
                 ListFooterComponent={
                     isFetchingNextPage ? (
                         <ActivityIndicator size="large" />
@@ -69,6 +64,15 @@ const WorkLogHistory = () => {
                     <ListHeaderComponent
                         date={data?.pages?.[0]?.data?.[0]?.date}
                     />
+                }
+                ListEmptyComponent={
+                    isLoading ? (
+                        <ActivityIndicator size="large" />
+                    ) : (
+                        <Text className="font-bold text-text text-xl mt-1 text-center">
+                            No Worklogs exists.
+                        </Text>
+                    )
                 }
                 onRefresh={refetch}
                 refreshing={isRefetching}

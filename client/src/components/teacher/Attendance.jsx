@@ -44,7 +44,7 @@ export const AttendanceItem = React.memo(
                     alignItems: "center"
                 }}
                 onLongPress={onLongPress}
-                className={`${item.present ? "bg-card-selected" : "bg-card"}`}
+                className={`${item.present ? "bg-btn" : "bg-card"}`}
                 onPress={() => toggleAttendance(item.rollno)}
                 disabled={!isEditable}
             >

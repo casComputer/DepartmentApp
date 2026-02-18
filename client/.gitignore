@@ -46,3 +46,5 @@ app-example
 package-lock.json
 yarn.lock
 
+.zip
+.apk

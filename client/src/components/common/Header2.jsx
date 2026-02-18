@@ -3,15 +3,16 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 
 const Header = ({ onSave, saving, disabled }) => {
-    const insets = useSafeAreaInsets();
+    const handleSave = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onSave();
+    };
+
     return (
-        <View
-            // style={{ marginTop: insets.top }}
-            className="flex-row items-center justify-between pl-2 pr-3"
-        >
+        <View className="flex-row items-center justify-between pl-2 pr-3">
             <TouchableOpacity
                 className="flex-row items-center gap-0"
                 onPress={() => router.back()}
@@ -28,12 +29,11 @@ const Header = ({ onSave, saving, disabled }) => {
                     Back
                 </Text>
             </TouchableOpacity>
-            
-            {typeof onSave === 'function' && (
 
+            {typeof onSave === "function" && (
                 <TouchableOpacity
                     disabled={saving || disabled}
-                    onPress={onSave}
+                    onPress={handleSave}
                 >
                     <Text
                         style={{ fontSize: RFPercentage(3.5) }}

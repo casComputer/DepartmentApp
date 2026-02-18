@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as Haptics from "expo-haptics";
 
 const DueDate = ({ date, onChange }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const handleShow = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setShowDatePicker(true);
+    };
 
     return (
         <View>
@@ -31,7 +37,7 @@ const DueDate = ({ date, onChange }) => {
             {!showDatePicker && (
                 <TouchableOpacity
                     className="mt-5 py-4 px-5"
-                    onPress={() => setShowDatePicker(true)}
+                    onPress={handleShow}
                 >
                     <Text className="text-center text-blue-500 text-2xl font-bold">
                         {date ? "Change" : "Select"}

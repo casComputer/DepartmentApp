@@ -398,15 +398,13 @@ async function generateAttendancePDF({
       </body>
     </html>
   `;
-  
+
     const browser = await puppeteer.launch({
-        executablePath: "/usr/bin/google-chrome",
         headless: "new",
         args: [
             "--no-sandbox",
             "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu"
+            "--disable-dev-shm-usage"
         ]
     });
 

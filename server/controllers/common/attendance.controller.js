@@ -347,6 +347,7 @@ async function generateAttendancePDF({
         <style>
           body {
             font-family: Arial, sans-serif;
+            border-radius: 22px;
           }
           table {
             width: 100%;
@@ -355,15 +356,18 @@ async function generateAttendancePDF({
           th, td {
             border: 1px solid #444;
             padding: 8px;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
           }
           th {
             background: #eee;
+            font-size: 25px;
+            font-weight: 900;
           }
           #title {
             text-align: center;
             margin-bottom: 20px;
+            margin: 20px 0; 
           }
         </style>
       </head>

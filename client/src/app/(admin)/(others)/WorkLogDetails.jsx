@@ -77,7 +77,7 @@ const WorkLogHistory = () => {
         });
 
     return (
-        <View className="flex-1 bg-primary pt-16">
+        <View className="flex-1 bg-primary">
             <Header title={"History"} />
 
             <FlashList
@@ -88,10 +88,9 @@ const WorkLogHistory = () => {
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
-                className="pt-16"
+                className="pt-16 px-1"
                 contentContainerStyle={{
                     paddingBottom: 60,
-                    paddingHorizontal: 5
                 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (

@@ -34,9 +34,9 @@ const Notes = ({ role }) => {
         queryKey: ["notes", folderId ?? null],
         queryFn:
             role === "student" ? fetchNotesForStudent : fetchNotesForTeacher,
-
         placeholderData: () => {
             const cached = getNotes(folderId ?? "root");
+            console.log('cached notes: ', cached);
             if (cached?.notes) {
                 return {
                     pages: [

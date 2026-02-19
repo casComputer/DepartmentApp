@@ -31,30 +31,19 @@ const handleParentData = (data) => {
 
 const syncUser = async (user) => {
     try {
-        console.log("syncing..")
         user = user === "admin" ? "teacher" : user;
-        
         const { data } = await axios.get(`/${user}/sync`);
 
-        console.log(data)
-        
         if (data.success) {
             if (user === "teacher" || user === "admin") handleTeacherData(data);
             else if (user === "student") handleStudentData(data);
             else if (user === "parent") handleParentData(data);
-
         } else {
             if (data?.type === "NOT_FOUND") useAppStore.getState().removeUser();
-            ToastAndroid.show(
-                data?.message ?? "Failed to sync user data",
-                ToastAndroid.LONG
-            );
         }
 
         return {};
     } catch (error) {
-        console.log(error);
-        ToastAndroid.show("Failed to sync user data", ToastAndroid.LONG);
         return {};
     }
 };

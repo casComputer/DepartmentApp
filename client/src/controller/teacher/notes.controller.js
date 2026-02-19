@@ -12,14 +12,14 @@ import { setNotes } from "@storage/app.storage.js";
 
 export const fetchNotes = async ({ queryKey, pageParam }) => {
     const parentId = queryKey[1] ?? null;
-    
+
     try {
         const res = await axios.post("/notes/fetchByTeacher", {
             parentId,
             page: pageParam,
             limit: 20
         });
-        
+
         if (!res.data?.success) {
             ToastAndroid.show(
                 "Please connect to the internet 🛰️",
@@ -32,7 +32,7 @@ export const fetchNotes = async ({ queryKey, pageParam }) => {
                 success: false
             };
         }
-        
+
         setNotes(parentId ?? "root", res.data);
         return res.data;
     } catch (error) {
@@ -61,10 +61,20 @@ export const create = async data => {
         const res = await axios.post("notes/create", data);
 
         if (res.data.success) {
-            queryClient.setQueryData(["notes", data.parentId], prev => ({
-                ...prev,
-                notes: [...(prev?.notes ?? []), res.data.note]
-            }));
+            queryClient.setQueryData(["notes", data.parentId], prev => {
+                if (!prev) return prev;
+
+                const newPages = [...prev.pages];
+                newPages[0] = {
+                    ...newPages[0],
+                    notes: [res.data.note, ...(newPages[0].notes ?? [])]
+                };
+
+                return {
+                    ...prev,
+                    pages: newPages
+                };
+            });
 
             // mmkv storage
             setNotes(

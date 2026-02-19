@@ -328,20 +328,20 @@ async function generateAttendanceExcel(data) {
 // ------------------ PDF ------------------
 
 async function generateAttendancePDF({
-  data,
-  course,
-  year,
-  startMonth,
-  endMonth,
-  startYear,
-  endYear
+    data,
+    course,
+    year,
+    startMonth,
+    endMonth,
+    startYear,
+    endYear
 }) {
-  const title =
-    startMonth === endMonth && startYear === endYear
-      ? `${monthNames[startMonth]} ${startYear}`
-      : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
+    const title =
+        startMonth === endMonth && startYear === endYear
+            ? `${monthNames[startMonth]} ${startYear}`
+            : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
 
-  const html = `
+    const html = `
     <html>
       <head>
         <style>
@@ -381,8 +381,8 @@ async function generateAttendancePDF({
           </thead>
           <tbody>
             ${data
-              .map(
-                (item) => `
+                .map(
+                    item => `
                 <tr>
                   <td>${item.studentId}</td>
                   <td>${item.working_days}</td>
@@ -391,33 +391,38 @@ async function generateAttendancePDF({
                   <td>${item.attendance_percentage}%</td>
                 </tr>
               `
-              )
-              .join("")}
+                )
+                .join("")}
           </tbody>
         </table>
       </body>
     </html>
   `;
+  
+    const browser = await puppeteer.launch({
+        executablePath: "/usr/bin/google-chrome",
+        headless: "new",
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu"
+        ]
+    });
 
-  const browser = await puppeteer.launch({
-    headless: "new", // recommended for newer versions
-    args: ["--no-sandbox", "--disable-setuid-sandbox"] // required for many servers
-  });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
-  const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: "networkidle0" });
+    // ✅ Generate PDF as buffer (NO file path)
+    const pdfBuffer = await page.pdf({
+        format: "A4",
+        printBackground: true
+    });
 
-  // ✅ Generate PDF as buffer (NO file path)
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-    printBackground: true
-  });
+    await browser.close();
 
-  await browser.close();
-
-  return pdfBuffer; // 👈 IMPORTANT
+    return pdfBuffer; // 👈 IMPORTANT
 }
-
 
 // ------------------ GENERATE XL/PDF ------------------
 
@@ -654,4 +659,3 @@ export const deleteReport = async (req, res) => {
             .json({ success: false, message: "Internal server error!" });
     }
 };
-

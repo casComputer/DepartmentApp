@@ -233,8 +233,6 @@ export const FolderItem = ({ item, role }) => {
 
     const openFile = async () => {
         if (downloading) return;
-
-        ToastAndroid.show("Please wait..", ToastAndroid.SHORT);
         setDownloading(true);
         await downloadFile(item.fileUrl, item.format, item.name);
         setDownloading(false);

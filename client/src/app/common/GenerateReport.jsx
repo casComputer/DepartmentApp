@@ -57,6 +57,7 @@ const GenerateReport = () => {
             : `${formatMonthYear(startDate)} → ${formatMonthYear(endDate)}`;
 
     const handleGeneration = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         if (!year || !course) return;
         setGenerating(true);
 
@@ -141,7 +142,7 @@ const GenerateReport = () => {
     };
 
     const handleDeleteReport = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         confirm("Are you sure to delete this record ?", async () => {
             setDeleting(true);
 
@@ -151,7 +152,7 @@ const GenerateReport = () => {
                 startMonth: result.startMonth,
                 endMonth: result.endMonth,
                 startYear: result.startYear,
-                endYear: result.endYear,
+                endYear: result.endYear
             });
 
             if (success) {
@@ -167,8 +168,8 @@ const GenerateReport = () => {
     return (
         <ScrollView className="grow bg-primary">
             <Header title={"Generate Report"} />
-            
-            <View className='pt-16' />
+
+            <View className="pt-16" />
 
             <Selector
                 toggler={toggler}

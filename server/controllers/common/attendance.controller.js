@@ -361,7 +361,7 @@ async function generateAttendancePDF({
           }
           th {
             background: #eee;
-            font-size: 25px;
+            font-size: 21px;
             font-weight: 900;
           }
           #title {

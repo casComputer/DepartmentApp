@@ -62,6 +62,8 @@ export const sendPushNotificationToClassStudents = async ({
             console.error("Invalid year and course");
             return false;
         }
+        
+        console.log(image);
 
         const { rows: students } = await turso.execute(
             `

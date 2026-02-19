@@ -400,8 +400,6 @@ async function generateAttendancePDF({
   `;
 
     const browser = await puppeteer.launch({
-        executablePath:
-            "/opt/render/.cache/puppeteer/chrome/linux-145.0.7632.67/chrome-linux64/chrome",
         headless: "new",
         args: [
             "--no-sandbox",

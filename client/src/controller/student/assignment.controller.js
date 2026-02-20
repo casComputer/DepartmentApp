@@ -114,8 +114,6 @@ const saveAssignmentSubmissionDetails = async ({
             return false;
         }
 
-        ToastAndroid.show("Please wait...", ToastAndroid.SHORT);
-
         const res = await axios.post(
             "/assignment/saveAssignmentSubmissionDetails",
             {

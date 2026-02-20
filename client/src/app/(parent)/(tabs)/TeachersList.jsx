@@ -34,15 +34,13 @@ const TeacherItem = ({ item }) => {
     
 I’m reaching out regarding *${studentText}*.
 
-
-Just wanted to ask about (your message here...)
+Just wanted to ask about (message)
 
 *Thanks in advance 🤝.*`;
 
     return (
         <View
-            className={`bg-card my-2 rounded-3xl p-4 justify-center items-center`}
-            style={{ width: vw * 0.9, marginHorizontal: vw * 0.05 }}
+            className={`w-full bg-card my-2 rounded-3xl p-4 justify-center items-center`}
         >
             <View className="bg-card-selected w-[150px] h-[150px] rounded-full overflow-hidden justify-center items-center">
                 {item?.dp ? (
@@ -143,8 +141,12 @@ Just wanted to ask about (your message here...)
 };
 
 const TeachersList = () => {
-    const { data: teachers, isLoading , refetch,
-        isRefetching} = useQuery({
+    const {
+        data: teachers,
+        isLoading,
+        refetch,
+        isRefetching
+    } = useQuery({
         queryKey: ["teachers"],
         queryFn: fetchAllTeachers
     });
@@ -157,7 +159,6 @@ const TeachersList = () => {
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.teacherId}
                 contentContainerStyle={{
-                    paddingTop: 40,
                     paddingBottom: 80
                 }}
                 ListEmptyComponent={
@@ -169,6 +170,7 @@ const TeachersList = () => {
                         </Text>
                     )
                 }
+                className="px-1 pt-4"
                 onRefresh={refetch}
                 refreshing={isRefetching}
             />

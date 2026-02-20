@@ -158,51 +158,59 @@ const TeachersList = () => {
         ) || [];
 
     return (
-        <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-            className="bg-primary"
-        >
+        <View className="bg-primary flex-1">
             <Header />
+            <ScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+            >
+                {isLoading && <ActivityIndicator size="large" />}
 
-            {isLoading && <ActivityIndicator size="large" />}
+                {yourTeachers.length ? (
+                    <Text className="text-text mt-4 px-3 text-2xl font-black">
+                        Your Teachers
+                    </Text>
+                ) : null}
 
-            {yourTeachers.length ? (
-                <Text className="text-text mt-4 px-3 text-2xl font-black">
-                    Your Teachers
-                </Text>
-            ) : null}
+                <View>
+                    <FlashList
+                        data={yourTeachers}
+                        renderItem={({ item }) => (
+                            <TeacherItem
+                                item={item}
+                                course={course}
+                                year={year}
+                            />
+                        )}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={item => item.teacherId}
+                    />
+                </View>
 
-            <View>
-                <FlashList
-                    data={yourTeachers}
-                    renderItem={({ item }) => (
-                        <TeacherItem item={item} course={course} year={year} />
-                    )}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={item => item.teacherId}
-                />
-            </View>
+                {otherTeachers.length ? (
+                    <Text className="text-text mt-4 px-3 text-2xl font-black">
+                        {yourTeachers.length ? "Other" : ""} Teachers
+                    </Text>
+                ) : null}
 
-            {otherTeachers.length ? (
-                <Text className="text-text mt-4 px-3 text-2xl font-black">
-                    {yourTeachers.length ? "Other" : ""} Teachers
-                </Text>
-            ) : null}
-
-            <View>
-                <FlashList
-                    data={otherTeachers}
-                    renderItem={({ item }) => (
-                        <TeacherItem item={item} course={course} year={year} />
-                    )}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={item => item.teacherId}
-                />
-            </View>
-        </ScrollView>
+                <View>
+                    <FlashList
+                        data={otherTeachers}
+                        renderItem={({ item }) => (
+                            <TeacherItem
+                                item={item}
+                                course={course}
+                                year={year}
+                            />
+                        )}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={item => item.teacherId}
+                    />
+                </View>
+            </ScrollView>
+        </View>
     );
 };
 

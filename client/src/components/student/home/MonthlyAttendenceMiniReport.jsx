@@ -44,7 +44,6 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
         queryKey: ["OverallAttendenceReport", studentId],
         queryFn: () => getOverallAttendenceReport(studentId)
     });
-    
 
     const role = useAppStore(state => state.user.role);
 
@@ -53,12 +52,12 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
     const totalClassesSoFar = report?.summary?.totalClassesSoFar ?? 0;
     const ongoingDays = report?.time_analysis?.ongoingDays ?? 0;
 
-    const handlePress = ()=>{
-        if(!totalClassesSoFar) return
-        
-        router.push("(student)/(others)/AttendanceSummary")
-    }
-    
+    const handlePress = () => {
+        if (!totalClassesSoFar) return;
+
+        router.push("(student)/(others)/AttendanceSummary");
+    };
+
     return (
         <TouchableOpacity
             style={{
@@ -78,11 +77,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
             ) : null}
             <View className="flex-row justify-between items-center">
                 <View className="flex-1">
-                    <CircularProgress
-                        progress={percentage || 0}
-                        size={size}
-                        strokeFillColor={"rgb(247,55,159)"}
-                    />
+                    <CircularProgress progress={percentage || 0} size={size} />
                     <Text
                         adjustsFontSizeToFit
                         numberOfLines={1}
@@ -99,7 +94,6 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                         }
                         size={size}
                         fraction={`${classesAttended}/${totalClassesSoFar} Days`}
-                        strokeFillColor={"rgb(247,55,159)"}
                     />
                     <Text
                         adjustsFontSizeToFit
@@ -114,12 +108,11 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                         progress={
                             hasPassed4PM()
                                 ? Math.max(0, ongoingDays - 1)
-                                : ongoingDays ?? 0
+                                : (ongoingDays ?? 0)
                         }
                         size={size}
                         showPercentage={false}
                         maxProgress={31}
-                        strokeFillColor={"rgb(247,55,159)"}
                     />
                     <Text
                         adjustsFontSizeToFit
@@ -151,7 +144,7 @@ const MultiReports = ({ students }) => {
         scrollX.value = withDelay(
             50,
             withTiming(0, {
-                duration: 600
+                duration: 1200
             })
         );
     }, [students]);

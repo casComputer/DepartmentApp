@@ -67,7 +67,7 @@ export const AttendanceItem = React.memo(
     }
 );
 
-export const Options = ({ loading, isEditable }) => {
+export const Options = ({ loading, isEditable, handleSelectAll }) => {
     const [selectAll, setSelectAll] = useState(false);
 
     return (
@@ -81,7 +81,7 @@ export const Options = ({ loading, isEditable }) => {
 
             {isEditable === true && (
                 <View className="flex-row gap-1 justify-center items-center ml-auto">
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleSelectAll}>
                         <Text className="font-semibold text-xl text-blue-500 ">
                             Mark All
                         </Text>

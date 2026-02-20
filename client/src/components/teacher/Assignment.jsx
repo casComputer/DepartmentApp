@@ -118,7 +118,7 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
                 className="self-center"
             >
                 <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">
-                    {accepting ? "Accepting" : "Accept"}
+                    {accepting ? "Accepting.." : "Accept"}
                 </Text>
             </TouchableOpacity>
         </View>

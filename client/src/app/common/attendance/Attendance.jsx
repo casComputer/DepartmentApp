@@ -1,16 +1,6 @@
-import {
-    useState,
-    useEffect,
-    useRef
-} from "react";
-import {
-    View,
-    ToastAndroid,
-    ScrollView
-} from "react-native";
-import {
-    useLocalSearchParams
-} from "expo-router";
+import { useState, useEffect, useRef } from "react";
+import { View, ToastAndroid, ScrollView } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header2";
@@ -25,9 +15,7 @@ import {
     saveAttendance
 } from "@controller/teacher/attendance.controller.js";
 
-import {
-    getStudentCount
-} from "@utils/storage";
+import { getStudentCount } from "@utils/storage";
 
 const Attendance = () => {
     const {
@@ -38,29 +26,31 @@ const Attendance = () => {
         date = new Date().toISOString().slice(0, 10)
     } = useLocalSearchParams();
 
-    const [loading,
-        setLoading] = useState(false);
-    const [saving,
-        setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const attendanceId = useRef(null);
 
-    const storedCount = getStudentCount({
-        course, year
-    }) || 0;
+    const storedCount =
+        getStudentCount({
+            course,
+            year
+        }) || 0;
 
-    const [students,
-        setStudents] = useState(
-        Array.from({
-            length: storedCount
-        }, (_, i) => ({
+    const [students, setStudents] = useState(
+        Array.from(
+            {
+                length: storedCount
+            },
+            (_, i) => ({
                 rollno: i + 1,
                 present: false
-            }))
+            })
+        )
     );
 
     // ---- DRAG SELECTION REFS ----
-    const itemLayouts = useRef( {});
-    const touchStartPosition = useRef( {});
+    const itemLayouts = useRef({});
+    const touchStartPosition = useRef({});
     const dragged = useRef(new Set());
     const dragging = useRef(false);
     const isDragMode = useRef(false);
@@ -80,10 +70,7 @@ const Attendance = () => {
     const handleTouch = event => {
         if (isEditable !== true) return;
 
-        const {
-            pageY,
-            pageX
-        } = event;
+        const { pageY, pageX } = event;
 
         const localY = convertPageToLocalY(pageY);
         const localX = pageX;
@@ -116,12 +103,12 @@ const Attendance = () => {
                 const {
                     students: newStudents = [],
                     attendance: existAttendance = []
-                } = await fetchStudentsForAttendance( {
-                        course,
-                        year,
-                        hour,
-                        date
-                    });
+                } = await fetchStudentsForAttendance({
+                    course,
+                    year,
+                    hour,
+                    date
+                });
 
                 attendanceId.current = existAttendance[0]?.attendanceId ?? null;
 
@@ -133,7 +120,6 @@ const Attendance = () => {
                     existAttendance.map(a => [a.rollno, a])
                 );
 
-
                 setStudents(prevStudents => {
                     const prevMap = new Map(
                         prevStudents.map(s => [s.rollno, s])
@@ -142,7 +128,6 @@ const Attendance = () => {
                     const attendanceMap = new Map(
                         existAttendance.map(a => [a.rollno, a])
                     );
-
 
                     if (existAttendance.length > 0) {
                         ToastAndroid.show(
@@ -153,7 +138,8 @@ const Attendance = () => {
                         return newStudents.map(student => ({
                             ...student,
                             present:
-                            attendanceMap.get(student.rollno)?.status === "present",
+                                attendanceMap.get(student.rollno)?.status ===
+                                "present",
                             manuallyEdited: false
                         }));
                     }
@@ -181,30 +167,25 @@ const Attendance = () => {
                         };
                     });
                 });
-
-
-
-                
             } finally {
                 setLoading(false);
             }
         };
 
         loadStudents();
-    },
-        [course,
-            year,
-            hour,
-            storedCount]);
+    }, [course, year, hour, storedCount]);
 
     const toggleAttendance = rollno => {
         if (isEditable !== true) return;
 
         setStudents(prev =>
             prev.map(s =>
-                s.rollno === rollno ? {
-                    ...s, present: !s.present
-                }: s
+                s.rollno === rollno
+                    ? {
+                          ...s,
+                          present: !s.present
+                      }
+                    : s
             )
         );
     };
@@ -214,7 +195,7 @@ const Attendance = () => {
             if (isEditable !== true) return;
 
             setSaving(true);
-            await saveAttendance( {
+            await saveAttendance({
                 students,
                 course,
                 year,
@@ -233,15 +214,20 @@ const Attendance = () => {
         isDragMode.current = true;
     };
 
+    const handleSelectAll = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setStudents(prev => prev.map({ ...prev, present: true }));
+    };
+
     return (
         <View className="flex-1 bg-primary">
             <Header
-                onSave={isEditable === true ? handleSave: undefined}
+                onSave={isEditable === true ? handleSave : undefined}
                 saving={saving}
                 disabled={loading}
-                />
+            />
 
-            <Options loading={loading} isEditable={isEditable} />
+            <Options loading={loading} handleSelectAll={handleSelectAll} isEditable={isEditable} />
 
             <ScrollView
                 ref={scrollViewRef}
@@ -277,16 +263,16 @@ const Attendance = () => {
                     dragged.current.clear();
                     isDragMode.current = false;
                 }}
-                contentContainerStyle={ {
+                contentContainerStyle={{
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "center",
                     flexGrow: 1
                 }}
-                >
+            >
                 {students?.length === 0 ? (
                     <ListEmptyComponent />
-                ): (
+                ) : (
                     students.map(item => (
                         <AttendanceItem
                             key={item.rollno}
@@ -295,7 +281,7 @@ const Attendance = () => {
                             onItemLayout={onItemLayout(item.rollno)}
                             onLongPress={longPressHandler}
                             isEditable={isEditable === true}
-                            />
+                        />
                     ))
                 )}
             </ScrollView>

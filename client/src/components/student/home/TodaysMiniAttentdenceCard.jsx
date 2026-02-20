@@ -141,7 +141,7 @@ const MiniAttentdence = () => {
         scrollX.value = withDelay(
             50,
             withTiming(0, {
-                duration: 500
+                duration: 1000
             })
         );
     }, [students]);

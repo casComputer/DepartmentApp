@@ -43,7 +43,6 @@ export const getAssignmentForStudent = async (req, res) => {
 
 export const saveAssignmentSubmissionDetails = async (req, res) => {
     const { secure_url: url, format, assignmentId } = req.body;
-
     const { userId: studentId } = req.user;
 
     try {
@@ -51,36 +50,64 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
             if (url) await deleteFile(url);
 
             return res.json({
-                message: "Missing required fields",
-                success: false
+                success: false,
+                message: "Missing required fields"
             });
         }
 
         const existAssignment = await Assignment.findById(assignmentId);
 
         if (!existAssignment) {
-            await deleteFile();
+            if (url) await deleteFile(url);
+
             return res.json({
                 success: false,
                 message: "Assignment not found!"
             });
         }
 
-        const isSubmitted = existAssignment?.submissions.some(
-            submission => submission.studentId === studentId
+        const submittedDoc = existAssignment.submissions.find(
+            submission =>
+                submission.studentId.toString() === studentId.toString()
         );
 
-        if (isSubmitted) {
-            await deleteFile();
+        const isDeadlinePassed = isDatePassed(existAssignment.dueDate);
+
+        if (submittedDoc && submittedDoc.status === "accepted") {
+            await deleteFile(url);
 
             return res.json({
                 success: false,
-                message: "Assignment already submitted!"
+                message: "Assignment already accepted! Cannot resubmit."
             });
         }
-        
-        if(isDatePassed(existAssignment.dueDate)){
-            await deleteFile();
+
+        if (submittedDoc) {
+            await Assignment.updateOne(
+                {
+                    _id: assignmentId,
+                    "submissions.studentId": studentId
+                },
+                {
+                    $set: {
+                        "submissions.$.url": url,
+                        "submissions.$.format": format,
+                        "submissions.$.updatedAt": new Date(),
+                        "submissions.$.status": "pending"
+                    }
+                }
+            );
+
+            return res.json({
+                success: true,
+                message: isDeadlinePassed
+                    ? "Submission updated (Late)."
+                    : "Submission updated."
+            });
+        }
+
+        if (isDeadlinePassed) {
+            await deleteFile(url);
 
             return res.json({
                 success: false,
@@ -88,24 +115,26 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
             });
         }
 
-        const submission = {
-            studentId,
-            url,
-            format
-        };
-
         await Assignment.findByIdAndUpdate(assignmentId, {
             $push: {
-                submissions: submission
+                submissions: {
+                    studentId,
+                    url,
+                    format,
+                    submittedAt: new Date()
+                }
             }
         });
 
-        res.json({
-            success: true
+        return res.json({
+            success: true,
+            message: "Assignment submitted successfully."
         });
     } catch (error) {
-        await deleteFile();
+        if (url) await deleteFile(url);
+
         console.error(error);
+
         res.status(500).json({
             success: false,
             message: "Internal server error"

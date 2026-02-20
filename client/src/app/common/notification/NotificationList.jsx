@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+    View,
+    Text,
+    ActivityIndicator,
+    TouchableOpacity,
+    Image
+} from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
@@ -12,6 +18,7 @@ import {
 import { fetchNotifications } from "@controller/common/notification.controller.js";
 
 import { downloadFile } from "@utils/file.js";
+import getPreviewUrl from "@utils/pdfPreview.js";
 
 const RenderItem = ({ item = {} }) => {
     const data = JSON.parse(item.data ?? "{}");
@@ -43,15 +50,24 @@ const RenderItem = ({ item = {} }) => {
             </Text>
 
             {data.type === "ATTENDANCE_REPORT_GENERATION" && (
-                <TouchableOpacity
-                    className="mt-2"
-                    disabled={downloading}
-                    onPress={handleDownload}
-                >
-                    <Text className="text-xl font-bold text-blue-500 text-center">
-                        {downloading ? "Downloading" : "Download File"}
-                    </Text>
-                </TouchableOpacity>
+                <View className="py-3">
+                    <View className="w-40 h-40 rounded-2xl overflow-hidden bg-card self-center mt-1">
+                        <Image
+                            source={{ uri: getPreviewUrl(data.pdf_url ?? "") }}
+                            className="bg-card-selected"
+                            style={{ width: "100%", height: "100%" }}
+                        />
+                    </View>
+                    <TouchableOpacity
+                        className="mt-2"
+                        disabled={downloading}
+                        onPress={handleDownload}
+                    >
+                        <Text className="text-xl font-bold text-blue-500 text-center">
+                            {downloading ? "Downloading" : "Download File"}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             )}
         </TouchableOpacity>
     );
@@ -82,10 +98,12 @@ const NotificationList = () => {
             <FlashList
                 data={notifications ?? []}
                 ListEmptyComponent={
-                    !isLoading && (
+                    !isLoading ? (
                         <Text className="text-lg font-bold text-text text-center mt-5">
                             No Notifications Yet!
                         </Text>
+                    ) : (
+                        <ActivityIndicator size="large" />
                     )
                 }
                 ListFooterComponent={

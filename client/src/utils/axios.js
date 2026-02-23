@@ -8,7 +8,7 @@ import { clearUser } from "@storage/user.storage.js";
 
 let url = "https://dc-connect.onrender.com";
 // url = "http://192.168.0.132:3000"; // 5g
-url = "http://10.63.31.150:3000"; // 
+// url = "http://10.63.31.150:3000"; // 
 
 const api = axios.create({
     baseURL: url,

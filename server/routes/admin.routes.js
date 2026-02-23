@@ -5,11 +5,12 @@ import {
     assignClass,
     verifyTeacher,
     deleteTeacher,
+    removeIncharge
 } from "../controllers/admin/teachers.controller.js";
 
 import {
     clearTable,
-    clearAllUsers,
+    clearAllUsers
 } from "../controllers/admin/table.controller.js";
 
 const router = express.Router();
@@ -17,6 +18,8 @@ const router = express.Router();
 router.get("/teachers", getTeachers);
 
 router.post("/assignClass", assignClass);
+
+router.post("/removeIncharge", removeIncharge);
 
 router.post("/verifyTeacher", verifyTeacher);
 

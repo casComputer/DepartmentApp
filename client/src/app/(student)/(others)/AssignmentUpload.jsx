@@ -37,14 +37,14 @@ const AssignmentUpload = () => {
         if (uploading) return;
         setUploading(true);
         setProgress(1);
+        
         const is_uploaded = await handleAssignmentUpload(
             file,
             assignmentId,
             setProgress
         );
+        
         if (is_uploaded) {
-            // adding studentid to submissions list
-
             queryClient.setQueryData(["assignments"], prev => {
                 if (!prev) return prev;
 
@@ -52,17 +52,31 @@ const AssignmentUpload = () => {
                     ...prev,
                     pages: prev.pages.map(page => ({
                         ...page,
-                        assignments: page.assignments.map(assignment =>
-                            assignment._id === assignmentId
-                                ? {
-                                      ...assignment,
-                                      submissions: [
-                                          ...(assignment.submissions ?? []),
-                                          { studentId }
+                        assignments: page.assignments.map(assignment => {
+                            if (assignment._id !== assignmentId)
+                                return assignment;
+
+                            const submissions = assignment.submissions ?? [];
+                            let found = false;
+
+                            const updatedSubmissions = submissions.map(sub => {
+                                if (sub.studentId === studentId) {
+                                    found = true;
+                                    return { ...sub, status: "pending" };
+                                }
+                                return sub;
+                            });
+
+                            return {
+                                ...assignment,
+                                submissions: found
+                                    ? updatedSubmissions
+                                    : [
+                                          ...submissions,
+                                          { studentId, status: "pending" }
                                       ]
-                                  }
-                                : assignment
-                        )
+                            };
+                        })
                     }))
                 };
             });

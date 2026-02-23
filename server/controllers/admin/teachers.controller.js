@@ -1,13 +1,6 @@
-import {
-    turso
-} from "../../config/turso.js";
-import {
-    YEAR,
-    COURSES
-} from "../../constants/YearAndCourse.js";
-import {
-    validateCourseAndYear
-} from "../../utils/validateCourseAndYear.js";
+import { turso } from "../../config/turso.js";
+import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
+import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
 
 export const getTeachers = async (req, res) => {
     try {
@@ -38,21 +31,15 @@ export const getTeachers = async (req, res) => {
 
 export const assignClass = async (req, res) => {
     try {
-        const {
-            course,
-            year,
-            teacherId
-        } = req.body;
+        const { course, year, teacherId } = req.body;
 
         if (!validateCourseAndYear(course, year))
             return res.json({
-            message: "invalid course or year",
-            success: false
-        });
+                message: "invalid course or year",
+                success: false
+            });
 
-        const {
-            rows: isExists
-        } = await turso.execute(
+        const { rows: isExists } = await turso.execute(
             `
             select in_charge from classes where year = ? and course = ? and in_charge IS NOT NULL
             `,
@@ -61,9 +48,9 @@ export const assignClass = async (req, res) => {
 
         if (isExists?.length > 0)
             return res.json({
-            message: `Class already assigned to ${isExists[0].in_charge}`,
-            success: false
-        });
+                message: `Class already assigned to ${isExists[0].in_charge}`,
+                success: false
+            });
 
         await turso.execute(
             `
@@ -80,7 +67,8 @@ export const assignClass = async (req, res) => {
         );
 
         res.json({
-            message: "Class assigned successfully", success: true
+            message: "Class assigned successfully",
+            success: true
         });
     } catch (error) {
         console.error("Error fetching teachers:", error);
@@ -91,10 +79,29 @@ export const assignClass = async (req, res) => {
     }
 };
 
+export const removeIncharge = async (req, res) => {
+    const { teacherId } = req.body;
+
+    try {
+        await turso.execute(
+            `UPDATE CLASSES set in_charge = NULL WHERE in_charge = ?`,
+            [teacherId]
+        );
+
+        res.json({
+            success: true
+        });
+    } catch (error) {
+        console.error("Error removing incharge:", error);
+        res.status(500).json({
+            error: "Internal Server Error",
+            success: false
+        });
+    }
+};
+
 export const verifyTeacher = async (req, res) => {
-    const {
-        teacherId
-    } = req.body;
+    const { teacherId } = req.body;
 
     try {
         await turso.execute(
@@ -102,7 +109,8 @@ export const verifyTeacher = async (req, res) => {
             [teacherId]
         );
         res.json({
-            message: "Teacher verified successfully", success: true
+            message: "Teacher verified successfully",
+            success: true
         });
     } catch (error) {
         console.error("Error verifying teacher:", error);
@@ -113,29 +121,29 @@ export const verifyTeacher = async (req, res) => {
     }
 };
 
+export const deleteTeacher = async (req, res) => {
+    const { teacherId } = req.body;
+    try {
+        if (!teacherId)
+            return res.json({
+                success: false,
+                message: `teacherId is compulsory!`
+            });
 
-export const deleteTeacher = async(req, res)=>{
-        const {
-            teacherId
-        } = req.body 
-    try{
-        
-        if(!teacherId) return res.json({
-            success: false,
-            message: `teacherId is compulsory!`
-        })
-        
-        await turso.execute(`DELETE FROM users WHERE userId = ? AND role = 'teacher'`, [teacherId])
-        
+        await turso.execute(
+            `DELETE FROM users WHERE userId = ? AND role = 'teacher'`,
+            [teacherId]
+        );
+
         res.json({
             success: true,
             message: `Successfully removed user: ${teacherId}`
-        })
-    }catch(e){
-        console.error('Error while removing teacher: ', e)
+        });
+    } catch (e) {
+        console.error("Error while removing teacher: ", e);
         res.json({
             success: false,
             message: `Failed to removed user: ${teacherId}`
-        })
+        });
     }
-}
+};

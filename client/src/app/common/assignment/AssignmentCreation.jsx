@@ -13,8 +13,6 @@ import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 import DueDate from "@components/common/DueDate.jsx";
 
-import queryClient from "@utils/queryClient";
-
 import { createAssignment } from "@controller/teacher/assignment.controller.js";
 
 import { COURSES, YEAR } from "@constants/ClassAndCourses.js";
@@ -45,21 +43,8 @@ const AssignmentCreation = () => {
             dueDate: date
         };
 
-        const result = await createAssignment(assignmentData);
-       
-        if (result.success) {
-            queryClient.setQueryData(["assignments"], prev => {
-                if (!prev) return prev;
-
-                return {
-                    ...prev,
-                    pages: prev.pages.map(page => ({
-                        ...page,
-                        assignments: [result.assignment, ...page.assignments]
-                    }))
-                };
-            });
-        }
+        await createAssignment(assignmentData);
+      
         setSaving(false);
         router.back();
     };

@@ -1,34 +1,27 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 import {
     View,
     Text,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    ScrollView
 } from "react-native";
-import {
-    useLocalSearchParams,
-    router
-} from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import * as Haptics from "expo-haptics";
 
 import {
     verifyTeacher,
     cancelVerification,
+    handleRemoveIncharge
 } from "@controller/admin/teachers.controller";
 
-import {
-    useAdminStore
-} from "@store/admin.store.js";
+import { useAdminStore } from "@store/admin.store.js";
 
 import confirm from "@utils/confirm.js";
 
 import Header from "@components/common/Header2.jsx";
 
-const ClassInChargeInfo = ({
-    year = "", classCharge = ""
-}) => {
+const ClassInChargeInfo = ({ year = "", classCharge = "" }) => {
     if (!year || !classCharge) return null;
 
     return (
@@ -40,29 +33,35 @@ const ClassInChargeInfo = ({
     );
 };
 
-const AssignClass = ({
-    user
-}) => {
+const AssignClass = ({ user }) => {
     return (
         <View>
             <ClassInChargeInfo
                 year={user.in_charge_year}
                 classCharge={user.in_charge_course}
-                />
+            />
 
             <TouchableOpacity
                 onPress={() =>
-                router.push({
-                    pathname: `/(admin)/(others)/AssignClass`,
-                    params: { userId: user.userId },
-                })
-
+                    router.push({
+                        pathname: `/(admin)/(others)/AssignClass`,
+                        params: { userId: user.userId }
+                    })
                 }
                 className="px-2 mt-5"
-                >
+            >
                 <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
                     {user?.in_charge_course && user?.in_charge_year
-                    ? "Reassign Class": "Assign class"}
+                        ? "Reassign Class"
+                        : "Assign class"}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => handleRemoveIncharge(user.userId)}
+                className="px-2 mt-5"
+            >
+                <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
+                    Remove Incharge
                 </Text>
             </TouchableOpacity>
         </View>
@@ -70,49 +69,39 @@ const AssignClass = ({
 };
 
 const VerifyTeacher = () => {
-    const {
-        userId
-    } = useLocalSearchParams();
-    const user = useAdminStore((state) =>
-        state.teachers.find((t) => t.userId === userId)
+    const { userId } = useLocalSearchParams();
+    const user = useAdminStore(state =>
+        state.teachers.find(t => t.userId === userId)
     );
 
-    const [verifying,
-        setVerifying] = useState(false)
-    const [cancelling,
-        setCancelling] = useState(false)
+    const [verifying, setVerifying] = useState(false);
+    const [cancelling, setCancelling] = useState(false);
 
     const handleCancelVerification = async () => {
-        if(cancelling) return
-        
+        if (cancelling) return;
+
         if (user && user.userId) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-            confirm(
-                `Are you sure to remove ${user.userId}`,
-                async () => {
-                    setCancelling(true)
-                    await cancelVerification(user.userId);
-                    setCancelling(false)
-                    router.back()
-                }
-            );
+            confirm(`Are you sure to remove ${user.userId}`, async () => {
+                setCancelling(true);
+                await cancelVerification(user.userId);
+                setCancelling(false);
+                router.back();
+            });
         }
     };
 
     const handleVerification = () => {
-        if(verifying) return
+        if (verifying) return;
         if (user && user.userId) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-            confirm(
-                `Are you sure to verify ${user.userId}`,
-                async () => {
-                    setVerifying(true)
-                    await verifyTeacher(user.userId);
-                    setVerifying(false)
-                }
-            );
+            confirm(`Are you sure to verify ${user.userId}`, async () => {
+                setVerifying(true);
+                await verifyTeacher(user.userId);
+                setVerifying(false);
+            });
         }
     };
 
@@ -127,12 +116,15 @@ const VerifyTeacher = () => {
     }
 
     return (
-        <View className="flex-1 bg-primary">
+        <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            className="bg-primary"
+        >
             <Header />
 
             {/* Image */}
-            <TouchableOpacity className="pt-16 w-[60vw] h-[60vw] rounded-full bg-card self-center mt-10 justify-center items-center">
-                <Text className="text-[40vw] font-black text-center text-text-secondary">
+            <TouchableOpacity className="w-[60vw] h-[60vw] rounded-full bg-card self-center mt-16 justify-center items-center">
+                <Text className="text-[18vw] font-black text-center text-text-secondary">
                     {user.fullname?.slice(0, 1)}
                 </Text>
             </TouchableOpacity>
@@ -146,33 +138,31 @@ const VerifyTeacher = () => {
                     className="text-text w-full h-full font-bold text-[5vw] px-5"
                     value={user.fullname}
                     editable={false}
-                    />
+                />
             </View>
 
-            {user.is_verified ?
-            <AssignClass user={user} /> : null
-            }
+            {user.is_verified ? <AssignClass user={user} /> : null}
             <View className="flex-1 justify-center items-end flex-row gap-3 py-20 px-2">
                 <TouchableOpacity
                     onPress={handleCancelVerification}
                     className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
-                    >
-                    <Text className="text-2xl text-text font-bold">{
-                        cancelling ? 'Cancelling..': 'Cancel'
-                        }</Text>
+                >
+                    <Text className="text-2xl text-text font-bold py-1">
+                        {cancelling ? "Cancelling.." : "Cancel"}
+                    </Text>
                 </TouchableOpacity>
-                {!user.is_verified &&
-                <TouchableOpacity
-                    onPress={handleVerification}
-                    className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
+                {!user.is_verified && (
+                    <TouchableOpacity
+                        onPress={handleVerification}
+                        className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
                     >
-                    <Text className="text-2xl text-text font-bold">{
-                        verifying ? 'Verifying..': 'Verify'
-                        }</Text>
-                </TouchableOpacity>
-                }
+                        <Text className="text-2xl text-text font-bold py-1">
+                            {verifying ? "Verifying.." : "Verify"}
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

@@ -13,6 +13,22 @@ export const createAssignment = async assignmentData => {
                 "Assignment created successfully",
                 ToastAndroid.LONG
             );
+
+            queryClient.setQueryData(["assignments"], prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        assignments: [
+                            response.data.assignment,
+                            ...page.assignments
+                        ]
+                    }))
+                };
+            });
+
             return response.data;
         }
     } catch (error) {
@@ -39,9 +55,8 @@ export const getAssignment = async ({ pageParam }) => {
             }
         );
 
-        if (response.data.success) 
-            return response.data;
-        
+        if (response.data.success) return response.data;
+
         ToastAndroid.show(
             response.data?.message ?? "Failed to fetch assignment",
             ToastAndroid.LONG
@@ -134,6 +149,33 @@ export const acceptAssignment = async (
         });
 
         if (response.data.success) {
+            queryClient.setQueryData(["assignments"], prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        assignments: page.assignments.map(assignment =>
+                            assignment._id === assignmentId
+                                ? {
+                                      ...assignment,
+                                      submissions: assignment.submissions.map(
+                                          submission =>
+                                              submission.studentId === studentId
+                                                  ? {
+                                                        ...submission,
+                                                        status: "accepted"
+                                                    }
+                                                  : submission
+                                      )
+                                  }
+                                : assignment
+                        )
+                    }))
+                };
+            });
+
             setAssignment(prev => ({
                 ...prev,
                 submissions: prev.submissions.map(submission =>

@@ -1,8 +1,9 @@
 import axios from "@utils/axios.js";
+import { ToastAndroid } from "react-native";
 import { router } from "expo-router";
 
 import { useAdminStore } from "@store/admin.store.js";
-import { ToastAndroid } from "react-native";
+import { useAppStore } from "@store/app.store.js";
 
 export const fetchTeachers = async () => {
     try {
@@ -10,11 +11,30 @@ export const fetchTeachers = async () => {
 
         const setTeachers = useAdminStore.getState().setTeachers;
         setTeachers(response.data);
-
-        return response.data;
     } catch (error) {
         console.error("Error fetching teachers:", error.message);
         throw error;
+    }
+};
+
+export const handleRemoveIncharge = async teacherId => {
+    try {
+        ToastAndroid.show("please wait", ToastAndroid.SHORT);
+        const response = await axios.post("/admin/removeIncharge", {
+            teacherId
+        });
+
+        if (response.data.success) {
+            useAdminStore.getState().setInCharge(teacherId, null, null);
+            ToastAndroid.show(
+                "Successfully removed in-charge",
+                ToastAndroid.SHORT
+            );
+        } else
+            ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
+    } catch (error) {
+        console.log(error);
+        ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
     }
 };
 
@@ -23,37 +43,41 @@ export const assignClass = async ({ year, course, teacherId }) => {
         const res = await axios.post("/admin/assignClass", {
             year: year.id,
             course: course.id,
-            teacherId,
+            teacherId
         });
 
         if (res.data.success) {
             const setInCharge = useAdminStore.getState().setInCharge;
-            const userId = useAdminStore.getState().user.userId;
+            const userId = useAppStore.getState().user.userId;
             setInCharge(teacherId, year.id, course.id);
 
             if (teacherId === userId) {
-                const setInCharge = useAdminStore.getState().updateUser({
+                useAppStore.getState().updateUser({
                     in_charge_year: year.id,
-                    in_charge_course: course.id,
+                    in_charge_course: course.id
                 });
             }
+
+            ToastAndroid.show(
+                "Class assigned successfully",
+                ToastAndroid.SHORT
+            );
 
             router.back();
         } else
             ToastAndroid.show(
                 res.data.message ?? "failed to assign class",
-                ToastAndroid.LONG,
+                ToastAndroid.LONG
             );
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("failed to assign class", ToastAndroid.LONG);
     }
 };
 
-export const verifyTeacher = async (teacherId) => {
+export const verifyTeacher = async teacherId => {
     try {
         const res = await axios.post("/admin/verifyTeacher", {
-            teacherId,
+            teacherId
         });
 
         if (res.data.success) {
@@ -62,7 +86,7 @@ export const verifyTeacher = async (teacherId) => {
         } else
             ToastAndroid.show(
                 res.data?.message ?? "Failed to verify teacher",
-                ToastAndroid.LONG,
+                ToastAndroid.LONG
             );
     } catch (error) {
         console.error(error);
@@ -70,10 +94,10 @@ export const verifyTeacher = async (teacherId) => {
     }
 };
 
-export const cancelVerification = async (teacherId) => {
+export const cancelVerification = async teacherId => {
     try {
         const res = await axios.post("/admin/deleteTeacher", {
-            teacherId,
+            teacherId
         });
 
         if (res.data?.success)
@@ -81,7 +105,7 @@ export const cancelVerification = async (teacherId) => {
         else
             ToastAndroid.show(
                 res.data?.message ?? "Failed to remove teacher",
-                ToastAndroid.LONG,
+                ToastAndroid.LONG
             );
 
         return res.data.success;

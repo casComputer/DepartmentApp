@@ -114,7 +114,7 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
             </TouchableOpacity>
             <TouchableOpacity
                 disabled={accepting}
-                onPress={handleAccept}
+                onPress={handlePressAccept}
                 className="self-center"
             >
                 <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">

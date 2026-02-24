@@ -18,6 +18,7 @@ import {
 import { useAdminStore } from "@store/admin.store.js";
 
 import confirm from "@utils/confirm.js";
+import queryClient from "@utils/queryClient.js";
 
 import Header from "@components/common/Header2.jsx";
 
@@ -56,24 +57,25 @@ const AssignClass = ({ user }) => {
                         : "Assign class"}
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => handleRemoveIncharge(user.userId)}
-                className="px-2 mt-5"
-            >
-                <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
-                    Remove Incharge
-                </Text>
-            </TouchableOpacity>
+
+            {user?.in_charge_course && user?.in_charge_year && (
+                <TouchableOpacity
+                    onPress={() => handleRemoveIncharge(user.userId)}
+                    className="px-2 mt-5"
+                >
+                    <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
+                        Remove Incharge
+                    </Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
 
 const VerifyTeacher = () => {
     const { userId } = useLocalSearchParams();
-    const user = useAdminStore(state =>
-        state.teachers.find(t => t.userId === userId)
-    );
-
+    const user = queryClient.getQueryData(["teachers"]).find(usr=> usr.userId === userId)
+    
     const [verifying, setVerifying] = useState(false);
     const [cancelling, setCancelling] = useState(false);
 

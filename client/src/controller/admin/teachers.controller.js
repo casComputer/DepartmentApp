@@ -9,11 +9,13 @@ export const fetchTeachers = async () => {
     try {
         const response = await axios.get("/admin/teachers");
 
-        const setTeachers = useAdminStore.getState().setTeachers;
-        setTeachers(response.data);
+        // const setTeachers = useAdminStore.getState().setTeachers;
+        // setTeachers(response.data);
+
+        return response.data ?? [];
     } catch (error) {
-        console.error("Error fetching teachers:", error.message);
-        throw error;
+        ToastAndroid.show("Failed to fetch teachets", ToastAndroid.SHORT);
+        return [];
     }
 };
 

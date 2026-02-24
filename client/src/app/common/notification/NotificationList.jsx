@@ -18,6 +18,7 @@ import {
 import { fetchNotifications } from "@controller/common/notification.controller.js";
 
 import { downloadFile } from "@utils/file.js";
+import { getTime } from "@utils/date.js";
 import getPreviewUrl from "@utils/pdfPreview.js";
 
 const RenderItem = ({ item = {} }) => {
@@ -41,7 +42,7 @@ const RenderItem = ({ item = {} }) => {
                     {item.title}
                 </Text>
                 <Text className="text-text/60 font-semibold text-sm">
-                    {item.createdAt.split("T")[1].slice(0, 5)}
+                    {getTime(item.createdAt)}
                 </Text>
             </View>
 

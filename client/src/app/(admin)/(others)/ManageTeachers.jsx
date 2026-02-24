@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 import { useAdminStore } from "@store/admin.store.js";
@@ -10,13 +10,15 @@ import TeacherItem from "@components/common/UserItem.jsx";
 import Header from "@components/common/Header.jsx";
 
 const ManageTeachers = () => {
-    const teachers = useAdminStore((state) => state.teachers);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        setLoading(true);
-        fetchTeachers().then(() => setLoading(false));
-    }, []);
+    const {
+        data: teachers,
+        isLoading: loading,
+        refetch,
+        isRefetching
+    } = useQuery({
+        queryKey: ["teachers"],
+        queryFn: () => fetchTeachers()
+    });
 
     return (
         <View className="flex-1 bg-primary">
@@ -25,6 +27,8 @@ const ManageTeachers = () => {
             <FlashList
                 data={teachers ?? []}
                 showsVerticalScrollIndicator={false}
+                onRefresh={refetch}
+                refreshing={isRefetching}
                 keyExtractor={(item, index) => item?.userId ?? index}
                 className="px-2 pt-16"
                 contentContainerStyle={{ paddingBottom: 60 }}
@@ -35,7 +39,7 @@ const ManageTeachers = () => {
                             item?.userId &&
                             router.push({
                                 pathname: "(admin)/(others)//VerifyTeacher",
-                                params: { userId: item?.userId },
+                                params: { userId: item?.userId }
                             })
                         }
                     />

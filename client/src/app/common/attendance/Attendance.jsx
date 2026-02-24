@@ -216,7 +216,7 @@ const Attendance = () => {
 
     const handleSelectAll = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setStudents(prev => prev.map({ ...prev, present: true }));
+        setStudents(prev => prev.map(item => ({ ...item, present: true })));
     };
 
     return (
@@ -227,7 +227,11 @@ const Attendance = () => {
                 disabled={loading}
             />
 
-            <Options loading={loading} handleSelectAll={handleSelectAll} isEditable={isEditable} />
+            <Options
+                loading={loading}
+                handleSelectAll={handleSelectAll}
+                isEditable={isEditable}
+            />
 
             <ScrollView
                 ref={scrollViewRef}

@@ -10,12 +10,16 @@ const Header = ({ onSave, saving, disabled }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onSave();
     };
+    const handleBack = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        router.back();
+    };
 
     return (
         <View className="flex-row items-center justify-between pl-2 pr-3">
             <TouchableOpacity
                 className="flex-row items-center gap-0"
-                onPress={() => router.back()}
+                onPress={handleBack}
             >
                 <MaterialIcons
                     name="arrow-back-ios-new"

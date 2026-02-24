@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { router } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header.jsx";
 import Select from "@/components/common/Select.jsx";
@@ -12,6 +13,7 @@ const Selector = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
 
     const handleProceed = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         if (selectedClass?.id && selectedCourse?.id) {
             router.push({
                 pathname: "/common/fees/Fees",
@@ -22,6 +24,11 @@ const Selector = () => {
             });
         }
     };
+    
+    const handleRouteToHistory = ()=>{
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        router.push("/common/fees/History")
+    }
 
     return (
         <View className="flex-1 bg-primary">
@@ -29,10 +36,10 @@ const Selector = () => {
                 title="Fees"
                 extraButton={true}
                 buttonTitle={"History"}
-                handlePress={() => router.push("/common/fees/History")}
+                handlePress={handleRouteToHistory}
             />
 
-            <View className="px-2 mt-5 pt-16"  >
+            <View className="px-2 mt-16"  >
                 <Select
                     title="Year"
                     options={YEAR}

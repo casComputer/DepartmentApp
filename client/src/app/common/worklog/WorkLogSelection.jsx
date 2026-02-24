@@ -197,6 +197,7 @@ const WorkLogSelection = () => {
 
     /* ------------------ NEXT BUTTON ------------------ */
     const handleNext = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setPage1Warning("");
 
         if (!page1Valid) {
@@ -209,6 +210,7 @@ const WorkLogSelection = () => {
 
     /* ------------------ SAVE WORKLOG ------------------ */
     const handleSave = async ({ subject, topics }) => {
+        
         if (!subject.trim() || !topics.trim()) {
             setPage2Warning("Please enter subject and topics.");
             return false;

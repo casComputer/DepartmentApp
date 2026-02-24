@@ -52,18 +52,27 @@ export const isDatePassed = input => {
     return date.getTime() < Date.now();
 };
 
-export const getRemainingDays = (dueDate) => {
-  if (!dueDate) return null;
+export const getRemainingDays = dueDate => {
+    if (!dueDate) return null;
 
-  const today = new Date();
-  const due = new Date(dueDate);
+    const today = new Date();
+    const due = new Date(dueDate);
 
-  // Remove time part to avoid partial-day issues
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
+    // Remove time part to avoid partial-day issues
+    today.setHours(0, 0, 0, 0);
+    due.setHours(0, 0, 0, 0);
 
-  const diffTime = due - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = due - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  return diffDays;
+    return diffDays;
+};
+
+export const getTime = timestamp => {
+    const now = new Date(timestamp);
+    return now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    });
 };

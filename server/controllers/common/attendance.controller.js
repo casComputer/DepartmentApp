@@ -367,7 +367,7 @@ async function generateAttendancePDF({
           #title {
             text-align: center;
             margin-bottom: 20px;
-            margin: 20px 0; 
+            margin: 20px 0;
           }
         </style>
       </head>
@@ -403,27 +403,43 @@ async function generateAttendancePDF({
     </html>
   `;
 
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage"
-        ]
-    });
+    let browser = null;
 
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    try {
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--no-first-run",
+                "--no-zygote",
+                "--single-process"
+            ]
+        });
 
-    // ✅ Generate PDF as buffer (NO file path)
-    const pdfBuffer = await page.pdf({
-        format: "A4",
-        printBackground: true
-    });
+        const page = await browser.newPage();
 
-    await browser.close();
+        await page.setContent(html, {
+            waitUntil: "domcontentloaded",
+            timeout: 60000
+        });
 
-    return pdfBuffer; // 👈 IMPORTANT
+        const pdfBuffer = await page.pdf({
+            format: "A4",
+            printBackground: true,
+            timeout: 60000
+        });
+
+        return pdfBuffer;
+    } finally {
+        if (browser) {
+            await browser
+                .close()
+                .catch(err => console.error("Error closing browser:", err));
+        }
+    }
 }
 
 // ------------------ GENERATE XL/PDF ------------------

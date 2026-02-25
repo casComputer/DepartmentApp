@@ -9,7 +9,7 @@ const tables = {
     student: { table: "students", id: "studentId" },
     teacher: { table: "teachers", id: "teacherId" },
     admin: { table: "admins", id: "adminId" },
-    parent: { table: "parents", id: "parentId" }
+    parent: { table: "parents", id: "parentId" },
 };
 
 router.post("/uploadDp", async (req, res) => {
@@ -19,14 +19,14 @@ router.post("/uploadDp", async (req, res) => {
     if (!role || !userId || !secure_url || !public_id)
         return res.json({
             success: false,
-            message: "Missing required parameters!"
+            message: "Missing required parameters!",
         });
 
     try {
         if (!current_dp_public_id) {
             const { rows } = await turso.execute(
                 `SELECT dp_public_id FROM users WHERE userId = ?`,
-                [userId]
+                [userId],
             );
             current_dp_public_id = rows[0]?.dp_public_id;
         }
@@ -41,23 +41,23 @@ router.post("/uploadDp", async (req, res) => {
 
         if (current_dp_public_id)
             await cloudinary.api.delete_resources([current_dp_public_id], {
-                resource_type: "image"
+                resource_type: "image",
             });
 
         return res.json({
             success: true,
-            message: "Profile picture updated successfully"
+            message: "Profile picture updated successfully",
         });
     } catch (error) {
         console.error("uploadDp error:", error);
 
         await cloudinary.api.delete_resources([public_id], {
-            resource_type: "image"
+            resource_type: "image",
         });
 
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
         });
     }
 });
@@ -69,7 +69,7 @@ router.post("/getDp", async (req, res) => {
         if (!userId || !role) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required parameters!"
+                message: "Missing required parameters!",
             });
         }
 
@@ -84,7 +84,7 @@ router.post("/getDp", async (req, res) => {
         if (!result.rows || result.rows.length === 0) {
             return res.json({
                 success: false,
-                message: "User not found"
+                message: "User not found",
             });
         }
 
@@ -93,13 +93,13 @@ router.post("/getDp", async (req, res) => {
         return res.json({
             success: true,
             dp,
-            dp_public_id
+            dp_public_id,
         });
     } catch (error) {
         console.error("Fetch dp Error:", error);
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
         });
     }
 });
@@ -108,51 +108,44 @@ router.post("/editProfile", async (req, res) => {
     try {
         const { userId, role } = req.user;
 
-        let { fullname, email, phone, about } = req.body;
+        let { fullname, phone, about } = req.body;
         fullname = fullname?.trim();
-        email = email?.trim();
         phone = phone?.trim();
         about = about?.trim();
 
         if (!fullname)
             return res.json({
                 success: false,
-                message: "Fullname cannot be empty"
+                message: "Fullname cannot be empty",
             });
 
         const { rows: existUser } = await turso.execute(
             `SELECT * FROM users WHERE userId = ?`,
-            [userId]
+            [userId],
         );
 
         if (existUser.length === 0)
             return res.json({
                 success: false,
-                message: "User not found!"
+                message: "User not found!",
             });
 
         const updateQuery = `
 	  UPDATE users
-	  SET fullname = ?, email = ?, phone = ?, about = ?
+	  SET fullname = ?, phone = ?, about = ?
 	  WHERE userId = ?
 	`;
-        await turso.execute(updateQuery, [
-            fullname,
-            email,
-            phone,
-            about,
-            userId
-        ]);
+        await turso.execute(updateQuery, [fullname, phone, about, userId]);
 
         return res.json({
             success: true,
-            message: "Profile updated successfully"
+            message: "Profile updated successfully",
         });
     } catch (error) {
         console.error("Edit Profile Error:", error);
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
         });
     }
 });

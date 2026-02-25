@@ -8,9 +8,10 @@ import {
     ScrollView,
     Platform,
     ActivityIndicator,
-    StatusBar
+    StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 import { generateOtp, verifyOtp } from "@controller/common/email.controller.js";
 
@@ -121,7 +122,7 @@ function FieldLabel({ children }) {
 
 /* ─── Main Screen ───────────────────────────────────────────── */
 export default function EmailVerificationScreen({ navigation }) {
-    const [step, setStep] = useState(0); // 0=email 1=code 2=done
+    const [step, setStep] = useState(0);
     const [email, setEmail] = useState("");
     const [emailFocus, setEmailFocus] = useState(false);
     const [code, setCode] = useState("");
@@ -146,9 +147,15 @@ export default function EmailVerificationScreen({ navigation }) {
         }
         setEmailError("");
         setLoading(true);
-        await generateOtp(email);
+        const success = await generateOtp(email);
         setLoading(false);
-        setStep(1);
+        if (success) {
+            setStep(1);
+        } else {
+            setEmailError(
+                "Failed to send verification code. Please try again.",
+            );
+        }
     };
 
     /* ── Validate & submit code ── */
@@ -159,9 +166,17 @@ export default function EmailVerificationScreen({ navigation }) {
         }
         setCodeError("");
         setLoading(true);
-        await verifyOtp(code);
+        const res = await verifyOtp(code);
+
         setLoading(false);
-        setStep(2);
+
+        if (res.success) {
+            setStep(2);
+        } else {
+            setCodeError(
+                res.message || "Verification failed. Please try again.",
+            );
+        }
     };
 
     return (
@@ -216,7 +231,7 @@ export default function EmailVerificationScreen({ navigation }) {
                                 </Text>
                                 <TouchableOpacity
                                     className="w-full bg-btn rounded-xl py-4 items-center"
-                                    onPress={() => navigation?.navigate("Home")}
+                                    onPress={() => router.push("/")}
                                 >
                                     <Text className="text-white font-semibold text-sm tracking-wide">
                                         Continue to App
@@ -268,7 +283,7 @@ export default function EmailVerificationScreen({ navigation }) {
                                                     placeholder="you@example.com"
                                                     placeholderTextColor="#94a3b8"
                                                     value={email}
-                                                    onChangeText={t => {
+                                                    onChangeText={(t) => {
                                                         setEmail(t);
                                                         setEmailError("");
                                                     }}
@@ -384,17 +399,17 @@ export default function EmailVerificationScreen({ navigation }) {
                                                     position: "absolute",
                                                     opacity: 0,
                                                     width: 0,
-                                                    height: 0
+                                                    height: 0,
                                                 }}
                                                 value={code}
-                                                onChangeText={t => {
+                                                onChangeText={(t) => {
                                                     setCode(
                                                         t
                                                             .replace(/\D/g, "")
                                                             .slice(
                                                                 0,
-                                                                CODE_LENGTH
-                                                            )
+                                                                CODE_LENGTH,
+                                                            ),
                                                     );
                                                     setCodeError("");
                                                 }}
@@ -425,7 +440,7 @@ export default function EmailVerificationScreen({ navigation }) {
                                             </TouchableOpacity>
 
                                             {codeError ? (
-                                                <View className="flex-row items-center gap-1 mt-2 mb-4">
+                                                <View className="flex-row items-center gap-1 mt-2 mb-4 justify-center">
                                                     <Ionicons
                                                         name="alert-circle-outline"
                                                         size={13}
@@ -467,7 +482,10 @@ export default function EmailVerificationScreen({ navigation }) {
                                                 )}
                                             </TouchableOpacity>
 
-                                            <TouchableOpacity className="mt-5 items-center">
+                                            <TouchableOpacity
+                                                onPress={handleEmailSubmit}
+                                                className="mt-5 items-center"
+                                            >
                                                 <Text className="text-text-secondary text-xs">
                                                     Didn't receive it?{" "}
                                                     <Text className="text-btn font-semibold">

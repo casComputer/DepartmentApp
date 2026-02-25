@@ -33,10 +33,9 @@ export const formatUsage = (usageData) => {
     const requestsUsage = usageData.requests ?? 0;
     const storageUsage = usageData.storage?.usage ?? 0;
 
-    // Validate limits or fallback to defaults
-    const maxReads = usageData.derived_resources ?? 500_000_000;
-    const maxWrites = usageData.requests ?? 10_000_000;
-    const maxStorage = usageData.storage?.limit_bytes ?? 5 * 1024 ** 3; // 5 GB fallback
+    const maxReads = 500_000_000;
+    const maxWrites = 10_000_000;
+    const maxStorage = 5 * 1024 ** 3; 
 
     // Ensure numbers are valid
     const safeNumber = (num, fallback = 0) =>

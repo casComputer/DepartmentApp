@@ -6,8 +6,6 @@ import {
     clearUser
 } from "@storage/user.storage.js";
 
-import { Color } from "@constants/TWPallet.js";
-
 export const useAppStore = create(set => ({
     user: {
         role: "unknown", 

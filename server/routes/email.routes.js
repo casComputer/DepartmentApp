@@ -3,6 +3,8 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import Otp from "../models/Otp.js";
 import { sendOtpEmail } from "../services/emailService.js";
+import { turso } from "../config/turso.js";
+import { exec } from "child_process";
 
 const router = Router();
 
@@ -136,6 +138,11 @@ router.post("/verify", async (req, res) => {
 
         // Success — delete the used OTP
         await Otp.deleteOne({ _id: record._id });
+
+        await turso.execute(
+            "UPDATE users SET is_email_verified = true WHERE userId = ?",
+            [cleanUserId]
+        );
 
         return res.status(200).json({
             success: true,

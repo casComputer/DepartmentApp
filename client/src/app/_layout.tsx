@@ -27,25 +27,25 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
-        shouldShowAlert: true
-    })
+        shouldShowAlert: true,
+    }),
 });
 
-const Layout = ({ userId, role, is_verified }) => (
+const Layout = ({ userId, role, is_verified, is_email_verified }) => (
     <Stack
         screenOptions={{
             headerShown: false,
-            animation: "slide_from_right"
+            animation: "slide_from_right",
         }}
     >
-        <Stack.Protected guard={true}>
-            <Stack.Screen name="EmailVerification" />
-        </Stack.Protected>
-
         <Stack.Protected guard={!userId || role === "unknown" || !role}>
             <Stack.Screen name="index" />
             <Stack.Screen name="auth/Signin" />
             <Stack.Screen name="auth/Signup" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!is_email_verified && userId}>
+            <Stack.Screen name="EmailVerification" />
         </Stack.Protected>
 
         <Stack.Protected guard={is_verified}>
@@ -77,7 +77,7 @@ const Layout = ({ userId, role, is_verified }) => (
         <Stack.Screen
             name="common/ImageFullView"
             options={{
-                animation: "fade"
+                animation: "fade",
             }}
         />
     </Stack>
@@ -90,8 +90,8 @@ export default function RootLayout() {
     const currTheme = storage.getString("theme");
     Uniwind.setTheme(currTheme ?? "system");
 
-    const { userId, role, is_verified } =
-        useAppStore(state => state?.user) ?? {};
+    const { userId, role, is_verified, is_email_verified } =
+        useAppStore((state) => state?.user) ?? {};
 
     useEffect(() => {
         if (!userId || !role) return;
@@ -114,6 +114,7 @@ export default function RootLayout() {
                         userId={userId}
                         role={role}
                         is_verified={is_verified}
+                        is_email_verified={is_email_verified}
                     />
                 </QueryClientProvider>
             </KeyboardProvider>

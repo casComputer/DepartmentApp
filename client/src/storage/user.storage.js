@@ -1,12 +1,11 @@
-import {
-    storage
-} from "@utils/storage.js";
+import { storage } from "@utils/storage.js";
 
 export const setUser = ({
     userId,
     fullname,
     role,
     is_verified = false,
+    is_email_verified = false,
     dp = "",
     dp_public_id = "",
 
@@ -25,7 +24,7 @@ export const setUser = ({
     year = "",
 
     // For parents
-    students = []
+    students = [],
 }) => {
     if (!role || !userId || !fullname) return;
     storage.set("userId", userId);
@@ -36,6 +35,8 @@ export const setUser = ({
     storage.set("phone", phone || "");
     storage.set("email", email || "");
     storage.set("about", about || "");
+    storage.set("is_email_verified", Boolean(is_email_verified));
+    storage.set("is_verified", Boolean(is_verified));
 
     storage.set("year", year ?? "");
     storage.set("course", course ?? "");
@@ -43,13 +44,6 @@ export const setUser = ({
     storage.set("in_charge_course", in_charge_course || "");
     storage.set("in_charge_year", in_charge_year || "");
     storage.set("courses", JSON.stringify(courses || []));
-
-    if (
-        typeof is_verified === "boolean" ||
-        is_verified === 0 ||
-        is_verified === 1
-    )
-        storage.set("is_verified", Boolean(is_verified));
 
     if (rollno) storage.set("rollno", rollno);
 
@@ -64,6 +58,7 @@ export const getUser = () => {
     const dp = storage.getString("dp") || "";
     const dp_public_id = storage.getString("dp_public_id") || "";
     const is_verified = storage.getBoolean("is_verified");
+    const is_email_verified = storage.getBoolean("is_email_verified");
     const phone = storage.getString("phone") || "";
     const email = storage.getString("email") || "";
     const about = storage.getString("about") || "";
@@ -81,7 +76,7 @@ export const getUser = () => {
     // parent
     const students = JSON.parse(storage.getString("students") || "[]");
 
-    if (role === 'student') {
+    if (role === "student") {
         return {
             userId,
             fullname,
@@ -95,8 +90,9 @@ export const getUser = () => {
             rollno,
             course,
             year,
+            is_email_verified,
         };
-    } else if (role === 'teacher' || role === 'admin') {
+    } else if (role === "teacher" || role === "admin") {
         return {
             userId,
             fullname,
@@ -109,9 +105,10 @@ export const getUser = () => {
             about,
             in_charge_course,
             in_charge_year,
-            courses
+            courses,
+            is_email_verified,
         };
-    } else if (role === 'parent') {
+    } else if (role === "parent") {
         return {
             userId,
             fullname,
@@ -122,11 +119,11 @@ export const getUser = () => {
             phone,
             email,
             about,
-            students
+            is_email_verified,
+            students,
         };
     }
 };
-
 
 export const clearUser = () => {
     storage.remove("userId");
@@ -135,6 +132,7 @@ export const clearUser = () => {
     storage.remove("dp");
     storage.remove("dp_public_id");
     storage.remove("is_verified");
+    storage.remove("is_email_verified");
     storage.remove("phone");
     storage.remove("email");
     storage.remove("about");

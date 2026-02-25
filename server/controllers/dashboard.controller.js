@@ -7,37 +7,36 @@ export const cloudinaryStats = async (req, res) => {
 
         res.json({
             success: true,
-            usage
+            usage,
         });
     } catch (error) {
         console.error("Error while fetching cloudinary stats: ", error);
         res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error: error?.message ?? "Error while fetching cloudinary stats!"
+            error: error?.message ?? "Error while fetching cloudinary stats!",
         });
     }
 };
 
-export const tursoStats = async () => {
-    async (req, res) => {
-        try {
-            const stats =
-                await tursoStatsClient.databases.usage("database");
+export const tursoStats = async (req, res) => {
+    try {
+        const stats = await tursoStatsClient.databases.usage("database");
 
-            res.json({
-                success: true,
-                stats
-            });
-        } catch (error) {
-            console.error("Error while fetching turso stats: ", error);
-            res.json({
-                success: false,
-                message: "Failed to fetch turso status!",
-                error: error?.message ?? "Failed to fetch turso status"
-            });
-        }
-    };
+        console.log(stats);
+
+        res.json({
+            success: true,
+            stats,
+        });
+    } catch (error) {
+        console.error("Error while fetching turso stats: ", error);
+        res.json({
+            success: false,
+            message: "Failed to fetch turso status!",
+            error: error?.message ?? "Failed to fetch turso status",
+        });
+    }
 };
 
 export const usersStats = async (req, res) => {
@@ -48,23 +47,22 @@ export const usersStats = async (req, res) => {
 
         const users = {};
 
-        rows.forEach(user => {
+        rows.forEach((user) => {
             users[user.role] = {
-                strength: user.strength
+                strength: user.strength,
             };
         });
 
         res.json({
             success: true,
-            users
+            users,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
 
         console.error(error);
     }
 };
-

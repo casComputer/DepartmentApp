@@ -65,7 +65,7 @@ export const CloudinaryStats = () => {
 
 export const TursoStats = () => {
     const { data: stats = {} } = useQuery({
-        queryKey: ["tursoStats", 1],
+        queryKey: ["tursoStats", 10000],
         queryFn: fetchTursoStats,
     });
 
@@ -75,9 +75,8 @@ export const TursoStats = () => {
         storage: {
             usage: stats.usage?.storage_bytes ?? 0,
             limit_bytes: 5 * 1024 ** 3,
-        },
-        derived_resources: 500_000_000, // optional
-        rate_limit_allowed: 10_000_000, // optional
+        }
+        
     });
 
     return (
@@ -90,15 +89,15 @@ export const TursoStats = () => {
                     <Text className="text-md font-semibold text-text">
                         Rows Read
                     </Text>
-                    <View className="flex-row items-center justify-end gap-2">
-                        <ProgressBar progress={reads.progress} width={"50%"} />
+                    <View className="flex-row items-center gap-2">
                         <Text
                             numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="text-md font-semibold text-text w-[20%]"
+                            
+                            className="text-md font-semibold text-text"
                         >
                             {reads.text}
                         </Text>
+                        <ProgressBar progress={reads.progress} width={140} />
                     </View>
                 </View>
 
@@ -106,15 +105,15 @@ export const TursoStats = () => {
                     <Text className="text-md font-semibold text-text">
                         Rows Written
                     </Text>
-                    <View className="flex-row items-center justify-end gap-2">
-                        <ProgressBar progress={writes.progress} width={"50%"} />
+                    <View className="flex-row items-center gap-2">
                         <Text
                             numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="text-md font-semibold text-text w-[20%]"
+                            
+                            className="text-md font-semibold text-text"
                         >
                             {writes.text}
                         </Text>
+                        <ProgressBar progress={writes.progress} width={140} />
                     </View>
                 </View>
 
@@ -122,18 +121,18 @@ export const TursoStats = () => {
                     <Text className="text-md font-semibold text-text">
                         Storage Usage
                     </Text>
-                    <View className="flex-row items-center justify-end gap-2">
-                        <ProgressBar
-                            progress={storage.progress}
-                            width={"50%"}
-                        />
+                    <View className="flex-row items-center gap-2 justify-end">
                         <Text
                             numberOfLines={1}
-                            adjustsFontSizeToFit
-                            className="text-md font-semibold text-text w-[20%]"
+                            
+                            className="text-md font-semibold text-text"
                         >
                             {storage.text}
                         </Text>
+                        <ProgressBar
+                            progress={storage.progress}
+                            width={140}
+                        />
                     </View>
                 </View>
             </View>

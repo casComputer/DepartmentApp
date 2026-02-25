@@ -1,20 +1,18 @@
 import nodemailer from "nodemailer";
 
-// ─── Validate required Brevo env vars ────────────────────────────────────────
 const assertBrevoConfig = () => {
-    const missing = ["BREVO_SMTP_USER", "BREVO_SMTP_PASS"].filter(
+    const missing = ["GMAIL_APP_PASSWORD", "GMAIL_USER"].filter(
         key => !process.env[key]
     );
 
     if (missing.length) {
         throw new Error(
             `Missing required environment variable(s): ${missing.join(", ")}.\n` +
-                "Set BREVO_SMTP_USER and BREVO_SMTP_PASS from Brevo SMTP settings."
+                "Set GMAIL_APP_PASSWORD and GMAIL_USER from Gmail SMTP settings."
         );
     }
 };
 
-// ─── Singleton transporter ────────────────────────────────────────────────────
 let _transporter = null;
 
 const getTransporter = () => {
@@ -23,39 +21,33 @@ const getTransporter = () => {
     assertBrevoConfig();
 
     _transporter = nodemailer.createTransport({
-        host: "smtp-relay.brevo.com",
+        host: "smtp.gmail.com",
         port: 587,
         secure: false, // must be false for 587
         auth: {
-            user: process.env.BREVO_SMTP_USER,
-            pass: process.env.BREVO_SMTP_PASS
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD
         }
     });
 
     return _transporter;
 };
 
-/**
- * Verifies SMTP connection.
- */
 export const verifyConnection = async () => {
     try {
         const transporter = getTransporter();
         await transporter.verify();
-        console.log("✅ Brevo SMTP connection verified");
+        console.log("✅ SMTP connection verified");
     } catch (err) {
         console.error("❌ SMTP verification failed:", err.message);
     }
 };
 
-/**
- * Sends OTP email
- */
 export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
     const transporter = getTransporter();
 
     const info = await transporter.sendMail({
-        from: `"OTP Service" <yourverified@yourdomain.com>`, // MUST match verified sender
+        from: `"DC-Connect  " <cas.department.computer@gmail.com>`,
         to,
         subject: "Your One-Time Password (OTP)",
         text: `Your OTP is: ${otp}\n\nIt expires in ${ttlMins} minutes.`,
@@ -69,7 +61,9 @@ export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
           ${otp}
         </div>
         <p style="font-size:12px;color:#999">If you did not request this, ignore this email.</p>
-      </div>
+      </di
+export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
+   v>
     `
     });
 

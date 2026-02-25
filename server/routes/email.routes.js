@@ -27,6 +27,8 @@ router.post("/generate", async (req, res) => {
     try {
         const { email } = req.body;
         const { userId } = req.user;
+        
+        console.log('Generate email ', email, userId);
 
         if (!userId?.trim())
             return res

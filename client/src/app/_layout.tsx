@@ -27,17 +27,21 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
-        shouldShowAlert: true,
-    }),
+        shouldShowAlert: true
+    })
 });
 
 const Layout = ({ userId, role, is_verified }) => (
     <Stack
         screenOptions={{
             headerShown: false,
-            animation: "slide_from_right",
+            animation: "slide_from_right"
         }}
     >
+        <Stack.Protected guard={true}>
+            <Stack.Screen name="EmailVerification" />
+        </Stack.Protected>
+
         <Stack.Protected guard={!userId || role === "unknown" || !role}>
             <Stack.Screen name="index" />
             <Stack.Screen name="auth/Signin" />
@@ -73,7 +77,7 @@ const Layout = ({ userId, role, is_verified }) => (
         <Stack.Screen
             name="common/ImageFullView"
             options={{
-                animation: "fade",
+                animation: "fade"
             }}
         />
     </Stack>
@@ -87,7 +91,7 @@ export default function RootLayout() {
     Uniwind.setTheme(currTheme ?? "system");
 
     const { userId, role, is_verified } =
-        useAppStore((state) => state?.user) ?? {};
+        useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
         if (!userId || !role) return;

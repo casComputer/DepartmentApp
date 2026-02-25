@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import "./config/mongoose.js";
+import "./services/emailService.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -16,11 +17,12 @@ import fileRoutes from "./routes/file.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
-import parentRoutes from "./routes/parent.routes.js"
+import parentRoutes from "./routes/parent.routes.js";
+import emailRoutes from "./routes/email.routes.js";
 
 import {
     authenticateToken,
-    authorize,
+    authorize
 } from "./middleware/authentication.middleware.js";
 import {
     checkHealth,
@@ -35,8 +37,8 @@ app.use(express.json());
 app.use(
     cors({
         origin: "*",
-        credentials: true,
-    }),
+        credentials: true
+    })
 );
 
 app.set("trust proxy", 1);
@@ -48,6 +50,7 @@ app.get("/", isServerRunning);
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/user", userRoutes);
+app.use("/email", emailRoutes);
 // app.get("/health", authorize("admin"), adminLimiter, checkHealth);
 // app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
 // app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);
@@ -69,7 +72,7 @@ app.use("/fees", feesRoutes);
 app.use((req, res) => {
     res.status(404).json({
         message: "Route not found",
-        success: false,
+        success: false
     });
 });
 

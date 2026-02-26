@@ -5,7 +5,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     FlatList,
-    Dimensions
+    Dimensions,
 } from "react-native";
 import Animated, {
     useAnimatedRef,
@@ -13,7 +13,7 @@ import Animated, {
     scrollTo,
     withTiming,
     withDelay,
-    useDerivedValue
+    useDerivedValue,
 } from "react-native-reanimated";
 import { useQuery } from "@tanstack/react-query";
 
@@ -30,10 +30,10 @@ const SIDE_SPACING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const today = new Date();
 const day = today.getDate();
 const weekday = today.toLocaleString("en-US", {
-    weekday: "long"
+    weekday: "long",
 });
 const month = today.toLocaleString("en-US", {
-    month: "long"
+    month: "long",
 });
 const year = today.getFullYear();
 
@@ -44,9 +44,9 @@ const Bubble = ({ item, attendance }) => (
                 attendance?.[item.id] === "present"
                     ? "rgb(34, 197, 94)"
                     : attendance?.[item.id] === "absent"
-                    ? "rgb(239, 68, 68)"
-                    : "rgb(120, 129, 143)",
-            borderRadius: "50%"
+                      ? "rgb(239, 68, 68)"
+                      : "rgb(120, 129, 143)",
+            borderRadius: "50%",
         }}
         className="w-8 h-8 justify-center items-center"
     >
@@ -57,14 +57,14 @@ const Bubble = ({ item, attendance }) => (
 const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
     const { data: attendance, isLoading } = useQuery({
         queryKey: ["todaysAttendanceReport", studentId],
-        queryFn: () => getTodaysAttendanceReport(studentId)
+        queryFn: () => getTodaysAttendanceReport(studentId),
     });
 
     return (
         <View
             style={{
                 width: studentId && !isSingle ? CARD_WIDTH : "100%",
-                marginRight: SIDE_SPACING * 2
+                marginRight: SIDE_SPACING * 2,
             }}
             className={`${!studentId || isSingle ? "px-2" : "mt-0"}`}
         >
@@ -105,7 +105,7 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                                 Holiday 🎉
                             </Text>
                         ) : (
-                            HOURS.map(item => (
+                            HOURS.map((item) => (
                                 <Bubble
                                     key={item.key}
                                     item={item}
@@ -122,8 +122,8 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
 };
 
 const MiniAttentdence = () => {
-    const role = useAppStore(state => state.user.role);
-    const students = useAppStore(state => state.user.students);
+    const role = useAppStore((state) => state.user.role);
+    const students = useAppStore((state) => state.user.students);
 
     const itemSize = CARD_WIDTH + SIDE_SPACING * 2;
     const maxOffset = itemSize * (students?.length - 1) ?? 0;
@@ -132,7 +132,9 @@ const MiniAttentdence = () => {
     const scrollX = useSharedValue(maxOffset);
 
     useDerivedValue(() => {
-        scrollTo(scrollRef, scrollX.value, 0, false);
+        if(scrollRef.current) {
+            scrollTo(scrollRef, scrollX.value, 0, false);
+        }
     });
 
     useEffect(() => {
@@ -141,8 +143,8 @@ const MiniAttentdence = () => {
         scrollX.value = withDelay(
             50,
             withTiming(0, {
-                duration: 1000
-            })
+                duration: 1000,
+            }),
         );
     }, [students]);
 
@@ -161,10 +163,10 @@ const MiniAttentdence = () => {
                     snapToInterval={CARD_WIDTH + SIDE_SPACING * 2}
                     decelerationRate="fast"
                     contentContainerStyle={{
-                        paddingHorizontal: SIDE_SPACING
+                        paddingHorizontal: SIDE_SPACING,
                     }}
                 >
-                    {students?.map(item => (
+                    {students?.map((item) => (
                         <MiniAttentdenceCard key={item} studentId={item} />
                     ))}
                 </Animated.ScrollView>

@@ -67,8 +67,7 @@
 //     `
 //     });
 
-//     console.log(`📧 OTP email sent to ${to} [messageId: ${info.messageId}]`);
-//     return info;
+//
 // };
 
 // verifyConnection();
@@ -78,8 +77,8 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
-    resend.emails.send({
-        from: "onboarding@resend.dev",
+    const { data, error } = await resend.emails.send({
+        from: "DC-Connect <onboarding@resend.dev>",
         to,
         subject: "Email Verification",
         html: `      <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:24px;border:1px solid #e0e0e0;border-radius:8px">
@@ -95,4 +94,7 @@ export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
 export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
    v>`
     });
+
+    console.log(`📧 OTP email sent to ${to} [info: ${info}]`);
+    return info;
 };

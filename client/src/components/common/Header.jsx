@@ -3,7 +3,7 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
-    Dimensions
+    Dimensions,
 } from "react-native";
 import { MaterialIcons } from "@icons";
 import { router } from "expo-router";
@@ -12,14 +12,12 @@ import * as Haptics from "expo-haptics";
 
 const ICON_SIZE = 26;
 
-const { height: vh } = Dimensions.get("window");
-
 const Header = ({
     title,
     extraButton = false,
     handlePress,
     buttonTitle = "",
-    disableBackBtn = false
+    disableBackBtn = false,
 }) => {
     const handleBack = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -52,14 +50,6 @@ const Header = ({
                     style={styles.background}
                     className="max-w-[75%] overflow-hidden bg-btn/10"
                 >
-                    {/* Background Blur Layer */}
-                    <BlurView
-                        tint="dark"
-                        intensity={10}
-                        experimentalBlurMethod="dimezisBlurView"
-                        style={[StyleSheet.absoluteFillObject]}
-                    />
-
                     {/* Foreground Content */}
                     <Text
                         className="text-3xl font-bold text-text"
@@ -97,8 +87,8 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.033)",
         borderWidth: 1,
         borderRadius: 23,
-        padding: 10
-    }
+        padding: 10,
+    },
 });
 
 export default Header;

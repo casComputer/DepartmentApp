@@ -2,13 +2,13 @@ import nodemailer from "nodemailer";
 
 const assertBrevoConfig = () => {
     const missing = ["GMAIL_APP_PASSWORD", "GMAIL_USER"].filter(
-        key => !process.env[key]
+        (key) => !process.env[key],
     );
 
     if (missing.length) {
         throw new Error(
             `Missing required environment variable(s): ${missing.join(", ")}.\n` +
-                "Set GMAIL_APP_PASSWORD and GMAIL_USER from Gmail SMTP settings."
+                "Set GMAIL_APP_PASSWORD and GMAIL_USER from Gmail SMTP settings.",
         );
     }
 };
@@ -21,14 +21,13 @@ const getTransporter = () => {
     assertBrevoConfig();
 
     _transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
+        host: "74.125.140.108",
         port: 465,
         secure: true, // must be true for 465
-          family: 4,
         auth: {
             user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD
-        }
+            pass: process.env.GMAIL_APP_PASSWORD,
+        },
     });
 
     return _transporter;
@@ -63,13 +62,10 @@ export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
         </div>
         <p style="font-size:12px;color:#999">If you did not request this, ignore this email.</p>
       </div>
-    `
+    `,
     });
 
     console.log(`✅ OTP email sent to ${to}: ${info.messageId}`);
-
-
-
 };
 
 verifyConnection();

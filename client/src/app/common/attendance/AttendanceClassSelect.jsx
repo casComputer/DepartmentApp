@@ -2,6 +2,8 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { router } from "expo-router";
 
+import * as Haptics from "expo-haptics";
+
 import Header from "@components/common/Header";
 import Select from "@/components/common/Select";
 
@@ -23,6 +25,7 @@ const Attendance = () => {
     const user = useAppStore(state => state.user);
 
     const handleProceed = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         if (selectedClass?.id && selectedCourse?.id && selectedHour?.id) {
             router.push({
                 pathname: "/common/attendance/Attendance",
@@ -55,7 +58,8 @@ const Attendance = () => {
                         <TouchableOpacity
                             onPress={() =>
                                 router.push({
-                                    pathname: "/common/attendance/AttendanceClassHistory",
+                                    pathname:
+                                        "/common/attendance/AttendanceClassHistory",
                                     params: {
                                         year: in_charge_year,
                                         course: in_charge_course

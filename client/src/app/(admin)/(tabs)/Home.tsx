@@ -6,11 +6,7 @@ import TeacherOptions from "@components/teacher/TeacherOptions.tsx";
 
 const Home = () => {
     return (
-        <ScrollView
-            contentContainerStyle={{ paddingBottom: 150 }}
-            className="bg-primary"
-            showsVerticalScrollIndicator={false}
-        >
+        <ScrollView className="bg-primary" showsVerticalScrollIndicator={false}>
             <Header />
             <AdminOptions />
             <TeacherOptions />

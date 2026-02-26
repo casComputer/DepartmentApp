@@ -18,7 +18,10 @@ const CourseList = ({ courses }) => {
             </Text>
             <View className="flex-row flex-wrap gap-2 ">
                 {courses.map((course, index) => (
-                    <View key={index} className="px-4 py-3 rounded-3xl bg-card">
+                    <View
+                        key={index}
+                        className="px-4 py-3 rounded-3xl bg-card overflow-hidden"
+                    >
                         <Text className="text-md font-bold text-text">
                             {course.course_name} {course.year} {course.course}
                         </Text>
@@ -27,7 +30,7 @@ const CourseList = ({ courses }) => {
                 <TouchableOpacity
                     onPress={routeToAddCourse}
                     activeOpacity={0.8}
-                    className="px-4 py-3 rounded-3xl bg-card flex-row justify-center items-center gap-1"
+                    className="px-4 py-3 rounded-3xl bg-card overflow-hidden flex-row justify-center items-center gap-1"
                 >
                     <Feather name="edit" size={16} color="rgb(59, 130, 246)" />
                     <Text className="text-md font-bold text-blue-500">

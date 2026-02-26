@@ -1,5 +1,12 @@
 import { useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    Dimensions,
+    StyleSheet
+} from "react-native";
 import Animated, {
     useSharedValue,
     withSpring,
@@ -7,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { MaterialIcons } from "@icons";
 import * as Haptics from "expo-haptics";
+import { BlurView } from "expo-blur";
 
 import { useAppStore } from "@store/app.store.js";
 
@@ -57,8 +65,15 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                     )}
                     <TouchableOpacity
                         onPress={handleClick}
-                        className="p-4 rounded-full bg-btn absolute z-10 -right-2 bottom-[15%]"
+                        style={{}}
+                        className="p-4 rounded-full bg-btn/20 absolute z-10 -right-2 bottom-[15%] overflow-hidden"
                     >
+                        <BlurView
+                            tint="dark"
+                            intensity={40}
+                            experimentalBlurMethod={"dimezisBlurView"}
+                            style={[StyleSheet.absoluteFillObject]}
+                        />
                         <MaterialIcons name="edit" size={30} />
                     </TouchableOpacity>
                 </View>

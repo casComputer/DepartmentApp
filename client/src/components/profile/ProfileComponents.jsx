@@ -40,7 +40,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                         width: AVATAR_SIZE,
                         borderRadius: AVATAR_SIZE / 2
                     }}
-                    className="bg-card border border-border justify-center items-center"
+                    className="bg-card border border-border justify-center items-center w-[80%] h-[80%]"
                 >
                     {dp ? (
                         <Image

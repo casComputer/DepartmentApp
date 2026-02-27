@@ -44,9 +44,9 @@ const Layout = ({ userId, role, is_verified, is_email_verified }) => (
             <Stack.Screen name="auth/Signup" />
         </Stack.Protected>
 
-        <Stack.Protected guard={!is_email_verified && userId}>
+        {/* <Stack.Protected guard={!is_email_verified && userId}>
             <Stack.Screen name="EmailVerification" />
-        </Stack.Protected>
+        </Stack.Protected> */}
 
         <Stack.Protected guard={is_verified}>
             <Stack.Protected guard={userId !== "" && role === "student"}>

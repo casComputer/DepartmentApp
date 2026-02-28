@@ -7,13 +7,11 @@
         "orientation": "portrait",
         "icon": "./assets/images/icon.png",
         "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
         "ios": {
             "supportsTablet": true,
             "bundleIdentifier": "com.cas.dcConnect"
         },
         "android": {
-            "edgeToEdgeEnabled": true,
             "package": "com.cas.dcConnect",
             "googleServicesFile": "./google-services.json"
         },
@@ -66,7 +64,9 @@
                         }
                     }
                 }
-            ]
+            ],
+            "expo-font",
+            "expo-sharing"
         ],
         "experiments": {
             "typedRoutes": true,

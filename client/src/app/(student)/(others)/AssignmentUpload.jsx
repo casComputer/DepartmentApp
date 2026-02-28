@@ -15,12 +15,11 @@ import queryClient from "@utils/queryClient";
 
 import { useAppStore } from "@store/app.store.js";
 
-const studentId = useAppStore.getState().user.userId;
-
 const AssignmentUpload = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(null);
+    const studentId = useAppStore(state => state.user.userId);
 
     const {
         assignmentId,
@@ -37,13 +36,13 @@ const AssignmentUpload = () => {
         if (uploading) return;
         setUploading(true);
         setProgress(1);
-        
+
         const is_uploaded = await handleAssignmentUpload(
             file,
             assignmentId,
             setProgress
         );
-        
+
         if (is_uploaded) {
             queryClient.setQueryData(["assignments"], prev => {
                 if (!prev) return prev;

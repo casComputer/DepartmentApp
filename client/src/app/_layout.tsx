@@ -27,7 +27,6 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
-        shouldShowAlert: true,
     }),
 });
 

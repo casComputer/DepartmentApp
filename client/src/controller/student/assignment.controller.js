@@ -1,29 +1,17 @@
 import axios from "@utils/axios.js";
-import {
-    ToastAndroid
-} from "react-native";
+import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import {
-    useAppStore
-} from "@store/app.store.js";
+import { useAppStore } from "@store/app.store.js";
 
-import {
-    getRandomSubmitMessage
-} from "@utils/displayMessages.js";
+import { getRandomSubmitMessage } from "@utils/displayMessages.js";
 
-export const getAssignment = async ({
-    pageParam
-}) => {
+export const getAssignment = async ({ pageParam }) => {
     try {
-        const {
-            course,
-            year
-        } = useAppStore.getState().user;
+        const { course, year } = useAppStore.getState().user;
 
-        if (!course || !year)
-            return []
+        if (!course || !year) return [];
 
         const response = await axios.post(
             "/assignment/getAssignmentForStudent",
@@ -35,14 +23,16 @@ export const getAssignment = async ({
             }
         );
 
-        if (response.data.success)
-            return response.data ?? []
+        if (response.data.success) return response.data ?? [];
 
-        ToastAndroid.show(response.data?.message ?? "Failed to fetch assignments", ToastAndroid.LONG);
+        ToastAndroid.show(
+            response.data?.message ?? "Failed to fetch assignments",
+            ToastAndroid.LONG
+        );
         return response.data ?? [];
     } catch (error) {
         ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
-        return []
+        return [];
     }
 };
 
@@ -54,12 +44,7 @@ export const handleDocumentPick = async setFormData => {
     if (result.canceled) {
         return;
     } else {
-        const {
-            name,
-            size,
-            uri,
-            mimeType
-        } = result.assets[0];
+        const { name, size, uri, mimeType } = result.assets[0];
 
         if (!name || !uri || !mimeType || !size) {
             ToastAndroid.show(
@@ -97,7 +82,10 @@ export const handleDocumentPick = async setFormData => {
         }
 
         setFormData({
-            uri, name, size, mimeType
+            uri,
+            name,
+            size,
+            mimeType
         });
     }
 };
@@ -125,7 +113,11 @@ const saveAssignmentSubmissionDetails = async ({
         );
 
         if (res?.data?.success) {
-            ToastAndroid.show(getRandomSubmitMessage() ?? "Assignment successfully submitted 🎉", ToastAndroid.SHORT);
+            ToastAndroid.show(
+                getRandomSubmitMessage() ??
+                    "Assignment successfully submitted 🎉",
+                ToastAndroid.SHORT
+            );
             return true;
         } else {
             ToastAndroid.show(
@@ -168,16 +160,14 @@ export const handleAssignmentUpload = async (
         });
 
         if (!signatureRes.data.success) {
-            ToastAndroid.show(signatureRes.data.message ?? 'failed to generate signature!', ToastAndroid.SHORT);
+            ToastAndroid.show(
+                signatureRes.data.message ?? "failed to generate signature!",
+                ToastAndroid.SHORT
+            );
             return false;
         }
 
-        const {
-            timestamp,
-            signature,
-            api_key,
-            preset
-        } = signatureRes.data;
+        const { timestamp, signature, api_key, preset } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
             ToastAndroid.show(
@@ -207,11 +197,9 @@ export const handleAssignmentUpload = async (
             }
         });
 
-        const {
-            secure_url, format
-        } = res.data;
+        const { secure_url, format } = res.data;
 
-        return await saveAssignmentSubmissionDetails( {
+        return await saveAssignmentSubmissionDetails({
             secure_url,
             format,
             assignmentId
@@ -221,8 +209,7 @@ export const handleAssignmentUpload = async (
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
         );
-        console.error("Error uploading to Cloudinary:",
-            error);
+        console.error("Error uploading to Cloudinary:", error);
         return false;
     }
 };

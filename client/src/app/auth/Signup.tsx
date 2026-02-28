@@ -167,7 +167,7 @@ const Signup = () => {
                         className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
                             username.trim().length >= 5
                                 ? "border-green-500"
-                                : "border-black dark:border-white"
+                                : "border-border"
                         }`}
                         placeholder="username"
                         autoCapitalize="none"
@@ -184,7 +184,7 @@ const Signup = () => {
                         className={`text-text border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl ${
                             fullName?.trim()?.length > 5
                                 ? "border-green-500"
-                                : "border-black dark:border-white "
+                                : "border-border"
                         }`}
                         placeholderTextColor="rgb(119,119,119)"
                         onChangeText={setFullName}
@@ -197,7 +197,7 @@ const Signup = () => {
                             className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl ${
                                 password.length > 5
                                     ? "border-green-500"
-                                    : "border-black dark:border-white"
+                                    : "border-border"
                             }`}
                             placeholder="Password"
                             placeholderTextColor="rgb(119,119,119)"

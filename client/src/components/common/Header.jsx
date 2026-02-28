@@ -3,7 +3,7 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
-    Dimensions,
+    Dimensions
 } from "react-native";
 import { MaterialIcons } from "@icons";
 import { router } from "expo-router";
@@ -17,7 +17,7 @@ const Header = ({
     extraButton = false,
     handlePress,
     buttonTitle = "",
-    disableBackBtn = false,
+    disableBackBtn = false
 }) => {
     const handleBack = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -33,12 +33,14 @@ const Header = ({
                         style={styles.background}
                         onPress={handleBack}
                     >
+                        {/* 
                         <BlurView
                             tint="dark"
                             intensity={10}
                             experimentalBlurMethod={"dimezisBlurView"}
                             style={[StyleSheet.absoluteFillObject]}
                         />
+                        */}
                         <MaterialIcons
                             name="arrow-back-ios-new"
                             size={ICON_SIZE}
@@ -84,11 +86,11 @@ const Header = ({
 const styles = StyleSheet.create({
     background: {
         borderColor: "#323232",
-        backgroundColor: "rgba(0,0,0,0.033)",
+        backgroundColor: "rgba(0,0,0,0.316)",
         borderWidth: 1,
         borderRadius: 23,
-        padding: 10,
-    },
+        padding: 10
+    }
 });
 
 export default Header;

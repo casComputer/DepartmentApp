@@ -44,7 +44,7 @@ export const AssignmentRenderItem = ({ item }) => {
 
     const status = exists?.status || "_";
     const rejectionMessage = exists?.rejectionMessage ?? "";
-    const isExpired = isDatePassed(item.dueDate);
+    const isExpired = isDatePassed();
 
     return (
         <TouchableOpacity

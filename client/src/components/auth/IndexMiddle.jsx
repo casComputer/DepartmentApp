@@ -7,10 +7,6 @@ import {
     View
 } from "react-native";
 
-import { useAppStore } from "../../store/app.store";
-
-const setUserRole = useAppStore.getState().setUserRole;
-
 const icons = {
     graduate: require("../../../assets/images/icons/graduate.png"),
     teacher: require("../../../assets/images/icons/teacher.png"),
@@ -18,12 +14,11 @@ const icons = {
 };
 
 const Button = ({ icon, text, role }) => {
-
     return (
         <TouchableOpacity
             onPress={() => {
                 router.push({
-                    pathname: "/auth/Signup",
+                    pathname: "/auth/GuideLine",
                     params: { userRole: role }
                 });
             }}

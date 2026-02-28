@@ -5,11 +5,11 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
-    Alert
+    Alert,
+    Image
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Haptics from "expo-haptics";
 
 import {
@@ -25,7 +25,7 @@ import { useTeacherStore } from "@store/teacher.store.js";
 
 const Avatar = ({ fullname, username, dp }) => (
     <>
-        <View className="w-[60vw] h-[60vw] rounded-full bg-green-400 self-center mt-10 justify-center items-center">
+        <View className="w-[60vw] h-[60vw] rounded-full bg-btn self-center mt-10 justify-center items-center">
             {dp ? (
                 <Image
                     source={{ uri: dp }}
@@ -37,19 +37,13 @@ const Avatar = ({ fullname, username, dp }) => (
                     }}
                 />
             ) : (
-                <Text
-                    style={{ fontSize: RFPercentage(18) }}
-                    className="font-black text-center text-text"
-                >
+                <Text className="font-black text-[8rem] text-center text-text">
                     {fullname?.slice(0, 1)}
                 </Text>
             )}
         </View>
 
-        <Text
-            style={{ fontSize: RFPercentage(2.3) }}
-            className="text-center text-text-secondary mt-2 "
-        >
+        <Text className="text-center text-2xl text-text-secondary mt-2 ">
             @{username}
         </Text>
     </>
@@ -58,32 +52,23 @@ const Avatar = ({ fullname, username, dp }) => (
 const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
     return (
         <View>
-            <View className="w-full rounded-full border-black border mt-5 dark:border-white ">
+            <View className="w-full rounded-full border-border border mt-5">
                 <TextInput
-                    style={{ fontSize: RFPercentage(2.4) }}
-                    className="w-full font-bold px-5 py-5 text-text"
+                    className="w-full font-bold px-5 py-5 text-text text-2xl"
                     value={fullname}
                     editable={false}
                 />
             </View>
 
             <View className="w-full mt-5 flex-row items-center gap-2">
-                <Text
-                    style={{ fontSize: RFPercentage(3) }}
-                    className="font-bold text-text "
-                >
-                    Roll No
-                </Text>
+                <Text className="font-bold text-text text-2xl">Roll No</Text>
 
                 <TextInput
                     style={{
-                        fontSize: RFPercentage(3),
                         borderWidth: !rollno ? 2 : 1
                     }}
-                    className={`flex-1 font-bold px-5 py-5 rounded-full text-text ${
-                        !rollno
-                            ? "border-red-500"
-                            : "border-black dark:border-white"
+                    className={`flex-1 text-2xl border font-bold px-5 py-5 rounded-full text-text ${
+                        !rollno ? "border-red-500" : "border-border"
                     }`}
                     value={`${rollno}`}
                     editable={Boolean(is_verified)}
@@ -161,56 +146,53 @@ const VerifyStudent = () => {
     }
 
     return (
-        <ScrollView
-            className="flex-1 px-3 bg-primary"
-            contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
-        >
+        <View className="flex-1 bg-primary">
             <Header onSave={handleSave} saving={saving} />
+            <ScrollView
+                className="px-2"
+                contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
+            >
+                <Avatar
+                    fullname={fullname}
+                    username={username}
+                    dp={student?.dp}
+                />
 
-            <Avatar fullname={fullname} username={username} dp={student?.dp} />
+                <Inputs
+                    fullname={fullname}
+                    rollno={roll}
+                    setRoll={setRoll}
+                    username={username}
+                    is_verified={is_verified}
+                />
 
-            <Inputs
-                fullname={fullname}
-                rollno={roll}
-                setRoll={setRoll}
-                username={username}
-                is_verified={is_verified}
-            />
-
-            <View className="flex-row gap-3 mt-10 px-3 ">
-                <TouchableOpacity
-                    disabled={loading}
-                    onPress={handleCancelVerification}
-                    className="flex-1 bg-red-500 rounded-3xl py-5"
-                >
-                    <Text
-                        style={{
-                            fontSize: RFPercentage(2.8)
-                        }}
-                        className="font-bold text-center leading-tight text-text"
-                    >
-                        Remove
-                    </Text>
-                </TouchableOpacity>
-
-                {!is_verified && (
+                <View className="flex-row gap-3 mt-10 px-3 ">
                     <TouchableOpacity
                         disabled={loading}
-                        onPress={handleVerification}
-                        className={`flex-1 w-[50%] rounded-3xl ${
-                            loading ? "bg-green-400" : "bg-green-500"
-                        }`}
+                        onPress={handleCancelVerification}
+                        className="flex-1 bg-red-500 rounded-3xl py-5"
                     >
-                        <Text
-                            style={{ fontSize: RFPercentage(2.8) }}
-                            className="font-bold text-center leading-tight py-5 text-text"
-                        >
-                            Verify
+                        <Text className="font-bold text-center leading-tight text-text text-2xl">
+                            Remove
                         </Text>
                     </TouchableOpacity>
-                )}
-            </View>
-        </ScrollView>
+
+                    {!is_verified && (
+                        <TouchableOpacity
+                            disabled={loading}
+                            onPress={handleVerification}
+                            className={`flex-1 w-[50%] rounded-3xl ${
+                                loading ? "bg-green-400" : "bg-green-500"
+                            }`}
+                        >
+                            <Text className="font-bold text-2xl text-center leading-tight py-5 text-text">
+                                Verify
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </ScrollView>
+        </View>
     );
 };
 

@@ -36,7 +36,7 @@ const RenderItem = ({ item = {} }) => {
     };
 
     return (
-        <TouchableOpacity className="bg-card my-1 px-3 py-4 rounded-xl">
+        <View className="bg-card my-1 px-3 py-4 rounded-xl">
             <View className="flex-row items-center justify-between">
                 <Text className="text-text font-black text-lg">
                     {item.title}
@@ -70,7 +70,7 @@ const RenderItem = ({ item = {} }) => {
                     </TouchableOpacity>
                 </View>
             )}
-        </TouchableOpacity>
+        </View>
     );
 };
 

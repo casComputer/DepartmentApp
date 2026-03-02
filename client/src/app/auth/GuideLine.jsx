@@ -121,7 +121,7 @@ const ProceedButton = ({ onPress, enterDelay }) => {
                     });
                 }}
             >
-                <Text className="text-primary font-extrabold text-base tracking-wide">
+                <Text className="text-text font-extrabold text-base tracking-wide">
                     I Understand — Create My Account
                 </Text>
             </AnimatedPressable>
@@ -214,6 +214,7 @@ export default function RegistrationGuidelinesScreen({ navigation }) {
             pathname: "/auth/Signup",
             params: { userRole }
         });
+
     };
 
     return (
@@ -225,7 +226,7 @@ export default function RegistrationGuidelinesScreen({ navigation }) {
         >
             <Animated.View
                 style={overlayStyle}
-                className="absolute inset-0 bg-primary/70"
+                className="absolute inset-0 bg-primary/90"
             />
 
             <Animated.View style={[{ flex: 1 }, contentStyle]}>
@@ -260,7 +261,7 @@ export default function RegistrationGuidelinesScreen({ navigation }) {
                         delay={200}
                         accentClass={{
                             badge: "bg-btn/20",
-                            title: "text-btn",
+                            title: "text-text",
                             divider: "bg-btn/30"
                         }}
                         bulletClass="bg-btn"
@@ -332,9 +333,9 @@ export default function RegistrationGuidelinesScreen({ navigation }) {
 
                     <Animated.View
                         style={roleStyle}
-                        className="bg-card-selected border border-btn/30 rounded-2xl p-5 mb-5"
+                        className="bg-card-selected border border-border rounded-2xl p-5 mb-5"
                     >
-                        <Text className="text-base font-bold text-btn mb-2">
+                        <Text className="text-base font-bold text-text mb-2">
                             🧑‍🎓 Who Can Register?
                         </Text>
                         <Text className="text-sm text-text-secondary leading-relaxed">

@@ -1,16 +1,10 @@
-import { useEffect } from "react";
-import {
-    Label,
-    NativeTabs,
-    Icon,
-    VectorIcon
-} from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Octicons, FontAwesome5 } from "@expo/vector-icons";
 import { useResolveClassNames } from "uniwind";
 
 export default function TabLayout() {
-    const styles = useResolveClassNames("bg-primary text-color");
+    const styles = useResolveClassNames("bg-primary text-text border-card");
+    const selectedCardStyle = useResolveClassNames("bg-card-selected");
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -20,30 +14,23 @@ export default function TabLayout() {
                     fontWeight: "900",
                     fontSize: 14
                 }}
-                shadowColor={"black"}
                 backgroundColor={styles["backgroundColor"]}
+                iconColor={styles.color}
+                indicatorColor={styles.borderColor}
+                rippleColor={selectedCardStyle.backgroundColor}
             >
                 <NativeTabs.Trigger name="Home">
-                    <Label>Home</Label>
-                    <Icon sf="house.fill" drawable="home" />
+                    <NativeTabs.Trigger.Icon sf="house.fill" drawable="home" />
                 </NativeTabs.Trigger>
 
                 <NativeTabs.Trigger name="TeachersList">
-                    <Label>Teachers</Label>
-                    <Icon
-                        src={
-                            <VectorIcon
-                                family={FontAwesome5}
-                                name="chalkboard-teacher"
-                            />
-                        }
+                    <NativeTabs.Trigger.Icon
+                        md="co_present"
+                        sf="person.and.background.dotted"
                     />
                 </NativeTabs.Trigger>
-
                 <NativeTabs.Trigger name="Profile">
-                    <Icon
-                        src={<VectorIcon family={Octicons} name="person" />}
-                    />
+                    <NativeTabs.Trigger.Icon md="person" sf="person" />
                 </NativeTabs.Trigger>
             </NativeTabs>
         </GestureHandlerRootView>

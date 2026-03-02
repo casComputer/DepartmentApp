@@ -1,5 +1,5 @@
 import axios from "@utils/axios";
-import { ToastAndroid } from "react-native";
+import { ToastAndroid, Text } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
 

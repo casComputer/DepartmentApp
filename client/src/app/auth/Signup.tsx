@@ -23,8 +23,8 @@ const Message = ({ message }) => (
             message.type === "error"
                 ? "text-red-500"
                 : message.type === "info"
-                ? "text-orange-500"
-                : "text-green-500"
+                  ? "text-orange-500"
+                  : "text-green-500"
         }`}
     >
         {message?.message}
@@ -68,7 +68,7 @@ const Signup = () => {
             return;
         }
 
-        if (fullName.trim()?.length <= 5) {
+        if (fullName.trim()?.length < 4) {
             setMessage({
                 type: "error",
                 message: "fullname is too short"
@@ -144,120 +144,119 @@ const Signup = () => {
     };
 
     return (
-<KeyboardAwareScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-                className="bg-primary"
+        <KeyboardAwareScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            className="bg-primary"
+        >
+            <Text
+                style={{ fontSize: vw * 0.2 }}
+                className="font-black text-text px-3 mt-20"
             >
-                <Text
-                    style={{ fontSize: vw * 0.2 }}
-                    className="font-black text-text px-3 mt-20"
-                >
-                    SignUp
-                </Text>
+                SignUp
+            </Text>
 
-                {/* Form */}
+            {/* Form */}
 
-                <View className="flex-1 gap-5 px-4 mt-5">
-                    <Message message={message} />
+            <View className="flex-1 gap-5 px-4 mt-5">
+                <Message message={message} />
 
+                <TextInput
+                    ref={usernameRef}
+                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
+                        username.trim().length >= 5
+                            ? "border-green-500"
+                            : "border-border"
+                    }`}
+                    placeholder="username"
+                    autoCapitalize="none"
+                    placeholderTextColor="rgb(119,119,119)"
+                    onChangeText={txt =>
+                        setUsername(txt.replace(/[^a-zA-Z0-9._-]/g, ""))
+                    }
+                    value={username}
+                />
+
+                <TextInput
+                    ref={fullnameRef}
+                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
+                        fullName.trim().length >= 5
+                            ? "border-green-500"
+                            : "border-border"
+                    }`}
+                    placeholder="fullname"
+                    placeholderTextColor="rgb(119,119,119)"
+                    onChangeText={setFullName}
+                    value={fullName}
+                />
+
+                <View className="relative">
                     <TextInput
-                        ref={usernameRef}
-                        className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
-                            username.trim().length >= 5
+                        ref={passwordRef}
+                        className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl ${
+                            password.length > 5
                                 ? "border-green-500"
                                 : "border-border"
                         }`}
-                        placeholder="username"
+                        placeholder="Password"
+                        placeholderTextColor="rgb(119,119,119)"
                         autoCapitalize="none"
-                        placeholderTextColor="rgb(119,119,119)"
-                        onChangeText={txt =>
-                            setUsername(txt.replace(/[^a-zA-Z0-9._-]/g, ""))
-                        }
-                        value={username}
+                        onChangeText={setPassword}
+                        value={password}
+                        secureTextEntry={!isPassVisible}
                     />
-
-                    <TextInput
-                        ref={fullnameRef}
-                        placeholder="fullname"
-                        className={`text-text border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl ${
-                            fullName?.trim()?.length > 5
-                                ? "border-green-500"
-                                : "border-border"
-                        }`}
-                        placeholderTextColor="rgb(119,119,119)"
-                        onChangeText={setFullName}
-                        value={fullName}
-                    />
-
-                    <View className="relative">
-                        <TextInput
-                            ref={passwordRef}
-                            className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl ${
-                                password.length > 5
-                                    ? "border-green-500"
-                                    : "border-border"
-                            }`}
-                            placeholder="Password"
-                            placeholderTextColor="rgb(119,119,119)"
-                            autoCapitalize="none"
-                            onChangeText={setPassword}
-                            value={password}
-                            secureTextEntry={!isPassVisible}
-                        />
-                        <TouchableOpacity
-                            onPress={() => setIsPassVisible(prev => !prev)}
-                            className="absolute top-1/2 -translate-y-1/2 right-5"
-                        >
-                            {isPassVisible ? (
-                                <Feather name="eye" size={20} />
-                            ) : (
-                                <AntDesign name="eye-invisible" size={20} />
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                    {(userRole === "student" || userRole === "parent") && (
-                        <StudentExtra
-                            year={year}
-                            setYear={setYear}
-                            course={course}
-                            setCourse={setCourse}
-                        />
-                    )}
-
-                    {userRole === "parent" && (
-                        <ParentExtra
-                            year={year}
-                            course={course}
-                            selectedStudents={selectedStudents}
-                            setSelectedStudents={setSelectedStudents}
-                        />
-                    )}
-                </View>
-
-                {/* Buttons */}
-                <View className="px-5 mt-3 mb-20">
                     <TouchableOpacity
-                        className="bg-green-400 py-5 w-full rounded-3xl"
-                        onPress={handleSubmit}
+                        onPress={() => setIsPassVisible(prev => !prev)}
+                        className="absolute top-1/2 -translate-y-1/2 right-5"
                     >
-                        <Text className="text-text font-black text-3xl text-center">
-                            Sign Up
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => router.replace("/auth/Signin")}
-                    >
-                        <Text className="text-text text-xl text-center font-bold mt-3">
-                            Already have an account? SignIn
-                        </Text>
+                        {isPassVisible ? (
+                            <Feather name="eye" size={20} />
+                        ) : (
+                            <AntDesign name="eye-invisible" size={20} />
+                        )}
                     </TouchableOpacity>
                 </View>
-            </KeyboardAwareScrollView>
 
+                {(userRole === "student" || userRole === "parent") && (
+                    <StudentExtra
+                        year={year}
+                        setYear={setYear}
+                        course={course}
+                        setCourse={setCourse}
+                    />
+                )}
+
+                {userRole === "parent" && (
+                    <ParentExtra
+                        year={year}
+                        course={course}
+                        selectedStudents={selectedStudents}
+                        setSelectedStudents={setSelectedStudents}
+                    />
+                )}
+            </View>
+
+            {/* Buttons */}
+            <View className="px-5 mt-3 mb-20">
+                <TouchableOpacity
+                    className="bg-green-400 py-5 w-full rounded-3xl"
+                    onPress={handleSubmit}
+                >
+                    <Text className="text-text font-black text-3xl text-center">
+                        Sign Up
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => router.replace("/auth/Signin")}
+                >
+                    <Text className="text-text text-xl text-center font-bold mt-3">
+                        Already have an account? SignIn
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAwareScrollView>
     );
 };
 

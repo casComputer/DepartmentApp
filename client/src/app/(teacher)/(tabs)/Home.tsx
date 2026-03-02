@@ -1,14 +1,18 @@
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 
 import Header from "../../../components/common/HomeHeader";
 import TeacherOptions from "../../../components/teacher/TeacherOptions";
 
 const Home = () => {
     return (
-        <View className="bg-primary flex-1">
+        <ScrollView
+            className="bg-primary"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40, flexGrow: 1, }}
+        >
             <Header />
             <TeacherOptions />
-        </View>
+        </ScrollView>
     );
 };
 

@@ -5,7 +5,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { YEAR, COURSES } from "@constants/ClassAndCourses";
 import { assignClass } from "@controller/admin/teachers.controller";
 
-import { useAdminStore } from "@store/admin.store.js";
 import Select from "@components/common/Select";
 import Header from "@components/common/Header";
 
@@ -16,17 +15,13 @@ const AssignClass = () => {
 
     let { userId } = useLocalSearchParams();
 
-    const user = useAdminStore((state) =>
-        state.teachers.find((t) => t.userId === userId)
-    );
-
     const handleAssignClass = async () => {
-        if (selectedClass && selectedCourse && user && user.userId) {
+        if (selectedClass && selectedCourse && userId) {
             setSaving(true);
             await assignClass({
                 year: selectedClass,
                 course: selectedCourse,
-                teacherId: user.userId,
+                teacherId: userId
             });
             setSaving(false);
             router.back();

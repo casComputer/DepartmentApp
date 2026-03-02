@@ -163,8 +163,7 @@ export const FloatingAddButton = ({ parentId }) => {
 
     return (
         <View
-            style={{ bottom: vh * 0.2 }}
-            className="absolute right-8 bottom-10 items-center"
+            className="absolute right-8 bottom-20 items-center"
         >
             <Animated.View
                 style={extraViewAnim}

@@ -2,15 +2,14 @@ const getPreviewUrl = url => {
     if (!url) return "";
 
     if (url.endsWith(".pdf")) {
-        return url
+        const normalized = url
             .replace("/raw/upload/", "/image/upload/")
-            .replace(
-                "/image/upload/",
-                "/image/upload/pg_1,f_jpg,w_600,q_auto/"
-            );
+            .replace(/\/image\/upload\/(.*?\/)?/, "/image/upload/"); // strip existing transforms
+
+        return normalized.replace("/image/upload/", "/image/upload/pg_1,f_jpg,w_600,q_auto/");
     }
 
-    return url; // fallback (icons, etc.)
+    return url;
 };
 
-export default getPreviewUrl;
+export default getPreviewUrl

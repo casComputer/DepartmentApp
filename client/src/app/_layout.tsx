@@ -26,15 +26,15 @@ Notifications.setNotificationHandler({
         shouldPlaySound: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
-        shouldShowList: true,
-    }),
+        shouldShowList: true
+    })
 });
 
 const Layout = ({ userId, role, is_verified, is_email_verified }) => (
     <Stack
         screenOptions={{
             headerShown: false,
-            animation: "slide_from_right",
+            animation: "slide_from_right"
         }}
     >
         <Stack.Protected guard={!userId || role === "unknown" || !role}>
@@ -76,7 +76,7 @@ const Layout = ({ userId, role, is_verified, is_email_verified }) => (
         <Stack.Screen
             name="common/ImageFullView"
             options={{
-                animation: "fade",
+                animation: "fade"
             }}
         />
     </Stack>
@@ -87,10 +87,13 @@ export default function RootLayout() {
     const insets = useSafeAreaInsets();
 
     const currTheme = storage.getString("theme");
-    Uniwind.setTheme(currTheme ?? "system");
+    
+    useEffect(() => {
+        Uniwind.setTheme(currTheme ?? "system");
+    }, [currTheme]);
 
     const { userId, role, is_verified, is_email_verified } =
-        useAppStore((state) => state?.user) ?? {};
+        useAppStore(state => state?.user) ?? {};
 
     useEffect(() => {
         if (!userId || !role) return;

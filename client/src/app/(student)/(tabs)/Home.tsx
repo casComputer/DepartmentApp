@@ -6,21 +6,20 @@ import MonthlyAttendenceMiniReport from "@components/student/home/MonthlyAttende
 import StudentOptions from "@components/student/home/StudentOptions";
 
 const Home = () => {
-  return (
-    <ScrollView
-      contentContainerStyle={{
-        paddingBottom: 150,
-        flexGrow: 1,
-      }}
-      showsVerticalScrollIndicator={false}
-      className="bg-primary"
-    >
-      <Header />
-      <TodaysMiniAttentdenceCard />
-      <MonthlyAttendenceMiniReport />
-      <StudentOptions />
-    </ScrollView>
-  );
+    return (
+        <ScrollView
+            contentContainerStyle={{
+                flexGrow: 1
+            }}
+            showsVerticalScrollIndicator={false}
+            className="bg-primary"
+        >
+            <Header />
+            <TodaysMiniAttentdenceCard />
+            <MonthlyAttendenceMiniReport />
+            <StudentOptions />
+        </ScrollView>
+    );
 };
 
 export default Home;

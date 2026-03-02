@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-
+import { View, Text } from "react-native";
 import { useAppStore } from "@store/app.store.js";
 
 const ParentExtra = () => {
@@ -8,20 +7,24 @@ const ParentExtra = () => {
 
     if (!students?.length) return null;
 
-    const studentText =
-        students.length === 1
-            ? students[0]
-            : students.slice(0, -1).join(",") + " and " + students.at(-1);
-
     return (
-        <View className="px-2 pt-3">
-            <Text className="text-text-secondary font-black text-3xl">
-                {students.length > 0 ? "Students" : "Student:"}
+        <View className="mx-2 mt-4 bg-card border border-border rounded-3xl px-5 py-4 gap-3">
+            {/* Label */}
+            <Text className="text-text-secondary text-xs font-bold tracking-widest uppercase">
+                {students.length === 1 ? "Student" : "Students"}
             </Text>
 
-            <Text className="pl-5 text-text font-bold text-xl">
-                {studentText}
-            </Text>
+            {/* One chip per student */}
+            <View className="flex-row flex-wrap gap-2">
+                {students.map((s, i) => (
+                    <View
+                        key={i}
+                        className="bg-card-selected border border-border rounded-full px-4 py-1.5"
+                    >
+                        <Text className="text-text font-bold text-sm">{s}</Text>
+                    </View>
+                ))}
+            </View>
         </View>
     );
 };

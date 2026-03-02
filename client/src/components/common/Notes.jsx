@@ -4,6 +4,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 import {
     FloatingAddButton,
     FolderItem,
@@ -36,7 +37,7 @@ const Notes = ({ role }) => {
             role === "student" ? fetchNotesForStudent : fetchNotesForTeacher,
         placeholderData: () => {
             const cached = getNotes(folderId ?? "root");
-            console.log('cached notes: ', cached);
+            console.log("cached notes: ", cached);
             if (cached?.notes) {
                 return {
                     pages: [
@@ -71,7 +72,8 @@ const Notes = ({ role }) => {
         if (!isFetchingNextPage) return null;
         return (
             <View className="py-4">
-                <ActivityIndicator />
+                <Loader size="large" /> />
+
             </View>
         );
     };
@@ -97,7 +99,7 @@ const Notes = ({ role }) => {
                 }
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator />
+                        <Loader size="large" />
                     ) : (
                         <Text className="mt-2 text-center text-xl font-bold text-text">
                             {role === "teacher" || role === "admin"

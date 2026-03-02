@@ -4,6 +4,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import Header from "@components/common/Header.jsx";
+import Loader from '@components/common/Loader';
 import {
     ItemSeparator,
     ListHeaderComponent
@@ -88,7 +89,8 @@ const History = () => {
                 }
                 ListFooterComponent={
                     !isLoading &&
-                    isFetchingNextPage && <ActivityIndicator size={"large"} />
+                    isFetchingNextPage && <Loader 
+ size={"large"} />
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}

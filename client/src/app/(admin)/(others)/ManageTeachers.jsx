@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
-import { useAdminStore } from "@store/admin.store.js";
 
 import TeacherItem from "@components/common/UserItem.jsx";
 import Header from "@components/common/Header.jsx";

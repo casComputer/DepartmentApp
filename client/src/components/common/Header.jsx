@@ -1,13 +1,6 @@
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    Dimensions
-} from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { MaterialIcons } from "@icons";
 import { router } from "expo-router";
-import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 
 const ICON_SIZE = 26;
@@ -25,22 +18,14 @@ const Header = ({
     };
 
     return (
-        <View className="flex-row items-center px-2 h-16 justify-between absolute top-0 left-0 z-20 w-full">
-            <View className="flex-1 flex-row items-center gap-1">
+        <View className="flex-row items-center h-16 px-1 justify-between absolute top-0 left-0 z-20 w-full">
+            <View className="flex-row items-center">
                 {!disableBackBtn && (
                     <TouchableOpacity
-                        className="overflow-hidden p-2"
-                        style={styles.background}
+                        className="overflow-hidden"
                         onPress={handleBack}
+                        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     >
-                        {/* 
-                        <BlurView
-                            tint="dark"
-                            intensity={10}
-                            experimentalBlurMethod={"dimezisBlurView"}
-                            style={[StyleSheet.absoluteFillObject]}
-                        />
-                        */}
                         <MaterialIcons
                             name="arrow-back-ios-new"
                             size={ICON_SIZE}
@@ -48,11 +33,7 @@ const Header = ({
                         />
                     </TouchableOpacity>
                 )}
-                <View
-                    style={styles.background}
-                    className="max-w-[75%] overflow-hidden bg-btn/10"
-                >
-                    {/* Foreground Content */}
+                <View className="max-w-[75%] overflow-hidden">
                     <Text
                         className="text-3xl font-bold text-text"
                         numberOfLines={1}
@@ -62,19 +43,14 @@ const Header = ({
                     </Text>
                 </View>
             </View>
+
             {extraButton && (
                 <TouchableOpacity
-                    style={styles.background}
-                    className="overflow-hidden p-2"
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    className="overflow-hidden "
                     onPress={handlePress}
                 >
-                    <BlurView
-                        tint="dark"
-                        intensity={10}
-                        experimentalBlurMethod={"dimezisBlurView"}
-                        style={[StyleSheet.absoluteFillObject]}
-                    />
-                    <Text className="text-2xl text-blue-500 font-black w-full">
+                    <Text className="text-2xl text-blue-500 font-black">
                         {buttonTitle}
                     </Text>
                 </TouchableOpacity>
@@ -82,15 +58,5 @@ const Header = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    background: {
-        borderColor: "#323232",
-        backgroundColor: "rgba(0,0,0,0.316)",
-        borderWidth: 1,
-        borderRadius: 23,
-        padding: 10
-    }
-});
 
 export default Header;

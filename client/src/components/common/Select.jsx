@@ -10,7 +10,7 @@ import Animated, {
     Extrapolation,
     FlipInXDown,
     StretchInX,
-    LightSpeedInLeft,
+    LightSpeedInLeft
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useResolveClassNames } from "uniwind";
@@ -53,7 +53,10 @@ const SelectOption = ({ item, selected, onSelect }) => {
             onPressOut={handlePressOut}
             className="w-[50%]"
         >
-            <Animated.View className="px-4 py-5 rounded-full" style={animatedStyle}>
+            <Animated.View
+                className="px-4 py-5 rounded-full"
+                style={animatedStyle}
+            >
                 <Text className="text-xl font-bold capitalize text-text">
                     {item.title}
                 </Text>
@@ -64,13 +67,13 @@ const SelectOption = ({ item, selected, onSelect }) => {
 
 const Select = ({ title, options, select, selected }) => {
     return (
-        <Animated.View
-            entering={StretchInX.springify().mass(0.4).damping(14).stiffness(160)}
-            className="mt-5 px-2 py-4 bg-card border border-border rounded-3xl"
-        >
+        <Animated.View className="mt-5 px-2 py-4 bg-card border border-border rounded-3xl">
             {title ? (
                 <Animated.Text
-                    entering={LightSpeedInLeft.delay(120).springify().mass(0.5).damping(14)}
+                    entering={LightSpeedInLeft.delay(120)
+                        .springify()
+                        .mass(0.5)
+                        .damping(14)}
                     className="text-[6vw] px-3 font-bold mb-3 text-text"
                 >
                     Select the {title}:
@@ -78,18 +81,7 @@ const Select = ({ title, options, select, selected }) => {
             ) : null}
             <Animated.View className="w-full flex-row flex-wrap">
                 {options.map((item, index) => (
-                    <Animated.View
-                        key={item.id}
-                        entering={
-                            FlipInXDown
-                                .delay(160 + index * 55)
-                                .springify()
-                                .mass(0.5)
-                                .damping(13)
-                                .stiffness(170)
-                        }
-                        style={{ width: "50%" }}
-                    >
+                    <Animated.View key={item.id} style={{ width: "50%" }}>
                         <SelectOption
                             item={item}
                             selected={selected?.id === item.id}

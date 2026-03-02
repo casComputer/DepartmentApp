@@ -189,6 +189,7 @@ const Attendance = () => {
             )
         );
     };
+    
 
     const handleSave = async () => {
         try {
@@ -246,8 +247,8 @@ const Attendance = () => {
                         }
                     );
                 }}
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
+                onStartShouldSetResponder={() => isDragMode.current}
+onMoveShouldSetResponder={() => isDragMode.current}
                 onResponderGrant={({ nativeEvent }) => {
                     if (!isDragMode.current) return;
                     dragging.current = true;

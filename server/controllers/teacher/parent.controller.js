@@ -1,4 +1,5 @@
 import { turso } from "../../config/turso.js";
+import { sendNotificationForListOfUsers } from "../../utils/notification.js";
 
 export const fetchParents = async (req, res) => {
     try {
@@ -83,7 +84,20 @@ export const verifyParent = async (req, res) => {
             [parentId, studentId]
         );
 
-        await turso.execute("UPDATE users SET is_verified = 1 WHERE userId = ?", [parentId])
+        await turso.execute(
+            "UPDATE users SET is_verified = 1 WHERE userId = ?",
+            [parentId]
+        );
+
+        sendNotificationForListOfUsers({
+            users: [parentId, studentId],
+            title: "Account Linked",
+            body: "The parent and student accounts have been successfully verified and activated.",
+            data: {
+                type: "ACCOUNT_LINKED"
+            },
+            image: null
+        });
 
         res.json({
             success: true
@@ -129,7 +143,26 @@ export const removeParent = async (req, res) => {
                 `,
                 [parentId]
             );
-        }
+
+            sendNotificationForListOfUsers({
+                users: [parentId],
+                title: `Account Permanently Removed`,
+                body: `Your account has been unverified and permanently deleted. Access to the app has been revoked.`,
+                data: {
+                    type: "DELETED"
+                },
+                image: null
+            });
+        } else
+            sendNotificationForListOfUsers({
+                users: [parentId],
+                title: "Account Unlinked",
+                body: "The connection between the parent and student accounts has been successfully removed.",
+                data: {
+                    type: "ACCOUNT_UNLINKED"
+                },
+                image: null
+            });
 
         res.json({
             success: true

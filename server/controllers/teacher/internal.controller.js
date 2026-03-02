@@ -1,6 +1,8 @@
 import Internal from "../../models/internalMark.js";
 
 import { deleteFile } from "../../utils/cloudinary.js";
+import { sendPushNotificationToClassStudents } from "../../utils/notification.js";
+import getPreviewUrl from "../../utils/previewUrl.js";
 
 export const saveInternalMarkDetails = async (req, res) => {
     const { course, sem, filename, secure_url, format, public_id } =
@@ -54,6 +56,15 @@ export const saveInternalMarkDetails = async (req, res) => {
             teacherId
         });
 
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "Internal Marks Published",
+            body: "Your internal marks have been uploaded. Please check the app to view your scores.",
+            data: { type: "INTERNAL_MARKS_UPLOADED", secure_url },
+            image: getPreviewUrl(secure_url)
+        });
+
         res.json({
             success: true
         });
@@ -85,7 +96,6 @@ export const checkInternalMarkUpload = async (req, res) => {
             teacherId
         });
 
-      
         res.json({
             success: true,
             uploaded: existDoc ? true : false

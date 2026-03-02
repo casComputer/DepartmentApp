@@ -51,7 +51,7 @@ const Attendance = () => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 className="pt-16"
-                contentContainerStyle={{ paddingBottom: 70, flexGrow: 1 }}
+                contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
             >
                 {isClassTeacher && (
                     <View className="flex-row justify-between items-center px-4 mt-2">

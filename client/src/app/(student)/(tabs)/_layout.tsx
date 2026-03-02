@@ -9,7 +9,6 @@ export default function TabLayout() {
         <NativeTabs
             labelStyle={{
                 color: styles.color,
-                fontWeight: "900",
                 fontSize: 14
             }}
             backgroundColor={styles["backgroundColor"]}

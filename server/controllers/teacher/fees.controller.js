@@ -1,34 +1,47 @@
 import { turso } from "../../config/turso.js";
 
+import {
+    sendPushNotificationToClassParents,
+    sendPushNotificationToClassStudents
+} from "../../utils/notification.js";
+
 export const create = async (req, res) => {
     try {
         const { dueDate, details, year, course, amount } = req.body;
         const { userId } = req.user;
 
-        if (
-            !userId ||
-            !dueDate ||
-            !details ||
-            !year ||
-            !course ||
-            !amount
-        )
+        if (!userId || !dueDate || !details || !year || !course || !amount)
             return res.json({
                 success: false,
                 message: "missing required parameters!"
             });
 
-        
-            await turso.execute(
-                `
+        await turso.execute(
+            `
                 INSERT INTO fees 
                     (year, course, details, dueDate, teacherId, amount)
                     VALUES
                     (?, ?, ?, ?, ?, ?);
             `,
-                [year, course, details, dueDate, userId, amount]
-            );
-        
+            [year, course, details, dueDate, userId, amount]
+        );
+
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: `New Fee Due Date Published`,
+            body: `The fee payment deadline is ${dueDate}. Amount payable: ₹${amount}.`,
+            data: { type: "FEE_ALERT" }
+        });
+
+        sendPushNotificationToClassParents({
+            course,
+            year,
+            title: `New Fee Due Date Published`,
+            body: `The fee payment deadline is ${dueDate}. Amount payable: ₹${amount}.`,
+            data: { type: "FEE_ALERT" }
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error(error);

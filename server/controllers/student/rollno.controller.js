@@ -1,5 +1,7 @@
 import { turso } from "../../config/turso.js";
 
+import { sendPushNotificationToClassStudents } from "../../utils/notification.js";
+
 export const autoAssignRollNoAlphabetically = async (req, res) => {
     try {
         const { course, year } = req.body;
@@ -15,7 +17,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
      SET rollno = NULL
      WHERE course = ?
        AND year = ?`,
-            [course, year],
+            [course, year]
         );
 
         // Fetch ONLY verified students sorted by name
@@ -29,7 +31,7 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
             AND u.is_verified = 1
             ORDER BY fullname ASC
             `,
-            [course, year],
+            [course, year]
         );
 
         // Assign roll numbers
@@ -43,17 +45,25 @@ export const autoAssignRollNoAlphabetically = async (req, res) => {
                 SET rollno = ?
                 WHERE userId = ?
                 `,
-                [rollno, s.userId],
+                [rollno, s.userId]
             );
 
             updated.push({ ...s, rollno });
             rollno++;
         }
 
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "Roll Number Updated",
+            body: "Your new roll number is now available. Check the app.",
+            data: { type: "ROLLNO_ASSIGNED" }
+        });
+
         res.json({
             success: true,
             assignedCount: updated.length,
-            students: updated,
+            students: updated
         });
     } catch (err) {
         console.error("Error while assigning roll numbers:", err);
@@ -68,19 +78,19 @@ export const assignGroupedRollNo = async (req, res) => {
         if (!Array.isArray(students)) {
             return res.status(400).json({
                 success: false,
-                message: "students must be an array",
+                message: "students must be an array"
             });
         }
 
         if (!course || !year)
             return res.status(400).json({
                 success: false,
-                message: "course or year is not provided",
+                message: "course or year is not provided"
             });
 
         await turso.execute(
             `UPDATE students SET rollno = NULL WHERE course = ? AND year = ?`,
-            [course, year],
+            [course, year]
         );
 
         const errors = [];
@@ -96,7 +106,7 @@ export const assignGroupedRollNo = async (req, res) => {
                     SET rollno = ?
                     WHERE userId = ?
                     `,
-                    [rollno, studentId],
+                    [rollno, studentId]
                 );
 
                 success.push({ studentId, rollno });
@@ -105,28 +115,36 @@ export const assignGroupedRollNo = async (req, res) => {
                     errors.push({
                         studentId,
                         rollno,
-                        error: "Duplicate rollno for this course/year (unique constraint failed)",
+                        error: "Duplicate rollno for this course/year (unique constraint failed)"
                     });
                 } else {
                     errors.push({
                         studentId,
                         rollno,
-                        error: err.message || "Unknown DB error",
+                        error: err.message || "Unknown DB error"
                     });
                 }
             }
         }
 
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "Roll Number Updated",
+            body: "Your new roll number is now available. Check the app.",
+            data: { type: "ROLLNO_ASSIGNED" }
+        });
+
         return res.status(200).json({
             success: true,
             updated: success,
-            failed: errors,
+            failed: errors
         });
     } catch (err) {
         console.error("Error in assignRollNo:", err);
         return res.status(500).json({
             success: false,
-            message: "Internal server error",
+            message: "Internal server error"
         });
     }
 };

@@ -1,6 +1,11 @@
 import { turso } from "../../config/turso.js";
 import Assignment from "../../models/assignment.js";
 
+import {
+    sendPushNotificationToClassStudents,
+    sendNotificationForListOfUsers
+} from "../../utils/notification.js";
+
 export const createAssignment = async (req, res) => {
     try {
         const { topic, description, year, course, dueDate } = req.body;
@@ -35,6 +40,14 @@ export const createAssignment = async (req, res) => {
             dueDate,
             teacherId: userId,
             strength: rows[0]?.strength || 0
+        });
+
+        sendPushNotificationToClassStudents({
+            course,
+            year,
+            title: "New Assignment Uploaded",
+            body: "A new assignment has been added. Please review and submit before the deadline.",
+            data: { type: "ASSIGNMENT_CREATION" }
         });
 
         res.status(200).json({
@@ -104,6 +117,14 @@ export const reject = async (req, res) => {
                 }
             }
         );
+
+        sendNotificationForListOfUsers({
+            title: "Assignment Needs Revision",
+            body: "Your assignment was not approved. Please make the required changes and resubmit.",
+            data: { type: "ASSIGNMENT_REJECTED" },
+            users: [studentId]
+        });
+
         res.status(200).json({
             message: "Assignment submission rejected successfully.",
             success: true
@@ -132,6 +153,14 @@ export const accept = async (req, res) => {
                 }
             }
         );
+
+        sendNotificationForListOfUsers({
+            title: "Submission Approved 🎉",
+            body: "Great work! Your assignment submission has been approved.",
+            data: { type: "ASSIGNMENT_REJECTED" },
+            users: [studentId]
+        });
+
         res.status(200).json({
             message: "Assignment accepted successfully.",
             success: true

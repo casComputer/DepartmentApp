@@ -105,6 +105,7 @@ async function sendAndScheduleReceipts(tokens, title, body, data, image) {
     }
 }
 
+// send notification to all students in a class
 export const sendPushNotificationToClassStudents = async ({
     course,
     year,
@@ -149,6 +150,61 @@ export const sendPushNotificationToClassStudents = async ({
     } catch (error) {
         console.error(
             "Error while sending notification to class students:",
+            error
+        );
+        return false;
+    }
+};
+
+// send notification to all parents in a class
+export const sendPushNotificationToClassParents = async ({
+    course,
+    year,
+    title = "",
+    body = "",
+    data = {},
+    image = null
+}) => {
+    try {
+        if (!course || !year) {
+            console.error("Invalid year and course");
+            return false;
+        }
+
+        const { rows: parents } = await turso.execute(
+            `SELECT DISTINCT u.token
+             FROM users u
+             JOIN parent_child pc ON pc.parentId = u.userId
+             JOIN students s ON s.userId = pc.studentId
+             WHERE s.course = ? 
+               AND s.year = ?
+               AND u.role = 'parent'
+               AND u.token IS NOT NULL`,
+            [course, year]
+        );
+
+        const validTokens = parents
+            .map(p => p.token)
+            .filter(t => Expo.isExpoPushToken(t));
+
+        if (!validTokens.length) return true;
+
+        const notificationRes = await Notification.create({
+            title,
+            body,
+            data: JSON.stringify(data),
+            target: "userIds",
+            userIds: parents.map(p => p.userId)
+        });
+
+        data = { ...data, _id: notificationRes._id.toString() };
+
+        await sendAndScheduleReceipts(validTokens, title, body, data, image);
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Error while sending notification to class parents:",
             error
         );
         return false;
@@ -275,8 +331,6 @@ export const sendPushNotificationToParentsOfStudents = async ({
         });
 
         data = { ...data, _id: notificationRes._id.toString() };
-
-        console.log("Sending notification to ", validTokens, rows, title, body);
 
         await sendAndScheduleReceipts(validTokens, title, body, data, image);
 

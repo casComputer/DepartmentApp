@@ -1,6 +1,7 @@
 import { turso } from "../../config/turso.js";
 import { YEAR, COURSES } from "../../constants/YearAndCourse.js";
 import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
+import { sendNotificationForListOfUsers } from "../../utils/notification.js";
 
 export const getTeachers = async (req, res) => {
     try {
@@ -66,6 +67,16 @@ export const assignClass = async (req, res) => {
             [teacherId, year, course]
         );
 
+        sendNotificationForListOfUsers({
+            users: [teacherId],
+            title: `Assigned as In-Charge for ${year} ${course}`,
+            body: `You have been assigned as the in-charge for ${year} ${course}.`,
+            data: {
+                type: "IN_CHARGED"
+            },
+            image: null
+        });
+
         res.json({
             message: "Class assigned successfully",
             success: true
@@ -88,6 +99,16 @@ export const removeIncharge = async (req, res) => {
             [teacherId]
         );
 
+        sendNotificationForListOfUsers({
+            users: [teacherId],
+            title: `In-Charge Role Removed`,
+            body: `You have been removed from the in-charge role.`,
+            data: {
+                type: "IN_CHARGE_REMOVED"
+            },
+            image: null
+        });
+
         res.json({
             success: true
         });
@@ -108,6 +129,17 @@ export const verifyTeacher = async (req, res) => {
             `update users set is_verified = TRUE where userId = ? AND role = 'teacher'`,
             [teacherId]
         );
+
+        sendNotificationForListOfUsers({
+            users: [teacherId],
+            title: `You're Verified! 🎉`,
+            body: `Great news! Your account is verified and you can now start using the app.`,
+            data: {
+                type: "VERIFIED"
+            },
+            image: null
+        });
+
         res.json({
             message: "Teacher verified successfully",
             success: true
@@ -134,6 +166,16 @@ export const deleteTeacher = async (req, res) => {
             `DELETE FROM users WHERE userId = ? AND role = 'teacher'`,
             [teacherId]
         );
+
+        sendNotificationForListOfUsers({
+            users: [teacherId],
+            title: `Account Permanently Removed`,
+            body: `Your account has been unverified and permanently deleted. Access to the app has been revoked.`,
+            data: {
+                type: "DELETED"
+            },
+            image: null
+        });
 
         res.json({
             success: true,

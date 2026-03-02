@@ -276,6 +276,8 @@ export const sendPushNotificationToParentsOfStudents = async ({
 
         data = { ...data, _id: notificationRes._id.toString() };
 
+        console.log("Sending notification to ", validTokens, rows, title, body);
+
         await sendAndScheduleReceipts(validTokens, title, body, data, image);
 
         return true;

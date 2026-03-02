@@ -5,47 +5,103 @@ import Notification from "../models/notification.js";
 
 const expo = new Expo();
 
-// Before/After calling this fn, make sure that the notification details are inserted into db.
-export async function sendPushNotification(
-    pushToken,
-    title,
-    body,
-    data,
-    image
-) {
-    if (!Expo.isExpoPushToken(pushToken)) {
-        console.error("Invalid Expo push token");
-        return;
-    }
+function buildMessages(tokens, title, body, data, image) {
+    return tokens.map(token => ({
+        to: token,
+        sound: "default",
+        title,
+        body,
+        data,
+        color: "#f97bb0",
+        ...(image ? { richContent: { image } } : {})
+    }));
+}
 
-    const payloadData = JSON.parse(
-        JSON.stringify({
-            ...data
-        })
-    );
+async function sendPushNotifications(tokens, title, body, data, image) {
+    const validTokens = tokens.filter(t => Expo.isExpoPushToken(t));
+    if (!validTokens.length) return [];
 
-    const messages = [
-        {
-            to: pushToken,
-            sound: "default",
-            title,
-            body,
-            data: payloadData,
-            color: "#f97bb0",
-            richContent: {
-                ...(image ? { image } : {})
-            }
-        }
-    ];
-
+    const messages = buildMessages(validTokens, title, body, data, image);
     const chunks = expo.chunkPushNotifications(messages);
+    const tickets = [];
 
     for (const chunk of chunks) {
         try {
-            const response = await expo.sendPushNotificationsAsync(chunk);
+            const chunkTickets = await expo.sendPushNotificationsAsync(chunk);
+            tickets.push(...chunkTickets);
         } catch (error) {
-            console.error(error);
+            console.error("Error sending push notification chunk:", error);
         }
+    }
+
+    return tickets;
+}
+
+export async function checkPushReceipts(ticketTokenMap) {
+    const receiptIds = Object.keys(ticketTokenMap);
+    if (!receiptIds.length) return;
+
+    const receiptChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
+
+    for (const chunk of receiptChunks) {
+        try {
+            const receipts = await expo.getPushNotificationReceiptsAsync(chunk);
+
+            for (const [receiptId, receipt] of Object.entries(receipts)) {
+                if (receipt.status === "error") {
+                    console.error(
+                        `Push receipt error [${receiptId}]:`,
+                        receipt.message,
+                        receipt.details
+                    );
+
+                    if (receipt.details?.error === "DeviceNotRegistered") {
+                        const deadToken = ticketTokenMap[receiptId];
+                        if (deadToken) {
+                            await turso.execute(
+                                `UPDATE users SET token = NULL WHERE token = ?`,
+                                [deadToken]
+                            );
+                            console.log(`Removed dead token: ${deadToken}`);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error checking push receipts:", error);
+        }
+    }
+}
+
+async function sendAndScheduleReceipts(tokens, title, body, data, image) {
+    const validTokens = tokens.filter(t => Expo.isExpoPushToken(t));
+    if (!validTokens.length) return;
+
+    const messages = buildMessages(validTokens, title, body, data, image);
+    const chunks = expo.chunkPushNotifications(messages);
+
+    const ticketTokenMap = {};
+    let messageIndex = 0;
+
+    for (const chunk of chunks) {
+        try {
+            const chunkTickets = await expo.sendPushNotificationsAsync(chunk);
+
+            chunkTickets.forEach((ticket, i) => {
+                if (ticket.status === "ok" && ticket.id) {
+                    ticketTokenMap[ticket.id] = messages[messageIndex + i].to;
+                }
+            });
+
+            messageIndex += chunk.length;
+        } catch (error) {
+            console.error("Error sending push notification chunk:", error);
+            messageIndex += chunk.length;
+        }
+    }
+
+    if (Object.keys(ticketTokenMap).length) {
+        setTimeout(() => checkPushReceipts(ticketTokenMap), 15 * 60 * 1000);
     }
 }
 
@@ -62,15 +118,20 @@ export const sendPushNotificationToClassStudents = async ({
             console.error("Invalid year and course");
             return false;
         }
-        
-        console.log(image);
 
         const { rows: students } = await turso.execute(
-            `
-        SELECT u.token FROM users u JOIN students s ON s.userId = u.userId WHERE s.course = ? AND s.year = ? AND u.role = 'student' AND u.token IS NOT NULL
-    `,
+            `SELECT u.token 
+             FROM users u 
+             JOIN students s ON s.userId = u.userId 
+             WHERE s.course = ? AND s.year = ? AND u.role = 'student' AND u.token IS NOT NULL`,
             [course, year]
         );
+
+        const validTokens = students
+            .map(s => s.token)
+            .filter(t => Expo.isExpoPushToken(t));
+
+        if (!validTokens.length) return true;
 
         const notificationRes = await Notification.create({
             title,
@@ -80,21 +141,14 @@ export const sendPushNotificationToClassStudents = async ({
             yearCourse: `${year}-${course}`
         });
 
-        data = {
-            ...data,
-            _id: notificationRes._id.toString()
-        };
+        data = { ...data, _id: notificationRes._id.toString() };
 
-        await Promise.all(
-            students.map(s =>
-                sendPushNotification(s.token, title, body, data, image)
-            )
-        );
+        await sendAndScheduleReceipts(validTokens, title, body, data, image);
 
         return true;
     } catch (error) {
         console.error(
-            "Error while sending notification to class students: ",
+            "Error while sending notification to class students:",
             error
         );
         return false;
@@ -115,11 +169,17 @@ export const sendNotificationForListOfUsers = async ({
 
         const { rows } = await turso.execute(
             `SELECT token 
-                 FROM users 
-                 WHERE userId IN (${placeholders}) 
-                   AND token IS NOT NULL`,
+             FROM users 
+             WHERE userId IN (${placeholders}) 
+               AND token IS NOT NULL`,
             users
         );
+
+        const validTokens = rows
+            .map(u => u.token)
+            .filter(t => Expo.isExpoPushToken(t));
+
+        if (!validTokens.length) return true;
 
         const notificationRes = await Notification.create({
             title,
@@ -129,27 +189,13 @@ export const sendNotificationForListOfUsers = async ({
             userIds: users
         });
 
-        data = {
-            ...data,
-            _id: notificationRes._id.toString()
-        };
+        data = { ...data, _id: notificationRes._id.toString() };
 
-        const validTokens = rows
-            .map(u => u.token)
-            .filter(t => Expo.isExpoPushToken(t));
-
-        await Promise.all(
-            validTokens.map(token =>
-                sendPushNotification(token, title, body, data, image)
-            )
-        );
+        await sendAndScheduleReceipts(validTokens, title, body, data, image);
 
         return true;
     } catch (error) {
-        console.error(
-            "Error while sending notification to users list: ",
-            error
-        );
+        console.error("Error while sending notification to users list:", error);
         return false;
     }
 };
@@ -160,31 +206,84 @@ export const sendPushNotificationToAllUsers = async (
     data,
     role
 ) => {
-    const condition = role ? `AND role = ?` : "";
+    try {
+        const condition = role ? `AND role = ?` : "";
 
-    const { rows } = await turso.execute({
-        sql: `SELECT token 
-              FROM users 
-              WHERE token IS NOT NULL ${condition}`,
-        args: role ? [role] : []
-    });
+        const { rows } = await turso.execute({
+            sql: `SELECT token 
+                  FROM users 
+                  WHERE token IS NOT NULL ${condition}`,
+            args: role ? [role] : []
+        });
 
-    await Notification.create({
-        title,
-        body,
-        data: JSON.stringify(data),
-        target: role || "all"
-    });
+        const validTokens = rows
+            .map(u => u.token)
+            .filter(t => Expo.isExpoPushToken(t));
 
-    const validTokens = rows
-        .map(u => u.token)
-        .filter(t => Expo.isExpoPushToken(t));
+        if (!validTokens.length) return true;
 
-    if (validTokens.length === 0) return;
+        await Notification.create({
+            title,
+            body,
+            data: JSON.stringify(data),
+            target: role || "all"
+        });
 
-    await Promise.all(
-        validTokens.map(token =>
-            sendPushNotification(token, title, body, data, "")
-        )
-    );
+        await sendAndScheduleReceipts(validTokens, title, body, data, null);
+
+        return true;
+    } catch (error) {
+        console.error("Error while sending notification to all users:", error);
+        return false;
+    }
+};
+
+export const sendPushNotificationToParentsOfStudents = async ({
+    students = [],
+    title = "",
+    body = "",
+    data = {},
+    image = null
+}) => {
+    try {
+        if (!students.length) return true;
+
+        const placeholders = students.map(() => "?").join(",");
+
+        const { rows } = await turso.execute(
+            `SELECT DISTINCT u.token, u.userId
+             FROM users u
+             INNER JOIN parent_child pc ON pc.parentId = u.userId
+             WHERE pc.studentId IN (${placeholders})
+               AND pc.is_verified = TRUE
+               AND u.token IS NOT NULL`,
+            students
+        );
+
+        const validTokens = rows
+            .map(row => row.token)
+            .filter(t => Expo.isExpoPushToken(t));
+
+        if (!validTokens.length) return true;
+
+        const notificationRes = await Notification.create({
+            title,
+            body,
+            data: JSON.stringify(data),
+            target: "userIds",
+            userIds: rows.map(item => item.userId)
+        });
+
+        data = { ...data, _id: notificationRes._id.toString() };
+
+        await sendAndScheduleReceipts(validTokens, title, body, data, image);
+
+        return true;
+    } catch (err) {
+        console.error(
+            "Error while sendPushNotificationToParentsOfStudents:",
+            err
+        );
+        return false;
+    }
 };

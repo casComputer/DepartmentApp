@@ -1,9 +1,11 @@
-
 import { turso } from "../../config/turso.js";
 
 import { ATTENDANCE_UPDATE_LIMIT_MINUTES as UPDATE_LIMIT_MINUTES } from "../../constants/constants.js";
 
-import { sendNotificationForListOfUsers } from "../../utils/notification.js";
+import {
+    sendNotificationForListOfUsers,
+    sendPushNotificationToParentsOfStudents
+} from "../../utils/notification.js";
 
 const buildDetailRows = (attendanceId, attendance) =>
     attendance.map(s => ({
@@ -167,8 +169,15 @@ export const save = async (req, res) => {
 
         sendNotificationForListOfUsers({
             users: attendance.filter(s => !s.present)?.map(s => s.userId) ?? [],
-            title: "attendance Taken",
+            title: "Attendance Taken",
             body: `Attendance was now taken, reach class within ${UPDATE_LIMIT_MINUTES} mins.`,
+            data: notificationData
+        });
+
+        sendPushNotificationToParentsOfStudents({
+            students: attendance.filter(s => !s.present).map(s => s.userId),
+            title: "Student Not Present",
+            body: `Heads up! Your child was not present when attendance was taken. Please check in with them.`,
             data: notificationData
         });
 
@@ -301,7 +310,6 @@ export const getClassAttendance = async (req, res) => {
             });
         }
 
-     
         const offset = (page - 1) * limit;
 
         const { rows: attendance } = await turso.execute(

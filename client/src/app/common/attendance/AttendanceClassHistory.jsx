@@ -40,7 +40,6 @@ const AttendanceClassHistory = () => {
             <Header
                 title="Class History"
                 isAbsolute={true}
-                targetRef={targetRef}
             />
             <FlashList
                 data={allItems}

@@ -20,7 +20,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export default function ImageFullView() {
-    const { url } = useLocalSearchParams();
+    const { url, tag } = useLocalSearchParams();
 
     const [ratio, setRatio] = useState(1);
 
@@ -28,7 +28,6 @@ export default function ImageFullView() {
     const translateY = useSharedValue(0);
     const translateX = useSharedValue(0);
 
-    // Get real image size
     useEffect(() => {
         if (url) {
             Image.getSize(url, (w, h) => {
@@ -37,7 +36,6 @@ export default function ImageFullView() {
         }
     }, [url]);
 
-    // Pinch Gesture
     const pinch = Gesture.Pinch()
         .onUpdate(e => {
             scale.value = e.scale;
@@ -48,7 +46,6 @@ export default function ImageFullView() {
             }
         });
 
-    // Drag Gesture (Dismiss)
     const pan = Gesture.Pan()
         .onUpdate(e => {
             if (scale.value === 1) {
@@ -88,7 +85,7 @@ export default function ImageFullView() {
 
             <GestureDetector gesture={composed}>
                 <AnimatedImage
-                    sharedTransitionTag="sharedTag"
+                    sharedTransitionTag={tag}
                     source={{ uri: url }}
                     resizeMode="contain"
                     style={[

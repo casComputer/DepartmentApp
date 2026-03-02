@@ -1,11 +1,5 @@
-import { BlurView } from "expo-blur";
-import { router } from "expo-router";
-import {
-    Image,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
+import { router } from "expo-router"; 
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 const icons = {
     graduate: require("../../../assets/images/icons/graduate.png"),
@@ -14,6 +8,7 @@ const icons = {
 };
 
 const Button = ({ icon, text, role }) => {
+    
     return (
         <TouchableOpacity
             onPress={() => {
@@ -22,28 +17,27 @@ const Button = ({ icon, text, role }) => {
                     params: { userRole: role }
                 });
             }}
-            className={`overflow-hidden h-26  rounded-3xl min-w-[43%] flex-row items-center ${
+            className={`overflow-hidden h-24  rounded-3xl min-w-[43%] flex-row items-center ${
                 role === "parent" ? "w-[50%]" : "flex-1"
-            }`}>
-            <BlurView
-                intensity={60}
-                tint="dark"
-                blurMethod='dimezisBlurView'
-                className="w-full h-full flex-row items-center justify-center px-5 gap-2">
+            }`}
+        >
+            <View className="w-full h-full flex-row items-center justify-center px-5 bg-zinc-700">
                 <Image
                     source={icons[icon]}
                     resizeMode="contain"
-                    className={`${
-                        role === "parent" ? "w-[20%]" : "w-[25%]"
-                    } h-full`}
+                    style={{
+                        width: role === "parent" ? "20%" : "25%",
+                        height: "100%"
+                    }}
                 />
                 <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
-                    className="flex-1 font-bold text-md text-center text-text ">
+                    className="flex-1 font-bold text-md text-center text-white"
+                >
                     {text}
                 </Text>
-            </BlurView>
+            </View>
         </TouchableOpacity>
     );
 };

@@ -2,8 +2,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 export const Chip = ({ isSelected, year, setSelected }) => (
   <TouchableOpacity
-    className={`rounded-2xl py-3 flex-1 justify-center items-center ${
-      isSelected && "bg-[#f8459e]"
+    className={`rounded-2xl py-3 flex-1 border border-border justify-center items-center ${
+      isSelected && "bg-card-selected"
     } `}
     onPress={() => setSelected(year)}
   >

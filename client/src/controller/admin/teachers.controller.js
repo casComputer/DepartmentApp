@@ -2,15 +2,12 @@ import axios from "@utils/axios.js";
 import { ToastAndroid } from "react-native";
 import { router } from "expo-router";
 
-import { useAdminStore } from "@store/admin.store.js";
 import { useAppStore } from "@store/app.store.js";
+import queryClient from "@utils/queryClient.js";
 
 export const fetchTeachers = async () => {
     try {
         const response = await axios.get("/admin/teachers");
-
-        // const setTeachers = useAdminStore.getState().setTeachers;
-        // setTeachers(response.data);
 
         return response.data ?? [];
     } catch (error) {
@@ -27,7 +24,17 @@ export const handleRemoveIncharge = async teacherId => {
         });
 
         if (response.data.success) {
-            useAdminStore.getState().setInCharge(teacherId, null, null);
+            queryClient.setQueryData(["teachers"], oldData =>
+                oldData?.map(teacher =>
+                    teacher.userId === teacherId
+                        ? {
+                              ...teacher,
+                              in_charge_course: null,
+                              in_charge_year: null
+                          }
+                        : teacher
+                )
+            );
             ToastAndroid.show(
                 "Successfully removed in-charge",
                 ToastAndroid.SHORT
@@ -49,9 +56,19 @@ export const assignClass = async ({ year, course, teacherId }) => {
         });
 
         if (res.data.success) {
-            const setInCharge = useAdminStore.getState().setInCharge;
             const userId = useAppStore.getState().user.userId;
-            setInCharge(teacherId, year.id, course.id);
+
+            queryClient.setQueryData(["teachers"], oldData =>
+                oldData?.map(teacher =>
+                    teacher.userId === teacherId
+                        ? {
+                              ...teacher,
+                              in_charge_course: course.id,
+                              in_charge_year: year.id
+                          }
+                        : teacher
+                )
+            );
 
             if (teacherId === userId) {
                 useAppStore.getState().updateUser({
@@ -83,8 +100,16 @@ export const verifyTeacher = async teacherId => {
         });
 
         if (res.data.success) {
-            const verifyTeacher = useAdminStore.getState().verifyTeacher;
-            verifyTeacher(teacherId);
+            queryClient.setQueryData(["teachers"], oldData =>
+                oldData?.map(teacher =>
+                    teacher.userId === teacherId
+                        ? {
+                              ...teacher,
+                              is_verified: true
+                          }
+                        : teacher
+                )
+            );
         } else
             ToastAndroid.show(
                 res.data?.message ?? "Failed to verify teacher",
@@ -103,7 +128,9 @@ export const cancelVerification = async teacherId => {
         });
 
         if (res.data?.success)
-            useAdminStore.getState().removeTeacher(teacherId);
+            queryClient.setQueryData(["teachers"], oldData =>
+                oldData?.filter(teacher => teacher.userId !== teacherId)
+            );
         else
             ToastAndroid.show(
                 res.data?.message ?? "Failed to remove teacher",

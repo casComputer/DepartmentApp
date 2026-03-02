@@ -535,7 +535,7 @@ export const generateReport = async (req, res) => {
             await new Promise((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
                     {
-                        resource_type: "raw",
+                        resource_type: "image",
                         folder: "attendance/xl",
                         public_id: `attendance_${Date.now()}.xlsx`,
                         format: "xlsx"
@@ -550,7 +550,7 @@ export const generateReport = async (req, res) => {
             await new Promise((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
                     {
-                        resource_type: "raw",
+                        resource_type: "image",
                         folder: "attendance/pdf",
                         public_id: `attendance_${Date.now()}.pdf`,
                         format: "pdf"

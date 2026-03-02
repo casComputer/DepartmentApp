@@ -11,7 +11,6 @@ const Home = () => {
         <ScrollView
             className="bg-primary"
             contentContainerStyle={{
-                paddingBottom: 150,
                 flexGrow: 1,
             }}
             showsVerticalScrollIndicator={false}

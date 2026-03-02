@@ -9,18 +9,18 @@
             --color-card-selected: #21262d; /* Selected card */
             --color-btn: #2f81f7; /* Button (accent blue) */
             --color-text: #e6edf3; /* Main text */
-            --color-text-secondary: #8b949e; /* Secondary text */
+            --color-text-secondary: #fedbcc; /* Secondary text */
             --color-border: rgba(240, 246, 252, 0.1);
         }
 
         @variant light {
-            --color-primary: #ffece6;
+            --color-primary:#feebe6;
             --color-card: #ffffff;
             --color-card-selected: #fdc8b7;
             --color-btn: #fedbcc;
             --color-text: #000000;
             --color-text-secondary: #291d16;
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(0 0 1 / 10%);
         }
 
         /* Premium theme variables */
@@ -32,7 +32,7 @@
             --color-btn: #763219;
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant ocean {
@@ -42,7 +42,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
             --color-btn: oklch(0.6 0.15 200);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant sunset {
@@ -52,7 +52,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
             --color-btn: oklch(0.65 0.18 40);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant forest {
@@ -62,7 +62,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #fedbcc;
             --color-btn: oklch(0.55 0.15 145);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant high-contrast {
@@ -82,7 +82,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #cbd5ff;
             --color-btn: oklch(0.65 0.2 260);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant arctic {
@@ -92,7 +92,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #d6f4ff;
             --color-btn: oklch(0.6 0.14 185);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant ember {
@@ -102,7 +102,7 @@
             --color-text: #ffffff;
             --color-text-secondary: #ffd6cc;
             --color-btn: oklch(0.63 0.2 40);
-            --color-border: oklch(0 0 0 / 0%);
+            --color-border: oklch(1 0 0 / 10%);
         }
 
         @variant earthy-rhythm {

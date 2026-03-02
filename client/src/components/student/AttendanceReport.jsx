@@ -3,8 +3,10 @@ import { Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import { Feather } from "@icons";
 import { useQuery } from "@tanstack/react-query";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Color } from "@constants/TWPallet.js";
+import Loader from '@components/common/Loader';
 
 import { getYearlyAttendenceReport } from "@controller/student/attendance.controller.js";
 
@@ -23,11 +25,10 @@ export const SelectYear = ({ setYear, year }) => {
                 <Feather name="chevron-left" size={24} />
             </TouchableOpacity>
             <Text className="text-2xl font-bold text-text ">{year}</Text>
-          
-                <TouchableOpacity style={{ opacity: hideArrowRight ? 0 : 1 }} disabled={hideArrowRight} onPress={() => handleChangeYear(1)}>
-                    <Feather name="chevron-right" size={24} />
-                </TouchableOpacity>
-            
+
+            <TouchableOpacity style={{ opacity: hideArrowRight ? 0 : 1 }} disabled={hideArrowRight} onPress={() => handleChangeYear(1)}>
+                <Feather name="chevron-right" size={24} />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -41,37 +42,47 @@ export const Chart = () => {
     });
 
     return (
-        <View >
+        <View>
             <Text className="text-text font-bold text-2xl text-center mt-8">
                 Yearly Report
             </Text>
             <SelectYear setYear={setYear} year={year} />
-            {isLoading && <ActivityIndicator />}
+            {isLoading && <Loader size="large" />}
+            
             {data?.length && (
-                <BarChart
-                    key={year}
-                    data={data ?? []}
-                    noOfSections={4}
-                    barBorderRadius={4}
-                    yAxisThickness={0}
-                    xAxisThickness={0}
-                    xAxisLabelTextStyle={{
-                        color: Color.gray[400],
-                        fontSize: 12,
-                        fontWeight: "500",
-                    }}
-                    yAxisTextStyle={{
-                        color: Color.gray[400],
-                        fontSize: 12,
-                        fontWeight: "500",
-                    }}
-                    isAnimated
-                    animationDuration={250}
-                    showGradient
-                    gradientColor={Color.pink[500]}
-                    frontColor={Color.pink[300]}
-                    dashGap={10}
-                />
+                <Animated.View entering={FadeInDown.duration(400).springify().damping(18)}>
+                    <BarChart
+                        key={year}
+                        data={data ?? []}
+                        noOfSections={4}
+                        barBorderRadius={4}
+                        yAxisThickness={0}
+                        xAxisThickness={0}
+                        xAxisLabelTextStyle={{
+                            color: Color.gray[400],
+                            fontSize: 12,
+                            fontWeight: "500",
+                        }}
+                        yAxisTextStyle={{
+                            color: Color.gray[400],
+                            fontSize: 12,
+                            fontWeight: "500",
+                        }}
+                        isAnimated
+                        animationDuration={250}
+                        showGradient
+                        gradientColor={Color.pink[500]}
+                        frontColor={Color.pink[300]}
+                        dashGap={10}
+                        showValuesAsTopLabel
+                        topLabelTextStyle={{
+                            color: Color.pink[500],
+                            fontSize: 9,
+                            fontWeight: "700",
+                            marginBottom: 2,
+                        }}
+                    />
+                </Animated.View>
             )}
         </View>
     );

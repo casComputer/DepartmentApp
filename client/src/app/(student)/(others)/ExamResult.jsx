@@ -25,7 +25,6 @@ const setProgress = useAppStore.getState().setGlobalProgress;
 const setProgressText = useAppStore.getState().setGlobalProgressText;
 
 const ExamResult = () => {
-    const [selectedCourse, setSelectedCourse] = useState({});
     const [selectedSem, setSelectedSem] = useState({});
     const [file, setFile] = useState({});
 
@@ -35,7 +34,7 @@ const ExamResult = () => {
     };
 
     const handdleUploadFile = async () => {
-        if (!selectedCourse.id || !selectedSem.id) {
+        if (!selectedSem.id) {
             ToastAndroid.show("Please select all fields.", ToastAndroid.SHORT);
             return;
         }
@@ -49,7 +48,6 @@ const ExamResult = () => {
         setProgressText("Checking Previous Uploads..");
 
         const isUploaded = await checkExamResultUpload(
-            selectedCourse.id,
             selectedSem.id,
         );
 
@@ -72,7 +70,6 @@ const ExamResult = () => {
             return setProgress(0);
 
         const data = {
-            course: selectedCourse.id,
             sem: selectedSem.id,
             filename: file.name,
             secure_url,
@@ -93,12 +90,7 @@ const ExamResult = () => {
             <Header onSave={handdleUploadFile} />
 
             <View className="px-1">
-                <Select
-                    title="Course"
-                    options={COURSES}
-                    select={setSelectedCourse}
-                    selected={selectedCourse}
-                />
+
                 <Select
                     title="Semester"
                     options={SEM}

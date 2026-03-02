@@ -1,0 +1,2 @@
+Add to style.xml
+<item name="android:forceDarkAllowed">false</item>

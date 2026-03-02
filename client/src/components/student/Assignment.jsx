@@ -1,47 +1,60 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 import { useAppStore } from "@store/app.store.js";
 import { isDatePassed } from "@utils/date.js";
 
-const Status = ({ status, is_submitted }) => {
+const StatusBadge = ({ status, is_submitted }) => {
     if (status === "accepted") {
         return (
-            <MaterialCommunityIcons
-                name="seal-variant"
-                size={26}
-                color="#39ee17"
-            />
+            <View className="flex-row items-center gap-1 bg-green-500/10 px-3 py-1 rounded-full">
+                <MaterialCommunityIcons
+                    name="seal-variant"
+                    size={16}
+                    color="#22c55e"
+                />
+                <Text className="text-xs font-bold text-green-500">
+                    Accepted
+                </Text>
+            </View>
         );
     }
 
     if (status === "rejected") {
         return (
-            <Text className="text-md font-black text-red-500">Rejected</Text>
+            <View className="bg-red-500/10 px-3 py-1 rounded-full">
+                <Text className="text-xs font-bold text-red-500">Rejected</Text>
+            </View>
         );
     }
 
     if (is_submitted) {
         return (
-            <Text className="text-sm font-black text-green-500">Submitted</Text>
+            <View className="bg-blue-500/10 px-3 py-1 rounded-full">
+                <Text className="text-xs font-bold text-blue-400">
+                    Submitted
+                </Text>
+            </View>
         );
     }
 
-    return null;
+    return (
+        <View className="bg-orange-500/10 px-3 py-1 rounded-full">
+            <Text className="text-xs font-bold text-orange-400">Pending</Text>
+        </View>
+    );
 };
 
 export const AssignmentRenderItem = ({ item }) => {
     const userId = useAppStore(state => state.user.userId);
 
-    const is_submitted = item?.submissions?.some(
-        submission => submission?.studentId === userId
-    );
-
     const exists = item?.submissions?.find(
         submission => submission?.studentId === userId
     );
 
+    const is_submitted = !!exists;
     const status = exists?.status || "_";
     const rejectionMessage = exists?.rejectionMessage ?? "";
     const isExpired = isDatePassed();
@@ -64,29 +77,53 @@ export const AssignmentRenderItem = ({ item }) => {
                 })
             }
             activeOpacity={0.7}
-            className="p-4 rounded-3xl bg-card my-2 border border-border"
-            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
+            className="rounded-2xl bg-card my-1 border border-border overflow-hidden"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.4)" }}
         >
-            <View className="flex-row py-2 justify-between items-center">
-                <Text className="font-black opacity-50 text-mg text-text">
-                    {item.teacherId}
+
+            <View className="p-4 gap-3">
+                {/* Header row */}
+                <View className="flex-row justify-between items-center">
+                    <Text className="text-xs font-semibold text-text/40 uppercase tracking-widest">
+                        {item.teacherId}
+                    </Text>
+                    <StatusBadge status={status} is_submitted={is_submitted} />
+                </View>
+
+                {/* Topic */}
+                <Text className="text-xl font-black text-text leading-tight">
+                    {item.topic}
                 </Text>
 
-                <Status status={status} is_submitted={is_submitted} />
+                {/* Description */}
+                <Text
+                    className="text-sm text-text/60 font-medium"
+                    numberOfLines={2}
+                >
+                    {item.description}
+                </Text>
+
+                {/* Footer row */}
+                <View className="flex-row justify-between items-center pt-1 border-t border-border">
+                    <Text className="text-xs font-semibold text-text/50">
+                        {item.year} · {item.course}
+                    </Text>
+
+                    <View className="flex-row items-center gap-1">
+                        <Feather
+                            name="clock"
+                            size={12}
+                            color={isExpired ? "#ef4444" : "#888"}
+                        />
+                        <Text
+                            className={`text-xs font-bold ${isExpired ? "text-red-500" : "text-text/50"}`}
+                        >
+                            {isExpired ? "Expired · " : "Due · "}
+                            {new Date(item.dueDate).toLocaleDateString()}
+                        </Text>
+                    </View>
+                </View>
             </View>
-            <Text className="text-xl font-black text-text">{item.topic}</Text>
-            <Text className="font-bold text-lg pl-3 text-text/80">
-                {item.description}
-            </Text>
-            <Text className="text-xl font-black mt-3 text-text">
-                {item.year} {item.course}
-            </Text>
-            <Text
-                className={`font-black text-lg ${isExpired ? "text-red-500" : "text-text"}`}
-            >
-                Due Date:
-                {new Date(item.dueDate).toLocaleDateString()}
-            </Text>
         </TouchableOpacity>
     );
 };

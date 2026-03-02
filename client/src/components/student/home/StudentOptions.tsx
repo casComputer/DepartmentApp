@@ -81,9 +81,7 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
 const StudentOptions = () => {
     return (
         <View className="px-2 mt-5">
-            <View className="bg-card border-border border rounded-3xl py-3" style={{
-                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
-            }}>
+            <View className="bg-card border-border border rounded-3xl py-3">
                 <FlashList
                     data={optionsData}
                     renderItem={({ item }) => (

@@ -36,7 +36,11 @@ const AttendanceClassHistory = () => {
 
     return (
         <View className="flex-1 bg-primary">
-            <Header title="Class History" isAbsolute={true} />
+            <Header
+                title="Class History"
+                isAbsolute={true}
+                targetRef={targetRef}
+            />
             <FlashList
                 data={allItems}
                 renderItem={({ item }) => (
@@ -52,7 +56,7 @@ const AttendanceClassHistory = () => {
                 contentContainerStyle={{
                     paddingBottom: 60
                 }}
-                className='pt-16'
+                className="pt-16"
                 ListEmptyComponent={
                     isLoading ? (
                         <ActivityIndicator size={"large"} />

@@ -14,7 +14,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { MaterialIcons } from "@icons";
 import * as Haptics from "expo-haptics";
-import { BlurView } from "expo-blur";
 
 import { useAppStore } from "@store/app.store.js";
 
@@ -40,7 +39,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                         width: AVATAR_SIZE,
                         borderRadius: AVATAR_SIZE / 2
                     }}
-                    className="bg-card border border-border justify-center items-center w-[80%] h-[80%]"
+                    className="bg-card border border-border justify-center items-center"
                 >
                     {dp ? (
                         <Image
@@ -63,38 +62,31 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                             {username[0]}
                         </Text>
                     )}
-                    <TouchableOpacity
-                        onPress={handleClick}
-                        style={{}}
-                        className="p-4 rounded-full bg-btn/20 absolute z-10 -right-2 bottom-[15%] overflow-hidden"
-                    >
-                        <BlurView
-                            tint="dark"
-                            intensity={40}
-                            experimentalBlurMethod={"dimezisBlurView"}
-                            style={[StyleSheet.absoluteFillObject]}
-                        />
-                        <MaterialIcons name="edit" size={30} />
-                    </TouchableOpacity>
                 </View>
-                <Text
-                    numberOfLines={1}
-                    minimumFontScale={0.3}
-                    adjustsFontSizeToFit
-                    style={{
-                        marginTop: -vw * 0.1
-                    }}
-                    className="w-[85%] text-text-secondary font-bold text-7xl text-center"
+
+                <TouchableOpacity
+                    className="p-4 bg-btn rounded-full absolute z-10 right-[10%] bottom-[15%]"
+                    onPress={handleClick}
                 >
-                    @{username}
-                </Text>
+                    <MaterialIcons name="edit" size={30} />
+                </TouchableOpacity>
             </View>
+
+            <Text
+                numberOfLines={1}
+                minimumFontScale={0.3}
+                adjustsFontSizeToFit
+                style={{ marginTop: -vw * 0.1 }}
+                className="w-[85%] text-text-secondary font-bold text-7xl text-center"
+            >
+                @{username}
+            </Text>
         </View>
     );
 };
 
 export const EditDpOptions = ({ show, handleChangePic }) => {
-    const SHEET_HEIGHT = vh * 0.3;
+    const SHEET_HEIGHT = vh * 0.15;
     const translateY = useSharedValue(SHEET_HEIGHT);
 
     useEffect(() => {

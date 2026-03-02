@@ -15,8 +15,6 @@ import {
     handleRemoveIncharge
 } from "@controller/admin/teachers.controller";
 
-import { useAdminStore } from "@store/admin.store.js";
-
 import confirm from "@utils/confirm.js";
 import queryClient from "@utils/queryClient.js";
 
@@ -150,7 +148,7 @@ const VerifyTeacher = () => {
                     className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
                 >
                     <Text className="text-2xl text-text font-bold py-1">
-                        {cancelling ? "Cancelling.." : "Cancel"}
+                        {cancelling ? "Deleting.." : "Delete"}
                     </Text>
                 </TouchableOpacity>
                 {!user.is_verified && (

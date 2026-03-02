@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -9,6 +9,7 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+import Loader from '@components/common/Loader';
 import Header from "@components/common/Header";
 import {
     ItemSeparator,
@@ -17,13 +18,14 @@ import {
 
 import { fetchNotifications } from "@controller/common/notification.controller.js";
 
-import { downloadFile } from "@utils/file.js";
+import { downloadFile, checkFileExists } from "@utils/file.js";
 import { getTime } from "@utils/date.js";
 import getPreviewUrl from "@utils/pdfPreview.js";
 
 const RenderItem = ({ item = {} }) => {
     const data = JSON.parse(item.data ?? "{}");
     const [downloading, setDownloading] = useState(false);
+    const [isDownloaded, setIsDownloaded] = useState(false);
 
     const handleDownload = async () => {
         if (downloading) return;
@@ -32,8 +34,17 @@ const RenderItem = ({ item = {} }) => {
         if (data.type === "ATTENDANCE_REPORT_GENERATION")
             await downloadFile(data.pdf_url, "pdf", `${data.filename}.pdf`);
 
+        setIsDownloaded(true);
         setDownloading(false);
     };
+
+    useEffect(() => {
+        checkFileExists(item.filename).then(({ exists }) =>
+            setIsDownloaded(exists)
+        );
+    }, [item.filename]);
+    
+    console.log(data.pdf_url, getPreviewUrl(data.pdf_url));
 
     return (
         <View className="bg-card my-1 px-3 py-4 rounded-xl">
@@ -65,7 +76,11 @@ const RenderItem = ({ item = {} }) => {
                         onPress={handleDownload}
                     >
                         <Text className="text-xl font-bold text-blue-500 text-center">
-                            {downloading ? "Downloading" : "Download File"}
+                            {isDownloaded
+                                ? "Open"
+                                : downloading
+                                  ? "Downloading"
+                                  : "Download File"}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -104,12 +119,12 @@ const NotificationList = () => {
                             No Notifications Yet!
                         </Text>
                     ) : (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     )
                 }
                 ListFooterComponent={
                     !isLoading &&
-                    isFetchingNextPage && <ActivityIndicator size={"large"} />
+                    isFetchingNextPage && <Loader size="large" />
                 }
                 ListHeaderComponent={
                     <ListHeaderComponent date={notifications[0]?.createdAt} />

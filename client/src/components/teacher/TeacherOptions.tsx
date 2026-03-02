@@ -130,13 +130,6 @@ const Option = ({
                     margin: 4,
                     borderRadius: 18,
                     padding: 16,
-                    borderWidth: 1,
-                    borderColor: "rgba(240,246,252,0.07)",
-                    shadowColor: "#000",
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    shadowOffset: { width: 0, height: 3 },
-                    elevation: 3,
                     ...(fullWidth
                         ? {
                               flexDirection: "row",
@@ -151,7 +144,7 @@ const Option = ({
                               minHeight: 110
                           })
                 }}
-                className="bg-card"
+                className="bg-card border border-border"
             >
                 {/* Icon badge */}
                 <View
@@ -226,7 +219,7 @@ const TeacherOptions = () => {
     const filteredOptions = optionsData.filter(
         opt => !opt.requiresInCharge || isInCharge
     );
-    
+
     console.log(filteredOptions);
 
     return (

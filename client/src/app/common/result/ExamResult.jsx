@@ -1,15 +1,10 @@
-import {
-    View,
-    Text,
-    ActivityIndicator,
-    Image,
-    TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import { openFileInBrowser } from "@utils/file.js";
@@ -49,7 +44,7 @@ const ExamResult = () => {
 
     const { data, isLoading } = useQuery({
         queryKey: ["examResults", course, sem],
-        queryFn: () => fetchExamResult({ course, sem }),
+        queryFn: () => fetchExamResult({ course, sem })
     });
 
     return (
@@ -59,11 +54,11 @@ const ExamResult = () => {
             <FlashList
                 data={data}
                 className="pt-16"
-                keyExtractor={(item) => item._id}
+                keyExtractor={item => item._id}
                 renderItem={({ item }) => <ResultItem item={item} />}
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     ) : (
                         <Text className="text-text text-center text-lg mt-10">
                             No Results Found

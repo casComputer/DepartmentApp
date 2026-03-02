@@ -1,8 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 
 import Header from "@components/common/Header";
 import { AttendanceHistoryRenderItem } from "@components/teacher/Attendance.jsx";
+import Loader from "@components/common/Loader";
 
 import { getAttendanceHistoryByTeacherId } from "@controller/teacher/attendance.controller.js";
 import { FlashList } from "@shopify/flash-list";
@@ -33,7 +34,7 @@ const AttendanceHistory = () => {
     return (
         <View className="flex-1 bg-primary">
             <Header title="History" isAbsolute={true} />
-            {isLoading && <ActivityIndicator size={"large"} />}
+            {isLoading && <Loader size={"large"} />}
             <FlashList
                 data={allItems}
                 renderItem={({ item }) => (
@@ -48,7 +49,7 @@ const AttendanceHistory = () => {
                 }}
                 className="pt-16"
                 ListEmptyComponent={
-                    isFetchingNextPage && <ActivityIndicator size="small" />
+                    isFetchingNextPage && <Loader size="small" />
                 }
             />
         </View>

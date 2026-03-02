@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 import { HistoryRenderItem } from "@components/teacher/WorkLog.jsx";
 import {
     ItemSeparator,
@@ -49,7 +50,7 @@ const WorkLogHistory = () => {
                 className="pt-16 px-1"
                 ListFooterComponent={
                     isFetchingNextPage ? (
-                        <ActivityIndicator size="large" />
+                        <Loader />
                     ) : (
                         !hasNextPage &&
                         allItems?.length > 8 && (
@@ -67,7 +68,7 @@ const WorkLogHistory = () => {
                 }
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     ) : (
                         <Text className="font-bold text-text text-xl mt-1 text-center">
                             No Worklogs exists.

@@ -1,8 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ActivityIndicator, View, Text } from "react-native";
+import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
 
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header";
 import { AttendanceHistoryRenderItem } from "@components/teacher/Attendance.jsx";
 import {
@@ -59,7 +60,7 @@ const AttendanceClassHistory = () => {
                 className="pt-16"
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size={"large"} />
+                        <Loader size={"large"} />
                     ) : (
                         <Text className="text-text text-lg font-bold text-center mt-5">
                             No attendance history found!
@@ -72,7 +73,7 @@ const AttendanceClassHistory = () => {
                 }
                 ListFooterComponent={
                     isFetchingNextPage ? (
-                        <ActivityIndicator size={"large"} />
+                        <Loader />
                     ) : (
                         !hasNextPage &&
                         !isLoading &&

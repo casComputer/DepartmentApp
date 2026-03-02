@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
     View,
     Text,
-    ActivityIndicator,
     Pressable,
     TouchableOpacity
 } from "react-native";

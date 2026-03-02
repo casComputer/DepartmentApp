@@ -1,12 +1,7 @@
 import { useState } from "react";
-import {
-    Text,
-    TouchableOpacity,
-    ScrollView,
-    ActivityIndicator
-} from "react-native";
-import { withUniwind } from "uniwind";
+import { Text, TouchableOpacity, ScrollView } from "react-native";
 
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header2.jsx";
 import Info from "@components/common/InfoBox.jsx";
 import Grouping from "@components/teacher/RollGroup.jsx";
@@ -18,7 +13,6 @@ import { useAppStore } from "@store/app.store.js";
 
 import confirm from "@utils/confirm.js";
 
-const StyledActivityIndicator = withUniwind(ActivityIndicator);
 const infoText = "Note: Auto-assigning will reset existing roll numbers.";
 
 const AssignRoleNumber = () => {
@@ -53,21 +47,18 @@ const AssignRoleNumber = () => {
             contentContainerStyle={{
                 paddingBottom: 70
             }}
-            className="px-3 bg-primary">
+            className="px-3 bg-primary"
+        >
             <Header />
 
-            {loading && (
-                <StyledActivityIndicator
-                    size="large"
-                    className="text-text"
-                />
-            )}
+            {loading && <Loader size="large" />}
 
             <Info text={infoText} />
 
             <TouchableOpacity
                 onPress={handleAlphebetic}
-                className="w-full justify-center items-center py-7 rounded-full bg-btn  mt-3">
+                className="w-full justify-center items-center py-7 rounded-full bg-btn  mt-3"
+            >
                 <Text className="text-text text-2xl font-bold">
                     Alphabetical Order
                 </Text>

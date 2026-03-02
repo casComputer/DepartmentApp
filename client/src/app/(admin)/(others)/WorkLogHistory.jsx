@@ -1,9 +1,10 @@
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 
 import Header from "@components/common/Header.jsx";
 import UserItem from "@components/common/UserItem.jsx";
+import Loader from "@components/common/Loader";
 
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 import { router } from "expo-router";
@@ -35,9 +36,7 @@ const WorkLogHistory = () => {
                 className="pt-16 px-1"
                 contentContainerStyle={{ paddingBottom: 70 }}
                 showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    isLoading && <ActivityIndicator size="large" />
-                }
+                ListEmptyComponent={isLoading && <Loader size="large" />}
             />
         </View>
     );

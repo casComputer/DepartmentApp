@@ -1,70 +1,71 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, Modal } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 
+import Loader from "@components/common/Loader";
+
 const MultiSelectModal = ({
-  list = [],
-  onDone,
-  title = "",
-  shouldShow = false,
-  isLoading= false
+    list = [],
+    onDone,
+    title = "",
+    shouldShow = false,
+    isLoading = false
 }) => {
-  const [selected, setSelected] = useState([]);
+    const [selected, setSelected] = useState([]);
 
-  const toggleSelect = (id) => {
-    let updated;
+    const toggleSelect = id => {
+        let updated;
 
-    if (selected.includes(id)) updated = selected.filter((s) => s !== id);
-    else updated = [...selected, id];
+        if (selected.includes(id)) updated = selected.filter(s => s !== id);
+        else updated = [...selected, id];
 
-    setSelected(updated);
-  };
+        setSelected(updated);
+    };
 
-  const handleDone = () => {
-    onDone(selected);
-    setSelected([]);
-  };
+    const handleDone = () => {
+        onDone(selected);
+        setSelected([]);
+    };
 
-  const renderItem = ({ item }) => {
-    const isSelected = selected.includes(item.userId);
+    const renderItem = ({ item }) => {
+        const isSelected = selected.includes(item.userId);
+
+        return (
+            <TouchableOpacity
+                onPress={() => toggleSelect(item.userId)}
+                className={`bg-card p-5 rounded-3xl my-1 ${
+                    isSelected && "border-[#3399ff] bg-card-selected"
+                }`}
+            >
+                <Text className="text-text">{item.fullname}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
-      <TouchableOpacity
-        onPress={() => toggleSelect(item.userId)}
-        className={`bg-card p-5 rounded-3xl my-1 ${
-          isSelected && "border-[#3399ff] bg-card-selected"
-        }`}
-      >
-        <Text className="text-text">{item.fullname}</Text>
-      </TouchableOpacity>
+        <Modal visible={shouldShow} animationType="slide">
+            <View className="pt-10 bg-primary flex-1">
+                <Text className="text-2xl font-bold text-center text-text">
+                    {title}
+                </Text>
+                <FlashList
+                    data={list}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ gap: 50, paddingBottom: 70 }}
+                    ListHeaderComponent={isLoading && <Loader size="large" />}
+                    showsVerticalScrollIndicator={false}
+                />
+                <TouchableOpacity
+                    onPress={handleDone}
+                    className="bg-btn py-4 mb-8 rounded-2xl"
+                >
+                    <Text className="text-text text-center text-xl font-bold">
+                        Done
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </Modal>
     );
-  };
-
-  return (
-    <Modal visible={shouldShow} animationType="slide">
-      <View className="pt-10 bg-primary flex-1">
-        <Text className="text-2xl font-bold text-center text-text">
-          {title}
-        </Text>
-        <FlashList
-          data={list}
-          renderItem={renderItem}
-          contentContainerStyle={{ gap: 50, paddingBottom: 70 }}
-          ListHeaderComponent={
-              isLoading &&
-                    <ActivityIndicator size={'large'} />
-                }
-                showsVerticalScrollIndicator={false}
-        />
-        <TouchableOpacity
-          onPress={handleDone}
-          className="bg-btn py-4 mb-8 rounded-2xl"
-        >
-          <Text className="text-text text-center text-xl font-bold">Done</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
-  );
 };
 
 export default MultiSelectModal;

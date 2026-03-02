@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import { Feather } from "@icons";
 import { useQuery } from "@tanstack/react-query";

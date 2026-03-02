@@ -1,17 +1,12 @@
 import React from "react";
-import {
-    View,
-    Text,
-    ActivityIndicator,
-    Alert,
-    TouchableOpacity
-} from "react-native";
+import { View, Text, Alert, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 
 import {
     fetch as fetchFees,
@@ -98,20 +93,16 @@ const History = () => {
             <FlashList
                 data={fees}
                 ListEmptyComponent={
-                    !isLoading && (
+                    !isLoading ? (
                         <Text className="text-lg font-bold text-text text-center mt-5">
                             No fees history Found!
                         </Text>
+                    ) : (
+                        <Loader size="large" />
                     )
                 }
-                ListHeaderComponent={
-                    isLoading &&
-                    !isRefetching &&
-                    !isFetchingNextPage && <ActivityIndicator size={"large"} />
-                }
                 ListFooterComponent={
-                    !isLoading &&
-                    isFetchingNextPage && <ActivityIndicator size={"large"} />
+                    !isLoading && isFetchingNextPage && <Loader />
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}

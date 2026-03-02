@@ -1,9 +1,10 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import { router } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
 
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header.jsx";
 import FloatingAddButton from "@components/common/FloatingAddButton.jsx";
 import { AssignmentRenderItem } from "@components/teacher/Assignment.jsx";
@@ -33,7 +34,7 @@ const Assignment = () => {
 
     const allItems =
         data?.pages?.flatMap(page => page?.assignments ?? []) ?? [];
-        
+
     return (
         <View className="flex-1 bg-primary">
             <Header title="Assignments" />
@@ -55,7 +56,7 @@ const Assignment = () => {
                 }
                 ListFooterComponent={
                     isFetchingNextPage ? (
-                        <ActivityIndicator size={"small"} />
+                        <Loader />
                     ) : (
                         !hasNextPage &&
                         !isLoading &&
@@ -68,7 +69,7 @@ const Assignment = () => {
                 }
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size={"large"} />
+                        <Loader size={"large"} />
                     ) : (
                         <Text className="font-bold text-text text-center text-lg">
                             Click + to create an assignment

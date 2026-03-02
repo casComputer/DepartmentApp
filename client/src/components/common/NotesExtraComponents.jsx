@@ -6,8 +6,7 @@ import {
     Pressable,
     Dimensions,
     Image,
-    ToastAndroid,
-    ActivityIndicator
+    ToastAndroid
 } from "react-native";
 import Animated, {
     withTiming,
@@ -26,6 +25,8 @@ import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import { downloadFile, checkFileExists } from "@utils/file.js";
 import confirm from "@utils/confirm.js";
+
+import Loader from "@components/common/Loader";
 
 import {
     uploadFileDetails,
@@ -162,9 +163,7 @@ export const FloatingAddButton = ({ parentId }) => {
     };
 
     return (
-        <View
-            className="absolute right-8 bottom-20 items-center"
-        >
+        <View className="absolute right-8 bottom-20 items-center">
             <Animated.View
                 style={extraViewAnim}
                 className="gap-3 items-center justify-end py-3"
@@ -297,7 +296,7 @@ export const FolderItem = ({ item, role }) => {
                             className="bg-card-selected"
                         />
                         {downloading && (
-                            <ActivityIndicator
+                            <Loader
                                 size={"large"}
                                 style={{
                                     position: "absolute"

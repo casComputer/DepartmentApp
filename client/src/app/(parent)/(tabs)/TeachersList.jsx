@@ -25,6 +25,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import Header from "@components/common/Header2.jsx";
+import Loader from "@components/common/Loader";
 import { fetchAllTeachers } from "@controller/student/teachers.controller.js";
 import { useAppStore } from "@store/app.store.js";
 import { openPhone, openWhatsApp, openEmail } from "@utils/openApp.js";
@@ -232,7 +233,9 @@ const TeacherItem = ({ item }) => {
                             <View className="flex-row items-center gap-2">
                                 <IconButton
                                     style={{
-                                        flex: 1, flexDirection: 'row', alignItems: 'center',
+                                        flex: 1,
+                                        flexDirection: "row",
+                                        alignItems: "center"
                                     }}
                                     className="flex-1 flex-row items-center justify-start px-3 gap-2"
                                     onPress={() => openPhone(item.phone)}
@@ -274,9 +277,7 @@ const TeacherItem = ({ item }) => {
 const EmptyState = ({ isLoading }) => (
     <View className="flex-1 items-center justify-center py-20 gap-3">
         {isLoading ? (
-            <Text className="text-text-secondary text-sm font-semibold">
-                Loading teachers…
-            </Text>
+            <Loader size="large" />
         ) : (
             <>
                 <Text style={{ fontSize: 40 }}>🏫</Text>

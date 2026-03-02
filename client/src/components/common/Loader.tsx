@@ -286,7 +286,7 @@ export function MorphingLoader({
         cy = px / 2,
         r = px * 0.4;
 
-    const uniwindStyles = useResolveClassNames("text-btn");
+    const uniwindStyles = useResolveClassNames("text-text-secondary");
     const pairs = useMemo(() => buildPairs(cx, cy, r), [px]);
 
     const morphT = useSharedValue(0);

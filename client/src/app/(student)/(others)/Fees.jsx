@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import Header from "@components/common/Header.jsx";
-import Loader from '@components/common/Loader';
+import Loader from "@components/common/Loader";
 import {
     ItemSeparator,
     ListHeaderComponent
@@ -81,16 +81,17 @@ const History = () => {
             <FlashList
                 data={fees}
                 ListEmptyComponent={
-                    !isLoading && (
+                    !isLoading ? (
                         <Text className="text-lg font-bold text-text text-center mt-5">
                             No fees history Found!
                         </Text>
+                    ) : (
+                        <Loader size={"large"} />
                     )
                 }
                 ListFooterComponent={
                     !isLoading &&
-                    isFetchingNextPage && <Loader 
- size={"large"} />
+                    isFetchingNextPage && <Loader size={"large"} />
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
@@ -98,9 +99,7 @@ const History = () => {
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 ListHeaderComponent={
-                    isLoading && !isRefetching ? (
-                        <ActivityIndicator size="large" />
-                    ) : (
+                    !isLoading && (
                         <ListHeaderComponent date={fees?.[0]?.timestamp} />
                     )
                 }

@@ -1,7 +1,5 @@
 /**
- * LoadingIndicator.tsx
- * Drop-in replacement for ActivityIndicator using Reanimated
- *
+ * LoadingIndicator.tsx *
  * Three variants:
  *  1. "fetch"   — Fetching assignment / note
  *  2. "history" — Fetching attendance history
@@ -48,7 +46,6 @@ const COLORS = {
 };
 
 // ─────────────────────────────────────────────
-// 1. FETCH — Spinning arc (like iOS ActivityIndicator but smoother)
 // ─────────────────────────────────────────────
 const FetchIndicator = ({ size = 40, color = COLORS.fetch }) => {
   const rotation = useSharedValue(0);

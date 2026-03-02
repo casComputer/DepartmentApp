@@ -3,12 +3,12 @@ import {
     Image,
     Text,
     TouchableOpacity,
-    ActivityIndicator
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 import { ItemSeparator } from "@components/common/ItemSeperatorDateComponent.jsx";
 
 import { getHistory } from "@controller/teacher/internal.controller.js";
@@ -79,7 +79,7 @@ const InternalHistory = () => {
                 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (
-                        <ActivityIndicator size={"small"} />
+                        <Loader />
                     ) : (
                         !hasNextPage &&
                         !isLoading &&
@@ -92,7 +92,7 @@ const InternalHistory = () => {
                 }
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size={"large"} />
+                        <Loader size="large" />
                     ) : (
                         <Text className="font-bold text-text text-center text-lg">
                             No internls upload yet.

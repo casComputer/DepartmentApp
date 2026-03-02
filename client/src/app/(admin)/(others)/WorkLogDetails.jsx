@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 
 import Header from "@components/common/Header.jsx";
+import Loader from '@components/common/Loader';
 
 import { fetchWorklogs } from "@controller/admin/worklog.controller";
 
@@ -94,12 +95,12 @@ const WorkLogHistory = () => {
                 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     ) : null
                 }
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size={"large"} />
+                        <Loader size={"large"} />
                     ) : (
                         <Text className="text-text mt-5 font-bold text-center">
                             No data available for this teacher!

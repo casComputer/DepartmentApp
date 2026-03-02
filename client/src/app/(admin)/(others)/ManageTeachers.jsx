@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTeachers } from "@controller/admin/teachers.controller.js";
 
 import TeacherItem from "@components/common/UserItem.jsx";
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header.jsx";
 
 const ManageTeachers = () => {
@@ -45,7 +46,7 @@ const ManageTeachers = () => {
                 )}
                 ListEmptyComponent={
                     loading ? (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     ) : (
                         !teachers.length && (
                             <Text className="text-lg font-bold text-text text-center mt-3">

@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    ActivityIndicator,
-    Dimensions
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
 import {
     MaterialIcons,
     FontAwesome,
@@ -19,6 +12,7 @@ import {
     verifyParent,
     removeParent
 } from "@controller/teacher/parent.controller.js";
+import Loader from "@components/common/Loader";
 
 import { openPhone, openWhatsApp, openEmail } from "@utils/openApp.js";
 import confirm from "@utils/confirm";
@@ -77,7 +71,7 @@ const Students = ({ students, userId }) => {
                                 }
                             >
                                 {rejecting === student.studentId ? (
-                                    <ActivityIndicator color="rgb(239, 68, 68)" />
+                                    <Loader color="rgb(239, 68, 68)" />
                                 ) : (
                                     <Entypo
                                         name="cross"
@@ -93,7 +87,7 @@ const Students = ({ students, userId }) => {
                                     }
                                 >
                                     {verifying === student.studentId ? (
-                                        <ActivityIndicator color="rgb(34, 197, 94)" />
+                                        <Loader color="rgb(34, 197, 94)" />
                                     ) : (
                                         <Ionicons
                                             name="checkmark"

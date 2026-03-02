@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
     View,
     Text,
-    ActivityIndicator,
     TouchableOpacity,
     Image
 } from "react-native";
@@ -39,13 +38,11 @@ const RenderItem = ({ item = {} }) => {
     };
 
     useEffect(() => {
-        checkFileExists(item.filename).then(({ exists }) =>
+        checkFileExists(`${data.filename}.pdf`).then(({ exists }) =>
             setIsDownloaded(exists)
         );
-    }, [item.filename]);
+    }, [data.filename]);
     
-    console.log(data.pdf_url, getPreviewUrl(data.pdf_url));
-
     return (
         <View className="bg-card my-1 px-3 py-4 rounded-xl">
             <View className="flex-row items-center justify-between">

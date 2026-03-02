@@ -1,8 +1,8 @@
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, Text } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
-import Loader from '@components/common/Loader';
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header.jsx";
 import { AssignmentRenderItem } from "@components/student/Assignment.jsx";
 import {
@@ -58,15 +58,10 @@ const Assignment = () => {
                         />
                     )
                 }
-                ListFooterComponent={
-                    isFetchNextPage && (
-                        <ActivityIndicator style={{ marginTop: 10 }} />
-                    )
-                }
+                ListFooterComponent={isFetchNextPage && <Loader />}
                 ListEmptyComponent={
                     isLoading ? (
-                        <Loader 
- size="large" />
+                        <Loader size="large" />
                     ) : (
                         <Text className="text-text text-xl text-center font-bold mt-5">
                             No assignments yet!

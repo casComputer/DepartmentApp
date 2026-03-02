@@ -1,8 +1,9 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 
 import Header from "@components/common/Header.jsx";
+import Loader from "@components/common/Loader";
 import { TeacherItem } from "@components/teacher/ManageParents.jsx";
 
 import { fetchParents } from "@controller/teacher/parent.controller.js";
@@ -42,7 +43,7 @@ const ManageParents = () => {
                 className="pt-16"
                 ListEmptyComponent={
                     isLoading ? (
-                        <ActivityIndicator size="large" />
+                        <Loader size="large" />
                     ) : (
                         <Text className="text-text text-lg font-bold text-center">
                             No parents registered yet!.

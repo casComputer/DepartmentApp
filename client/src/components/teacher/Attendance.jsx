@@ -1,19 +1,13 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    Dimensions,
-    ActivityIndicator
-} from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { withUniwind } from "uniwind";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
 import CheckBox from "@components/common/CheckBox.jsx";
+import Loader from "@components/common/Loader";
 import CircularProgress from "@components/common/CircularProgress.jsx";
 
-const StyledActivityIndicator = withUniwind(ActivityIndicator);
 const { width: vw } = Dimensions.get("window");
 
 const ITEM_SIZE = (vw - 6 * 12) / 5,
@@ -75,7 +69,7 @@ export const Options = ({ loading, isEditable, handleSelectAll }) => {
             {loading && (
                 <View className="flex-row justify-center items-center gap-1">
                     <Text className="font-bold text-xl text-text">syncing</Text>
-                    <StyledActivityIndicator size="16" className="text-text" />
+                    <Loader />
                 </View>
             )}
 

@@ -1,21 +1,4 @@
-/**
- * LoadingIndicator.tsx
- * Drop-in replacement for ActivityIndicator using Reanimated
- *
- * Three variants:
- *  1. "fetch"   — Fetching assignment / note
- *  2. "history" — Fetching attendance history
- *  3. "delete"  — Admin deleting database record
- *
- * Usage:
- *   <LoadingIndicator type="fetch" size={40} />
- *   <LoadingIndicator type="history" size={40} />
- *   <LoadingIndicator type="delete" size={40} />
- *
- * Install:
- *   npx expo install react-native-reanimated
- *   Add 'react-native-reanimated/plugin' to babel.config.js plugins
- */
+
 
 import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
@@ -48,7 +31,6 @@ const COLORS = {
 };
 
 // ─────────────────────────────────────────────
-// 1. FETCH — Spinning arc (like iOS ActivityIndicator but smoother)
 // ─────────────────────────────────────────────
 const FetchIndicator = ({ size = 40, color = COLORS.fetch }) => {
     const rotation = useSharedValue(0);

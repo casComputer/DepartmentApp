@@ -4,7 +4,6 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    ActivityIndicator,
     ToastAndroid
 } from "react-native";
 import * as Haptics from "expo-haptics";
@@ -12,6 +11,7 @@ import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { FontAwesome6, Octicons, FontAwesome } from "@icons";
 
 import Header from "@components/common/Header";
+import Loader from "@components/common/Loader";
 
 import { ReportFileItem, Selector } from "@components/teacher/GenerateReport";
 
@@ -240,9 +240,7 @@ const GenerateReport = () => {
                 </Text>
 
                 {generating && (
-                    <ActivityIndicator
-                        style={{ position: "absolute", right: "20%" }}
-                    />
+                    <Loader style={{ position: "absolute", right: "20%" }} />
                 )}
             </TouchableOpacity>
 

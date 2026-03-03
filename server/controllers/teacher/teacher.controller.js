@@ -5,15 +5,18 @@ export const syncUser = async (req, res) => {
         const { userId } = req.user;
 
         const { rows: userRows } = await turso.execute(
-            "SELECT userId, is_verified FROM users WHERE userId = ? AND role = 'teacher' OR role = 'admin'",
-            [userId],
+            `SELECT userId, is_verified 
+                FROM users 
+                WHERE userId = 'femina' 
+                AND (role = 'teacher' OR role = 'admin');`,
+            [userId]
         );
 
         if (userRows.length === 0) {
             return res.json({
                 message: "Teacher not found.",
                 type: "NOT_FOUND",
-                success: false,
+                success: false
             });
         }
 
@@ -28,33 +31,33 @@ export const syncUser = async (req, res) => {
             LEFT JOIN teacher_courses tc
                 ON tc.teacherId = c.in_charge
             WHERE c.in_charge = ?`,
-            [userId],
+            [userId]
         );
 
         const inCharge = {
             year: rows[0]?.in_charge_year || null,
-            course: rows[0]?.in_charge_course || null,
+            course: rows[0]?.in_charge_course || null
         };
 
         return res.json({
             success: true,
             inCharge,
             courses: rows
-                .filter((row) => row.course_name !== null)
-                .map((row) => ({
+                .filter(row => row.course_name !== null)
+                .map(row => ({
                     year: row.teaching_year,
                     course: row.teaching_course,
-                    course_name: row.course_name,
+                    course_name: row.course_name
                 })),
 
-            is_verified: userRows[0].is_verified,
+            is_verified: userRows[0].is_verified
         });
     } catch (error) {
         console.error("Error syncing teacher:", error);
 
         return res.status(500).json({
             message: "Internal server error.",
-            success: false,
+            success: false
         });
     }
 };
@@ -86,7 +89,7 @@ export const fetchAllTeachers = async (req, res) => {
             ORDER BY u.fullname ASC
         `);
 
-        const result = rows.map((row) => ({
+        const result = rows.map(row => ({
             teacherId: row.teacherId,
             fullname: row.fullname,
             dp: row.dp,
@@ -98,29 +101,29 @@ export const fetchAllTeachers = async (req, res) => {
             inCharge: row.in_charge_course
                 ? {
                       course: row.in_charge_course,
-                      year: row.in_charge_year,
+                      year: row.in_charge_year
                   }
-                : null,
+                : null
         }));
 
         // Aggregate courses for each teacher
         const teachersMap = new Map();
 
-        result.forEach((teacher) => {
+        result.forEach(teacher => {
             if (!teachersMap.has(teacher.teacherId)) {
                 teachersMap.set(teacher.teacherId, {
                     ...teacher,
-                    courses: [],
+                    courses: []
                 });
             }
         });
 
-        rows.forEach((row) => {
+        rows.forEach(row => {
             if (teachersMap.has(row.teacherId) && row.course) {
                 teachersMap.get(row.teacherId).courses.push({
                     course: row.course,
                     year: row.year,
-                    course_name: row.course_name,
+                    course_name: row.course_name
                 });
             }
         });
@@ -129,14 +132,13 @@ export const fetchAllTeachers = async (req, res) => {
 
         res.json({
             success: true,
-            teachers: finalResult,
+            teachers: finalResult
         });
     } catch (err) {
         console.error(err);
         return res.status(500).json({
             message: "Internal server Error",
-            success: false,
+            success: false
         });
     }
 };
-

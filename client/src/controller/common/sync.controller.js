@@ -3,16 +3,16 @@ import { useAppStore } from "@store/app.store.js";
 import axios from "@utils/axios.js";
 
 const handleTeacherData = (data) => {
+    console.log(data)
     useAppStore.getState().updateUser({
         in_charge_year: data?.inCharge?.year,
         in_charge_course: data?.inCharge?.course,
         courses: data.courses ?? [],
-        is_verified: data.is_verified,
+        is_verified: data.is_verified ?? false,
     });
 };
 
 const handleStudentData = (data) => {
-    console.log(data)
     useAppStore.getState().updateUser({
         rollno: data.rollno,
         course: data.course,
@@ -33,6 +33,8 @@ const syncUser = async (user) => {
     try {
         user = user === "admin" ? "teacher" : user;
         const { data } = await axios.get(`/${user}/sync`);
+        
+        console.log(user, data)
 
         if (data.success) {
             if (user === "teacher" || user === "admin") handleTeacherData(data);

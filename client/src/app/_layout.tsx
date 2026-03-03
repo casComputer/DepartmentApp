@@ -39,6 +39,7 @@ const Layout = ({ userId, role, is_verified, is_email_verified }) => (
     >
         <Stack.Protected guard={!userId || role === "unknown" || !role}>
             <Stack.Screen name="index" />
+            <Stack.Screen name="auth/GuideLine" />
             <Stack.Screen name="auth/Signin" />
             <Stack.Screen name="auth/Signup" />
         </Stack.Protected>

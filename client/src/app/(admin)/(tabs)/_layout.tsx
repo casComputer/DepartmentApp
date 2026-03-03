@@ -2,16 +2,16 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useResolveClassNames } from "uniwind";
 import { useQuery } from "@tanstack/react-query";
 
-import { syncUser } from "@controller/teacher/teacher.controller.js";
+// import { syncUser } from "@controller/teacher/teacher.controller.js";
 
 export default function TabLayout() {
     const styles = useResolveClassNames("bg-primary text-text border-card");
     const selectedCardStyle = useResolveClassNames("bg-card-selected");
 
-    useQuery({
-        queryKey: ["syncUser"],
-        queryFn: syncUser
-    });
+    // useQuery({
+    //     queryKey: ["syncUser"],
+    //     queryFn: syncUser
+    // });
 
     return (
         <NativeTabs

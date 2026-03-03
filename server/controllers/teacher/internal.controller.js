@@ -56,12 +56,24 @@ export const saveInternalMarkDetails = async (req, res) => {
             teacherId
         });
 
+        let year = "";
+
+        if (sem === "First" || sem === "Second") year = "First";
+        else if (sem === "Third" || sem === "Fourth") year = "Second";
+        else if (sem === "Fifth" || sem === "Sixth") year = "Third";
+        else if (sem === "Seventh" || sem === "Eight") year = "Fourth";
+
         sendPushNotificationToClassStudents({
             course,
             year,
             title: "Internal Marks Published",
             body: "Your internal marks have been uploaded. Please check the app to view your scores.",
-            data: { type: "INTERNAL_MARKS_UPLOADED", secure_url, filename, format },
+            data: {
+                type: "INTERNAL_MARKS_UPLOADED",
+                secure_url,
+                filename,
+                format
+            },
             image: getPreviewUrl(secure_url)
         });
 

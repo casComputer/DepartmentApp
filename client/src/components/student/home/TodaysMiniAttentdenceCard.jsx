@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { View, Text, Dimensions } from "react-native";
 import Animated, {
@@ -168,8 +167,7 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                                     />
                                 ))
                             )}
-                            {isLoading && <Loader size={'large'} />}
-
+                            {isLoading && <Loader size={36} />}
                         </View>
                     </View>
                 </View>

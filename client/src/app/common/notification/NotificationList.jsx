@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    Image
-} from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import Loader from '@components/common/Loader';
+import Loader from "@components/common/Loader";
 import Header from "@components/common/Header";
 import {
     ItemSeparator,
@@ -32,17 +27,26 @@ const RenderItem = ({ item = {} }) => {
 
         if (data.type === "ATTENDANCE_REPORT_GENERATION")
             await downloadFile(data.pdf_url, "pdf", `${data.filename}.pdf`);
+        else if (data.type === "INTERNAL_MARKS_UPLOADED")
+            await downloadFile(
+                data.secure_url,
+                data.format,
+                `${data.filename}.${data.format}`
+            );
 
         setIsDownloaded(true);
         setDownloading(false);
     };
 
     useEffect(() => {
-        checkFileExists(`${data.filename}.pdf`).then(({ exists }) =>
+        const file = data.format
+            ? `${data.filename}.${data.format}`
+            : `${data.filename}.pdf`;
+        checkFileExists(`${file}`).then(({ exists }) =>
             setIsDownloaded(exists)
         );
     }, [data.filename]);
-    
+
     return (
         <View className="bg-card my-1 px-3 py-4 rounded-xl">
             <View className="flex-row items-center justify-between">
@@ -58,11 +62,14 @@ const RenderItem = ({ item = {} }) => {
                 {item.body}
             </Text>
 
-            {data.type === "ATTENDANCE_REPORT_GENERATION" && (
+            {(data.type === "ATTENDANCE_REPORT_GENERATION" ||
+                data.type === "INTERNAL_MARKS_UPLOADED") && (
                 <View className="py-3">
                     <View className="w-40 h-40 rounded-2xl overflow-hidden bg-card self-center mt-1">
                         <Image
-                            source={{ uri: getPreviewUrl(data.pdf_url ?? "") }}
+                            source={{
+                                uri: getPreviewUrl(data.pdf_url || data.pdf_url)
+                            }}
                             className="bg-card-selected"
                             style={{ width: "100%", height: "100%" }}
                         />
@@ -120,8 +127,7 @@ const NotificationList = () => {
                     )
                 }
                 ListFooterComponent={
-                    !isLoading &&
-                    isFetchingNextPage && <Loader size="large" />
+                    !isLoading && isFetchingNextPage && <Loader size="large" />
                 }
                 ListHeaderComponent={
                     <ListHeaderComponent date={notifications[0]?.createdAt} />

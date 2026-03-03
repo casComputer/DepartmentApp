@@ -61,7 +61,7 @@ export const saveInternalMarkDetails = async (req, res) => {
             year,
             title: "Internal Marks Published",
             body: "Your internal marks have been uploaded. Please check the app to view your scores.",
-            data: { type: "INTERNAL_MARKS_UPLOADED", secure_url },
+            data: { type: "INTERNAL_MARKS_UPLOADED", secure_url, filename, format },
             image: getPreviewUrl(secure_url)
         });
 

@@ -1,6 +1,6 @@
 import { turso } from "../../config/turso.js";
 import { validateCourseAndYear } from "../../utils/validateCourseAndYear.js";
-import { sendPushNotificationToClassStudents } from "../../utils/notification.js";
+import { sendNotificationForListOfUsers } from "../../utils/notification.js";
 
 export const fetchStudentsByClass = async (req, res) => {
     const { course, year } = req.body;
@@ -97,14 +97,20 @@ export const saveStudentDetails = async (req, res) => {
         // assign roll number
         await turso.execute(
             `
-			update students s JOIN users u on u.userId = s.userId set rollno = ? where s.userId = ? AND u.is_verified = 1
-		`,
+          UPDATE students
+          SET rollno = ?
+          WHERE userId = ?
+          AND EXISTS (
+              SELECT 1 FROM users
+              WHERE users.userId = students.userId
+              AND users.is_verified = 1
+          )
+          `,
             [rollno, studentId]
         );
 
-        sendPushNotificationToClassStudents({
-            course,
-            year,
+        sendNotificationForListOfUsers({
+            users: [studentId],
             title: "Roll Number Updated",
             body: "Your new roll number is now available. Check the app.",
             data: { type: "ROLLNO_ASSIGNED" }

@@ -32,12 +32,12 @@ const handleParentData = (data) => {
 const syncUser = async (user) => {
     try {
         user = user === "admin" ? "teacher" : user;
-        const { data } = await axios.get(`/${user}/sync`);
+        const { data } = await axios.get(`/${user}/sync`)
         
-        console.log(user, data)
-
+        console.log(data)
+        
         if (data.success) {
-            if (user === "teacher" || user === "admin") handleTeacherData(data);
+            if (user === "teacher") handleTeacherData(data);
             else if (user === "student") handleStudentData(data);
             else if (user === "parent") handleParentData(data);
         } else {

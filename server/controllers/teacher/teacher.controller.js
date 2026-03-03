@@ -7,7 +7,7 @@ export const syncUser = async (req, res) => {
         const { rows: userRows } = await turso.execute(
             `SELECT userId, is_verified 
                 FROM users 
-                WHERE userId = 'femina' 
+                WHERE userId = ? 
                 AND (role = 'teacher' OR role = 'admin');`,
             [userId]
         );

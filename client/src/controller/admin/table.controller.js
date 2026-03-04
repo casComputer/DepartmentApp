@@ -1,5 +1,7 @@
 import axios from "@utils/axios";
 
+import { ToastAndroid } from "react-native";
+
 export const deleteAllDocsFromCollection = async (option, db) => {
     try {
         if (db === "turso") {
@@ -17,10 +19,22 @@ export const deleteAllDocsFromCollection = async (option, db) => {
                 }
                 await axios.post(`/admin/clearTable/`, { table: option });
             }
+        } else {
+            await axios.post(`/admin/clearDbDocuments/`, {
+                collection: option
+            });
         }
+        ToastAndroid.show(
+            "Documents deleted successfully!",
+            ToastAndroid.SHORT
+        );
         return true;
     } catch (error) {
-        console.error(`Error deleting documents from ${option}:`, error);
-        throw error;
+        ToastAndroid.show(
+            error.response?.data?.message ??
+                "Error deleting documents from ${option}",
+            ToastAndroid.LONG
+        );
+        return false;
     }
 };

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header";
+import DeleteIndicator from "@components/common/DeleteIndicator";
 import Prompt from "@components/common/Prompt";
 
 import { usePromptStore } from "@store/app.store";
@@ -14,7 +16,7 @@ const MONGODB_DELETE_OPTIONS = [
     "attendance-reports",
     "notes",
     "notifications",
-    "records",
+    "records"
 ];
 
 const TURSO_DELETE_OPTIONS = [
@@ -24,7 +26,7 @@ const TURSO_DELETE_OPTIONS = [
     "attendance-records",
     "worklogs",
     "fees",
-    "users",
+    "users"
 ];
 
 function toTitleCase(text) {
@@ -32,15 +34,17 @@ function toTitleCase(text) {
         .trim()
         .toLowerCase()
         .split(/\s+/)
-        .map((word) => word[0]?.toUpperCase() + word.slice(1))
+        .map(word => word[0]?.toUpperCase() + word.slice(1))
         .join(" ");
 }
 
-const deleteRecords = (value, db, option) => {
-    deleteAllDocsFromCollection(option, db);
+const deleteRecords = async ({ db, option, setDeleting }) => {
+    setDeleting(true);
+    await deleteAllDocsFromCollection(option, db);
+    setDeleting(false);
 };
 
-const handleDelete = (option, db, open) => {
+const handleDelete = ({ option, db, open, setDeleting }) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
 
     let message = "This action cannot be undone.";
@@ -57,7 +61,7 @@ const handleDelete = (option, db, open) => {
             "DELETE_FIRST_BSC_STUDENTS",
             "DELETE_SECOND_BSC_STUDENTS",
             "DELETE_THIRD_BSC_STUDENTS",
-            "DELETE_FOURTH_BSC_STUDENTS",
+            "DELETE_FOURTH_BSC_STUDENTS"
         ];
         message = `Enter DELETE_ALL_STUDENTS to remove all students.\n\nTo remove students from a specific class, enter DELETE_{YEAR}_{COURSE}_STUDENTS\n(e.g., DELETE_THIRD_BCA_STUDENTS)`;
     } else {
@@ -68,12 +72,13 @@ const handleDelete = (option, db, open) => {
         title: `Delete ${option}`,
         message,
         requireText,
-        onConfirm: (value) => deleteRecords(value, db, option),
+        onConfirm: value => deleteRecords({ db, option, setDeleting })
     });
 };
 
 const AdvancedSystemOperations = () => {
     const { open } = usePromptStore();
+    const [deleting, setDeleting] = useState(false);
 
     return (
         <View className="flex-1 bg-primary px-2">
@@ -90,12 +95,17 @@ const AdvancedSystemOperations = () => {
                         • Mongodb •
                     </Text>
 
-                    {MONGODB_DELETE_OPTIONS.map((option) => (
+                    {MONGODB_DELETE_OPTIONS.map(option => (
                         <TouchableOpacity
                             key={option}
                             className="self-start"
                             onPress={() =>
-                                handleDelete(option, "mongodb", open)
+                                handleDelete({
+                                    option,
+                                    db: "mongodb",
+                                    open,
+                                    setDeleting
+                                })
                             }
                         >
                             <Text
@@ -109,11 +119,18 @@ const AdvancedSystemOperations = () => {
                         • Turso DB •
                     </Text>
 
-                    {TURSO_DELETE_OPTIONS.map((option) => (
+                    {TURSO_DELETE_OPTIONS.map(option => (
                         <TouchableOpacity
                             key={option}
                             className="self-start"
-                            onPress={() => handleDelete(option, "turso", open)}
+                            onPress={() =>
+                                handleDelete({
+                                    option,
+                                    db: "turso",
+                                    open,
+                                    setDeleting
+                                })
+                            }
                         >
                             <Text
                                 className={`text-xl font-semibold text-text capitalize ${(option === "users" || option === "records") && "font-black text-red-500 uppercase"}`}
@@ -126,6 +143,12 @@ const AdvancedSystemOperations = () => {
             </View>
 
             <Prompt />
+
+            {deleting && (
+                <View className="w-screen h-screen absolute top-0 left-0 z-40 justify-center items-center bg-primary/70">
+                    <DeleteIndicator size={80} />
+                </View>
+            )}
         </View>
     );
 };

@@ -10,24 +10,15 @@ import { getMonthlyAttendanceReport } from "../common/attendance.controller.js";
 
 export const generateAttendanceCalendarReport = async (req, res) => {
     try {
-        const {
-            month,
-            year,
-            studentId
-        } = req.body;
-        let {
-            userId,
-            role
-        } = req.user;
+        const { month, year, studentId } = req.body;
+        let { userId, role } = req.user;
 
         if (role === "parent") userId = studentId;
 
         const firstDay = `${year}-${String(month).padStart(2, "0")}-01`;
         const lastDay = new Date(year, month, 0).toISOString().slice(0, 10);
 
-        const {
-            rows
-        } = await turso.execute(
+        const { rows } = await turso.execute(
             `
             WITH daily_sections AS (
             SELECT
@@ -102,7 +93,8 @@ export const generateAttendanceCalendarReport = async (req, res) => {
         }
 
         res.json({
-            success: true, report
+            success: true,
+            report
         });
     } catch (err) {
         console.error("Error while generating attendance calendar:", err);
@@ -112,7 +104,6 @@ export const generateAttendanceCalendarReport = async (req, res) => {
         });
     }
 };
-
 
 export const getTodaysAttendanceReport = async (req, res) => {
     try {
@@ -290,8 +281,8 @@ export const overallAttendenceReport = async (req, res) => {
         CASE
         WHEN first_present = first_total
         AND second_present = second_total THEN 1.0
-        WHEN first_present = 0
-        AND second_present = 0 THEN 0.0
+        WHEN first_present < first_total
+        AND second_present < second_total THEN 0.0
         ELSE 0.5
         END
 
@@ -404,10 +395,10 @@ export const overallAttendenceReport = async (req, res) => {
                         remainingDays === 0
                             ? "No remaining classes left to improve or reduce your attendance this month."
                             : projections.isCritical
-                            ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`
-                            : projections.safetyMarginClasses === 0
-                            ? "You cannot miss any more working days if you want to maintain 75% attendance."
-                            : `You can afford to miss ${projections.safetyMarginClasses} more working day(s) and still maintain 75%.`
+                              ? `Attention: Even with 100% attendance, your maximum possible reach is ${projections.maxPossiblePercent}%.`
+                              : projections.safetyMarginClasses === 0
+                                ? "You cannot miss any more working days if you want to maintain 75% attendance."
+                                : `You can afford to miss ${projections.safetyMarginClasses} more working day(s) and still maintain 75%.`
                 }
             }
         });
@@ -477,8 +468,8 @@ export const getYearlyAttendanceReport = async (req, res) => {
             CASE
             WHEN first_present = first_total
             AND second_present = second_total THEN 1.0
-            WHEN first_present = 0
-            AND second_present = 0 THEN 0.0
+            WHEN first_present < first_total
+            AND second_present < second_total THEN 0.0
             ELSE 0.5
             END
 

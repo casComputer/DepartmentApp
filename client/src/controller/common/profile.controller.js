@@ -75,21 +75,22 @@ export const editProfile = async profileData => {
     }
 };
 
-export const changePassword = async data => {
+export const changePassword = async payload => {
     try {
-        const { data } = await axios.post("/auth/changePassword", data);
+        const { data } = await axios.post("/auth/changePassword", payload);
 
-        if (data.success)
-            ToastAndroid.show(
-                "Password  changed successfully",
-                ToastAndroid.SHORT
-            );
-        else
-            ToastAndroid.show(
-                data.message ?? "Failed to change password",
-                ToastAndroid.LONG
-            );
+        if (data.success) {
+            return {
+                success: true
+            };
+        } else
+            return {
+                message: data.message,
+                success: false
+            };
     } catch (e) {
-        ToastAndroid.show("Failed to change password", ToastAndroid.LONG);
+        return {
+            success: false
+        };
     }
 };

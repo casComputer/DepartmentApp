@@ -133,16 +133,27 @@ const EditProfile = () => {
         }
 
         setSavingPw(true);
-        await changePassword({
+        const { message, success } = await changePassword({
             currentPassword: currentPw,
             newPassword: newPw
         });
+
         setSavingPw(false);
-        setCurrentPw("");
-        setNewPw("");
-        setConfirmPw("");
-        togglePw();
-        setMessage({ text: "Password changed successfully.", error: false });
+        if (success) {
+            setMessage({
+                text: "Password changed successfully.",
+                error: false
+            });
+            setCurrentPw("");
+            setNewPw("");
+            setConfirmPw("");
+            togglePw();
+        } else {
+            setMessage({
+                text: message ?? "Password changed failed.",
+                error: true
+            });
+        }
     };
 
     const inputClass =

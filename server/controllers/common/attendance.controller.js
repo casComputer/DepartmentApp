@@ -406,6 +406,7 @@ async function generateAttendancePDF({
             display: flex;
             align-items: flex-start;
             gap: 14px;
+            align-items: center;
           }
 
           .header-icon {
@@ -588,7 +589,7 @@ async function generateAttendancePDF({
           </table>
 
           <div class="card-footer">
-            <span>System-generated report &mdash; no signature required.</span>
+            <span>System-generated report</span>
           </div>
 
         </div>

@@ -10,7 +10,7 @@ export const deleteFile = async public_id => {
     }
 };
 
-export const getPublicIdFromUrl = (url) => {
+export const getPublicIdFromUrl = url => {
     if (!url || typeof url !== "string") return null;
 
     try {
@@ -24,5 +24,20 @@ export const getPublicIdFromUrl = (url) => {
         return path;
     } catch (err) {
         return null;
+    }
+};
+
+export const deleteFolderFiles = async (folder) => {
+    try {
+        await Promise.all([
+            cloudinary.api.delete_resources_by_prefix(folder, { resource_type: "image" }),
+            cloudinary.api.delete_resources_by_prefix(folder, { resource_type: "video" }),
+            cloudinary.api.delete_resources_by_prefix(folder, { resource_type: "raw" })
+        ]);
+
+        return true;
+    } catch (e) {
+        console.error("Error deleting folder files:", e);
+        return false;
     }
 };

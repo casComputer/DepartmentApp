@@ -53,7 +53,8 @@ export const saveInternalMarkDetails = async (req, res) => {
             filename,
             secure_url,
             format,
-            teacherId
+            teacherId,
+            public_id
         });
 
         let year = "";

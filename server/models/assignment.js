@@ -13,17 +13,19 @@ const assignmentSchema = new mongoose.Schema({
         {
             studentId: {
                 type: String,
-                required: true,
-                unique: true
+                required: true
             },
             url: {
                 type: String,
                 required: true,
                 unique: true
             },
+
+            public_key: String,
+
             status: {
                 type: String,
-                default: 'pending',
+                default: "pending",
                 enum: ["pending", "accepted", "rejected"]
             },
             rejectionMessage: String,

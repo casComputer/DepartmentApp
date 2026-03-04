@@ -1,56 +1,46 @@
 import ExamResult from "../../models/examResult.js";
 import cloudinary from "../../config/cloudinary.js";
 
-const deleteFile = async (public_id)=> {
+const deleteFile = async public_id => {
     try {
         await cloudinary.api.delete_resources([public_id], {
-            resource_type: "raw",
+            resource_type: "raw"
         });
-    } catch(e) {
-        console.error('Error while deleting file: ', e)
+    } catch (e) {
+        console.error("Error while deleting file: ", e);
     }
-}
+};
 
 export const saveExamResultDetails = async (req, res) => {
-    const {
-        userId: studentId,
-        role
-    } = req.user;
+    const { userId: studentId, role } = req.user;
 
-    const {
-        filename,
-        format,
-        course,
-        sem,
-        secure_url,
-        public_id
-    } =
-    req.body?.data;
+    const { filename, format, course, sem, secure_url, public_id } =
+        req.body?.data;
 
     try {
         if (role !== "student") {
-            await deleteFile(public_id)
+            await deleteFile(public_id);
             return res.json({
                 success: false,
-                message: "You have no access to upload exam results!",
+                message: "You have no access to upload exam results!"
             });
         }
 
         // File validation
         if (!filename || !format || !secure_url || !public_id) {
-            await deleteFile(public_id)
+            await deleteFile(public_id);
             return res.json({
                 success: false,
-                message: "File uploaded details are missing!",
+                message: "File uploaded details are missing!"
             });
         }
 
         // Class info validation
         if (!course || !sem) {
-            await deleteFile(public_id)
+            await deleteFile(public_id);
             return res.json({
                 success: false,
-                message: "Missing your class information!",
+                message: "Missing your class information!"
             });
         }
 
@@ -58,15 +48,15 @@ export const saveExamResultDetails = async (req, res) => {
         const existingResult = await ExamResult.findOne({
             course,
             sem,
-            studentId,
+            studentId
         });
 
         if (existingResult) {
-            await deleteFile(public_id)
+            await deleteFile(public_id);
 
             return res.json({
                 success: false,
-                message: "You already uploaded result for this semester!",
+                message: "You already uploaded result for this semester!"
             });
         }
 
@@ -78,63 +68,57 @@ export const saveExamResultDetails = async (req, res) => {
             format,
             studentId,
             filename,
+            public_id
         });
 
         return res.status(200).json({
-            success: true,
+            success: true
         });
     } catch (err) {
-        if (public_id)
-            await deleteFile(public_id)
+        if (public_id) await deleteFile(public_id);
 
         console.error("Error while saving exam result:", err);
 
         return res.status(500).json({
             success: false,
-            message: "Internal server error",
+            message: "Internal server error"
         });
     }
 };
 
-
 export const checkExamResultUpload = async (req, res) => {
-    const {
-        userId: studentId,
-        role
-    } = req.user;
+    const { userId: studentId, role } = req.user;
 
-    const {
-        course,
-        sem
-    } = req.body;
+    const { course, sem } = req.body;
 
     try {
-
         if (!course || !sem)
             return res.json({
-            success: false,
-            message: "Missing your class informations!",
-        });
+                success: false,
+                message: "Missing your class informations!"
+            });
 
         const existDoc = await ExamResult.find({
             course,
             sem,
-            studentId,
+            studentId
         });
 
         if (existDoc && existDoc.length > 0) {
             return res.json({
                 success: true,
-                uploaded: true,
+                uploaded: true
             });
         }
         res.json({
-            success: true, uploaded: false
+            success: true,
+            uploaded: false
         });
     } catch (err) {
         console.error("Error while checking exam result upload: ", err);
         res.status(500).json({
-            success: false, uploaded: false
+            success: false,
+            uploaded: false
         });
     }
 };

@@ -1,5 +1,6 @@
 import { turso } from "../../config/turso.js";
 import { sendPushNotificationToAllUsers } from "../../utils/notification.js";
+import { deleteFolderFiles } from "../../utils/cloudinary.js";
 
 import Assignment from "../../models/assignment.js";
 import Result from "../../models/examResult.js";
@@ -21,6 +22,14 @@ export const clearDbDocuments = async (req, res) => {
             notifications: Notification
         };
 
+        const folderMap = {
+            assignments: "assignment",
+            "exam-results": "exam_result",
+            "internal-marks": "internal_mark",
+            "attendance-reports": "attendance",
+            notes: "notes"
+        };
+
         const Model = collectionMap[collection];
 
         if (!Model) {
@@ -30,10 +39,16 @@ export const clearDbDocuments = async (req, res) => {
             });
         }
 
-        const result = await Model.deleteMany({});
+        await Model.deleteMany({});
+
+        const folder = folderMap[collection];
+        if (folder) {
+            await deleteFolderFiles(folder);
+        }
 
         return res.json({
-            success: true
+            success: true,
+            message: `${collection} cleared successfully`
         });
     } catch (e) {
         console.error("Error while deleting mongodb documents:", e);

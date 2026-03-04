@@ -93,7 +93,8 @@ export const handleDocumentPick = async setFormData => {
 const saveAssignmentSubmissionDetails = async ({
     secure_url,
     format,
-    assignmentId
+    assignmentId,
+    public_key
 }) => {
     try {
         const studentId = useAppStore.getState().user.userId;
@@ -105,10 +106,10 @@ const saveAssignmentSubmissionDetails = async ({
         const res = await axios.post(
             "/assignment/saveAssignmentSubmissionDetails",
             {
-                studentId,
                 secure_url,
                 format,
-                assignmentId
+                assignmentId,
+                public_key
             }
         );
 
@@ -197,12 +198,15 @@ export const handleAssignmentUpload = async (
             }
         });
 
-        const { secure_url, format } = res.data;
+        const { secure_url, format, public_key } = res.data;
+
+        alert("public key: ", public_key);
 
         return await saveAssignmentSubmissionDetails({
             secure_url,
             format,
-            assignmentId
+            assignmentId,
+            public_key
         });
     } catch (error) {
         ToastAndroid.show(

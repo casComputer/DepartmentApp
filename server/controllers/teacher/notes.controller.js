@@ -1,25 +1,10 @@
 import Notes from "../../models/notes.js";
 import cloudinary from "../../config/cloudinary.js";
 
-const extractPublicIdFromUrl = url => {
-    try {
-        if (!url) return null;
-
-        const cleanUrl = url.split("?")[0];
-        const parts = cleanUrl.split("/upload/");
-
-        if (parts.length !== 2) return null;
-        let publicIdWithExt = parts[1];
-
-        publicIdWithExt = publicIdWithExt.replace(/^v\d+\//, "");
-
-        const publicId = publicIdWithExt.replace(/\.[^/.]+$/, "");
-
-        return publicId;
-    } catch {
-        return null;
-    }
-};
+import {
+    deleteFile,
+    getPublicIdFromUrl as extractPublicIdFromUrl
+} from "../../utils/cloudinary.js";
 
 export const create = async (req, res) => {
     try {
@@ -76,6 +61,8 @@ export const upload = async (req, res) => {
         const { secure_url, format, size, parentId, filename, publicId } =
             req.body;
 
+        let publicId = req.body?.publicId;
+
         const { userId: teacherId } = req.user;
 
         if (
@@ -86,19 +73,23 @@ export const upload = async (req, res) => {
             !filename ||
             !publicId ||
             !teacherId
-        )
+        ) {
+            if (publicId) await deleteFile(publicId);
             return res.json({
                 success: false,
                 message: "Missing required parameters!"
             });
+        }
 
         const parentDoc = await Notes.findById(parentId);
 
-        if (!parentDoc)
+        if (!parentDoc) {
+            if (publicId) await deleteFile(publicId);
             return res.json({
                 success: false,
                 message: "Failed to locate parent folder!"
             });
+        }
 
         const newDoc = await Notes.create({
             name: filename,

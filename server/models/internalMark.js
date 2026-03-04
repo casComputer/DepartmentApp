@@ -17,22 +17,25 @@ const schema = new mongoose.Schema({
 
     teacherId: {
         type: String,
-        required: true,
+        required: true
     },
 
     secure_url: {
         type: String,
-        required: true,
+        required: true
     },
+
+    public_key: String,
+
     format: {
         type: String,
-        required: true,
+        required: true
     },
 
     createdAt: {
         type: Date,
         default: Date.now
-        }
-    });
+    }
+});
 
-    export default mongoose.model("internalMark", schema);
+export default mongoose.model("internalMark", schema);

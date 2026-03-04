@@ -1,5 +1,5 @@
 import Assignment from "../../models/assignment.js";
-import { deleteFile } from "../../utils/cloudinary.js";
+import { deleteFile, getPublicIdFromUrl } from "../../utils/cloudinary.js";
 import { isDatePassed } from "../../utils/date.js";
 
 export const getAssignmentForStudent = async (req, res) => {
@@ -42,7 +42,7 @@ export const getAssignmentForStudent = async (req, res) => {
 };
 
 export const saveAssignmentSubmissionDetails = async (req, res) => {
-    const { secure_url: url, format, assignmentId } = req.body;
+    let { secure_url: url, format, assignmentId, public_key } = req.body;
     const { userId: studentId } = req.user;
 
     try {
@@ -54,11 +54,12 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
                 message: "Missing required fields"
             });
         }
+        if (!public_key) public_key = getPublicIdFromUrl(url);
 
         const existAssignment = await Assignment.findById(assignmentId);
 
         if (!existAssignment) {
-            if (url) await deleteFile(url);
+            if (public_key) await deleteFile(public_key);
 
             return res.json({
                 success: false,
@@ -74,7 +75,7 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
         const isDeadlinePassed = isDatePassed(existAssignment.dueDate);
 
         if (submittedDoc && submittedDoc.status === "accepted") {
-            await deleteFile(url);
+            if (public_key) await deleteFile(public_key);
 
             return res.json({
                 success: false,
@@ -91,12 +92,18 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
                 {
                     $set: {
                         "submissions.$.url": url,
+                        "submissions.$.public_key": public_key,
                         "submissions.$.format": format,
                         "submissions.$.updatedAt": new Date(),
                         "submissions.$.status": "pending"
                     }
                 }
             );
+
+            if (submittedDoc.public_key)
+                await deleteFile(submittedDoc.public_key);
+            else if (submittedDoc.url)
+                await deleteFile(getPublicIdFromUrl(submittedDoc.url));
 
             return res.json({
                 success: true,
@@ -107,7 +114,7 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
         }
 
         if (isDeadlinePassed) {
-            await deleteFile(url);
+            await deleteFile(public_key);
 
             return res.json({
                 success: false,
@@ -120,6 +127,7 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
                 submissions: {
                     studentId,
                     url,
+                    public_key,
                     format,
                     submittedAt: new Date()
                 }
@@ -131,7 +139,8 @@ export const saveAssignmentSubmissionDetails = async (req, res) => {
             message: "Assignment submitted successfully."
         });
     } catch (error) {
-        if (url) await deleteFile(url);
+        if (public_key) await deleteFile(public_key);
+        if (url) await deleteFile(getPublicIdFromUrl(public_key));
 
         console.error(error);
 

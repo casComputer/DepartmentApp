@@ -494,7 +494,7 @@ async function generateAttendancePDF({
 
           td {
             padding: 11px 18px;
-            font-size: .84rem;
+            font-size: .88rem;
             text-align: center;
             color: var(--neutral-800);
             border-bottom: 1px solid var(--neutral-100);
@@ -551,7 +551,6 @@ async function generateAttendancePDF({
             </div>
             <div>
               <div class="header-title">Attendance Report &mdash; ${year} ${course} &middot; ${title}</div>
-              <div class="header-sub">Generated &middot; ${generateDate} &nbsp;|&nbsp; Academic Year ${year}</div>
             </div>
           </div>
 
@@ -590,7 +589,6 @@ async function generateAttendancePDF({
 
           <div class="card-footer">
             <span>System-generated report &mdash; no signature required.</span>
-            <span class="footer-badge">OFFICIAL RECORD</span>
           </div>
 
         </div>
@@ -778,9 +776,10 @@ export const generateReport = async (req, res) => {
 
         const samePeriod = startMonth === endMonth && startYear === endYear;
 
+        const uniqueId = Math.floor(100000 + Math.random() * 900000);
         const filename = samePeriod
-            ? `${monthNames[startMonth]}-${startYear}-${year}-${course}`
-            : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}`;
+            ? `${monthNames[startMonth]}-${startYear}-${year}-${course}-${uniqueId}`
+            : `${monthNames[startMonth]}-${startYear}_to_${monthNames[endMonth]}-${endYear}-${year}-${course}_uid_${uniqueId}`;
 
         const notificationData = {
             pdf_url,

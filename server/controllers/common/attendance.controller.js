@@ -341,64 +341,259 @@ async function generateAttendancePDF({
             ? `${monthNames[startMonth]} ${startYear}`
             : `${monthNames[startMonth]} ${startYear} to ${monthNames[endMonth]} ${endYear}`;
 
+    const generateDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+    const avgPct = Math.round(
+        data.reduce((s, i) => s + i.attendance_percentage, 0) / data.length
+    );
+    const belowThreshold = data.filter(
+        i => i.attendance_percentage < 75
+    ).length;
+    const workingDays = data[0]?.working_days ?? 0;
+
+    function pctStyle(p) {
+        if (p >= 85) return "background:#d1fae5;color:#065f46;";
+        if (p >= 75) return "background:#fef3c7;color:#92400e;";
+        return "background:#fee2e2;color:#991b1b;";
+    }
+
     const html = `
     <html>
       <head>
+        <meta charset="UTF-8" />
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            border-radius: 22px;
+          @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap');
+
+          :root {
+            --brand:       #1a56db;
+            --brand-light: #e8effd;
+            --accent:      #0e9f6e;
+            --danger:      #e3342f;
+            --warn:        #f59e0b;
+            --neutral-50:  #f9fafb;
+            --neutral-100: #f3f4f6;
+            --neutral-200: #e5e7eb;
+            --neutral-400: #9ca3af;
+            --neutral-600: #4b5563;
+            --neutral-800: #1f2937;
           }
+
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+          body {
+            font-family: 'DM Sans', Arial, sans-serif;
+            color: var(--neutral-800);
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          .card {
+            width: 100%;
+            background: #fff;
+            border: 1px solid var(--neutral-200);
+            border-radius: 10px;
+            overflow: hidden;
+          }
+
+          .card-header {
+            background: var(--brand);
+            padding: 24px 32px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+          }
+
+          .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,.18);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+          }
+
+          .header-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+          .header-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -.01em;
+            line-height: 1.35;
+          }
+
+          .header-sub {
+            font-size: .75rem;
+            color: rgba(255,255,255,.75);
+            margin-top: 4px;
+            font-family: 'DM Mono', monospace;
+          }
+
+          .summary {
+            display: flex;
+            gap: 10px;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--neutral-50);
+            flex-wrap: wrap;
+          }
+
+          .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #fff;
+            border: 1px solid var(--neutral-200);
+            border-radius: 999px;
+            padding: 5px 12px 5px 7px;
+            font-size: .73rem;
+            font-weight: 500;
+            color: var(--neutral-600);
+            white-space: nowrap;
+          }
+
+          .pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: inline-block;
+          }
+
           table {
             width: 100%;
             border-collapse: collapse;
+            page-break-inside: auto;
           }
-          th, td {
-            border: 1px solid #444;
-            padding: 8px;
-            font-size: 20px;
-            text-align: center;
-          }
+
+          thead { display: table-header-group; }
+
           th {
-            background: #eee;
-            font-size: 21px;
-            font-weight: 900;
-          }
-          #title {
+            font-size: .68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--neutral-400);
+            padding: 13px 18px;
             text-align: center;
-            margin-bottom: 20px;
-            margin: 20px 0;
+            background: #fff;
+            border-bottom: 2px solid var(--neutral-200);
+            white-space: nowrap;
+          }
+
+          th:first-child { text-align: left; }
+
+          tr { page-break-inside: avoid; }
+
+          td {
+            padding: 11px 18px;
+            font-size: .84rem;
+            text-align: center;
+            color: var(--neutral-800);
+            border-bottom: 1px solid var(--neutral-100);
+          }
+
+          tbody tr:last-child td { border-bottom: none; }
+
+          td:first-child {
+            text-align: left;
+            font-family: 'DM Mono', monospace;
+            font-size: .78rem;
+            font-weight: 500;
+            color: var(--brand);
+          }
+
+          .pct-badge {
+            display: inline-block;
+            font-weight: 600;
+            font-size: .78rem;
+            padding: 3px 10px;
+            border-radius: 999px;
+          }
+
+          .card-footer {
+            padding: 12px 32px;
+            border-top: 1px solid var(--neutral-200);
+            background: var(--neutral-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .7rem;
+            color: var(--neutral-400);
+          }
+
+          .footer-badge {
+            background: var(--brand-light);
+            color: var(--brand);
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-family: 'DM Mono', monospace;
+            font-size: .68rem;
           }
         </style>
       </head>
       <body>
-        <h2 id="title">Attendance Report for ${year} ${course} - ${title}</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>StudentId</th>
-              <th>Working Days</th>
-              <th>Present Days</th>
-              <th>Absent Days</th>
-              <th>Percentage</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${data
-                .map(
-                    item => `
+        <div class="card">
+
+          <div class="card-header">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="header-title">Attendance Report &mdash; ${year} ${course} &middot; ${title}</div>
+              <div class="header-sub">Generated &middot; ${generateDate} &nbsp;|&nbsp; Academic Year ${year}</div>
+            </div>
+          </div>
+
+          <div class="summary">
+            <span class="pill"><span class="pill-dot" style="background:var(--brand)"></span>${data.length} Students</span>
+            <span class="pill"><span class="pill-dot" style="background:var(--accent)"></span>Avg. Attendance: ${avgPct}%</span>
+            <span class="pill"><span class="pill-dot" style="background:var(--danger)"></span>Below 75%: ${belowThreshold} Students</span>
+            <span class="pill"><span class="pill-dot" style="background:var(--warn)"></span>Working Days: ${workingDays}</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Working Days</th>
+                <th>Present Days</th>
+                <th>Absent Days</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data
+                  .map(
+                      item => `
                 <tr>
                   <td>${item.studentId}</td>
                   <td>${item.working_days}</td>
                   <td>${item.present_days}</td>
                   <td>${item.absent_days}</td>
-                  <td>${item.attendance_percentage}%</td>
-                </tr>
-              `
-                )
-                .join("")}
-          </tbody>
-        </table>
+                  <td><span class="pct-badge" style="${pctStyle(item.attendance_percentage)}">${item.attendance_percentage}%</span></td>
+                </tr>`
+                  )
+                  .join("")}
+            </tbody>
+          </table>
+
+          <div class="card-footer">
+            <span>System-generated report &mdash; no signature required.</span>
+            <span class="footer-badge">OFFICIAL RECORD</span>
+          </div>
+
+        </div>
       </body>
     </html>
   `;
@@ -421,14 +616,21 @@ async function generateAttendancePDF({
 
         const page = await browser.newPage();
 
+        // waitUntil: "networkidle0" ensures Google Fonts finish loading before capture
         await page.setContent(html, {
-            waitUntil: "domcontentloaded",
+            waitUntil: "networkidle0",
             timeout: 60000
         });
 
         const pdfBuffer = await page.pdf({
             format: "A4",
-            printBackground: true,
+            printBackground: true, // required for colored header/badges/pills
+            margin: {
+                top: "24px",
+                bottom: "24px",
+                left: "24px",
+                right: "24px"
+            },
             timeout: 60000
         });
 

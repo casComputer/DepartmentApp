@@ -13,7 +13,7 @@ import Animated, {
     withSpring,
     withTiming
 } from "react-native-reanimated";
-
+import * as Haptics from "expo-haptics";
 import Svg, { Circle, Line, Polygon } from "react-native-svg";
 import { useCSSVariable, useResolveClassNames } from "uniwind";
 
@@ -573,6 +573,7 @@ const RollNumberBadge: React.FC<RollNumberBadgeProps> = ({
 
     const handlePress = useCallback(() => {
         if (busy.current) return;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         busy.current = true;
 
         const key = ANIMS[animCursor % ANIMS.length];
@@ -731,7 +732,6 @@ const RollNumberBadge: React.FC<RollNumberBadgeProps> = ({
                                     fill={colorPrimary ?? "#6366f1"}
                                     opacity={0.1}
                                 />
-
                             </Svg>
                         </View>
 

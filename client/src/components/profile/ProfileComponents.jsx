@@ -20,14 +20,14 @@ import { useAppStore } from "@store/app.store.js";
 const { width: vw, height: vh } = Dimensions.get("window");
 const AVATAR_SIZE = vw * 0.7;
 
-import { handleRemovePic } from "@controller/common/profile";
+import { handleRemovePic } from "@controller/common/profile.controller.js";
 
 export const Avatar = ({ handleEdit, handleChangePic }) => {
     const username = useAppStore(state => state.user?.userId || "");
     const dp = useAppStore(state => state.user?.dp || "");
 
     const handleClick = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         if (dp) handleEdit();
         else handleChangePic();
     };
@@ -58,8 +58,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                             allowFontScale={false}
                             numberOfLines={1}
                             adjustsFontSizeToFit
-                            style={{ fontSize: vw * 0.4 }}
-                            className="w-full text-center px-4 text-text-secondary font-black"
+                            className="w-full text-center px-4 text-text-secondary font-black text-[10rem]"
                         >
                             {username[0]}
                         </Text>
@@ -67,7 +66,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                 </View>
 
                 <TouchableOpacity
-                    className="p-4 bg-btn rounded-full absolute z-10 right-[10%] bottom-[15%]"
+                    className="p-4 bg-btn rounded-full absolute z-10 right-[13%] bottom-[15%]"
                     onPress={handleClick}
                 >
                     <MaterialIcons name="edit" size={30} />

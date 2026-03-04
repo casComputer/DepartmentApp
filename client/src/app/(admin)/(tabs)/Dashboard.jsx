@@ -16,7 +16,7 @@ const Dashboard = () => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
+            contentContainerStyle={{ flexGrow: 1 }}
             className="bg-primary pt-5 px-2"
             showsVerticalScrollIndicator={false}
         >
@@ -25,7 +25,7 @@ const Dashboard = () => {
             <UsersStats />
             <TouchableOpacity
                 onPress={handleClick}
-                className="py-5 px-5 rounded-3xl bg-btn mt-5 self-center"
+                className="py-5 px-5 rounded-3xl bg-btn my-5 self-center"
             >
                 <Text className="text-xl font-black text-text">
                     Advanced System Operations

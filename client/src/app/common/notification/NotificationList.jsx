@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Pressable } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { router } from "expo-router"
 
 import Loader from "@components/common/Loader";
 import Header from "@components/common/Header";
@@ -47,6 +48,8 @@ const RenderItem = ({ item = {} }) => {
         );
     }, [data.filename]);
 
+    const previewUrl = getPreviewUrl(data.pdf_url || data.pdf_url);
+
     return (
         <View className="bg-card my-1 px-3 py-4 rounded-xl">
             <View className="flex-row items-center justify-between">
@@ -65,15 +68,26 @@ const RenderItem = ({ item = {} }) => {
             {(data.type === "ATTENDANCE_REPORT_GENERATION" ||
                 data.type === "INTERNAL_MARKS_UPLOADED") && (
                 <View className="py-3">
-                    <View className="w-40 h-40 rounded-2xl overflow-hidden bg-card self-center mt-1">
+                    <Pressable
+                        onPress={() =>
+                            router.push({
+                                pathname: "/common/ImageFullView",
+                                params: {
+                                    url: previewUrl,
+                                    tag: `notification-${item._id}`
+                                }
+                            })
+                        }
+                        className="w-40 h-40 rounded-2xl overflow-hidden bg-card self-center mt-1"
+                    >
                         <Image
                             source={{
-                                uri: getPreviewUrl(data.pdf_url || data.pdf_url)
+                                uri: previewUrl
                             }}
                             className="bg-card-selected"
                             style={{ width: "100%", height: "100%" }}
                         />
-                    </View>
+                    </Pressable>
                     <TouchableOpacity
                         className="mt-2"
                         disabled={downloading}

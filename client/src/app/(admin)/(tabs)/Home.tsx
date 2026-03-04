@@ -8,7 +8,7 @@ const Home = () => {
         <ScrollView
             className="bg-primary"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40, flexGrow: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
         >
             <Header />
             <AdminOptions />

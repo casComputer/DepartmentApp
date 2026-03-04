@@ -54,7 +54,7 @@ const Profile = () => {
                 alwaysBounceVertical
                 showsVerticalScrollIndicator={false}
                 overScrollMode="always"
-                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+                contentContainerStyle={{ flexGrow: 1 }}
                 onTouchStart={() => setDpOptions(false)}
             >
                 <View className="px-4">

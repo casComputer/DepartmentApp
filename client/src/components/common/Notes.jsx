@@ -72,8 +72,7 @@ const Notes = ({ role }) => {
         if (!isFetchingNextPage) return null;
         return (
             <View className="py-4">
-                <Loader size="large" /> />
-
+                <Loader size="large" />
             </View>
         );
     };
@@ -115,9 +114,7 @@ const Notes = ({ role }) => {
                 onEndReachedThreshold={0.5}
                 numColumns={2}
                 className={`${folder ? "pt-16" : ""} px-1`}
-                contentContainerStyle={{
-                    paddingBottom: 120
-                }}
+                showsVerticalScrollIndicator={false}
                 estimatedItemSize={100}
             />
 

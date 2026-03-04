@@ -10,7 +10,8 @@ import {
 
 import {
     clearTable,
-    clearAllUsers
+    clearAllUsers,
+    clearDbDocuments
 } from "../controllers/admin/table.controller.js";
 
 const router = express.Router();
@@ -28,5 +29,7 @@ router.post("/deleteTeacher", deleteTeacher);
 router.post("/clearTable", clearTable);
 
 router.post("/clearAllUsers", clearAllUsers);
+
+router.post("/clearDbDocuments", clearDbDocuments);
 
 export default router;

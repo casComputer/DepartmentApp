@@ -1,12 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons, Octicons, MaterialIcons } from "@icons";
 import { router } from "expo-router";
-import Animated, {
-    FadeInDown,
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring
-} from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
+
+import { useApplePressAnimation } from "../../hooks/useAppleAnimation.js";
 
 const ICONS_SIZE = 22;
 
@@ -29,75 +26,54 @@ const adminItems = [
         sub: "Activity history",
         route: "/(admin)/(others)/WorkLogHistory",
         accent: "#3fb950"
-    },
-    {
-        icon: <MaterialIcons name="currency-rupee" size={ICONS_SIZE} />,
-        label: "Manage Fees",
-        sub: "Fees & dues",
-        route: "/common/fees/Selector",
-        accent: "#d29922"
     }
 ];
 
 const AdminCard = ({ item, index }) => {
-    const scale = useSharedValue(1);
-    const animStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }]
-    }));
+    const { animatedStyle, onPressIn, onPressOut } = useApplePressAnimation();
 
     return (
         <Animated.View
             entering={FadeInDown.delay(index * 80)
                 .springify()
-                .damping(14)}
-            style={animStyle}
-            className="flex-1"
+                .damping(16)}
         >
-            <TouchableOpacity
-                activeOpacity={0.8}
-                onPressIn={() => {
-                    scale.value = withSpring(0.96);
-                }}
-                onPressOut={() => {
-                    scale.value = withSpring(1);
-                }}
-                onPress={() => router.push(item.route as any)}
-                className="bg-card rounded-2xl p-4 flex-row items-center gap-3 border border-border"
-            >
-                {/* Icon pill */}
-                <View
-                    style={{
-                        backgroundColor: item.accent + "22",
-                        borderRadius: 12,
-                        padding: 10,
-                        borderWidth: 1,
-                        borderColor: item.accent + "44"
-                    }}
+            <Animated.View style={animatedStyle}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
+                    onPress={() => router.push(item.route)}
+                    className="bg-card rounded-2xl p-4 flex-row items-center gap-3 border border-border"
                 >
-                    <View style={{ color: item.accent }}>{item.icon}</View>
-                </View>
-
-                <View className="flex-1">
-                    <Text
-                        allowFontScaling={false}
-                        className="text-text font-bold text-base"
+                    <View
+                        style={{
+                            backgroundColor: item.accent + "22",
+                            borderRadius: 12,
+                            padding: 10,
+                            borderWidth: 1,
+                            borderColor: item.accent + "44"
+                        }}
                     >
-                        {item.label}
-                    </Text>
-                    <Text
-                        allowFontScaling={false}
-                        className="text-text-secondary text-xs mt-0.5 opacity-70"
-                    >
-                        {item.sub}
-                    </Text>
-                </View>
+                        <View style={{ color: item.accent }}>{item.icon}</View>
+                    </View>
 
-                <MaterialIcons
-                    name="chevron-right"
-                    size={18}
-                    style={{ opacity: 0.3 }}
-                />
-            </TouchableOpacity>
+                    <View className="flex-1">
+                        <Text className="text-text font-bold text-base">
+                            {item.label}
+                        </Text>
+                        <Text className="text-text-secondary text-xs opacity-70">
+                            {item.sub}
+                        </Text>
+                    </View>
+
+                    <MaterialIcons
+                        name="chevron-right"
+                        size={18}
+                        style={{ opacity: 0.3 }}
+                    />
+                </TouchableOpacity>
+            </Animated.View>
         </Animated.View>
     );
 };
@@ -105,14 +81,11 @@ const AdminCard = ({ item, index }) => {
 const AdminOptions = () => {
     return (
         <View className="px-4 mt-8">
-            <Animated.Text
-                entering={FadeInDown.delay(0).springify()}
-                allowFontScaling={false}
-                className="text-text-secondary text-xs font-semibold uppercase tracking-widest mb-3 ml-1"
-                style={{ letterSpacing: 2, opacity: 0.6 }}
-            >
-                Admin
-            </Animated.Text>
+            <Animated.View entering={FadeInDown.springify()}>
+                <Text className="text-text-secondary text-xs font-semibold uppercase tracking-widest mb-3 ml-1 opacity-60">
+                    Admin
+                </Text>
+            </Animated.View>
 
             <View className="gap-2">
                 {adminItems.map((item, i) => (

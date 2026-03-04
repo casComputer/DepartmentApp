@@ -7,14 +7,12 @@ import {
     MaterialIcons,
     Entypo
 } from "@icons";
+
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import Animated, {
-    FadeInDown,
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring
-} from "react-native-reanimated";
+
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { useApplePressAnimation } from "../../hooks/useAppleAnimation.js";
 
 import { useAppStore } from "@store/app.store.js";
 
@@ -100,88 +98,64 @@ const optionsData = [
     }
 ];
 
-const Option = ({
-    Icon,
-    iconName,
-    text = "",
-    locaton,
-    accent = "#2f81f7",
-    sub = "",
-    fullWidth = false
-}) => {
-    const scale = useSharedValue(1);
-    const animStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }]
-    }));
+const Option = ({ item }) => {
+    const { animatedStyle, onPressIn, onPressOut } = useApplePressAnimation();
+
+    const Icon = item.Icon;
 
     return (
-        <Animated.View style={[animStyle, { flex: 1 }]}>
+        <Animated.View style={[animatedStyle, { flex: 1 }]}>
             <TouchableOpacity
-                activeOpacity={0.85}
-                onPressIn={() => {
-                    scale.value = withSpring(0.95, { damping: 20 });
-                }}
-                onPressOut={() => {
-                    scale.value = withSpring(1, { damping: 30 });
-                }}
-                onPress={() => locaton && router.push(locaton as any)}
+                activeOpacity={1}
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                onPress={() => item.locaton && router.push(item.locaton)}
+                className="bg-card border border-border rounded-2xl p-4"
                 style={{
-                    flex: 1,
                     margin: 4,
-                    borderRadius: 18,
-                    padding: 16,
-                    ...(fullWidth
+                    ...(item.fullWidth
                         ? {
                               flexDirection: "row",
                               alignItems: "center",
-                              gap: 16,
-                              paddingVertical: 18
+                              gap: 16
                           }
                         : {
-                              flexDirection: "column",
-                              alignItems: "flex-start",
-                              gap: 12,
-                              minHeight: 110
+                              minHeight: 110,
+                              gap: 12
                           })
                 }}
-                className="bg-card border border-border"
             >
-                {/* Icon badge */}
                 <View
                     style={{
-                        backgroundColor: accent + "20",
+                        backgroundColor: item.accent + "20",
                         borderRadius: 12,
                         padding: 9,
                         borderWidth: 1,
-                        borderColor: accent + "35",
-                        alignSelf: fullWidth ? "center" : "flex-start"
+                        borderColor: item.accent + "35"
                     }}
+                    className="flex-row items-center gap-3"
                 >
-                    <Icon name={iconName} size={ICONS_SIZE} color={accent} />
-                </View>
-
-                <View style={{ flex: fullWidth ? 1 : undefined }}>
-                    <Text
-                        allowFontScaling={false}
-                        className="text-text font-bold"
-                        style={{ fontSize: 14, lineHeight: 18 }}
-                    >
-                        {text}
-                    </Text>
-                    <Text
-                        allowFontScaling={false}
-                        className="text-text-secondary"
-                        style={{ fontSize: 11, marginTop: 2, opacity: 0.6 }}
-                    >
-                        {sub}
+                    <Icon
+                        name={item.iconName}
+                        size={ICONS_SIZE}
+                        color={item.accent}
+                    />
+                    <Text className="text-text font-bold text-sm">
+                        {item.text}
                     </Text>
                 </View>
 
-                {fullWidth && (
+                <View style={{ flex: item.fullWidth ? 1 : undefined }}>
+                    <Text className="text-text-secondary text-xs opacity-70">
+                        {item.sub}
+                    </Text>
+                </View>
+
+                {item.fullWidth && (
                     <MaterialIcons
                         name="chevron-right"
                         size={18}
-                        color={accent}
+                        color={item.accent}
                         style={{ opacity: 0.6 }}
                     />
                 )}
@@ -193,20 +167,13 @@ const Option = ({
 const AnimatedOption = ({ item, index }) => {
     return (
         <Animated.View
-            entering={FadeInDown.delay(index * 60)
+            entering={FadeInDown.delay(index * 70)
                 .springify()
-                .damping(15)}
+                .damping(16)
+                .stiffness(120)}
             style={{ flex: 1 }}
         >
-            <Option
-                Icon={item.Icon}
-                iconName={item.iconName}
-                text={item.text}
-                locaton={item.locaton}
-                accent={item.accent}
-                sub={item.sub}
-                fullWidth={item.fullWidth}
-            />
+            <Option item={item} />
         </Animated.View>
     );
 };
@@ -220,36 +187,29 @@ const TeacherOptions = () => {
         opt => !opt.requiresInCharge || isInCharge
     );
 
-    console.log(filteredOptions);
-
     return (
         <View className="px-2 mt-6">
-            <Animated.Text
-                entering={FadeInDown.delay(200).springify()}
-                allowFontScaling={false}
-                className="text-text-secondary text-xs font-semibold uppercase ml-3 mb-2"
-                style={{ letterSpacing: 2, opacity: 0.6 }}
-            >
-                Quick Actions
-            </Animated.Text>
+            <Animated.View entering={FadeInDown.delay(200).springify()}>
+                <Text className="text-text-secondary text-xs font-semibold uppercase ml-3 mb-2 opacity-60">
+                    Quick Actions
+                </Text>
+            </Animated.View>
 
             <FlashList
                 data={filteredOptions}
                 numColumns={2}
+                estimatedItemSize={120}
                 keyExtractor={item => item.text}
-                estimatedItemSize={118}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                overrideItemLayout={(layout, item) => {
-                    if (item.fullWidth) layout.span = 2;
-                }}
-                contentContainerStyle={{
-                    paddingBottom: 8,
-                    paddingHorizontal: 2
-                }}
+                
+        
                 renderItem={({ item, index }) => (
                     <AnimatedOption item={item} index={index} />
                 )}
+                overrideItemLayout={(layout, item) => {
+                    if (item.fullWidth) layout.span = 2;
+                }}
             />
         </View>
     );

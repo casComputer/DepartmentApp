@@ -20,6 +20,8 @@ import { useAppStore } from "@store/app.store.js";
 const { width: vw, height: vh } = Dimensions.get("window");
 const AVATAR_SIZE = vw * 0.7;
 
+import { handleRemovePic } from "@controller/common/profile";
+
 export const Avatar = ({ handleEdit, handleChangePic }) => {
     const username = useAppStore(state => state.user?.userId || "");
     const dp = useAppStore(state => state.user?.dp || "");
@@ -122,7 +124,7 @@ export const EditDpOptions = ({ show, handleChangePic }) => {
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity
-                onPress={handleChangePic}
+                onPress={handleRemovePic}
                 className="w-full py-3 justify-center items-center "
             >
                 <Text className="text-text text-xl font-bold">

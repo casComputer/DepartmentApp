@@ -89,11 +89,24 @@ export const changePassword = async payload => {
                 success: false
             };
     } catch (e) {
-        
-        console.log(e)
+        console.log(e);
         return {
             success: false
         };
-        
+    }
+};
+
+export const handleRemovePic = async () => {
+    try {
+        const { dp, dp_public_id } = useAppStore.getState().user;
+
+        await axios.post("/profile/removeDp", { public_key: dp_public_id, dp });
+
+        useAppStore.getState().updateUser({ dp: "", dp_public_id: "" });
+    } catch (err) {
+        ToastAndroid.show(
+            "Failed to remove profile picture",
+            ToastAndroid.SHORT
+        );
     }
 };

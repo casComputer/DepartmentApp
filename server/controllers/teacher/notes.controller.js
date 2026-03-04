@@ -58,8 +58,7 @@ export const create = async (req, res) => {
 
 export const upload = async (req, res) => {
     try {
-        const { secure_url, format, size, parentId, filename, publicId } =
-            req.body;
+        const { secure_url, format, size, parentId, filename } = req.body;
 
         let publicId = req.body?.publicId;
 

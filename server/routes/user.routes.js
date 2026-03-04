@@ -31,14 +31,14 @@ router.post("/changePassword", async (req, res) => {
         if (!validPassword)
             return res.json({
                 success: false,
-                error: "Invalid password"
+                message: "Invalid current password"
             });
 
         const hashedPassword = await hashPassword(newPassword);
 
         turso.execute(
             "UPDATE users SET password = ? WHERE userId = ? AND role = ?",
-            [newPassword, userId, role]
+            [hashedPassword, userId, role]
         );
 
         res.json({ success: true });

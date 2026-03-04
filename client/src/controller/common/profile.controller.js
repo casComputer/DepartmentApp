@@ -77,7 +77,7 @@ export const editProfile = async profileData => {
 
 export const changePassword = async payload => {
     try {
-        const { data } = await axios.post("/auth/changePassword", payload);
+        const { data } = await axios.post("/user/changePassword", payload);
 
         if (data.success) {
             return {
@@ -89,8 +89,11 @@ export const changePassword = async payload => {
                 success: false
             };
     } catch (e) {
+        
+        console.log(e)
         return {
             success: false
         };
+        
     }
 };

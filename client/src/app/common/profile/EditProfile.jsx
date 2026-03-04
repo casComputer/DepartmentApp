@@ -150,7 +150,7 @@ const EditProfile = () => {
             togglePw();
         } else {
             setMessage({
-                text: message ?? "Password changed failed.",
+                text: message ?? "Failed to change password.",
                 error: true
             });
         }

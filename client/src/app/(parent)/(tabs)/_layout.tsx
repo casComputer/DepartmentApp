@@ -19,10 +19,10 @@ export default function TabLayout() {
                 indicatorColor={styles.borderColor}
                 rippleColor={selectedCardStyle.backgroundColor}
             >
+                {" "}
                 <NativeTabs.Trigger name="Home">
-                    <NativeTabs.Trigger.Icon sf="house.fill" drawable="home" />
+                    <NativeTabs.Trigger.Icon md="home" sf="house.fill" />
                 </NativeTabs.Trigger>
-
                 <NativeTabs.Trigger name="TeachersList">
                     <NativeTabs.Trigger.Icon
                         md="co_present"

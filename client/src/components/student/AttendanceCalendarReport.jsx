@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { generateAttendanceCalendarReport } from "@controller/student/attendance.controller";
+import { DayDetailOverlay } from "@components/student/CalenderDetailsBubble";
 import { calendarData } from "@utils/calenderData.js";
 
 const SLIDE_DISTANCE = 400;
@@ -26,11 +27,14 @@ const statusColors = {
     "half-day": "text-yellow-500"
 };
 
-const CalendarItem = ({ day, status }) => {
+const CalendarItem = ({ day, status, onPress, date }) => {
     if (!day) return <View className="h-12 w-[14.28%]" />;
 
     return (
-        <View className="flex items-center justify-center rounded-xl p-3 m-1">
+        <Pressable
+            onPress={() => status && date && onPress(date)}
+            className="flex items-center justify-center rounded-xl p-3 m-1"
+        >
             <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
@@ -40,11 +44,11 @@ const CalendarItem = ({ day, status }) => {
             >
                 {day}
             </Text>
-        </View>
+        </Pressable>
     );
 };
 
-const CalendarGrid = ({ data, translateX }) => {
+const CalendarGrid = ({ data, translateX, handleDayPress }) => {
     const animStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }]
     }));
@@ -57,7 +61,12 @@ const CalendarGrid = ({ data, translateX }) => {
                 numColumns={7}
                 estimatedItemSize={48}
                 renderItem={({ item }) => (
-                    <CalendarItem day={item.day} status={item.status} />
+                    <CalendarItem
+                        day={item.day}
+                        status={item.status}
+                        onPress={handleDayPress}
+                        date={item.date}
+                    />
                 )}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
@@ -214,6 +223,18 @@ export const AttendanceCalendar = ({ studentId = null }) => {
         slideToDate(newDate, direction);
     };
 
+    const [overlay, setOverlay] = useState({ date: null, periods: null });
+
+    const handleDayPress = date => {
+        // Toggle off if same date tapped again
+        if (overlay.date === date) {
+            setOverlay({ date: null, periods: null });
+            return;
+        }
+        const entry = data?.find?.(item => item.date === date) ?? data?.[date];
+        setOverlay({ date, periods: entry?.periods ?? null });
+    };
+
     return (
         <View className="rounded-3xl bg-card border border-border p-2 mx-2 mt-5 overflow-hidden">
             <CalendarDatePicker
@@ -231,7 +252,17 @@ export const AttendanceCalendar = ({ studentId = null }) => {
                 ))}
             </View>
 
-            <CalendarGrid data={data} translateX={translateX} />
+            <CalendarGrid
+                data={data}
+                translateX={translateX}
+                handleDayPress={handleDayPress}
+            />
+
+            <DayDetailOverlay
+                date={overlay.date}
+                periods={overlay.periods}
+                onClose={() => setOverlay({ date: null, periods: null })}
+            />
         </View>
     );
 };

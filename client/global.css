@@ -6,7 +6,7 @@
         @variant dark {
             --color-primary: #0d1117; /* Main background */
             --color-card: #161b22; /* Card background */
-            --color-card-selected: #21262d; /* Selected card */
+            --color-card-selected: #2c323b; /* Selected card */
             --color-btn: #2f81f7; /* Button (accent blue) */
             --color-text: #e6edf3; /* Main text */
             --color-text-secondary: #fedbcc; /* Secondary text */

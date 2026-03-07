@@ -21,64 +21,73 @@ export const generateAttendanceCalendarReport = async (req, res) => {
         const { rows } = await turso.execute(
             `
             WITH daily_sections AS (
-            SELECT
-            a.date,
+                SELECT
+                    a.date,
 
-            COUNT(DISTINCT CASE
-            WHEN a.hour IN ('First','Second','Third')
-            THEN a.hour END
-            ) AS first_total,
+                    COUNT(DISTINCT CASE
+                        WHEN a.hour IN ('First','Second','Third')
+                        THEN a.hour END
+                    ) AS first_total,
 
-            COUNT(DISTINCT CASE
-            WHEN a.hour IN ('Fourth','Fifth')
-            THEN a.hour END
-            ) AS second_total,
+                    COUNT(DISTINCT CASE
+                        WHEN a.hour IN ('Fourth','Fifth')
+                        THEN a.hour END
+                    ) AS second_total,
 
-            SUM(CASE
-            WHEN a.hour IN ('First','Second','Third')
-            AND ad.status IN ('present','late')
-            THEN 1 ELSE 0 END
-            ) AS first_present,
+                    SUM(CASE
+                        WHEN a.hour IN ('First','Second','Third')
+                        AND ad.status IN ('present','late')
+                        THEN 1 ELSE 0 END
+                    ) AS first_present,
 
-            SUM(CASE
-            WHEN a.hour IN ('Fourth','Fifth')
-            AND ad.status IN ('present','late')
-            THEN 1 ELSE 0 END
-            ) AS second_present
+                    SUM(CASE
+                        WHEN a.hour IN ('Fourth','Fifth')
+                        AND ad.status IN ('present','late')
+                        THEN 1 ELSE 0 END
+                    ) AS second_present,
 
-            FROM attendance a
-            JOIN attendance_details ad
-            ON a.attendanceId = ad.attendanceId
+                    -- Collect each period's status as individual columns
+                    MAX(CASE WHEN a.hour = 'First'  THEN ad.status END) AS first_status,
+                    MAX(CASE WHEN a.hour = 'Second' THEN ad.status END) AS second_status,
+                    MAX(CASE WHEN a.hour = 'Third'  THEN ad.status END) AS third_status,
+                    MAX(CASE WHEN a.hour = 'Fourth' THEN ad.status END) AS fourth_status,
+                    MAX(CASE WHEN a.hour = 'Fifth'  THEN ad.status END) AS fifth_status
 
-            WHERE ad.studentId = ?
-            AND a.date BETWEEN ? AND ?
+                FROM attendance a
+                JOIN attendance_details ad ON a.attendanceId = ad.attendanceId
 
-            GROUP BY a.date
+                WHERE ad.studentId = ?
+                  AND a.date BETWEEN ? AND ?
 
-            -- exclude holidays / no-class days
-            HAVING
-            COUNT(DISTINCT CASE
-            WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
-            THEN a.hour END
-            ) > 0
+                GROUP BY a.date
+
+                HAVING
+                    COUNT(DISTINCT CASE
+                        WHEN a.hour IN ('First','Second','Third','Fourth','Fifth')
+                        THEN a.hour END
+                    ) > 0
             )
 
             SELECT
-            date,
-            CASE
-            -- FULL DAY PRESENT
-            WHEN first_present = first_total
-            AND second_present = second_total
-            THEN 'present'
+                date,
+                CASE
+                    WHEN first_present = first_total
+                     AND second_present = second_total
+                    THEN 'present'
 
-            -- FULL DAY LEAVE
-            WHEN first_present < first_total
-            AND second_present < second_total
-            THEN 'leave'
+                    WHEN first_present < first_total
+                     AND second_present < second_total
+                    THEN 'leave'
 
-            -- HALF DAY LEAVE
-            ELSE 'half-day'
-            END AS status
+                    ELSE 'half-day'
+                END AS status,
+
+                first_status,
+                second_status,
+                third_status,
+                fourth_status,
+                fifth_status
+
             FROM daily_sections
             ORDER BY date;
             `,
@@ -88,14 +97,18 @@ export const generateAttendanceCalendarReport = async (req, res) => {
         const report = {};
         for (const row of rows) {
             report[row.date] = {
-                status: row.status
+                status: row.status,
+                periods: [
+                    row.first_status,
+                    row.second_status,
+                    row.third_status,
+                    row.fourth_status,
+                    row.fifth_status
+                ]
             };
         }
 
-        res.json({
-            success: true,
-            report
-        });
+        res.json({ success: true, report });
     } catch (err) {
         console.error("Error while generating attendance calendar:", err);
         res.status(500).json({

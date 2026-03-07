@@ -44,7 +44,7 @@ export const saveAttendance = async ({
             err?.response?.data?.message ?? "🟥 Failed to save attendance!",
             ToastAndroid.LONG
         );
-        
+
         return false;
     }
 };
@@ -122,11 +122,9 @@ export const getClassAttendance = async ({
         }
 
         const { data } = await axios.post("/attendance/getClassAttendance", {
-            userId,
-            role,
             course,
             year,
-            pageParam,
+            page: pageParam,
             limit
         });
 

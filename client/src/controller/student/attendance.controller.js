@@ -126,6 +126,7 @@ export const generateAttendanceCalendarReport = async (
             data.map(day => {
                 if (report[day.date]) {
                     day.status = report[day.date].status;
+                    day.periods = report[day.date].periods;
                 }
             });
             return data;

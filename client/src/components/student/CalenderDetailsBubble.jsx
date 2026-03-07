@@ -35,7 +35,7 @@ const PeriodBubble = ({ period, status }) => {
     );
 };
 
-export const DayDetailOverlay = ({ date, periods, onClose }) => {
+export const DayDetailOverlay = ({ date, periods }) => {
     if (!date) return null;
 
     const formatted = new Date(date).toLocaleDateString("default", {
@@ -65,11 +65,6 @@ export const DayDetailOverlay = ({ date, periods, onClose }) => {
                     )
                 )}
             </View>
-
-            {/* Close */}
-            <TouchableOpacity onPress={onClose} hitSlop={8}>
-                <Feather name="x" size={18} />
-            </TouchableOpacity>
         </View>
     );
 };

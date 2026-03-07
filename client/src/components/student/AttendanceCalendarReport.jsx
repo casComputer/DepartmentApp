@@ -15,6 +15,7 @@ import Animated, {
 
 import { generateAttendanceCalendarReport } from "@controller/student/attendance.controller";
 import { DayDetailOverlay } from "@components/student/CalenderDetailsBubble";
+import Loader from "@components/common/Loader";
 import { calendarData } from "@utils/calenderData.js";
 
 const SLIDE_DISTANCE = 400;
@@ -47,10 +48,16 @@ const CalendarItem = ({ day, status, onPress, date }) => {
         </Pressable>
     );
 };
+const CalendarGrid = ({ data, translateX, handleDayPress, overlayDate }) => {
+    const paddingB = useSharedValue(0);
 
-const CalendarGrid = ({ data, translateX, handleDayPress }) => {
+    useEffect(() => {
+        paddingB.value = withTiming(overlayDate ? 48 : 0, { duration: 800 });
+    }, [overlayDate]);
+
     const animStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: translateX.value }]
+        transform: [{ translateX: translateX.value }],
+        paddingBottom: paddingB.value
     }));
 
     return (
@@ -71,29 +78,6 @@ const CalendarGrid = ({ data, translateX, handleDayPress }) => {
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
             />
-        </Animated.View>
-    );
-};
-
-const PulsingCalendarIcon = () => {
-    const opacity = useSharedValue(1);
-
-    useEffect(() => {
-        opacity.value = withRepeat(
-            withTiming(0.2, {
-                duration: 600,
-                easing: Easing.inOut(Easing.ease)
-            }),
-            -1,
-            true
-        );
-    }, []);
-
-    const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
-
-    return (
-        <Animated.View style={[style, { position: "absolute", right: "4.5%" }]}>
-            <Feather name="calendar" size={20} color={"rgb(254,187,97)"} />
         </Animated.View>
     );
 };
@@ -120,7 +104,7 @@ const CalendarDatePicker = ({ loading, date, onMonthDown, onMonthUp }) => {
                 <Feather name="chevron-right" size={24} />
             </TouchableOpacity>
 
-            {loading && <PulsingCalendarIcon />}
+            {loading && <Loader />}
 
             {showDatePicker && (
                 <DateTimePickerAndroid
@@ -223,15 +207,14 @@ export const AttendanceCalendar = ({ studentId = null }) => {
         slideToDate(newDate, direction);
     };
 
-    const [overlay, setOverlay] = useState({ date: null, periods: null });
+    const [overlay, setOverlay] = useState({
+        date: null,
+        periods: null
+    });
 
     const handleDayPress = date => {
-        // Toggle off if same date tapped again
-        if (overlay.date === date) {
-            setOverlay({ date: null, periods: null });
-            return;
-        }
-        const entry = data?.find?.(item => item.date === date) ?? data?.[date];
+        if (!data) return;
+        const entry = data.find(item => item.date === date);
         setOverlay({ date, periods: entry?.periods ?? null });
     };
 
@@ -256,13 +239,10 @@ export const AttendanceCalendar = ({ studentId = null }) => {
                 data={data}
                 translateX={translateX}
                 handleDayPress={handleDayPress}
+                overlayDate={overlay.date}
             />
 
-            <DayDetailOverlay
-                date={overlay.date}
-                periods={overlay.periods}
-                onClose={() => setOverlay({ date: null, periods: null })}
-            />
+            <DayDetailOverlay date={overlay.date} periods={overlay.periods} />
         </View>
     );
 };

@@ -68,15 +68,13 @@ const InternalHistory = () => {
                 data={allItems ?? []}
                 keyExtractor={item => item._id}
                 className="pt-16 px-1"
+                contentContainerStyle={{ paddingBottom: 150 }}
                 renderItem={({ item }) => <Item item={item} />}
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
                 maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
-                contentContainerStyle={{
-                    paddingBottom: 100
-                }}
                 ListFooterComponent={
                     isFetchingNextPage ? (
                         <Loader />

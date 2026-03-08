@@ -12,9 +12,7 @@ export const generateOtp = async (email) => {
 
 export const verifyOtp = async (otp) => {
     try {
-        const res = await axios.post("/email/verify", { otp });
-
-        console.log(res.data);
+        const res = await axios.post("/email/verify", { otp })
 
         useAppStore
             .getState()

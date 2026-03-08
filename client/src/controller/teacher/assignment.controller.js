@@ -33,7 +33,7 @@ export const createAssignment = async assignmentData => {
         }
     } catch (error) {
         ToastAndroid.show("Failed to create assignment", ToastAndroid.LONG);
-        console.error("Error creating assignment:", error.message);
+
         throw error;
     }
 };
@@ -64,7 +64,7 @@ export const getAssignment = async ({ pageParam }) => {
         return response.data;
     } catch (error) {
         ToastAndroid.show("Failed to fetch assignment", ToastAndroid.LONG);
-        console.error("Error fetching assignment:", error.message);
+
         throw error;
     }
 };
@@ -132,7 +132,7 @@ export const rejectAssignment = async (
         }
     } catch (error) {
         ToastAndroid.show("Internal server error.", ToastAndroid.LONG);
-        console.error("Error rejecting assignment submission:", error);
+
         throw error;
     }
 };
@@ -198,7 +198,7 @@ export const acceptAssignment = async (
         }
     } catch (error) {
         ToastAndroid.show("Internal server error.", ToastAndroid.LONG);
-        console.error("Error rejecting assignment submission:", error);
+
         throw error;
     }
 };

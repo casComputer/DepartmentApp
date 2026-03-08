@@ -37,10 +37,7 @@ const AttendanceClassHistory = () => {
 
     return (
         <View className="flex-1 bg-primary">
-            <Header
-                title="Class History"
-                isAbsolute={true}
-            />
+            <Header title="Class History" isAbsolute={true} />
             <FlashList
                 data={allItems}
                 renderItem={({ item }) => (
@@ -53,10 +50,8 @@ const AttendanceClassHistory = () => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
-                contentContainerStyle={{
-                    paddingBottom: 60
-                }}
                 className="pt-16"
+                contentContainerStyle={{ paddingBottom: 150 }}
                 ListEmptyComponent={
                     isLoading ? (
                         <Loader size={"large"} />

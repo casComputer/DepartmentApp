@@ -20,7 +20,6 @@ export const getTodaysAttendanceReport = async (studentId = null) => {
             return {};
         }
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             `Syncing today's attendance failed: ${error.message}`,
             ToastAndroid.LONG
@@ -38,7 +37,6 @@ export const getOverallAttendenceReport = async studentId => {
         if (res.data.success) return res.data.report ?? {};
         else return {};
     } catch (error) {
-        console.error(error.message);
         ToastAndroid.show(
             `Failed to fetching monthly attendance report!`,
             ToastAndroid.LONG
@@ -95,7 +93,6 @@ export const getYearlyAttendenceReport = async year => {
             return [];
         }
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             `Failed to fetch yearly attendance report!`,
             ToastAndroid.LONG

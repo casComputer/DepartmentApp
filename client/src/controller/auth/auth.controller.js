@@ -1,32 +1,22 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-import {
-    storage
-} from "@utils/storage.js";
-import {
-    useAppStore
-} from "@store/app.store.js";
+import { storage } from "@utils/storage.js";
+import { useAppStore } from "@store/app.store.js";
 
-let API_URL =
-process.env.EXPO_PUBLIC_API_BASE_URL || "https://dc-connect.onrender.com";
+let API_URL = process.env.EXPO_PUBLIC_MAIN_SERVER;
 
-API_URL = "https://dc-connect.onrender.com";
-// API_URL = "http://192.168.0.132:3000";
+console.log(API_URL)
 
-const authController = async (data) => {
+const authController = async data => {
     try {
         const response = await axios.post(`${API_URL}/auth/${data.endpoint}`, {
-            ...data,
+            ...data
         });
 
         if (response?.data?.success) {
-            const {
-                refreshToken,
-                accessToken,
-                user
-            } = response.data;
-            
+            const { refreshToken, accessToken, user } = response.data;
+
             await SecureStore.setItemAsync("refreshToken", refreshToken);
             storage.set("accessToken", accessToken);
 
@@ -56,7 +46,7 @@ const authController = async (data) => {
             }
         } else if (error.request) {
             message =
-            "No response from the server. Please check your network connection or please try again later.";
+                "No response from the server. Please check your network connection or please try again later.";
         } else {
             message = error.message;
         }

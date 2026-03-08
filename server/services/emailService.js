@@ -3,13 +3,13 @@ import nodemailer from "nodemailer";
 // Ensure Brevo credentials are set
 const assertBrevoConfig = () => {
     const missing = ["BREVO_SMTP_USER", "BREVO_SMTP_PASS"].filter(
-        (key) => !process.env[key]
+        key => !process.env[key]
     );
 
     if (missing.length) {
         throw new Error(
             `Missing required environment variable(s): ${missing.join(", ")}.\n` +
-            "Set BREVO_SMTP_USER and BREVO_SMTP_PASS from your Brevo SMTP settings."
+                "Set BREVO_SMTP_USER and BREVO_SMTP_PASS from your Brevo SMTP settings."
         );
     }
 };
@@ -27,8 +27,8 @@ const getTransporter = () => {
         secure: true, // SSL
         auth: {
             user: process.env.BREVO_SMTP_USER, // Brevo SMTP user
-            pass: process.env.BREVO_SMTP_PASS, // Brevo SMTP password
-        },
+            pass: process.env.BREVO_SMTP_PASS // Brevo SMTP password
+        }
     });
 
     return _transporter;
@@ -39,7 +39,6 @@ export const verifyConnection = async () => {
     try {
         const transporter = getTransporter();
         await transporter.verify();
-        console.log("✅ Brevo SMTP connection verified and ready to send emails");
     } catch (err) {
         console.error("❌ Brevo SMTP verification failed:", err.message);
     }
@@ -65,13 +64,9 @@ export const sendOtpEmail = async (to, otp, ttlMins = 10) => {
           </div>
           <p style="font-size:12px;color:#999">If you did not request this, ignore this email.</p>
         </div>
-      `,
+      `
     });
-
-    console.log(`✅ OTP email sent to ${to}: ${info.messageId}`);
 };
-
 // Example usage
 verifyConnection();
 sendOtpEmail("adwaith.anand.dev@gmail.com", "123456").catch(console.error);
-

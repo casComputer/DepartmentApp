@@ -54,7 +54,6 @@ const signupAllStudents = async () => {
             });
 
             const data = await response.json();
-            console.log(`✅ Created: ${fullName}`, data);
         } catch (error) {
             console.error(`❌ Error creating ${fullName}:`, error);
         }

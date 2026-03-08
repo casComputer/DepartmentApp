@@ -13,7 +13,7 @@ export async function registerForPushNotificationsAsync() {
             name: "A channel is needed for the permissions prompt to appear",
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
-            lightColor: "#FF231F7C",
+            lightColor: "#FF231F7C"
         });
     }
 
@@ -38,7 +38,7 @@ export async function registerForPushNotificationsAsync() {
         }
         token = (
             await Notifications.getExpoPushTokenAsync({
-                projectId,
+                projectId
             })
         ).data;
     } catch (e) {
@@ -54,7 +54,7 @@ export async function registerForPushNotificationsAsync() {
         }
         token = (
             await Notifications.getExpoPushTokenAsync({
-                projectId,
+                projectId
             })
         ).data;
         addNotificationToken(token);
@@ -64,17 +64,15 @@ export async function registerForPushNotificationsAsync() {
     return token;
 }
 
-const addNotificationToken = async (token) => {
+const addNotificationToken = async token => {
     try {
         const { data } = await axios.post("/user/addNotificationToken", {
-            token,
+            token
         });
-    } catch (error) {
-        console.error(error);
-    }
+    } catch (error) {}
 };
 
-export const fetchNotifications = async (page) => {
+export const fetchNotifications = async page => {
     try {
         const { course = "", year = "" } = useAppStore.getState().user ?? {};
 
@@ -82,7 +80,7 @@ export const fetchNotifications = async (page) => {
             page,
             limit: 15,
             course,
-            year,
+            year
         });
 
         if (data.success) return data;
@@ -90,15 +88,14 @@ export const fetchNotifications = async (page) => {
             success: false,
             nextPage: null,
             hasMore: false,
-            notifications: [],
+            notifications: []
         };
     } catch (error) {
-        console.error(error);
         return {
             success: false,
             nextPage: null,
             hasMore: false,
-            notifications: [],
+            notifications: []
         };
     }
 };

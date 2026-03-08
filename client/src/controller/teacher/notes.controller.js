@@ -123,7 +123,6 @@ export const uploadFileDetails = async data => {
                 ToastAndroid.SHORT
             );
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to Uplaod file data!", ToastAndroid.SHORT);
     }
 };
@@ -167,7 +166,6 @@ export const deleteNotes = async () => {
             );
         }
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to delete file!", ToastAndroid.LONG);
     }
 };

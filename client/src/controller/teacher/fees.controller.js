@@ -35,7 +35,7 @@ export const create = async ({ course, year, details, amount, dueDate }) => {
         }
     } catch (error) {
         ToastAndroid.show("Fees Details Updation Failed", ToastAndroid.LONG);
-        console.error(error);
+
         return false;
     }
 };
@@ -88,7 +88,6 @@ export const deleteFee = async feeId => {
             );
         }
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to delete fee item!", ToastAndroid.LONG);
     }
 };

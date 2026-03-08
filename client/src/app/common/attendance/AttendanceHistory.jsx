@@ -47,9 +47,6 @@ const AttendanceHistory = () => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
-                contentContainerStyle={{
-                    paddingBottom: 60
-                }}
                 ListEmptyComponent={
                     isLoading ? (
                         <Loader size={"large"} />
@@ -77,6 +74,7 @@ const AttendanceHistory = () => {
                     )
                 }
                 className="pt-16"
+		contentContainerStyle={{ paddingBottom: 150  }}
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

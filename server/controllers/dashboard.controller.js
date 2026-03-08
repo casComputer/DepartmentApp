@@ -23,8 +23,6 @@ export const tursoStats = async (req, res) => {
     try {
         const stats = await tursoStatsClient.databases.usage("database");
 
-        console.log(stats);
-
         res.json({
             success: true,
             stats,

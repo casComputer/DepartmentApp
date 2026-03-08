@@ -105,8 +105,8 @@ const History = () => {
                     !isLoading && isFetchingNextPage && <Loader />
                 }
                 renderItem={({ item }) => <RenderItem item={item} />}
-                contentContainerStyle={{ paddingBottom: 100 }}
                 className="px-2 pt-16"
+                contentContainerStyle={{ paddingBottom: 150 }}
                 onRefresh={refetch}
                 refreshing={isRefetching}
                 showsVerticalScrollIndicator={false}

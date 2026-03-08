@@ -9,16 +9,16 @@ import queryClient from "@utils/queryClient.js";
 
 const AssignmentShow = () => {
     const { assignmentId } = useLocalSearchParams();
-    const [assignment, setAssignment] = useState({})
+    const [assignment, setAssignment] = useState({});
 
     const infiniteData = queryClient.getQueryData(["assignments"]);
     const data = infiniteData.pages
         .flatMap(page => page.assignments)
         ?.find(a => a._id === assignmentId);
-        
-    useEffect(()=>{
-        setAssignment(data)
-    }, [data])
+
+    useEffect(() => {
+        setAssignment(data);
+    }, [data]);
 
     return (
         <View className="flex-1 bg-primary">
@@ -30,11 +30,14 @@ const AssignmentShow = () => {
             <FlashList
                 data={assignment.submissions || []}
                 renderItem={({ item }) => (
-                    <RenderItem item={item} assignmentId={assignment?._id} setAssignment={setAssignment} />
+                    <RenderItem
+                        item={item}
+                        assignmentId={assignment?._id}
+                        setAssignment={setAssignment}
+                    />
                 )}
-                contentContainerStyle={{
-                    paddingHorizontal: 15
-                }}
+                contentContainerStyle={{ paddingBottom: 150 }}
+                className="px-3"
                 ListEmptyComponent={
                     <Text className="mt-5 text-center text-text text-xl font-bold">
                         No Submissions Yet.

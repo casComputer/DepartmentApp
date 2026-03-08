@@ -44,10 +44,8 @@ const WorkLogHistory = () => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingBottom: 60
-                }}
                 className="pt-16 px-1"
+                contentContainerStyle={{ paddingBottom: 150 }}
                 ListFooterComponent={
                     isFetchingNextPage ? (
                         <Loader />

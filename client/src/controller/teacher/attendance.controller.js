@@ -100,7 +100,6 @@ export const fetchStudentsForAttendance = async ({
 
         return res.data;
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
         return 0;
     }
@@ -135,7 +134,6 @@ export const getClassAttendance = async ({
                 ToastAndroid.LONG
             );
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to fetch attendance", ToastAndroid.LONG);
     }
 };
@@ -165,7 +163,6 @@ export const getAttendanceXl = async payload => {
             success: false
         };
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             "Failed to generate attendance report!",
             ToastAndroid.LONG
@@ -194,7 +191,6 @@ export const deleteReport = async payload => {
 
         return { success: false };
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             "Failed to delete attendance report!",
             ToastAndroid.LONG

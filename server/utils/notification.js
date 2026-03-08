@@ -62,7 +62,6 @@ export async function checkPushReceipts(ticketTokenMap) {
                                 `UPDATE users SET token = NULL WHERE token = ?`,
                                 [deadToken]
                             );
-                            console.log(`Removed dead token: ${deadToken}`);
                         }
                     }
                 }

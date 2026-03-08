@@ -13,14 +13,19 @@
         },
         "android": {
             "package": "com.cas.dcConnect",
-            "googleServicesFile": "./google-services.json"
+            "googleServicesFile": "./google-services.json",
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundImage": "./assets/images/adaptive-bg.png"
+            }
         },
         "web": {
             "output": "static",
             "favicon": "./assets/images/icon.png"
         },
         "plugins": [
-            "expo-router",
+            "./disableForceDark",
+   	    "expo-router",
             [
                 "expo-splash-screen",
                 {
@@ -34,7 +39,6 @@
                 }
             ],
             "expo-secure-store",
-            "expo-web-browser",
             "expo-notifications",
             [
                 "@react-native-community/datetimepicker",

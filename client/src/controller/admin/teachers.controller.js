@@ -42,7 +42,6 @@ export const handleRemoveIncharge = async teacherId => {
         } else
             ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
     } catch (error) {
-        console.log(error);
         ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
     }
 };
@@ -116,7 +115,6 @@ export const verifyTeacher = async teacherId => {
                 ToastAndroid.LONG
             );
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to verify teacher", ToastAndroid.LONG);
     }
 };
@@ -139,7 +137,6 @@ export const cancelVerification = async teacherId => {
 
         return res.data.success;
     } catch (error) {
-        console.error(error);
         ToastAndroid.show("Failed to remove teacher", ToastAndroid.LONG);
     }
 };

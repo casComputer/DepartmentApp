@@ -76,6 +76,7 @@ const Assignment = () => {
                         </Text>
                     )
                 }
+                contentContainerStyle={{ paddingBottom: 150 }}
                 className="pt-16 px-1"
                 onRefresh={refetch}
                 refreshing={isRefetching}

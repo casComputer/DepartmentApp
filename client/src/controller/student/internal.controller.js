@@ -1,5 +1,5 @@
 import axios from "@utils/axios";
-import { ToastAndroid } from 'react-native'
+import { ToastAndroid } from "react-native";
 
 import { useAppStore } from "@store/app.store.js";
 
@@ -25,7 +25,7 @@ export const fetchInternal = async page => {
         };
     } catch (error) {
         ToastAndroid.show("Failed to fetch internal!", ToastAndroid.LONG);
-        console.error(error);
+
         return {
             internals: [],
             nextPage: null

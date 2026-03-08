@@ -128,7 +128,6 @@ const saveAssignmentSubmissionDetails = async ({
             return false;
         }
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
@@ -147,7 +146,7 @@ export const handleAssignmentUpload = async (
             ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
             return false;
         }
-        const url = `https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload`;
+        const url = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_URL;
 
         const formData = new FormData();
         formData.append("file", {
@@ -213,7 +212,7 @@ export const handleAssignmentUpload = async (
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
         );
-        console.error("Error uploading to Cloudinary:", error);
+
         return false;
     }
 };

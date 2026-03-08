@@ -7,22 +7,17 @@ export const fetchCloudinaryStats = async () => {
         if (data.success) return data.usage;
         else return {};
     } catch (error) {
-        console.error(error);
         return {};
     }
 };
 
 export const fetchTursoStats = async () => {
     try {
-        console.log("fetching");
         const { data } = await axios.get("/dashboard/turso");
-
-        console.log(" data ", data);
 
         if (data.success) return data.stats;
         else return {};
     } catch (error) {
-        console.error(error);
         return {};
     }
 };
@@ -34,7 +29,6 @@ export const fetchUserStats = async () => {
         if (data.success) return data.users;
         else return {};
     } catch (error) {
-        console.error(error);
         return {};
     }
 };

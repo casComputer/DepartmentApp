@@ -6,88 +6,87 @@ import { Alert } from "react-native";
 import { storage } from "./storage";
 import { clearUser } from "@storage/user.storage.js";
 
-let url = "https://dc-connect.onrender.com";
-// url = "http://192.168.0.132:3000"; // 5g 
-// url = "http://10.63.31.150:3000"; // 
+let PRIMARY_URL = process.env.EXPO_PUBLIC_FALLBACK_SERVER;
+// let PRIMARY_URL = process.env.EXPO_PUBLIC_MAIN_SERVER;
+let BACKUP_URL = process.env.EXPO_PUBLIC_FALLBACK_SERVER;
 
 const api = axios.create({
-    baseURL: url,
+    baseURL: PRIMARY_URL,
+    timeout: 10000
 });
 
+console.log(PRIMARY_URL)
+
 api.interceptors.request.use(
-    async (config) => {
+    async config => {
         const token = storage.getString("accessToken");
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
-    (error) => Promise.reject(error),
+    error => Promise.reject(error)
 );
 
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
+    response => response,
+    async error => {
         const originalReq = error.config;
+        const status = error.response?.status;
 
-        if (error.response?.status === 429) {
+        const serverFailure =
+            !error.response || [500, 502, 503, 504, 402].includes(status);
+
+        // FALLBACK SERVER
+        if (serverFailure && !originalReq._backupRetry && BACKUP_URL) {
+            originalReq._backupRetry = true;
+
+            originalReq.baseURL = BACKUP_URL;
+            return axios(originalReq);
+        }
+
+        // RATE LIMIT
+        if (status === 429) {
             const retryAfter = error.response.headers["retry-after"] || 60;
-            const message =
-                error.response.data?.error ||
-                "Too many requests. Please try again later.";
 
             Alert.alert(
                 "Rate Limit Exceeded",
-                `${message}\n\nPlease wait ${retryAfter} seconds before trying again.`,
-                [{ text: "OK" }],
+                `Please wait ${retryAfter} seconds before trying again.`,
+                [{ text: "OK" }]
             );
 
             return Promise.reject(error);
         }
 
-        if (
-            (error.response?.status === 403 ||
-                error.response?.status === 401) &&
-            !originalReq._retry
-        ) {
+        // TOKEN REFRESH
+        if ((status === 401 || status === 403) && !originalReq._retry) {
             originalReq._retry = true;
 
             try {
                 const refreshToken =
                     await SecureStore.getItemAsync("refreshToken");
+
                 if (!refreshToken) {
                     storage.remove("accessToken");
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();
                     router.replace("/auth/Signin");
+                    return Promise.reject(error);
                 }
 
-                const { data } = await axios.post(`${url}/auth/refresh`, {
-                    refreshToken,
-                });
+                const { data } = await axios.post(
+                    `${originalReq.baseURL}/auth/refresh`,
+                    { refreshToken }
+                );
 
                 storage.set("accessToken", data.accessToken);
-
-                // ======= temporary removed token rotaion =======
-                // await SecureStore.setItemAsync(
-                //     "refreshToken",
-                //     data.refreshToken,
-                //     {
-                //         keychainAccessible: SecureStore.WHEN_UNLOCKED
-                //     }
-                // );
 
                 originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
 
                 return api(originalReq);
             } catch (err) {
-                console.error(
-                    "Refresh error:",
-                    err.response?.status,
-                    err.message,
-                );
-
-                // Only logout if refresh token is invalid/expired
                 const status = err.response?.status;
 
                 if (status === 401 || status === 403) {
@@ -95,16 +94,14 @@ api.interceptors.response.use(
                     await SecureStore.deleteItemAsync("refreshToken");
                     clearUser();
                     router.replace("/auth/Signin");
-                    return Promise.reject(err);
                 }
 
-                // Otherwise server/network error
                 return Promise.reject(err);
             }
         }
 
         return Promise.reject(error);
-    },
+    }
 );
 
 export default api;

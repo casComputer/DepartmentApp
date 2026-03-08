@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Haptics from "expo-haptics";
 
 const Header = ({ onSave, saving, disabled }) => {

@@ -36,7 +36,6 @@ export const uploadDp = async data => {
                 ToastAndroid.LONG
             );
     } catch (error) {
-        console.error(error);
         ToastAndroid.show(
             "Failed to update profile picture",
             ToastAndroid.LONG
@@ -89,7 +88,6 @@ export const changePassword = async payload => {
                 success: false
             };
     } catch (e) {
-        console.log(e);
         return {
             success: false
         };

@@ -1,16 +1,12 @@
 import axios from "@utils/axios.js";
-import {
-    ToastAndroid
-} from "react-native";
+import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import {
-    useAppStore
-} from "@store/app.store.js"
+import { useAppStore } from "@store/app.store.js";
 
-const setProgressText = useAppStore.getState().setGlobalProgressText
-const setProgress = useAppStore.getState().setGlobalProgress
+const setProgressText = useAppStore.getState().setGlobalProgressText;
+const setProgress = useAppStore.getState().setGlobalProgress;
 
 export const handleDocumentPick = async (types = []) => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -19,12 +15,7 @@ export const handleDocumentPick = async (types = []) => {
 
     if (result.canceled) return null;
 
-    const {
-        name,
-        size,
-        uri,
-        mimeType
-    } = result.assets[0];
+    const { name, size, uri, mimeType } = result.assets[0];
 
     if (!name || !uri || !mimeType || !size) {
         ToastAndroid.show(
@@ -77,7 +68,7 @@ export const handleUpload = async (file, preset_type) => {
             };
         }
 
-        const url = `https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload`;
+        const url = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_URL;
 
         const formData = new FormData();
         formData.append("file", {
@@ -86,18 +77,13 @@ export const handleUpload = async (file, preset_type) => {
             type: file.mimeType
         });
 
-        setProgressText('generating signature...')
+        setProgressText("generating signature...");
 
         const signatureRes = await axios.post("/file/getSignature", {
             preset_type
         });
 
-        const {
-            timestamp,
-            signature,
-            api_key,
-            preset
-        } = signatureRes.data;
+        const { timestamp, signature, api_key, preset } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
             ToastAndroid.show(
@@ -114,7 +100,7 @@ export const handleUpload = async (file, preset_type) => {
         formData.append("signature", signature);
         formData.append("api_key", api_key);
 
-        setProgressText('uploading file...')
+        setProgressText("uploading file...");
 
         const res = await orgAxios.post(url, formData, {
             headers: {
@@ -131,17 +117,14 @@ export const handleUpload = async (file, preset_type) => {
             }
         });
 
-        const {
-            secure_url, format, public_id
-        } = res.data;
-        
+        const { secure_url, format, public_id } = res.data;
+
         if (!secure_url || !format || !public_id) {
-                ToastAndroid.show("Failed to upload the file!", ToastAndroid.SHORT);
-                return {
+            ToastAndroid.show("Failed to upload the file!", ToastAndroid.SHORT);
+            return {
                 success: false
             };
-            }
-
+        }
 
         return {
             secure_url,
@@ -150,13 +133,11 @@ export const handleUpload = async (file, preset_type) => {
             success: true
         };
     } catch (error) {
+        setProgress(0);
         ToastAndroid.show(
             "Failed to upload file. Please try again.",
             ToastAndroid.LONG
         );
-        setProgress(0);
-        console.error("Error uploading to Cloudinary:",
-            error);
         return {
             success: false
         };

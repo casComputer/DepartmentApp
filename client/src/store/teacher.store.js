@@ -21,9 +21,7 @@ export const useTeacherStore = create((set, get) => ({
 
         try {
             set({ students: JSON.parse(raw) });
-        } catch (e) {
-            console.error("Failed to parse students from storage", e);
-        }
+        } catch (e) {}
     },
 
     getStudent: id => get().students.find(s => s.userId === id),

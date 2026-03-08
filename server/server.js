@@ -94,5 +94,5 @@ if (!process.env.VERCEL) {
     });
 }
 
-// ✅ Export for Vercel
+// Export for Vercel
 export default app;

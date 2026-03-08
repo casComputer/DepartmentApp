@@ -1,19 +1,19 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server/vercel.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server/vercel.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "regions": ["iad1"]
+    "version": 2,
+    "builds": [
+        {
+            "src": "server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "server.js"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    },
+    "regions": ["iad1"]
 }

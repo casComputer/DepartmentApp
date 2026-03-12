@@ -5,7 +5,7 @@
         "scheme": "dc-connect",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
+        "icon": "./assets/images/icon2.png",
         "userInterfaceStyle": "automatic",
         "ios": {
             "supportsTablet": true,
@@ -25,11 +25,11 @@
         },
         "plugins": [
             "./disableForceDark",
-   	    "expo-router",
+            "expo-router",
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/icon.png",
+                    "image": "./assets/images/icon2.png",
                     "imageWidth": 200,
                     "resizeMode": "contain",
                     "backgroundColor": "#ffffff",

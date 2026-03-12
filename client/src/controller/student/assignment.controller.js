@@ -199,8 +199,6 @@ export const handleAssignmentUpload = async (
 
         const { secure_url, format, public_key } = res.data;
 
-        alert("public key: ", public_key);
-
         return await saveAssignmentSubmissionDetails({
             secure_url,
             format,

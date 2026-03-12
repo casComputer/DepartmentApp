@@ -108,7 +108,7 @@ export const uploadFileDetails = async data => {
         if (res.data.success) {
             const { file } = res.data;
 
-            queryClient.setQueryData(["notes", file.parentId], prev => ({
+            queryClient.setQueryData(["notes", data.parentId], prev => ({
                 ...prev,
                 notes: [...(prev.notes ?? []), file]
             }));

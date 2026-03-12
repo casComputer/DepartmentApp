@@ -4,9 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { storage } from "@utils/storage.js";
 import { useAppStore } from "@store/app.store.js";
 
-let API_URL = process.env.EXPO_PUBLIC_MAIN_SERVER;
-
-console.log(API_URL)
+let API_URL = process.env.EXPO_PUBLIC_PRIMARY_SERVER;
 
 const authController = async data => {
     try {

@@ -44,42 +44,40 @@ const Layout = ({ userId, role, is_verified, is_email_verified }) => (
             <Stack.Screen name="auth/Signup" />
         </Stack.Protected>
 
-        {/* <Stack.Protected guard={!is_email_verified && userId}>
-            <Stack.Screen name="EmailVerification" />
-        </Stack.Protected> */}
-
-        <Stack.Protected guard={is_verified}>
-            <Stack.Protected guard={userId !== "" && role === "student"}>
+        <Stack.Protected guard={is_verified && userId !== ""}>
+            <Stack.Protected guard={role === "student"}>
                 <Stack.Screen name="(student)/(tabs)" />
                 <Stack.Screen name="(student)/(others)" />
             </Stack.Protected>
-            <Stack.Protected guard={userId !== "" && role === "admin"}>
+            <Stack.Protected guard={role === "admin"}>
                 <Stack.Screen name="(admin)/(tabs)" />
+                <Stack.Screen name="(admin)/(others)" />
             </Stack.Protected>
 
-            <Stack.Protected
-                guard={
-                    userId !== "" && (role === "teacher" || role === "admin")
-                }
-            >
+            <Stack.Protected guard={role === "teacher" || role === "admin"}>
                 <Stack.Screen name="(teacher)/(tabs)" />
                 <Stack.Screen name="(teacher)/(others)" />
             </Stack.Protected>
 
-            <Stack.Protected guard={userId !== "" && role === "parent"}>
+            <Stack.Protected guard={role === "parent"}>
                 <Stack.Screen name="(parent)/(tabs)" />
+                <Stack.Screen name="(parent)/(others)" />
             </Stack.Protected>
         </Stack.Protected>
 
         <Stack.Protected guard={!is_verified && userId}>
             <Stack.Screen name="Waiting" />
         </Stack.Protected>
-        <Stack.Screen
-            name="common/ImageFullView"
-            options={{
-                animation: "fade"
-            }}
-        />
+
+        <Stack.Protected guard={userId}>
+            <Stack.Screen
+                name="common/ImageFullView"
+                options={{
+                    animation: "fade"
+                }}
+            />
+            <Stack.Screen name="common/profile/EditProfile" />
+        </Stack.Protected>
     </Stack>
 );
 
@@ -88,7 +86,7 @@ export default function RootLayout() {
     const insets = useSafeAreaInsets();
 
     const currTheme = storage.getString("theme");
-    
+
     useEffect(() => {
         Uniwind.setTheme(currTheme ?? "system");
     }, [currTheme]);

@@ -1,18 +1,34 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
-import { withUniwind } from "uniwind";
-import { router } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import React, {
+    useState
+} from "react";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Dimensions
+} from "react-native";
+import {
+    withUniwind
+} from "uniwind";
+import {
+    router
+} from "expo-router";
+import {
+    FontAwesome5
+} from "@icons";
+import * as Haptics from 'expo-haptics'
 
 import CheckBox from "@components/common/CheckBox.jsx";
 import Loader from "@components/common/Loader";
 import CircularProgress from "@components/common/CircularProgress.jsx";
 
-const { width: vw } = Dimensions.get("window");
+const {
+    width: vw
+} = Dimensions.get("window");
 
 const ITEM_SIZE = (vw - 6 * 12) / 5,
-    MARGIN_X = 4,
-    MARGIN_Y = 10;
+MARGIN_X = 4,
+MARGIN_Y = 10;
 
 export const AttendanceItem = React.memo(
     ({
@@ -27,7 +43,7 @@ export const AttendanceItem = React.memo(
         return (
             <TouchableOpacity
                 onLayout={onItemLayout}
-                style={{
+                style={ {
                     width: ITEM_SIZE,
                     height: ITEM_SIZE,
                     marginHorizontal: MARGIN_X,
@@ -38,15 +54,15 @@ export const AttendanceItem = React.memo(
                     alignItems: "center"
                 }}
                 onLongPress={onLongPress}
-                className={`${item.present ? "bg-btn dark:bg-[#4F46E5]" : "bg-card"}`}
+                className={`${item.present ? "bg-btn dark:bg-[#4F46E5]": "bg-card"}`}
                 onPress={() => toggleAttendance(item.rollno)}
                 disabled={!isEditable}
-            >
+                >
                 <Text
                     numberOfLines={1}
                     adjustsFontSizeToFit
                     className="text-text text-[30px] font-semibold text-center w-[90%]"
-                >
+                    >
                     {item.rollno}
                 </Text>
             </TouchableOpacity>
@@ -61,11 +77,27 @@ export const AttendanceItem = React.memo(
     }
 );
 
-export const Options = ({ loading, isEditable, handleSelectAll }) => {
+export const Options = ({
+    loading,
+    isEditable,
+    handleSelectAll,
+    course,
+    year
+}) => {
     const [selectAll, setSelectAll] = useState(false);
 
+    const routeToStudentList = ()=> {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        router.push({
+            pathname: '/common/attendance/StudentsList',
+            params: {
+                course,
+                year
+            }})
+    }
+
     return (
-        <View className="flex-row justify-between items-center px-5 mt-5">
+        <View className="flex-row justify-between items-center px-5 mt-5 pb-3">
             {loading && (
                 <View className="flex-row justify-center items-center gap-1">
                     <Text className="font-bold text-xl text-text">syncing</Text>
@@ -74,11 +106,14 @@ export const Options = ({ loading, isEditable, handleSelectAll }) => {
             )}
 
             {isEditable === true && (
-                <View className="flex-row gap-1 justify-center items-center ml-auto">
+                <View className="flex-row gap-5 justify-center items-center ml-auto">
                     <TouchableOpacity onPress={handleSelectAll}>
-                        <Text className="font-semibold text-xl text-blue-500 ">
+                        <Text className="font-semibold text-xl text-text ">
                             Mark All
                         </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={ routeToStudentList}>
+                        <FontAwesome5 name="list-ol" size={20} className="text-orange-500" />
                     </TouchableOpacity>
                 </View>
             )}
@@ -101,7 +136,7 @@ const AttendanceHistoryExtra = ({
     strength = 0
 }) => {
     const totalPresent = present + late_present;
-    const progress = strength === 0 ? 0 : present / strength;
+    const progress = strength === 0 ? 0: present / strength;
 
     return (
         <View className="flex-row items-center">
@@ -110,19 +145,19 @@ const AttendanceHistoryExtra = ({
                 <Text
                     numberOfLines={1}
                     className="text-md font-semibold text-text"
-                >
+                    >
                     Present: {present}
                 </Text>
                 <Text
                     numberOfLines={1}
                     className="text-md font-semibold text-text"
-                >
+                    >
                     Absent: {absent}
                 </Text>
                 <Text
                     numberOfLines={1}
                     className="text-md font-semibold text-text"
-                >
+                    >
                     Late: {late_present}
                 </Text>
             </View>
@@ -137,7 +172,7 @@ const AttendanceHistoryExtra = ({
                 <Text
                     numberOfLines={1}
                     className="text-lg font-semibold text-right text-text"
-                >
+                    >
                     Strength: {strength}
                 </Text>
             </View>
@@ -164,8 +199,8 @@ export const AttendanceHistoryRenderItem = ({
         <View className="w-full px-3 my-2">
             <View
                 className="w-full bg-card rounded-3xl px-5 py-6"
-                style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
-            >
+                style={ { boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
+                >
                 <View className="flex-row justify-between items-center">
                     <Text className="text-xl font-black text-text">
                         {item.year} {item.course} {"\n"}
@@ -181,7 +216,7 @@ export const AttendanceHistoryRenderItem = ({
                     absent={absent}
                     late_present={late_present}
                     strength={strength}
-                />
+                    />
 
                 {haveFullAccess && (
                     <>
@@ -194,26 +229,26 @@ export const AttendanceHistoryRenderItem = ({
                                 {" " + item.updated_by + "\n"}
                                 on
                                 {" " +
-                                    new Date(
-                                        item.updated_timestamp
-                                    )?.toLocaleString()}
+                                new Date(
+                                    item.updated_timestamp
+                                )?.toLocaleString()}
                             </Text>
                         )}
                         <TouchableOpacity
                             onPress={() =>
-                                router.push({
-                                    pathname: "/common/attendance/Attendance",
-                                    params: {
-                                        course: item.course,
-                                        year: item.year,
-                                        hour: item.hour,
-                                        isEditable: false,
-                                        date: item.date
-                                    }
-                                })
+                            router.push({
+                                pathname: "/common/attendance/Attendance",
+                                params: {
+                                    course: item.course,
+                                    year: item.year,
+                                    hour: item.hour,
+                                    isEditable: false,
+                                    date: item.date
+                                }
+                            })
                             }
                             className="mt-3 bg-card-selected rounded-lg"
-                        >
+                            >
                             <Text className="text-xl font-black text-blue-500 text-center py-2">
                                 View
                             </Text>
@@ -224,18 +259,18 @@ export const AttendanceHistoryRenderItem = ({
                 {(haveFullAccess || isEditable) && (
                     <TouchableOpacity
                         onPress={() =>
-                            router.push({
-                                pathname: "/common/attendance/Attendance",
-                                params: {
-                                    course: item.course,
-                                    year: item.year,
-                                    date: item.date,
-                                    hour: item.hour
-                                }
-                            })
+                        router.push({
+                            pathname: "/common/attendance/Attendance",
+                            params: {
+                                course: item.course,
+                                year: item.year,
+                                date: item.date,
+                                hour: item.hour
+                            }
+                        })
                         }
                         className="mt-3 bg-card-selected rounded-lg"
-                    >
+                        >
                         <Text className="text-xl font-black text-green-500 text-center py-2">
                             Edit
                         </Text>

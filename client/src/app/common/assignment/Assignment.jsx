@@ -86,7 +86,7 @@ const Assignment = () => {
 
             <FloatingAddButton
                 onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     router.push("/common/assignment/AssignmentCreation");
                 }}
             />

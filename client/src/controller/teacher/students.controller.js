@@ -1,19 +1,27 @@
 import axios from "@utils/axios.js";
 
-import { ToastAndroid } from "react-native";
+import {
+    ToastAndroid
+} from "react-native";
 
-import { useTeacherStore } from "@store/teacher.store.js";
-import { useAppStore } from "@store/app.store.js";
+import {
+    useTeacherStore
+} from "@store/teacher.store.js";
+import {
+    useAppStore
+} from "@store/app.store.js";
 
-export const assignRollByGroup = async ({ students, year, course }) => {
+export const assignRollByGroup = async ({
+    students, year, course
+}) => {
     try {
         students = students
-            .map(st => st.students)
-            .flat()
-            .map(s => ({
-                studentId: s.userId,
-                rollno: s.rollno
-            }));
+        .map(st => st.students)
+        .flat()
+        .map(s => ({
+            studentId: s.userId,
+            rollno: s.rollno
+        }));
 
         const res = await axios.post("/student/assignGroupedRollNo", {
             students,
@@ -23,7 +31,7 @@ export const assignRollByGroup = async ({ students, year, course }) => {
 
         if (res.data?.success) {
             const updates = {},
-                updated = res.data?.updated || [];
+            updated = res.data?.updated || [];
             updated.forEach(s => {
                 updates[s.studentId] = s.rollno;
             });
@@ -32,11 +40,10 @@ export const assignRollByGroup = async ({ students, year, course }) => {
 
             ToastAndroid.show(
                 `Successfully assigned roll numbers to ${res.data?.updated?.length} students.` +
-                    `${
-                        res.data?.failed?.length > 0
-                            ? ` Failed: ${res.data.failed.length}`
-                            : ""
-                    }`,
+                `${
+                res.data?.failed?.length > 0
+                ? ` Failed: ${res.data.failed.length}`: ""
+                }`,
                 ToastAndroid.SHORT
             );
         }
@@ -45,7 +52,9 @@ export const assignRollByGroup = async ({ students, year, course }) => {
     }
 };
 
-export const assignRollAlphabetically = async ({ course, year }) => {
+export const assignRollAlphabetically = async ({
+    course, year
+}) => {
     try {
         const res = await axios.post(
             "/student/autoAssignRollNoAlphabetically",
@@ -57,8 +66,8 @@ export const assignRollAlphabetically = async ({ course, year }) => {
         if (res.data?.success) {
             res.data?.students.forEach(s =>
                 useTeacherStore
-                    .getState()
-                    .updateStudentRollNo(s.studentId, s.rollno)
+                .getState()
+                .updateStudentRollNo(s.studentId, s.rollno)
             );
             ToastAndroid.show(
                 "Roll numbers assigned successfully",
@@ -84,9 +93,9 @@ export const verifyMultipleStudents = async students => {
         students = students.map(s => s.userId);
         if (!students)
             return ToastAndroid.show(
-                "Currently you no students!",
-                ToastAndroid.SHORT
-            );
+            "Currently you no students!",
+            ToastAndroid.SHORT
+        );
 
         const res = await axios.post("/student/verifyMultipleStudents", {
             students
@@ -106,7 +115,9 @@ export const verifyMultipleStudents = async students => {
     }
 };
 
-export const saveStudentDetails = async ({ studentId, rollno }) => {
+export const saveStudentDetails = async ({
+    studentId, rollno
+}) => {
     try {
         rollno = parseInt(rollno, 10);
         if (!studentId || !rollno || rollno == 0 || rollno < 0) {
@@ -136,7 +147,9 @@ export const saveStudentDetails = async ({ studentId, rollno }) => {
     }
 };
 
-export const verifyStudent = async ({ studentId }) => {
+export const verifyStudent = async ({
+    studentId
+}) => {
     try {
         const res = await axios.post("/student/verifyStudent", {
             studentId
@@ -150,7 +163,9 @@ export const verifyStudent = async ({ studentId }) => {
     }
 };
 
-export const cancelStudentVerification = async ({ studentId }) => {
+export const cancelStudentVerification = async ({
+    studentId
+}) => {
     try {
         ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
 
@@ -192,9 +207,13 @@ export const removeAllStudents = async () => {
 };
 
 // note: use this when current user is a class teacher
-export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
+export const fetchStudentsByClassTeacher = async ({
+    setStatus
+}) => {
     try {
-        const { data } = await axios.get(
+        const {
+            data
+        } = await axios.get(
             "/student/fetchStudentsByClassTeacher"
         );
 
@@ -242,7 +261,26 @@ export const fetchStudentsByClassTeacher = async ({ setStatus }) => {
     } catch (error) {
         setStatus("ERROR");
 
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+        ToastAndroid.show("Failed to get students list!!", ToastAndroid.LONG);
         return null;
     }
 };
+
+export const getStudentList = async ({
+    course, year
+})=> {
+    try {
+        const {
+            data
+        } = await axios.post('/student/fetchStudentsByClass', {
+                course, year
+            })
+        if (data.success) return data.students
+
+        ToastAndroid.show("Failed to get students list", ToastAndroid.LONG);
+        return []
+    }catch(err) {
+        return []
+        ToastAndroid.show("Failed to get students list", ToastAndroid.LONG);
+    }
+}

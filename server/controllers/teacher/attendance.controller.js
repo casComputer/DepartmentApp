@@ -11,14 +11,6 @@ import {
     sendPushNotificationToParentsOfStudents
 } from "../../utils/notification.js";
 
-const buildDetailRows = (attendanceId, attendance) =>
-attendance.map(s => ({
-    attendanceId,
-    studentId: s.userId,
-    rollno: s.rollno,
-    status: s.present ? "present": "absent"
-}));
-
 const insertAttendanceDetails = async (tx, rows) => {
     if (!rows.length) return;
 
@@ -83,6 +75,7 @@ export const save = async (req, res) => {
         const date = now.toISOString().slice(0, 10);
 
         let finalAttendanceId = attendanceId;
+        let previousStatusMap = new Map();
 
         // ================= CREATE =================
         if (!attendanceId) {
@@ -141,7 +134,7 @@ export const save = async (req, res) => {
             inCharge?.length &&
             inCharge[0].in_charge === userId;
 
-            if (!isOwner && !isAdmin && !isClassTeacher)
+            if (!isOwner && role !== "admin" && !isClassTeacher)
                 return abort(tx, res, {
                 success: false, message: "Not authorized"
             });
@@ -177,15 +170,39 @@ export const save = async (req, res) => {
                 ]
             });
 
+            const {
+                rows: existingDetails
+            } = await tx.execute({
+                    sql: `SELECT rollno, status FROM attendance_details WHERE attendanceId = ?`,
+                    args: [attendanceId]
+                });
+            previousStatusMap = new Map(existingDetails.map(r => [r.rollno, r.status]));
+
+
             await tx.execute({
                 sql: `DELETE FROM attendance_details WHERE attendanceId = ?`,
                 args: [attendanceId]
             });
         }
 
-        // ================= DETAILS =================
-        const detailRows = buildDetailRows(finalAttendanceId, attendance);
-        await insertAttendanceDetails(tx, detailRows);
+        const detailRows = attendance.map(s => {
+            const prevStatus = previousStatusMap.get(s.rollno);
+            let status;
+
+            if (!s.present) status = "absent"
+            else if (prevStatus === "absent" || prevStatus === "late") status = "late"
+            else status = "present";
+
+            return {
+                attendanceId: finalAttendanceId,
+                studentId: s.userId,
+                rollno: s.rollno,
+                status
+            };
+        });
+
+        await insertAttendanceDetails(tx,
+            detailRows);
         await tx.commit();
 
         const notificationData = {

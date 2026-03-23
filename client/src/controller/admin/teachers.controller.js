@@ -1,8 +1,12 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import {
+    router
+} from "expo-router";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 import queryClient from "@utils/queryClient.js";
 
 export const fetchTeachers = async () => {
@@ -11,14 +15,14 @@ export const fetchTeachers = async () => {
 
         return response.data ?? [];
     } catch (error) {
-        ToastAndroid.show("Failed to fetch teachets", ToastAndroid.SHORT);
+        toast.success("Failed to fetch teachets");
         return [];
     }
 };
 
 export const handleRemoveIncharge = async teacherId => {
     try {
-        ToastAndroid.show("please wait", ToastAndroid.SHORT);
+        toast.info("please wait");
         const response = await axios.post("/admin/removeIncharge", {
             teacherId
         });
@@ -27,26 +31,26 @@ export const handleRemoveIncharge = async teacherId => {
             queryClient.setQueryData(["teachers"], oldData =>
                 oldData?.map(teacher =>
                     teacher.userId === teacherId
-                        ? {
-                              ...teacher,
-                              in_charge_course: null,
-                              in_charge_year: null
-                          }
-                        : teacher
+                    ? {
+                        ...teacher,
+                        in_charge_course: null,
+                        in_charge_year: null
+                    }: teacher
                 )
             );
-            ToastAndroid.show(
-                "Successfully removed in-charge",
-                ToastAndroid.SHORT
+            toast.success(
+                "Successfully removed in-charge"
             );
         } else
-            ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
+            toast.error("Failed to remove incharge");
     } catch (error) {
-        ToastAndroid.show("Failed to remove incharge", ToastAndroid.LONG);
+        toast.error("Failed to remove incharge");
     }
 };
 
-export const assignClass = async ({ year, course, teacherId }) => {
+export const assignClass = async ({
+    year, course, teacherId
+}) => {
     try {
         const res = await axios.post("/admin/assignClass", {
             year: year.id,
@@ -60,12 +64,11 @@ export const assignClass = async ({ year, course, teacherId }) => {
             queryClient.setQueryData(["teachers"], oldData =>
                 oldData?.map(teacher =>
                     teacher.userId === teacherId
-                        ? {
-                              ...teacher,
-                              in_charge_course: course.id,
-                              in_charge_year: year.id
-                          }
-                        : teacher
+                    ? {
+                        ...teacher,
+                        in_charge_course: course.id,
+                        in_charge_year: year.id
+                    }: teacher
                 )
             );
 
@@ -76,19 +79,18 @@ export const assignClass = async ({ year, course, teacherId }) => {
                 });
             }
 
-            ToastAndroid.show(
-                "Class assigned successfully",
-                ToastAndroid.SHORT
+            toast.success(
+                "Class assignment successfull"
             );
-
             router.back();
         } else
-            ToastAndroid.show(
-                res.data.message ?? "failed to assign class",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to assign class",
+            res.data.message ?? ""
+
+        );
     } catch (error) {
-        ToastAndroid.show("failed to assign class", ToastAndroid.LONG);
+        toast.error("Failed to assign class");
     }
 };
 
@@ -102,20 +104,19 @@ export const verifyTeacher = async teacherId => {
             queryClient.setQueryData(["teachers"], oldData =>
                 oldData?.map(teacher =>
                     teacher.userId === teacherId
-                        ? {
-                              ...teacher,
-                              is_verified: true
-                          }
-                        : teacher
+                    ? {
+                        ...teacher,
+                        is_verified: true
+                    }: teacher
                 )
             );
         } else
-            ToastAndroid.show(
-                res.data?.message ?? "Failed to verify teacher",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to verify teacher",
+            res.data?.message ?? ""
+        );
     } catch (error) {
-        ToastAndroid.show("Failed to verify teacher", ToastAndroid.LONG);
+        toast.error("Failed to verify teacher");
     }
 };
 
@@ -127,16 +128,16 @@ export const cancelVerification = async teacherId => {
 
         if (res.data?.success)
             queryClient.setQueryData(["teachers"], oldData =>
-                oldData?.filter(teacher => teacher.userId !== teacherId)
-            );
+            oldData?.filter(teacher => teacher.userId !== teacherId)
+        );
         else
-            ToastAndroid.show(
-                res.data?.message ?? "Failed to remove teacher",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to remove teacher",
+            res.data?.message ?? ""
+        );
 
         return res.data.success;
     } catch (error) {
-        ToastAndroid.show("Failed to remove teacher", ToastAndroid.LONG);
+        toast.error("Failed to remove teacher");
     }
 };

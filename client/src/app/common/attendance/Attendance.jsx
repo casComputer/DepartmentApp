@@ -5,7 +5,6 @@ import {
 } from "react";
 import {
     View,
-    ToastAndroid,
     ScrollView
 } from "react-native";
 import {
@@ -28,9 +27,12 @@ import {
 import {
     getStudentCount
 } from "@utils/storage";
+import {
+    toast
+} from "@store/app.store";
 
 const Attendance = () => {
-    const {
+    let {
         course,
         year,
         hour,
@@ -148,9 +150,9 @@ const Attendance = () => {
                     );
 
                     if (existAttendance.length > 0) {
-                        ToastAndroid.show(
+                        toast.info(
                             "Attendance already exists. Local changes were reset.",
-                            ToastAndroid.LONG
+
                         );
 
                         return newStudents.map(student => ({
@@ -163,9 +165,9 @@ const Attendance = () => {
                     }
 
                     if (newStudents.length !== storedCount) {
-                        ToastAndroid.show(
+                        toast.info(
                             "Student strength changed. Attendance reset.",
-                            ToastAndroid.LONG
+
                         );
 
                         return newStudents.map(student => ({

@@ -1,14 +1,17 @@
-import { ToastAndroid } from "react-native";
-
 import axios from "@utils/axios.js";
 import queryClient from "@utils/queryClient.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
-export const create = async ({ course, year, details, amount, dueDate }) => {
+export const create = async ({
+    course, year, details, amount, dueDate
+}) => {
     try {
         if (!course || !year || !details || !amount || !dueDate) {
-            ToastAndroid.show("Missing required values!", ToastAndroid.LONG);
+            toast.warn("Missing required values!");
             return false;
         }
 
@@ -21,21 +24,19 @@ export const create = async ({ course, year, details, amount, dueDate }) => {
         });
 
         if (res.data.success) {
-            ToastAndroid.show(
-                "Fees Details Updated Successfully ✨",
-                ToastAndroid.SHORT
+            toast.success(
+                "Fees Details Updated Successfully"
             );
             return true;
         } else {
-            ToastAndroid.show(
-                res.data.message ?? "Fees Details Updation Failed",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to update fee details",
+                res.data.message ?? ""
             );
             return false;
         }
     } catch (error) {
-        ToastAndroid.show("Fees Details Updation Failed", ToastAndroid.LONG);
-
+        toast.error("Failed to update fee details");
         return false;
     }
 };
@@ -50,16 +51,26 @@ export const fetch = async page => {
         if (res.data.success) {
             return res.data;
         } else {
-            ToastAndroid.show(
-                res.data.message ?? "Fees fetching Failed",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to fetch fee details",
+                res.data.message ?? "",
             );
 
-            return { success: false, hasMore: true, page, fees: [] };
+            return {
+                success: false,
+                hasMore: true,
+                page,
+                fees: []
+            };
         }
     } catch (error) {
-        ToastAndroid.show("Fees fetching Failed", ToastAndroid.LONG);
-        return { success: false, hasMore: true, page, fees: [] };
+        toast.error("Failed to fetch fee details");
+        return {
+            success: false,
+            hasMore: true,
+            page,
+            fees: []
+        };
     }
 };
 
@@ -77,17 +88,20 @@ export const deleteFee = async feeId => {
             };
         });
 
-        const { data } = await axios.post("/fees/delete", {
-            feeId
-        });
+        const {
+            data
+        } = await axios.post("/fees/delete",
+            {
+                feeId
+            });
 
         if (!data.success) {
-            ToastAndroid.show(
-                data?.message ?? "Failed to delete fee item!",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to delete fee item",
+                data?.message ?? ""
             );
         }
     } catch (error) {
-        ToastAndroid.show("Failed to delete fee item!", ToastAndroid.LONG);
+        toast.error("Failed to delete fee item");
     }
 };

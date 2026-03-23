@@ -1,25 +1,38 @@
-import { useState } from "react";
+import {
+    useState
+} from "react";
 import {
     View,
     Text,
     TouchableOpacity,
     ScrollView,
-    ToastAndroid,
+
 } from "react-native";
-import { router } from "expo-router";
+import {
+    router
+} from "expo-router";
 
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 
-import { COURSES, SEM } from "@constants/ClassAndCourses";
+import {
+    toast
+} from "@store/app.store";
+
+import {
+    COURSES,
+    SEM
+} from "@constants/ClassAndCourses";
 
 const ExamResult = () => {
-    const [selectedCourse, setSelectedCourse] = useState({});
-    const [selectedSem, setSelectedSem] = useState({});
+    const [selectedCourse,
+        setSelectedCourse] = useState( {});
+    const [selectedSem,
+        setSelectedSem] = useState( {});
 
     const handlePress = async () => {
         if (!selectedCourse.id || !selectedSem.id) {
-            ToastAndroid.show("Please select all fields", ToastAndroid.LONG);
+            toast.warn("Please select all fields");
             return;
         }
 
@@ -33,7 +46,7 @@ const ExamResult = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }} className="bg-primary">
+        <ScrollView contentContainerStyle={ { paddingBottom: 100, flexGrow: 1 }} className="bg-primary">
             <Header />
 
             <View className="px-1">
@@ -42,13 +55,13 @@ const ExamResult = () => {
                     options={COURSES}
                     select={setSelectedCourse}
                     selected={selectedCourse}
-                />
+                    />
                 <Select
                     title="Semester"
                     options={SEM}
                     select={setSelectedSem}
                     selected={selectedSem}
-                />
+                    />
             </View>
 
             <TouchableOpacity onPress={handlePress}>

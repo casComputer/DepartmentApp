@@ -1,7 +1,8 @@
 import axios from "@utils/axios.js";
-
-import { useAppStore } from "@store/app.store.js";
-import { ToastAndroid } from "react-native";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 export const saveWorklog = async ({
     year,
@@ -20,7 +21,7 @@ export const saveWorklog = async ({
             !subject ||
             topics.length === 0
         ) {
-            throw new Error("All fields are required to save the worklog.");
+            return toast.warn("All fields are required to save the worklog.");
         }
 
         const user = useAppStore.getState().user;
@@ -37,14 +38,13 @@ export const saveWorklog = async ({
         const response = await axios.post("/teacher/saveWorklog", worklogData);
 
         if (response.data.success) {
-            ToastAndroid.show(
+            toast.success(
                 "Worklog saved successfully.",
-                ToastAndroid.SHORT
             );
         }
-        ToastAndroid.show(
-            response.data.message ?? "Failed to save Worklog",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to save Worklog",
+            response.data.message ?? ""
         );
     } catch (error) {
         if (
@@ -52,12 +52,16 @@ export const saveWorklog = async ({
             error.response.data &&
             error.response.data.message
         ) {
-            ToastAndroid.show(
-                error.response.data.message ?? "Failed to save Worklog",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to save Worklog",
+                error.response.data.message ?? ""
             );
         } else {
-            throw error;
+            toast.error(
+                "Failed to save Worklog",
+                error.response.data.message ?? ""
+            );
+
         }
     }
 };
@@ -72,12 +76,12 @@ export const fetchWorklogs = async page => {
             limit: 5
         });
 
-        if (response.data.success) {
+        if (response.data.success)
             return response.data;
-        }
-        ToastAndroid.show(
-            response.data.message ?? "Failed to fetch Worklog",
-            ToastAndroid.LONG
+
+        toast.error(
+            "Failed to fetch Worklog",
+            response.data.message ?? "",
         );
         return {
             data: [],
@@ -86,7 +90,7 @@ export const fetchWorklogs = async page => {
             success: false
         };
     } catch (error) {
-        ToastAndroid.show("Failed to fetch Worklog", ToastAndroid.LONG);
+        toast.error("Failed to fetch Worklog");
         return {
             data: [],
             hasMore: false,

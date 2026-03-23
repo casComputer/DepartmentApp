@@ -1,10 +1,11 @@
-import { useState } from "react";
+import {
+    useState
+} from "react";
 import {
     View,
     Text,
     TouchableOpacity,
     ScrollView,
-    ToastAndroid,
 } from "react-native";
 
 import Header from "@components/common/Header2.jsx";
@@ -15,18 +16,29 @@ import {
     checkExamResultUpload,
 } from "@controller/student/exam.controller.js";
 
-import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
+import {
+    handleDocumentPick,
+    handleUpload
+} from "@utils/file.upload.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
-import { COURSES, SEM } from "@constants/ClassAndCourses";
+import {
+    COURSES,
+    SEM
+} from "@constants/ClassAndCourses";
 
 const setProgress = useAppStore.getState().setGlobalProgress;
 const setProgressText = useAppStore.getState().setGlobalProgressText;
 
 const ExamResult = () => {
-    const [selectedSem, setSelectedSem] = useState({});
-    const [file, setFile] = useState({});
+    const [selectedSem,
+        setSelectedSem] = useState( {});
+    const [file,
+        setFile] = useState( {});
 
     const handleSelectFile = async () => {
         const asset = await handleDocumentPick(["application/pdf", "image/*"]);
@@ -35,12 +47,12 @@ const ExamResult = () => {
 
     const handdleUploadFile = async () => {
         if (!selectedSem.id) {
-            ToastAndroid.show("Please select all fields.", ToastAndroid.SHORT);
+            toast.warn("Please select all fields.");
             return;
         }
 
         if (!file || !file.name) {
-            ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
+            toast.warn("Please select a file.");
             return;
         }
 
@@ -52,16 +64,21 @@ const ExamResult = () => {
         );
 
         if (isUploaded) {
-            ToastAndroid.show(
+            toast.warn(
                 "You already uploaded result for this sem!",
-                ToastAndroid.SHORT,
+
             );
             setProgress(0);
             return;
         }
         setProgressText("Uploading File..");
 
-        const { secure_url, format, success, public_id } = await handleUpload(
+        const {
+            secure_url,
+            format,
+            success,
+            public_id
+        } = await handleUpload(
             file,
             "exam_result",
         );
@@ -84,9 +101,9 @@ const ExamResult = () => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+            contentContainerStyle={ { paddingBottom: 100, flexGrow: 1 }}
             className="bg-primary"
-        >
+            >
             <Header onSave={handdleUploadFile} />
 
             <View className="px-1">
@@ -96,7 +113,7 @@ const ExamResult = () => {
                     options={SEM}
                     select={setSelectedSem}
                     selected={selectedSem}
-                />
+                    />
             </View>
             {file?.name ? (
                 <View className="mt-5 px-2">
@@ -104,7 +121,7 @@ const ExamResult = () => {
                         Selected File: {file.name}
                     </Text>
                 </View>
-            ) : (
+            ): (
                 <TouchableOpacity onPress={handleSelectFile}>
                     <Text className="text-2xl font-black text-blue-500 text-center mt-5">
                         Select File

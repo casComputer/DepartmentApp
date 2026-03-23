@@ -99,10 +99,9 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                     )}
 
                     {isLoading ? (
-                        <Loader size={20} /> 
+                        <Loader size={15} /> 
                     ) : canTap ? (
                         <Animated.View
-                            entering={FadeIn.delay(400)}
                             className="flex-row items-center gap-1"
                         >
                             <Text className="text-xs font-semibold text-text-secondary">

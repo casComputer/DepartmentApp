@@ -1,14 +1,11 @@
 import axios from "@utils/axios.js";
 
 import {
-    ToastAndroid
-} from "react-native";
-
-import {
     useTeacherStore
 } from "@store/teacher.store.js";
 import {
-    useAppStore
+    useAppStore,
+    toast
 } from "@store/app.store.js";
 
 export const assignRollByGroup = async ({
@@ -38,17 +35,12 @@ export const assignRollByGroup = async ({
 
             useTeacherStore.getState().updateStudentsBulk(updates);
 
-            ToastAndroid.show(
-                `Successfully assigned roll numbers to ${res.data?.updated?.length} students.` +
-                `${
-                res.data?.failed?.length > 0
-                ? ` Failed: ${res.data.failed.length}`: ""
-                }`,
-                ToastAndroid.SHORT
+            toast.success(
+                `Successfully assigned roll numbers to ${res.data?.updated?.length} students.`
             );
         }
     } catch (error) {
-        ToastAndroid.show("Roll numbers assigning failed!", ToastAndroid.SHORT);
+        toast.error("Roll numbers assigning failed!");
     }
 };
 
@@ -69,13 +61,12 @@ export const assignRollAlphabetically = async ({
                 .getState()
                 .updateStudentRollNo(s.studentId, s.rollno)
             );
-            ToastAndroid.show(
+            toast.success(
                 "Roll numbers assigned successfully",
-                ToastAndroid.SHORT
             );
         }
     } catch (error) {
-        ToastAndroid.show("Roll numbers assignment failed", ToastAndroid.SHORT);
+        toast.error("Roll numbers assignment failed");
     }
 };
 
@@ -84,17 +75,15 @@ export const verifyMultipleStudents = async students => {
         const allVerified = students.every(s => s.is_verified);
 
         if (allVerified) {
-            return ToastAndroid.show(
+            return toast.info(
                 "Students were already verified!",
-                ToastAndroid.SHORT
             );
         }
 
         students = students.map(s => s.userId);
         if (!students)
-            return ToastAndroid.show(
-            "Currently you no students!",
-            ToastAndroid.SHORT
+            return toast.error(
+            "Currently you have no students!",
         );
 
         const res = await axios.post("/student/verifyMultipleStudents", {
@@ -105,13 +94,12 @@ export const verifyMultipleStudents = async students => {
             students.forEach(id => {
                 useTeacherStore.getState().verifyStudent(id);
             });
-            ToastAndroid.show(
-                `${students.length} students verified`,
-                ToastAndroid.SHORT
+            toast.success(
+                `${students.length} students verified`
             );
         }
     } catch (error) {
-        ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
+        toast.error("Failed to verify students");
     }
 };
 
@@ -121,9 +109,8 @@ export const saveStudentDetails = async ({
     try {
         rollno = parseInt(rollno, 10);
         if (!studentId || !rollno || rollno == 0 || rollno < 0) {
-            ToastAndroid.show(
-                "Please Provide a valid roll number!",
-                ToastAndroid.SHORT
+            toast.warn(
+                "Please Provide a valid roll number"
             );
             return;
         }
@@ -135,14 +122,13 @@ export const saveStudentDetails = async ({
 
         if (res.data.success) {
             useTeacherStore.getState().updateStudentRollNo(studentId, rollno);
-            ToastAndroid.show("Saved successfuly", ToastAndroid.SHORT);
+            toast.success("Details saved successfull");
         } else {
-            ToastAndroid.show(res.data?.message, ToastAndroid.LONG);
+            toast.error("Failed to update student details", res.data?.message ?? "");
         }
     } catch (error) {
-        ToastAndroid.show(
-            error.response?.data?.message ?? "Something went wrong!",
-            ToastAndroid.LONG
+        toast.error("Failed to update student details",
+            error.response?.data?.message ?? ""
         );
     }
 };
@@ -156,10 +142,10 @@ export const verifyStudent = async ({
         });
         if (res.data.success) {
             useTeacherStore.getState().verifyStudent(studentId);
-            ToastAndroid.show("Verified successfuly", ToastAndroid.SHORT);
+            toast.success("Student successfully verified");
         }
     } catch (error) {
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+        toast.error("Failed to verify student");
     }
 };
 
@@ -167,22 +153,21 @@ export const cancelStudentVerification = async ({
     studentId
 }) => {
     try {
-        ToastAndroid.show("Removing student...", ToastAndroid.SHORT);
+        toast.info("Removing student...",);
 
         const res = await axios.post("/student/cancelStudentVerification", {
             studentId
         });
         if (res.data.success) {
             useTeacherStore.getState().removeStudent(studentId);
-            ToastAndroid.show("Removed student", ToastAndroid.SHORT);
+            toast.success("Student removez successfully");
         } else {
-            ToastAndroid.show(
-                `Student couldn't removed: ${res.data?.message} `,
-                ToastAndroid.SHORT
+            toast.error(
+                `Student couldn't removed: ${res.data?.message} `
             );
         }
     } catch (error) {
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+        toast.error("Failed to delete student");
     }
 };
 
@@ -191,18 +176,16 @@ export const removeAllStudents = async () => {
         const res = await axios.post("/student/removeAllByClassTeacher");
         if (res.data.success) {
             useTeacherStore.getState().clearStudents();
-            ToastAndroid.show(
+            toast.success(
                 "Students removed successfully",
-                ToastAndroid.SHORT
             );
         } else {
-            ToastAndroid.show(
+            toast.error(
                 `Student couldn't removed: ${res.data?.message ?? ""} `,
-                ToastAndroid.SHORT
             );
         }
     } catch (error) {
-        ToastAndroid.show("Students couldn't removed", ToastAndroid.LONG);
+        toast.error("Students couldn't removed",);
     }
 };
 
@@ -261,7 +244,7 @@ export const fetchStudentsByClassTeacher = async ({
     } catch (error) {
         setStatus("ERROR");
 
-        ToastAndroid.show("Failed to get students list!!", ToastAndroid.LONG);
+        toast.error("Failed to get students list!!");
         return null;
     }
 };
@@ -277,10 +260,10 @@ export const getStudentList = async ({
             })
         if (data.success) return data.students
 
-        ToastAndroid.show("Failed to get students list", ToastAndroid.LONG);
+        toast.error("Failed to get students list");
         return []
     }catch(err) {
+        toast.error("Failed to get students list");
         return []
-        ToastAndroid.show("Failed to get students list", ToastAndroid.LONG);
     }
 }

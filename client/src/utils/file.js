@@ -2,13 +2,18 @@ import * as IntentLauncher from "expo-intent-launcher";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as Linking from "expo-linking";
-import { Platform, ToastAndroid } from "react-native";
+import {
+    Platform
+} from "react-native";
 
 import getMimeType from "@utils/getMimeType.js";
 import {
     getSystemStorageUri,
     saveSystemStorageUri
 } from "@storage/app.storage.js";
+import {
+    toast
+} from "@store/app.store.js";
 
 export const checkFileExists = async (
     filename,
@@ -22,14 +27,14 @@ export const checkFileExists = async (
         const dirUri = getSystemStorageUri();
         if (dirUri) {
             const files =
-                await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                    dirUri
-                );
+            await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                dirUri
+            );
 
             contentUri =
-                files.find(uri =>
-                    decodeURIComponent(uri).endsWith("/" + filename)
-                ) ?? null;
+            files.find(uri =>
+                decodeURIComponent(uri).endsWith("/" + filename)
+            ) ?? null;
         }
     } catch {}
 
@@ -56,7 +61,7 @@ export const openFileWithDefaultApp = async (uri, mimeType) => {
             type: mimeType
         });
     } catch {
-        ToastAndroid.show("Unable to open file", ToastAndroid.LONG);
+        toast.error("Unable to open file");
     }
 };
 
@@ -68,7 +73,7 @@ export const ensureDirectoryPermission = async () => {
         return dirUri;
     } catch {
         const perm =
-            await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
         if (!perm.granted) return null;
 
         saveSystemStorageUri(perm.directoryUri);
@@ -93,7 +98,9 @@ export const saveFile = async (
 
     const mimeType = getMimeType(format);
     const dirUri = await ensureDirectoryPermission();
-    if (!dirUri) return { success: false };
+    if (!dirUri) return {
+        success: false
+    };
 
     await deleteSAFIfExists(dirUri, filename);
 
@@ -103,11 +110,11 @@ export const saveFile = async (
         });
 
         const contentUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-                dirUri,
-                filename,
-                mimeType
-            );
+        await FileSystem.StorageAccessFramework.createFileAsync(
+            dirUri,
+            filename,
+            mimeType
+        );
 
         await FileSystem.writeAsStringAsync(contentUri, base64, {
             encoding: FileSystem.EncodingType.Base64
@@ -119,12 +126,15 @@ export const saveFile = async (
 
         return {
             success: true,
-            fileUri: localUri, // ← Expo Sharing
+            fileUri: localUri,
+            // ← Expo Sharing
             contentUri // ← Android system
         };
     } catch (err) {
-        ToastAndroid.show("Failed to save file", ToastAndroid.LONG);
-        return { success: false };
+        toast.error("Failed to save file");
+        return {
+            success: false
+        };
     }
 };
 
@@ -141,11 +151,11 @@ export const downloadFile = async (
         const localPath = FileSystem.documentDirectory + filename;
 
         const existing = await checkFileExists(filename);
-        
+
         if (existing.exists && existing.contentUri && existing.fileUri) {
-            if (autoOpen) 
+            if (autoOpen)
                 await openFileWithDefaultApp(existing.contentUri, mimeType);
-        
+
             return {
                 success: true,
                 fileUri: existing.fileUri,
@@ -165,8 +175,10 @@ export const downloadFile = async (
             contentUri: saved.contentUri
         };
     } catch (err) {
-        ToastAndroid.show("Failed to download file", ToastAndroid.SHORT);
-        return { success: false };
+        toast.error("Failed to download file");
+        return {
+            success: false
+        };
     }
 };
 
@@ -175,14 +187,14 @@ export const openFileInBrowser = async url => {
     if (supported) {
         await Linking.openURL(url);
     } else {
-        ToastAndroid.show(`Cannot open URL`, ToastAndroid.LONG);
+        toast.error(`Cannot open URL`);
     }
 };
 
 export const deleteSAFIfExists = async (dirUri, filename) => {
     try {
         const files =
-            await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
+        await FileSystem.StorageAccessFramework.readDirectoryAsync(dirUri);
 
         const found = files.find(uri =>
             decodeURIComponent(uri).endsWith("/" + filename)
@@ -192,8 +204,7 @@ export const deleteSAFIfExists = async (dirUri, filename) => {
             await FileSystem.StorageAccessFramework.deleteAsync(found);
             return true;
         }
-    } catch (e) {
-    }
+    } catch (e) {}
     return false;
 };
 
@@ -207,9 +218,9 @@ export const deleteFileEverywhere = async (
         const dirUri = getSystemStorageUri();
         if (dirUri) {
             const files =
-                await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                    dirUri
-                );
+            await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                dirUri
+            );
 
             const found = files.find(uri =>
                 decodeURIComponent(uri).endsWith("/" + filename)
@@ -220,19 +231,19 @@ export const deleteFileEverywhere = async (
                 deleted = true;
             }
         }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     try {
         const localPath = localDir + filename;
         const info = await FileSystem.getInfoAsync(localPath);
 
         if (info.exists) {
-            await FileSystem.deleteAsync(localPath, { idempotent: true });
+            await FileSystem.deleteAsync(localPath, {
+                idempotent: true
+            });
             deleted = true;
         }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     return deleted;
 };

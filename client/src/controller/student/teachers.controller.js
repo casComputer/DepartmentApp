@@ -1,17 +1,21 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from 'react-native'
+import {
+    toast
+} from '@store/app.store'
 
 export const fetchAllTeachers = async () => {
     try {
-        const { data } = await axios.post("/teacher/fetchAllTeachers");
+        const {
+            data
+        } = await axios.post("/teacher/fetchAllTeachers");
 
         if (data.success) return data.teachers;
         else {
-           ToastAndroid.show(data.message ?? 'Failed to fetch teachers!', ToastAndroid.LONG)
-           return []
+            toast.error("Failed to fetch teachers", data.message ?? '')
+            return []
         }
     } catch (err) {
-           ToastAndroid.show('Failed to fetch teachers!', ToastAndroid.LONG)
+        toast.error('Failed to fetch teachers')
         return [];
     }
 };

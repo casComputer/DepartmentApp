@@ -1,7 +1,9 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 import queryClient from "@utils/queryClient";
 
 export const createAssignment = async assignmentData => {
@@ -9,9 +11,8 @@ export const createAssignment = async assignmentData => {
         const response = await axios.post("/assignment/create", assignmentData);
 
         if (response.data.success) {
-            ToastAndroid.show(
-                "Assignment created successfully",
-                ToastAndroid.LONG
+            toast.success(
+                "Assignment created successfully"
             );
 
             queryClient.setQueryData(["assignments"], prev => {
@@ -31,40 +32,34 @@ export const createAssignment = async assignmentData => {
 
             return response.data;
         }
+        toast.error("Failed to create assignment");
     } catch (error) {
-        ToastAndroid.show("Failed to create assignment", ToastAndroid.LONG);
+        toast.error("Failed to create assignment");
 
-        throw error;
     }
 };
 
-export const getAssignment = async ({ pageParam }) => {
+export const getAssignment = async ({
+    pageParam
+}) => {
     try {
-        const userId = useAppStore.getState().user.userId;
-        const limit = 10;
-        if (!userId) {
-            throw new Error("User not logged in");
-        }
-
         const response = await axios.post(
             "/assignment/getAssignmentsCreatedByMe",
             {
-                teacherId: userId,
                 page: pageParam,
-                limit
+                limit: 15
             }
         );
 
         if (response.data.success) return response.data;
 
-        ToastAndroid.show(
-            response.data?.message ?? "Failed to fetch assignment",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to fetch assignment",
+            response.data?.message ?? ""
         );
         return response.data;
     } catch (error) {
-        ToastAndroid.show("Failed to fetch assignment", ToastAndroid.LONG);
-
+        toast.error("Failed to fetch assignment");
         throw error;
     }
 };
@@ -92,19 +87,17 @@ export const rejectAssignment = async (
                         ...page,
                         assignments: page.assignments.map(assignment =>
                             assignment._id === assignmentId
-                                ? {
-                                      ...assignment,
-                                      submissions: assignment.submissions.map(
-                                          submission =>
-                                              submission.studentId === studentId
-                                                  ? {
-                                                        ...submission,
-                                                        status: "rejected"
-                                                    }
-                                                  : submission
-                                      )
-                                  }
-                                : assignment
+                            ? {
+                                ...assignment,
+                                submissions: assignment.submissions.map(
+                                    submission =>
+                                    submission.studentId === studentId
+                                    ? {
+                                        ...submission,
+                                        status: "rejected"
+                                    }: submission
+                                )
+                            }: assignment
                         )
                     }))
                 };
@@ -114,26 +107,22 @@ export const rejectAssignment = async (
                 ...prev,
                 submissions: prev.submissions.map(submission =>
                     submission.studentId === studentId
-                        ? {
-                              ...submission,
-                              status: "rejected"
-                          }
-                        : submission
+                    ? {
+                        ...submission,
+                        status: "rejected"
+                    }: submission
                 )
             }));
 
-            ToastAndroid.show(
-                "Assignment submission rejected successfully.",
-                ToastAndroid.SHORT
+            toast.success(
+                "Assignment rejection successfull"
             );
             return response.data;
         } else {
-            ToastAndroid.show(response.data.message, ToastAndroid.LONG);
+            toast.error("Failed to reject Assignment", response.data.message ?? "");
         }
     } catch (error) {
-        ToastAndroid.show("Internal server error.", ToastAndroid.LONG);
-
-        throw error;
+        toast.error("Failed to reject Assignment");
     }
 };
 
@@ -158,19 +147,17 @@ export const acceptAssignment = async (
                         ...page,
                         assignments: page.assignments.map(assignment =>
                             assignment._id === assignmentId
-                                ? {
-                                      ...assignment,
-                                      submissions: assignment.submissions.map(
-                                          submission =>
-                                              submission.studentId === studentId
-                                                  ? {
-                                                        ...submission,
-                                                        status: "accepted"
-                                                    }
-                                                  : submission
-                                      )
-                                  }
-                                : assignment
+                            ? {
+                                ...assignment,
+                                submissions: assignment.submissions.map(
+                                    submission =>
+                                    submission.studentId === studentId
+                                    ? {
+                                        ...submission,
+                                        status: "accepted"
+                                    }: submission
+                                )
+                            }: assignment
                         )
                     }))
                 };
@@ -180,25 +167,22 @@ export const acceptAssignment = async (
                 ...prev,
                 submissions: prev.submissions.map(submission =>
                     submission.studentId === studentId
-                        ? {
-                              ...submission,
-                              status: "accepted"
-                          }
-                        : submission
+                    ? {
+                        ...submission,
+                        status: "accepted"
+                    }: submission
                 )
             }));
 
-            ToastAndroid.show(
-                "Assignment submission accepted successfully.",
-                ToastAndroid.SHORT
+            toast.success(
+                "Assignment submission accepted successfully."
             );
             return;
         } else {
-            ToastAndroid.show(response.data.message, ToastAndroid.LONG);
+            toast.error("Failed to accept Assignment", response.data.message ?? "");
         }
     } catch (error) {
-        ToastAndroid.show("Internal server error.", ToastAndroid.LONG);
+        toast.error("Failed to accept Assignment");
 
-        throw error;
     }
 };

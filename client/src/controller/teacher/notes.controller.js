@@ -1,5 +1,3 @@
-import { ToastAndroid } from "react-native";
-
 import axios from "@utils/axios.js";
 import queryClient from "@utils/queryClient.js";
 import {
@@ -7,10 +5,18 @@ import {
     ensureDirectoryPermission
 } from "@utils/file.js";
 
-import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
-import { setNotes } from "@storage/app.storage.js";
+import {
+    useAppStore,
+    useMultiSelectionList,
+    toast
+} from "@store/app.store.js";
+import {
+    setNotes
+} from "@storage/app.storage.js";
 
-export const fetchNotes = async ({ queryKey, pageParam }) => {
+export const fetchNotes = async ({
+    queryKey, pageParam
+}) => {
     const parentId = queryKey[1] ?? null;
 
     try {
@@ -21,9 +27,8 @@ export const fetchNotes = async ({ queryKey, pageParam }) => {
         });
 
         if (!res.data?.success) {
-            ToastAndroid.show(
-                "Please connect to the internet 🛰️",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to fetch notes"
             );
             return {
                 notes: [],
@@ -37,11 +42,10 @@ export const fetchNotes = async ({ queryKey, pageParam }) => {
         return res.data;
     } catch (error) {
         if (error.message?.includes("Network Error")) {
-            ToastAndroid.show(
-                "Please connect to the internet 🛰️",
-                ToastAndroid.LONG
+            toast.error(
+                "Please connect to the internet 🛰️"
             );
-        } else ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
+        } else toast.error("Failed to Sync notes");
 
         return {
             notes: [],
@@ -67,7 +71,8 @@ export const create = async data => {
                 const newPages = [...prev.pages];
                 newPages[0] = {
                     ...newPages[0],
-                    notes: [res.data.note, ...(newPages[0].notes ?? [])]
+                    notes: [res.data.note,
+                        ...(newPages[0].notes ?? [])]
                 };
 
                 return {
@@ -81,17 +86,15 @@ export const create = async data => {
                 data.parentId ?? "root",
                 queryClient.getQueryData(["notes", data.parentId])
             ); // root notes
-        } else ToastAndroid.show(res.data.message, ToastAndroid.LONG);
+        } else toast.error("Failed to create notes folder", res.data.message ?? "");
     } catch (error) {
         if (error.message?.includes("Network Error")) {
-            ToastAndroid.show(
+            toast.error(
                 "Please connect to the internet 🛰️",
-                ToastAndroid.LONG
             );
         } else {
-            ToastAndroid.show(
+            toast.error(
                 "Failed to create notes folder!",
-                ToastAndroid.LONG
             );
         }
     }
@@ -106,7 +109,9 @@ export const uploadFileDetails = async data => {
         const res = await axios.post("/notes/upload", data);
 
         if (res.data.success) {
-            const { file } = res.data;
+            const {
+                file
+            } = res.data;
 
             queryClient.setQueryData(["notes", data.parentId], prev => ({
                 ...prev,
@@ -117,13 +122,15 @@ export const uploadFileDetails = async data => {
                 data.parentId,
                 queryClient.getQueryData(["notes", file.parentId])
             );
-        } else
-            ToastAndroid.show(
-                res.data.message ?? "Failed to Uplaod file data!",
-                ToastAndroid.SHORT
+        } else {
+
+            toast.error(
+                "Failed to Uplaod file data!",
+                res.data.message ?? ""
             );
+        }
     } catch (error) {
-        ToastAndroid.show("Failed to Uplaod file data!", ToastAndroid.SHORT);
+        toast.error("Failed to Uplaod file data");
     }
 };
 
@@ -135,12 +142,17 @@ export const deleteNotes = async () => {
         const noteIds = useMultiSelectionList.getState().list;
         if (noteIds?.length <= 0) return;
 
-        ToastAndroid.show("please wait...", ToastAndroid.LONG);
+        toast.info("please wait...",);
 
-        const res = await axios.post("/notes/delete", { noteIds, teacherId });
+        const res = await axios.post("/notes/delete", {
+            noteIds, teacherId
+        });
 
         if (res.data.success) {
-            const { validRoots, fileNotes } = res.data;
+            const {
+                validRoots,
+                fileNotes
+            } = res.data;
 
             validRoots.forEach(root => {
                 queryClient.setQueryData(["notes", root.parentId], prev => ({
@@ -158,14 +170,14 @@ export const deleteNotes = async () => {
 
             if (fileNotes.length > 0)
                 for (let file of fileNotes)
-                    await deleteFileEverywhere(file.name);
+                await deleteFileEverywhere(file.name);
         } else {
-            ToastAndroid.show(
-                res.data.message ?? "Failed to delete file!",
-                ToastAndroid.LONG
+            toast.error(
+                'Failed to delete file',
+                res.data.message ?? "",
             );
         }
     } catch (error) {
-        ToastAndroid.show("Failed to delete file!", ToastAndroid.LONG);
+        toast.error("Failed to delete file!");
     }
 };

@@ -1,9 +1,13 @@
 import axios from "@utils/axios";
-import { ToastAndroid, Text } from "react-native";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
-import { calendarData } from "@utils/calenderData";
+import {
+    calendarData
+} from "@utils/calenderData";
 
 export const getTodaysAttendanceReport = async (studentId = null) => {
     try {
@@ -13,18 +17,16 @@ export const getTodaysAttendanceReport = async (studentId = null) => {
 
         if (res.data.success) return res.data.attendance;
         else {
-            ToastAndroid.show(
-                "Syncing today's attendance failed",
-                ToastAndroid.LONG
+            toast.error(
+                "Syncing today's attendance failed"
             );
             return {};
         }
     } catch (error) {
-        ToastAndroid.show(
-            `Syncing today's attendance failed: ${error.message}`,
-            ToastAndroid.LONG
+        toast.error(
+            "Syncing today's attendance failed", error.message ?? ""
         );
-        throw new Error(error.message);
+        return {}
     }
 };
 
@@ -35,11 +37,14 @@ export const getOverallAttendenceReport = async studentId => {
         });
 
         if (res.data.success) return res.data.report ?? {};
-        else return {};
+        else
+            toast.error(
+            `Failed to fetching monthly attendance report!`
+        );
+        return {};
     } catch (error) {
-        ToastAndroid.show(
-            `Failed to fetching monthly attendance report!`,
-            ToastAndroid.LONG
+        toast.error(
+            `Failed to fetching monthly attendance report!`
         );
         return {};
     }
@@ -47,7 +52,7 @@ export const getOverallAttendenceReport = async studentId => {
 
 export const getYearlyAttendenceReport = async year => {
     try {
-        if (!year) return ToastAndroid.show("invalid year", ToastAndroid.SHORT);
+        if (!year) return toast.error("invalid year", toast.SHORT);
 
         const res = await axios.post("/attendance/getYearlyAttendanceReport", {
             year: year?.toString()
@@ -85,17 +90,16 @@ export const getYearlyAttendenceReport = async year => {
 
             return report ?? [];
         } else {
-            ToastAndroid.show(
+            toast.error(
+                "Failed to fetch yearly attendance report",
                 res.data?.message ??
-                    `Failed to fetch yearly attendance report!`,
-                ToastAndroid.LONG
+                ""
             );
             return [];
         }
     } catch (error) {
-        ToastAndroid.show(
+        toast.error(
             `Failed to fetch yearly attendance report!`,
-            ToastAndroid.LONG
         );
         return [];
     }
@@ -128,18 +132,18 @@ export const generateAttendanceCalendarReport = async (
             });
             return data;
         } else {
-            ToastAndroid.show(
+            toast.error(
+                "Generating attendance calendar report failed",
                 res.data.message ??
-                    "Generating attendance calendar report failed",
-                ToastAndroid.LONG
+                ""
             );
             return data;
         }
     } catch (error) {
-        ToastAndroid.show(
+        toast.error(
+            "Generating attendance calendar report failed",
             error.response?.data.message ??
-                `Generating attendance calendar report failed`,
-            ToastAndroid.LONG
+            ""
         );
         return data;
     }

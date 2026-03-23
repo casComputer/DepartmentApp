@@ -1,4 +1,8 @@
-import { useRef, useState, useEffect } from "react";
+import {
+    useRef,
+    useState,
+    useEffect
+} from "react";
 import {
     TouchableOpacity,
     View,
@@ -6,7 +10,7 @@ import {
     Pressable,
     Dimensions,
     Image,
-    ToastAndroid
+
 } from "react-native";
 import Animated, {
     withTiming,
@@ -15,15 +19,30 @@ import Animated, {
     withSpring,
     runOnJS
 } from "react-native-reanimated";
-import { router, usePathname } from "expo-router";
-import { Feather, Entypo, MaterialIcons as Material } from "@icons";
+import {
+    router,
+    usePathname
+} from "expo-router";
+import {
+    Feather,
+    Entypo,
+    MaterialIcons as Material
+} from "@icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 
-import { getColorFromString } from "@utils/colors.js";
-import { handleDocumentPick, handleUpload } from "@utils/file.upload.js";
+import {
+    getColorFromString
+} from "@utils/colors.js";
+import {
+    handleDocumentPick,
+    handleUpload
+} from "@utils/file.upload.js";
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
-import { downloadFile, checkFileExists } from "@utils/file.js";
+import {
+    downloadFile,
+    checkFileExists
+} from "@utils/file.js";
 import confirm from "@utils/confirm.js";
 
 import Loader from "@components/common/Loader";
@@ -33,17 +52,24 @@ import {
     deleteNotes
 } from "@controller/teacher/notes.controller.js";
 
-import { useAppStore, useMultiSelectionList } from "@store/app.store.js";
+import {
+    useAppStore,
+    useMultiSelectionList
+} from "@store/app.store.js";
 
 const AnimatedTouchableOpacity =
-    Animated.createAnimatedComponent(TouchableOpacity);
+Animated.createAnimatedComponent(TouchableOpacity);
 const AnimatedFeather = Animated.createAnimatedComponent(Feather);
 
 const setGlobalProgress = useAppStore.getState().setGlobalProgress;
 
-const { height: vh } = Dimensions.get("window");
+const {
+    height: vh
+} = Dimensions.get("window");
 
-export const FloatingAddButton = ({ parentId }) => {
+export const FloatingAddButton = ({
+    parentId
+}) => {
     const isOpened = useRef(false);
 
     const rounded = useSharedValue(18);
@@ -105,19 +131,21 @@ export const FloatingAddButton = ({ parentId }) => {
     const extraViewAnim = useAnimatedStyle(() => ({
         opacity: opacity.value,
         height: 100,
-        transform: [{ translateY: translateY.value }]
+        transform: [{
+            translateY: translateY.value
+        }]
     }));
 
     const buttonScaleStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: btnScale.value }]
+        transform: [{
+            scale: btnScale.value
+        }]
     }));
 
     const animatedIconStyle = useAnimatedStyle(() => ({
-        transform: [
-            {
-                rotate: angle.value
-            }
-        ]
+        transform: [{
+            rotate: angle.value
+        }]
     }));
 
     const handleCreateFolder = () => {
@@ -140,7 +168,11 @@ export const FloatingAddButton = ({ parentId }) => {
 
         setGlobalProgress(1);
 
-        const { secure_url, format, public_id } = await handleUpload(
+        const {
+            secure_url,
+            format,
+            public_id
+        } = await handleUpload(
             asset,
             "note",
             setGlobalProgress
@@ -167,13 +199,13 @@ export const FloatingAddButton = ({ parentId }) => {
             <Animated.View
                 style={extraViewAnim}
                 className="gap-3 items-center justify-end py-3"
-            >
+                >
                 {parentId && (
                     <AnimatedTouchableOpacity
                         style={buttonScaleStyle}
                         onPress={handleUploadPress}
                         className="justify-center items-center bg-btn rounded-2xl"
-                    >
+                        >
                         <Text className="text-xl font-bold text-text-secondary px-4 py-1">
                             Upload
                         </Text>
@@ -184,7 +216,7 @@ export const FloatingAddButton = ({ parentId }) => {
                     style={buttonScaleStyle}
                     onPress={handleCreateFolder}
                     className="justify-center items-center bg-btn rounded-2xl"
-                >
+                    >
                     <Text className="text-xl font-bold text-text-secondary px-4 py-1">
                         Folder
                     </Text>
@@ -195,12 +227,12 @@ export const FloatingAddButton = ({ parentId }) => {
                 style={floatingAnim}
                 className="bg-btn justify-center items-center"
                 onPress={handlePress}
-            >
+                >
                 <AnimatedFeather
                     style={animatedIconStyle}
                     name="plus"
                     size={35}
-                />
+                    />
             </AnimatedTouchableOpacity>
         </View>
     );
@@ -209,8 +241,11 @@ export const FloatingAddButton = ({ parentId }) => {
 const toggleMultiSelectionList = useMultiSelectionList.getState().toggle;
 const clearMultiSelectionList = useMultiSelectionList.getState().clear;
 
-export const FolderItem = ({ item, role }) => {
-    const [downloading, setDownloading] = useState(false);
+export const FolderItem = ({
+    item, role
+}) => {
+    const [downloading,
+        setDownloading] = useState(false);
 
     const color = getColorFromString(item.name);
 
@@ -224,9 +259,8 @@ export const FolderItem = ({ item, role }) => {
 
     if (!isFolder && item.fileUrl) {
         url =
-            item.format === "pdf"
-                ? getPdfPreviewUrl(item.fileUrl)
-                : item.fileUrl;
+        item.format === "pdf"
+        ? getPdfPreviewUrl(item.fileUrl): item.fileUrl;
     }
 
     const openFile = async () => {
@@ -260,9 +294,9 @@ export const FolderItem = ({ item, role }) => {
             onLongPress={onLongPress}
             onPress={handlePress}
             className={`mx-2 my-2 flex-1 h-[170px] rounded-xl border border-border ${
-                isExistsInMultiSelectList ? "bg-card-selected" : "bg-card"
+            isExistsInMultiSelectList ? "bg-card-selected": "bg-card"
             }`}
-        >
+            >
             <View className="h-[40px] px-2 mt-3 flex-row justify-between items-start">
                 <View className="flex-row items-center gap-2">
                     {isFolder && (
@@ -273,7 +307,7 @@ export const FolderItem = ({ item, role }) => {
                         // adjustsFontSizeToFit
                         className="flex-1 text-[12px] font-bold text-text"
                         numberOfLines={2}
-                    >
+                        >
                         {item.name}
                     </Text>
                 </View>
@@ -282,11 +316,11 @@ export const FolderItem = ({ item, role }) => {
             <View className="flex-1 w-full justify-center items-center">
                 {isFolder ? (
                     <MaterialIcons name="folder" size={110} color={color} />
-                ) : (
+                ): (
                     <>
                         <Image
-                            source={{ uri: url }}
-                            style={{
+                            source={ { uri: url }}
+                            style={ {
                                 width: "90%",
                                 height: 110,
                                 marginTop: -5,
@@ -294,14 +328,14 @@ export const FolderItem = ({ item, role }) => {
                                 opacity: 0.8
                             }}
                             className="bg-card-selected"
-                        />
+                            />
                         {downloading && (
                             <Loader
                                 size={"large"}
-                                style={{
+                                style={ {
                                     position: "absolute"
                                 }}
-                            />
+                                />
                         )}
                     </>
                 )}
@@ -310,7 +344,9 @@ export const FolderItem = ({ item, role }) => {
     );
 };
 
-export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
+export const SelectingHeader = ({
+    handleSelectAll, handleOpenInBrowser
+}) => {
     const count = useMultiSelectionList(state => state.list.length);
 
     const translateY = useSharedValue(-100);
@@ -321,11 +357,9 @@ export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
     }, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        transform: [
-            {
-                translateY: translateY.value
-            }
-        ]
+        transform: [{
+            translateY: translateY.value
+        }]
     }));
 
     const handlePressDismiss = () => {
@@ -343,7 +377,7 @@ export const SelectingHeader = ({ handleSelectAll, handleOpenInBrowser }) => {
         <Animated.View
             style={animatedStyle}
             className="w-full mt-6 flex-row items-center justify-between py-4 px-4"
-        >
+            >
             <View className="flex-row gap-3 items-center">
                 <TouchableOpacity onPress={handlePressDismiss}>
                     <Entypo name="cross" size={ICON_SIZE} />

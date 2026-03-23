@@ -1,5 +1,7 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
+import {
+    toast
+} from "@store/app.store.js";
 
 export const fetchWorklogs = async (page, teacherId) => {
     try {
@@ -12,7 +14,7 @@ export const fetchWorklogs = async (page, teacherId) => {
         if (response.data.success) {
             return response.data;
         } else {
-            ToastAndroid.show("Failed to fetch worklogs", ToastAndroid.SHORT);
+            toast.error("Failed to fetch worklogs");
             return {
                 data: [],
                 nextPage: null,
@@ -20,7 +22,7 @@ export const fetchWorklogs = async (page, teacherId) => {
             };
         }
     } catch (error) {
-        ToastAndroid.show("Failed to fetch worklogs", ToastAndroid.SHORT);
+        toast.error("Failed to fetch worklogs");
         return {
             data: [],
             nextPage: null,

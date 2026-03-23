@@ -1,27 +1,40 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import {
+    router
+} from "expo-router";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
-export const save = async ({ list }) => {
+export const save = async ({
+    list
+}) => {
     try {
-        const { data } = await axios.post("/teacher/addCourse", { list });
-        
+        const {
+            data
+        } = await axios.post("/teacher/addCourse", {
+                list
+            });
+
         if (data.success) {
-            ToastAndroid.show(
-                data?.message ?? "Courses updated successfull",
-                ToastAndroid.SHORT
+            toast.success(
+                "Courses updated successfull",
+                data?.message ?? ""
             );
-            useAppStore.getState().updateUser({ courses: list });
+            useAppStore.getState().updateUser({
+                courses: list
+            });
 
             router.back()
-        } else
-            ToastAndroid.show(
-                data?.message ?? "Courses updated failed",
-                ToastAndroid.LONG
+        } else {
+            toast.error(
+                "Courses updation failed",
+                data?.message ?? ""
             );
+        }
     } catch (error) {
-        ToastAndroid.show("Courses updation failed!", ToastAndroid.LONG);
+        toast.error("Courses updation failed!");
     }
 };

@@ -4,7 +4,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    ToastAndroid
+    
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { router } from "expo-router";
@@ -12,6 +12,8 @@ import { router } from "expo-router";
 import Header from "@components/common/Header2.jsx";
 import Select from "@components/common/Select.jsx";
 import DueDate from "@components/common/DueDate.jsx";
+
+import {toast} from "@store/app.store";
 
 import { createAssignment } from "@controller/teacher/assignment.controller.js";
 
@@ -30,7 +32,7 @@ const AssignmentCreation = () => {
         setSaving(true);
 
         if (!topic || !description || !year.id || !course.id || !date) {
-            ToastAndroid.show("Please fill all fields", ToastAndroid.LONG);
+            toast.warn("Please fill all fields");
             setSaving(false);
             return;
         }

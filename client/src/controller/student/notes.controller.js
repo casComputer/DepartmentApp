@@ -1,22 +1,32 @@
-import { ToastAndroid } from "react-native";
-
 import axios from "@utils/axios.js";
 import queryClient from "@utils/queryClient.js";
 
-import { useAppStore } from "@store/app.store.js";
-import { setNotes } from "@storage/app.storage.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
+import {
+    setNotes
+} from "@storage/app.storage.js";
 
-export const fetchNotes = async ({ queryKey }) => {
+export const fetchNotes = async ({
+    queryKey
+}) => {
     const parentId = queryKey[1] ?? null;
-    const { course, year } = useAppStore.getState().user;
+    const {
+        course,
+        year
+    } = useAppStore.getState().user;
 
     try {
         if (!course || !year) {
-            ToastAndroid.show(
-                "Missing course and year fields!",
-                ToastAndroid.LONG
+            toast.warn(
+                "Missing course and year fields!"
             );
-            return { notes: [], success: true };
+            return {
+                notes: [],
+                success: true
+            };
         }
 
         const res = await axios.post("/notes/fetchByStudent", {
@@ -26,8 +36,11 @@ export const fetchNotes = async ({ queryKey }) => {
         });
 
         if (!res.data?.success) {
-        ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
-            return { notes: [], success: false };
+            toast.error("Failed to Sync notes");
+            return {
+                notes: [],
+                success: false
+            };
         }
 
         setNotes(parentId ?? "root", res.data);
@@ -36,14 +49,19 @@ export const fetchNotes = async ({ queryKey }) => {
     } catch (error) {
         if (error.message?.includes("Network Error")) {
             if (!parentId)
-                ToastAndroid.show(
-                    "Please connect to the internet 🛰️",
-                    ToastAndroid.LONG
-                );
-            return getNotes(parentId ?? "root") ?? { notes: [], success: true };
+                toast.error(
+                "Please connect to the internet 🛰️",
+            );
+            return getNotes(parentId ?? "root") ?? {
+                notes: [],
+                success: true
+            };
         }
 
-        ToastAndroid.show("Failed to Sync notes", ToastAndroid.SHORT);
-        return { notes: [], success: true };
+        toast.error("Failed to Sync notes");
+        return {
+            notes: [],
+            success: true
+        };
     }
 };

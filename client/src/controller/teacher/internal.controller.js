@@ -1,6 +1,11 @@
+import {
+    router
+} from "expo-router";
+
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import {
+    toast
+} from "@store/app.store";
 
 export const handleSave = async data => {
     try {
@@ -9,18 +14,17 @@ export const handleSave = async data => {
         });
 
         if (res.data.success) {
-            ToastAndroid.show(
-                "Internal mark uploaded successfull ✨",
-                ToastAndroid.SHORT
-            );
+            toast.success(
+                "Internal mark uploaded successfull"
+            )
             router.back();
         } else
-            ToastAndroid.show(
-                res.data.message ?? "Failed to upload internal mark!",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to upload internal mark",
+            res.data.message ?? ""
+        );
     } catch (e) {
-        ToastAndroid.show("Failed to upload internal mark!", ToastAndroid.LONG);
+        toast.error("Failed to upload internal mark!");
     }
 };
 
@@ -33,9 +37,8 @@ export const checkExists = async (course, sem) => {
 
         if (res.data.success) {
             if (res.data?.uploaded) {
-                ToastAndroid.show(
-                    "You already uploaded internal marks for this sem!",
-                    ToastAndroid.SHORT
+                toast.error(
+                    "You already uploaded internal marks for this sem!"
                 );
             }
 
@@ -45,18 +48,18 @@ export const checkExists = async (course, sem) => {
             };
         }
 
-        ToastAndroid.show(
-            res.data.message ?? "Failed to check existing internal marks!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to check existing internal marks",
+            res.data.message ?? "",
+
         );
         return {
             uploaded: false,
             failed: true
         };
     } catch (e) {
-        ToastAndroid.show(
-            "Failed to check existing internal marks!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to check existing internal marks"
         );
         return {
             uploaded: false,
@@ -75,9 +78,9 @@ export const getHistory = async page => {
         if (res.data.success) {
             return res.data;
         } else {
-            ToastAndroid.show(
-                res.data.message ?? "Failed to fetch history!",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to fetch history",
+                res.data.message ?? ""
             );
             return {
                 data: [],
@@ -86,7 +89,7 @@ export const getHistory = async page => {
             };
         }
     } catch (e) {
-        ToastAndroid.show("Failed to fetch history!", ToastAndroid.LONG);
+        toast.error("Failed to fetch history!");
         return {
             data: [],
             hasMore: false,

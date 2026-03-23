@@ -7,6 +7,7 @@ import {
     TursoStats,
     UsersStats
 } from "@components/admin/Stats.jsx";
+import Links from "@components/admin/Links.jsx";
 
 const Dashboard = () => {
     const handleClick = () => {
@@ -23,6 +24,7 @@ const Dashboard = () => {
             <CloudinaryStats />
             <TursoStats />
             <UsersStats />
+            <Links />
             <TouchableOpacity
                 onPress={handleClick}
                 className="py-5 px-5 rounded-3xl bg-btn my-5 self-center"

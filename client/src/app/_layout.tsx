@@ -8,6 +8,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
 import { Uniwind } from "uniwind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import queryClient from "@utils/queryClient";
 import { useAppStore } from "@store/app.store.js";
@@ -18,6 +19,7 @@ import { registerForPushNotificationsAsync } from "@controller/common/notificati
 import syncUser from "@controller/common/sync.controller.js";
 
 import GlobalProgress from "@components/common/GlobalProgress.jsx";
+import Toast from "@components/common/Toast.jsx";
 
 useAppStore.getState().hydrateUser(getUser());
 
@@ -102,24 +104,27 @@ export default function RootLayout() {
 
     return (
         <View
-            style={{ paddingTop: insets.top }}
-            className="${theme === 'dark' ? 'dark': ''} flex-1 bg-primary"
+            style={{ paddingTop: insets.top, flex: 1 }}
+            className="${theme === 'dark' ? 'dark': ''} bg-primary"
         >
-            <StatusBar
-                style={`${currTheme === "system" || currTheme === "light" ? "auto" : "light"}`}
-                animated
-            />
-            <KeyboardProvider>
-                <QueryClientProvider client={queryClient}>
-                    <Layout
-                        userId={userId}
-                        role={role}
-                        is_verified={is_verified}
-                        is_email_verified={is_email_verified}
-                    />
-                </QueryClientProvider>
-            </KeyboardProvider>
-            <GlobalProgress />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <StatusBar
+                    style={`${currTheme === "system" || currTheme === "light" ? "auto" : "light"}`}
+                    animated
+                />
+                <KeyboardProvider>
+                    <QueryClientProvider client={queryClient}>
+                        <Layout
+                            userId={userId}
+                            role={role}
+                            is_verified={is_verified}
+                            is_email_verified={is_email_verified}
+                        />
+                    </QueryClientProvider>
+                </KeyboardProvider>
+                <GlobalProgress />
+                <Toast />
+            </GestureHandlerRootView>
         </View>
     );
 }

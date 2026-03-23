@@ -1,27 +1,39 @@
-import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import {
+    router
+} from "expo-router";
 
 import axios from "@utils/axios.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 export const uploadDp = async data => {
     const user = useAppStore.getState().user;
-    const { userId, role } = user;
-    const { secure_url, public_id } = data;
+    const {
+        userId,
+        role
+    } = user;
+    const {
+        secure_url,
+        public_id
+    } = data;
 
     if (!userId || !role || !secure_url || !public_id) return;
 
     const current_dp_public_id = useAppStore.getState().user.dp_public_id;
 
     try {
-        const { data } = await axios.post("/profile/uploadDp", {
-            userId,
-            role,
-            secure_url,
-            public_id,
-            current_dp_public_id
-        });
+        const {
+            data
+        } = await axios.post("/profile/uploadDp", {
+                userId,
+                role,
+                secure_url,
+                public_id,
+                current_dp_public_id
+            });
 
         if (data.success) {
             const updateData = {
@@ -31,23 +43,24 @@ export const uploadDp = async data => {
 
             useAppStore.getState().updateUser(updateData);
         } else
-            ToastAndroid.show(
-                data.message ?? "Failed to update profile picture",
-                ToastAndroid.LONG
-            );
-    } catch (error) {
-        ToastAndroid.show(
+            toast.error(
             "Failed to update profile picture",
-            ToastAndroid.LONG
+            data.message ?? ""
+        );
+    } catch (error) {
+        toast.error(
+            "Failed to update profile picture"
         );
     }
 };
 
 export const editProfile = async profileData => {
     try {
-        const { data } = await axios.post("/profile/editProfile", {
-            ...profileData
-        });
+        const {
+            data
+        } = await axios.post("/profile/editProfile", {
+                ...profileData
+            });
 
         if (data.success) {
             profileData = {
@@ -58,25 +71,26 @@ export const editProfile = async profileData => {
             };
 
             useAppStore.getState().updateUser(profileData);
-            ToastAndroid.show(
-                "Profile updated successfully",
-                ToastAndroid.SHORT
+            toast.success(
+                "Profile updated successfully"
             );
             router.back();
         } else {
-            ToastAndroid.show(
-                data.message ?? "Failed to update profile",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to update profile",
+                data.message ?? ""
             );
         }
     } catch (error) {
-        ToastAndroid.show("Failed to update profile", ToastAndroid.LONG);
+        toast.error("Failed to update profile",);
     }
 };
 
 export const changePassword = async payload => {
     try {
-        const { data } = await axios.post("/user/changePassword", payload);
+        const {
+            data
+        } = await axios.post("/user/changePassword", payload);
 
         if (data.success) {
             return {
@@ -84,9 +98,9 @@ export const changePassword = async payload => {
             };
         } else
             return {
-                message: data.message,
-                success: false
-            };
+            message: data.message,
+            success: false
+        };
     } catch (e) {
         return {
             success: false
@@ -96,15 +110,21 @@ export const changePassword = async payload => {
 
 export const handleRemovePic = async () => {
     try {
-        const { dp, dp_public_id } = useAppStore.getState().user;
+        const {
+            dp,
+            dp_public_id
+        } = useAppStore.getState().user;
 
-        await axios.post("/profile/removeDp", { public_key: dp_public_id, dp });
+        await axios.post("/profile/removeDp", {
+            public_key: dp_public_id, dp
+        });
 
-        useAppStore.getState().updateUser({ dp: "", dp_public_id: "" });
+        useAppStore.getState().updateUser({
+            dp: "", dp_public_id: ""
+        });
     } catch (err) {
-        ToastAndroid.show(
+        toast.error(
             "Failed to remove profile picture",
-            ToastAndroid.SHORT
         );
     }
 };

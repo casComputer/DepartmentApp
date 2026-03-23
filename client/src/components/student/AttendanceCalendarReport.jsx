@@ -52,7 +52,7 @@ const CalendarGrid = ({ data, translateX, handleDayPress, overlayDate }) => {
     const paddingB = useSharedValue(0);
 
     useEffect(() => {
-        paddingB.value = withTiming(overlayDate ? 48 : 0, { duration: 800 });
+        paddingB.value = withTiming(overlayDate ? 48 : 0, { duration: 250 });
     }, [overlayDate]);
 
     const animStyle = useAnimatedStyle(() => ({

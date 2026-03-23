@@ -1,9 +1,11 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 const setProgressText = useAppStore.getState().setGlobalProgressText;
 const setProgress = useAppStore.getState().setGlobalProgress;
@@ -15,13 +17,16 @@ export const handleDocumentPick = async (types = []) => {
 
     if (result.canceled) return null;
 
-    const { name, size, uri, mimeType } = result.assets[0];
+    const {
+        name,
+        size,
+        uri,
+        mimeType
+    } = result.assets[0];
 
     if (!name || !uri || !mimeType || !size) {
-        ToastAndroid.show(
-            "Failed to retrieve file information. Please try again.",
-            ToastAndroid.LONG
-        );
+        toast.error(
+            "Failed to retrieve file information. Please try again.");
         return null;
     }
 
@@ -29,9 +34,8 @@ export const handleDocumentPick = async (types = []) => {
     const sizeInMB = size / (1024 * 1024);
 
     if (sizeInMB > MAX_MB) {
-        ToastAndroid.show(
-            "File size exceeds 10MB limit. Please select a smaller file.",
-            ToastAndroid.LONG
+        toast.warn(
+            "File size exceeds 10MB limit. Please select a smaller file."
         );
         return null;
     }
@@ -41,7 +45,7 @@ export const handleDocumentPick = async (types = []) => {
     );
 
     if (!isValid) {
-        ToastAndroid.show("Invalid file type selected.", ToastAndroid.LONG);
+        toast.error("Invalid file type selected.");
         return null;
     }
 
@@ -56,13 +60,13 @@ export const handleDocumentPick = async (types = []) => {
 export const handleUpload = async (file, preset_type) => {
     try {
         if (!file) {
-            ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
+            toast.info("Please select a file.");
             return {
                 success: false
             };
         }
         if (!preset_type) {
-            ToastAndroid.show("Invalid preset!", ToastAndroid.SHORT);
+            toast.error("Invalid preset!");
             return {
                 success: false
             };
@@ -83,12 +87,16 @@ export const handleUpload = async (file, preset_type) => {
             preset_type
         });
 
-        const { timestamp, signature, api_key, preset } = signatureRes.data;
+        const {
+            timestamp,
+            signature,
+            api_key,
+            preset
+        } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
-            ToastAndroid.show(
-                "Failed to generate signature. Please try again.",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to generate signature. Please try again."
             );
             return {
                 success: false
@@ -117,10 +125,12 @@ export const handleUpload = async (file, preset_type) => {
             }
         });
 
-        const { secure_url, format, public_id } = res.data;
+        const {
+            secure_url, format, public_id
+        } = res.data;
 
         if (!secure_url || !format || !public_id) {
-            ToastAndroid.show("Failed to upload the file!", ToastAndroid.SHORT);
+            toast.error("Failed to upload the file!");
             return {
                 success: false
             };
@@ -134,9 +144,8 @@ export const handleUpload = async (file, preset_type) => {
         };
     } catch (error) {
         setProgress(0);
-        ToastAndroid.show(
+        toast.error(
             "Failed to upload file. Please try again.",
-            ToastAndroid.LONG
         );
         return {
             success: false

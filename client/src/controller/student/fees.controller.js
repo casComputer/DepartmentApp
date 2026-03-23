@@ -1,15 +1,24 @@
-import { ToastAndroid } from "react-native";
-
 import axios from "@utils/axios.js";
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 export const fetch = async page => {
     try {
-        const { course, year } = useAppStore.getState().user;
-                
+        const {
+            course,
+            year
+        } = useAppStore.getState().user;
+
         if (!course || !year) {
-            ToastAndroid.show("Missing required values!", ToastAndroid.LONG);
-            return { success: false, hasMore: true, page, fees: [] };
+            toast.warn("Missing required values!");
+            return {
+                success: false,
+                hasMore: true,
+                page,
+                fees: []
+            };
         }
 
         const res = await axios.post("/fees/fetchByStudent", {
@@ -22,15 +31,25 @@ export const fetch = async page => {
         if (res.data.success) {
             return res.data;
         } else {
-            ToastAndroid.show(
-                res.data.message ?? "Fees fetching Failed",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to fetch fee details",
+                res.data.message ?? ""
             );
 
-            return { success: false, hasMore: true, page, fees: [] };
+            return {
+                success: false,
+                hasMore: true,
+                page,
+                fees: []
+            };
         }
     } catch (error) {
-        ToastAndroid.show("Fees fetching Failed", ToastAndroid.LONG);
-        return { success: false, hasMore: true, page, fees: [] };
+        toast.error("Failed to fetch fee details");
+        return {
+            success: false,
+            hasMore: true,
+            page,
+            fees: []
+        };
     }
 };

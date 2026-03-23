@@ -1,7 +1,9 @@
 import axios from "@utils/axios";
-import { ToastAndroid } from "react-native";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 export const fetchInternal = async page => {
     try {
@@ -15,16 +17,16 @@ export const fetchInternal = async page => {
 
         if (res.data?.success) return res.data;
 
-        ToastAndroid.show(
-            res.data?.message ?? "Failed to fetch internal!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to fetch internal marks",
+            res.data?.message ?? ""
         );
         return {
             internals: [],
             nextPage: null
         };
     } catch (error) {
-        ToastAndroid.show("Failed to fetch internal!", ToastAndroid.LONG);
+        toast.error("Failed to fetch internal marks");
 
         return {
             internals: [],

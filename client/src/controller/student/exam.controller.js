@@ -1,7 +1,9 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 export const handleSaveResultDetails = async data => {
     try {
@@ -12,17 +14,16 @@ export const handleSaveResultDetails = async data => {
         });
 
         if (res.data.success)
-            ToastAndroid.show(
-                "Exam result uploaded successfull ✨",
-                ToastAndroid.SHORT
-            );
+            toast.success(
+            "Exam result uploaded successfull ✨",
+        );
         else
-            ToastAndroid.show(
-                res.data.message ?? "Failed to upload exam result!",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to upload exam result!",
+            res.data.message ?? ""
+        );
     } catch (e) {
-        ToastAndroid.show("Failed to upload exam result!", ToastAndroid.LONG);
+        toast.error("Failed to upload exam result!");
     }
 };
 
@@ -37,15 +38,14 @@ export const checkExamResultUpload = async sem => {
 
         if (res.data.success) return res.data.uploaded;
 
-        ToastAndroid.show(
-            res.data.message ?? "Failed to check exam result upload!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to check exam existing results",
+            res.data.message ?? ""
         );
         return false;
     } catch (e) {
-        ToastAndroid.show(
-            "Failed to check exam result upload!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to check exam result upload",
         );
         return false;
     }

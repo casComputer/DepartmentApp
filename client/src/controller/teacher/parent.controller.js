@@ -1,20 +1,24 @@
 import axios from "@utils/axios";
 import queryClient from "@utils/queryClient";
 
-import { ToastAndroid } from "react-native";
+import {
+    toast
+} from "@store/app.store";
 
 export const fetchParents = async page => {
     try {
-        const { data } = await axios.post("/teacher/fetchParents", {
-            page,
-            limit: 25
-        });
+        const {
+            data
+        } = await axios.post("/teacher/fetchParents", {
+                page,
+                limit: 25
+            });
 
         if (data.success) return data;
 
-        ToastAndroid.show(
-            data.message ?? "Failed to fetch parents!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to fetch parents",
+            data.message ?? ""
         );
 
         return {
@@ -24,7 +28,7 @@ export const fetchParents = async page => {
             success: false
         };
     } catch (error) {
-        ToastAndroid.show("Failed to fetch parents!", ToastAndroid.LONG);
+        toast.error("Failed to fetch parents!");
 
         return {
             parents: [],
@@ -37,10 +41,12 @@ export const fetchParents = async page => {
 
 export const verifyParent = async (studentId, parentId) => {
     try {
-        const { data } = await axios.post("/teacher/verifyParent", {
-            parentId,
-            studentId
-        });
+        const {
+            data
+        } = await axios.post("/teacher/verifyParent", {
+                parentId,
+                studentId
+            });
 
         if (data.success) {
             queryClient.setQueryData(["parents"], prev => {
@@ -52,40 +58,39 @@ export const verifyParent = async (studentId, parentId) => {
                         ...page,
                         parents: page.parents.map(parent =>
                             parentId === parent.userId
-                                ? {
-                                      ...parent,
-                                      students: parent.students.map(student =>
-                                          student.studentId === studentId
-                                              ? {
-                                                    ...student,
-                                                    isVerified: true
-                                                }
-                                              : student
-                                      )
-                                  }
-                                : parent
+                            ? {
+                                ...parent,
+                                students: parent.students.map(student =>
+                                    student.studentId === studentId
+                                    ? {
+                                        ...student,
+                                        isVerified: true
+                                    }: student
+                                )
+                            }: parent
                         )
                     }))
                 };
             });
         } else
-            ToastAndroid.show(
-                data.message ?? "Failed to verify student for the parent!",
-                ToastAndroid.LONG
-            );
+            toast.error(
+            "Failed to verify student for the parent",
+            data.message ?? "",
+        );
     } catch (error) {
-        ToastAndroid.show(
-            "Failed to verify student for the parent!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to verify student for the parent!"
         );
     }
 };
 export const removeParent = async (studentId, parentId) => {
     try {
-        const { data } = await axios.post("/teacher/removeParent", {
-            parentId,
-            studentId
-        });
+        const {
+            data
+        } = await axios.post("/teacher/removeParent", {
+                parentId,
+                studentId
+            });
 
         if (data.success) {
             queryClient.setQueryData(["parents"], prev => {
@@ -97,28 +102,26 @@ export const removeParent = async (studentId, parentId) => {
                         ...page,
                         parents: page.parents.map(parent =>
                             parentId === parent.userId
-                                ? {
-                                      ...parent,
-                                      students: parent.students.filter(
-                                          student =>
-                                              student.studentId !== studentId
-                                      )
-                                  }
-                                : parent
+                            ? {
+                                ...parent,
+                                students: parent.students.filter(
+                                    student =>
+                                    student.studentId !== studentId
+                                )
+                            }: parent
                         )
                     }))
                 };
             });
         } else {
-            ToastAndroid.show(
-                data.message ?? "Failed to reject parent request!",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to reject parent request",
+                data.message ?? "",
             );
         }
     } catch (error) {
-        ToastAndroid.show(
-            "Failed to reject parent request!",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to reject parent request!"
         );
     }
 };

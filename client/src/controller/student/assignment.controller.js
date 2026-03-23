@@ -1,15 +1,24 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
-import { getRandomSubmitMessage } from "@utils/displayMessages.js";
+import {
+    getRandomSubmitMessage
+} from "@utils/displayMessages.js";
 
-export const getAssignment = async ({ pageParam }) => {
+export const getAssignment = async ({
+    pageParam
+}) => {
     try {
-        const { course, year } = useAppStore.getState().user;
+        const {
+            course,
+            year
+        } = useAppStore.getState().user;
 
         if (!course || !year) return [];
 
@@ -25,13 +34,13 @@ export const getAssignment = async ({ pageParam }) => {
 
         if (response.data.success) return response.data ?? [];
 
-        ToastAndroid.show(
-            response.data?.message ?? "Failed to fetch assignments",
-            ToastAndroid.LONG
+        toast.error(
+            "Failed to fetch assignments",
+            response.data?.message ?? ""
         );
         return response.data ?? [];
     } catch (error) {
-        ToastAndroid.show("Failed to fetch assignments", ToastAndroid.LONG);
+        toast.error("Failed to fetch assignments");
         return [];
     }
 };
@@ -44,12 +53,16 @@ export const handleDocumentPick = async setFormData => {
     if (result.canceled) {
         return;
     } else {
-        const { name, size, uri, mimeType } = result.assets[0];
+        const {
+            name,
+            size,
+            uri,
+            mimeType
+        } = result.assets[0];
 
         if (!name || !uri || !mimeType || !size) {
-            ToastAndroid.show(
-                "Failed to retrieve file information. Please try again.",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to retrieve file information. Please try again."
             );
             return;
         }
@@ -58,9 +71,8 @@ export const handleDocumentPick = async setFormData => {
         const sizeInMB = size / (1024 * 1024);
 
         if (sizeInMB > MAX_MB) {
-            ToastAndroid.show(
-                "File size exceeds 10MB limit. Please select a smaller file.",
-                ToastAndroid.LONG
+            toast.warn(
+                "File size exceeds 10MB limit. Please select a smaller file."
             );
             return;
         }
@@ -73,9 +85,8 @@ export const handleDocumentPick = async setFormData => {
         ];
 
         if (!allowedExt.includes(mimeType)) {
-            ToastAndroid.show(
+            toast.warn(
                 "Invalid file type. Please select a PDF or image file.",
-                ToastAndroid.LONG
             );
 
             return;
@@ -97,11 +108,6 @@ const saveAssignmentSubmissionDetails = async ({
     public_key
 }) => {
     try {
-        const studentId = useAppStore.getState().user.userId;
-        if (!studentId) {
-            ToastAndroid.show("Missing login informations!", ToastAndroid.LONG);
-            return false;
-        }
 
         const res = await axios.post(
             "/assignment/saveAssignmentSubmissionDetails",
@@ -114,23 +120,22 @@ const saveAssignmentSubmissionDetails = async ({
         );
 
         if (res?.data?.success) {
-            ToastAndroid.show(
+            toast.success(
+                "Assignment successfully submitted",
                 getRandomSubmitMessage() ??
-                    "Assignment successfully submitted 🎉",
-                ToastAndroid.SHORT
+                ""
             );
             return true;
         } else {
-            ToastAndroid.show(
-                res.data?.message || "Failed to upload file. Please try again.",
-                ToastAndroid.LONG
+            toast.error(
+                "Failed to upload file",
+                res.data?.message ?? ""
             );
             return false;
         }
     } catch (error) {
-        ToastAndroid.show(
+        toast.error(
             "Failed to upload file. Please try again.",
-            ToastAndroid.LONG
         );
         return false;
     }
@@ -143,7 +148,7 @@ export const handleAssignmentUpload = async (
 ) => {
     try {
         if (!file) {
-            ToastAndroid.show("Please select a file.", ToastAndroid.SHORT);
+            toast.warn("Please select a file.");
             return false;
         }
         const url = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_URL;
@@ -160,19 +165,23 @@ export const handleAssignmentUpload = async (
         });
 
         if (!signatureRes.data.success) {
-            ToastAndroid.show(
-                signatureRes.data.message ?? "failed to generate signature!",
-                ToastAndroid.SHORT
+            toast.error(
+                "Failed to generate signature",
+                signatureRes.data.message ?? ""
             );
             return false;
         }
 
-        const { timestamp, signature, api_key, preset } = signatureRes.data;
+        const {
+            timestamp,
+            signature,
+            api_key,
+            preset
+        } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
-            ToastAndroid.show(
-                "Unable to generate signature. Please try again.",
-                ToastAndroid.LONG
+            toast.error(
+                "Unable to generate signature. Please try again."
             );
             return false;
         }
@@ -197,18 +206,19 @@ export const handleAssignmentUpload = async (
             }
         });
 
-        const { secure_url, format, public_key } = res.data;
+        const {
+            secure_url, format, public_key
+        } = res.data;
 
-        return await saveAssignmentSubmissionDetails({
+        return await saveAssignmentSubmissionDetails( {
             secure_url,
             format,
             assignmentId,
             public_key
         });
     } catch (error) {
-        ToastAndroid.show(
+        toast.error(
             "Failed to upload file. Please try again.",
-            ToastAndroid.LONG
         );
 
         return false;

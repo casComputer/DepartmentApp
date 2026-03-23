@@ -1,12 +1,20 @@
-import { ToastAndroid } from "react-native";
+import {
+    toast
+} from "@store/app.store";
 import * as Sharing from "expo-sharing";
 
-import { checkFileExists, openFileWithDefaultApp } from "@utils/file.js";
+import {
+    checkFileExists,
+    openFileWithDefaultApp
+} from "@utils/file.js";
 import getMimeType from "@utils/getMimeType.js";
 
 export const openFile = async (type, filename) => {
     if (type === "pdf") {
-        const { contentUri, exists } = await checkFileExists(
+        const {
+            contentUri,
+            exists
+        } = await checkFileExists(
             filename + ".pdf"
         );
         const mimeType = getMimeType("pdf");
@@ -14,9 +22,12 @@ export const openFile = async (type, filename) => {
         if (exists && contentUri) {
             await openFileWithDefaultApp(contentUri, mimeType);
         } else
-            ToastAndroid.show("Unable to open the file.", ToastAndroid.SHORT);
+            toast.error("Unable to open the file.");
     } else if (type === "xl") {
-        const { contentUri, exists } = await checkFileExists(
+        const {
+            contentUri,
+            exists
+        } = await checkFileExists(
             filename + ".xlsx"
         );
         const mimeType = getMimeType("xlsx");
@@ -24,23 +35,24 @@ export const openFile = async (type, filename) => {
         if (exists && contentUri) {
             await openFileWithDefaultApp(contentUri, mimeType);
         } else
-            ToastAndroid.show("Unable to open the file.", ToastAndroid.SHORT);
+            toast.error("Unable to open the file.");
     }
 };
 
 export const shareFile = async (type, filename) => {
     const isAvailable = await Sharing.isAvailableAsync();
     if (!isAvailable) {
-        ToastAndroid.show(
-            "Sharing is not available on this device",
-            ToastAndroid.SHORT
+        toast.error(
+            "Sharing is not available on this device"
         );
         return;
     }
-    
+
     if (type === "pdf") {
         const mimeType = getMimeType("pdf");
-        const { fileUri } = await checkFileExists(filename + ".pdf");
+        const {
+            fileUri
+        } = await checkFileExists(filename + ".pdf");
 
         if (fileUri) {
             await Sharing.shareAsync(fileUri, {
@@ -48,10 +60,12 @@ export const shareFile = async (type, filename) => {
                 dialogTitle: "Share"
             });
         } else
-            ToastAndroid.show("Unable to share the file", ToastAndroid.SHORT);
+            toast.error("Unable to share the file");
     } else if (type === "xl") {
         const mimeType = getMimeType("xlsx");
-        const { fileUri } = await checkFileExists(filename + ".xlsx");
+        const {
+            fileUri
+        } = await checkFileExists(filename + ".xlsx");
 
         if (fileUri) {
             await Sharing.shareAsync(fileUri, {
@@ -59,6 +73,6 @@ export const shareFile = async (type, filename) => {
                 dialogTitle: "Share"
             });
         } else
-            ToastAndroid.show("Unable to share the file", ToastAndroid.SHORT);
+            toast.error("Unable to share the file");
     }
 };

@@ -1,26 +1,38 @@
-import { useState } from "react";
+import {
+    useState
+} from "react";
 import {
     View,
     Text,
     ScrollView,
     TouchableOpacity,
-    ToastAndroid
+
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
-import { FontAwesome6, Octicons, FontAwesome } from "@icons";
+import {
+    FontAwesome6,
+    Octicons,
+    FontAwesome
+} from "@icons";
 
 import Header from "@components/common/Header";
 import Loader from "@components/common/Loader";
 
-import { ReportFileItem, Selector } from "@components/teacher/GenerateReport";
+import {
+    ReportFileItem,
+    Selector
+} from "@components/teacher/GenerateReport";
 
 import {
     getAttendanceXl,
     deleteReport
 } from "@controller/teacher/attendance.controller.js";
 
-import { useAppStore } from "@store/app.store.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
 
 import {
     downloadFile,
@@ -28,33 +40,43 @@ import {
     deleteFileEverywhere,
     downloadToSAF
 } from "@utils/file.js";
-import { openFile, shareFile } from "@utils/generateReport.js";
+import {
+    openFile,
+    shareFile
+} from "@utils/generateReport.js";
 import confirm from "@utils/confirm.js";
 
 const formatMonthYear = date =>
-    `${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getFullYear()}`;
+`${(date.getMonth() + 1)
+.toString()
+.padStart(2, "0")}-${date.getFullYear()}`;
 
 const GenerateReport = () => {
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate,
+        setStartDate] = useState(new Date());
+    const [endDate,
+        setEndDate] = useState(new Date());
 
-    const [showPicker, setShowPicker] = useState(false);
-    const [activePicker, setActivePicker] = useState(null); // single | start | end
+    const [showPicker,
+        setShowPicker] = useState(false);
+    const [activePicker,
+        setActivePicker] = useState(null); // single | start | end
 
-    const [generating, setGenerating] = useState(false);
-    const [deleting, setDeleting] = useState(false);
-    const [result, setResult] = useState({});
-    const [toggler, setToggler] = useState(0);
+    const [generating,
+        setGenerating] = useState(false);
+    const [deleting,
+        setDeleting] = useState(false);
+    const [result,
+        setResult] = useState( {});
+    const [toggler,
+        setToggler] = useState(0);
 
     const course = useAppStore(state => state.user.in_charge_course);
     const year = useAppStore(state => state.user.in_charge_year);
 
     const dateText =
-        toggler === 0
-            ? formatMonthYear(startDate)
-            : `${formatMonthYear(startDate)} → ${formatMonthYear(endDate)}`;
+    toggler === 0
+    ? formatMonthYear(startDate): `${formatMonthYear(startDate)} → ${formatMonthYear(endDate)}`;
 
     const handleGeneration = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -62,23 +84,22 @@ const GenerateReport = () => {
         setGenerating(true);
 
         const payload =
-            toggler === 0
-                ? {
-                      course,
-                      year,
-                      startMonth: startDate.getMonth(),
-                      startYear: startDate.getFullYear(),
-                      endMonth: startDate.getMonth(),
-                      endYear: startDate.getFullYear()
-                  }
-                : {
-                      course,
-                      year,
-                      startMonth: startDate.getMonth(),
-                      startYear: startDate.getFullYear(),
-                      endMonth: endDate.getMonth(),
-                      endYear: endDate.getFullYear()
-                  };
+        toggler === 0
+        ? {
+            course,
+            year,
+            startMonth: startDate.getMonth(),
+            startYear: startDate.getFullYear(),
+            endMonth: startDate.getMonth(),
+            endYear: startDate.getFullYear()
+        }: {
+            course,
+            year,
+            startMonth: startDate.getMonth(),
+            startYear: startDate.getFullYear(),
+            endMonth: endDate.getMonth(),
+            endYear: endDate.getFullYear()
+        };
 
         const {
             success,
@@ -118,12 +139,12 @@ const GenerateReport = () => {
     };
 
     const handleDownload = async type => {
-        ToastAndroid.show("Downloading...", ToastAndroid.SHORT);
+        toast.info("Downloading...");
 
-        const file = type === "pdf" ? result.pdf : result.xl;
+        const file = type === "pdf" ? result.pdf: result.xl;
         if (!file?.url) return;
 
-        const ext = type === "pdf" ? "pdf" : "xlsx";
+        const ext = type === "pdf" ? "pdf": "xlsx";
 
         const res = await downloadFile(
             file.url,
@@ -135,10 +156,12 @@ const GenerateReport = () => {
         if (res.success && res.contentUri) {
             setResult(p => ({
                 ...p,
-                [type]: { ...p[type], exists: true }
+                [type]: {
+                    ...p[type], exists: true
+                }
             }));
         } else
-            ToastAndroid.show("Failed to download file!", ToastAndroid.SHORT);
+            toast.error("Failed to download file!");
     };
 
     const handleDeleteReport = () => {
@@ -146,19 +169,23 @@ const GenerateReport = () => {
         confirm("Are you sure to delete this record ?", async () => {
             setDeleting(true);
 
-            const { success, message } = await deleteReport({
-                year,
-                course,
-                startMonth: result.startMonth,
-                endMonth: result.endMonth,
-                startYear: result.startYear,
-                endYear: result.endYear
-            });
+            const {
+                success, message
+            } = await deleteReport({
+                    year,
+                    course,
+                    startMonth: result.startMonth,
+                    endMonth: result.endMonth,
+                    startYear: result.startYear,
+                    endYear: result.endYear
+                });
 
             if (success) {
                 await deleteFileEverywhere(result.filename + ".pdf");
                 await deleteFileEverywhere(result.filename + ".xlsx");
-                setResult({ message });
+                setResult({
+                    message
+                });
             }
 
             setDeleting(false);
@@ -187,7 +214,7 @@ const GenerateReport = () => {
                     setActivePicker("end");
                     setShowPicker(true);
                 }}
-            />
+                />
 
             {result.message && (
                 <>
@@ -199,9 +226,9 @@ const GenerateReport = () => {
                         <TouchableOpacity
                             disabled={deleting}
                             onPress={handleDeleteReport}
-                        >
+                            >
                             <Text className="text-red-500 my-1 mb-3 text-xl font-black text-center">
-                                {deleting ? "Deleting.." : "Delete Report"}
+                                {deleting ? "Deleting..": "Delete Report"}
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -216,7 +243,7 @@ const GenerateReport = () => {
                     onDownload={() => handleDownload("pdf")}
                     onOpen={() => openFile("pdf", result.filename)}
                     onShare={() => shareFile("pdf", result.filename)}
-                />
+                    />
             )}
 
             {result.xl?.url && (
@@ -227,27 +254,27 @@ const GenerateReport = () => {
                     onDownload={() => handleDownload("xl")}
                     onOpen={() => openFile("xl", result.filename)}
                     onShare={() => shareFile("xl", result.filename)}
-                />
+                    />
             )}
 
             <TouchableOpacity
                 disabled={generating}
                 className="py-5 bg-btn rounded-2xl mt-8 mx-3 justify-center items-center"
                 onPress={handleGeneration}
-            >
+                >
                 <Text className="text-xl font-bold text-center text-text">
-                    {generating ? "Generating" : "Generate"} Report
+                    {generating ? "Generating": "Generate"} Report
                 </Text>
 
                 {generating && (
-                    <Loader style={{ position: "absolute", right: "20%" }} />
+                    <Loader style={ { position: "absolute", right: "20%" }} />
                 )}
             </TouchableOpacity>
 
             {showPicker && (
                 <DateTimePickerAndroid
                     mode="date"
-                    value={activePicker === "end" ? endDate : startDate}
+                    value={activePicker === "end" ? endDate: startDate}
                     onChange={(event, selectedDate) => {
                         setShowPicker(false);
                         if (event.type !== "set" || !selectedDate) return;
@@ -273,7 +300,7 @@ const GenerateReport = () => {
 
                         setActivePicker(null);
                     }}
-                />
+                    />
             )}
         </ScrollView>
     );

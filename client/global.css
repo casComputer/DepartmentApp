@@ -14,13 +14,15 @@
         }
 
         @variant light {
-            --color-primary:#feebe6;
+            --color-primary: #feebe6;
             --color-card: #ffffff;
             --color-card-selected: #fdc8b7;
             --color-btn: #fedbcc;
             --color-text: #000000;
             --color-text-secondary: #291d16;
-            --color-border: oklch(0 0 1 / 10%);
+            --color-border: oklch(
+                0.55 0.06 25 / 15%
+            ); /* FIX: was black oklch(0 0 1 / 10%), now warm peach tint */
         }
 
         /* Premium theme variables */
@@ -40,18 +42,19 @@
             --color-card: oklch(0.3 0.06 215);
             --color-card-selected: oklch(0.4 0.08 210);
             --color-text: #ffffff;
-            --color-text-secondary: #fedbcc;
+            --color-text-secondary: #c2e8ff; /* FIX: was peach #fedbcc, now ocean-appropriate icy blue */
             --color-btn: oklch(0.6 0.15 200);
             --color-border: oklch(1 0 0 / 10%);
         }
 
+        /* FIX: Shifted hue from H=25–40 (orange) to H=48–52 (golden amber) — sunset golden hour feel */
         @variant sunset {
-            --color-primary: oklch(0.3 0.08 30);
-            --color-card: oklch(0.35 0.1 25);
-            --color-card-selected: oklch(0.45 0.12 35);
+            --color-primary: oklch(0.3 0.07 48);
+            --color-card: oklch(0.36 0.09 50);
+            --color-card-selected: oklch(0.46 0.11 52);
             --color-text: #ffffff;
-            --color-text-secondary: #fedbcc;
-            --color-btn: oklch(0.65 0.18 40);
+            --color-text-secondary: #ffe9a0; /* warm golden to match palette */
+            --color-btn: oklch(0.7 0.18 52);
             --color-border: oklch(1 0 0 / 10%);
         }
 
@@ -60,7 +63,7 @@
             --color-card: oklch(0.25 0.06 155);
             --color-card-selected: oklch(0.35 0.08 150);
             --color-text: #ffffff;
-            --color-text-secondary: #fedbcc;
+            --color-text-secondary: #c2e8c8; /* FIX: was peach #fedbcc, now soft forest green */
             --color-btn: oklch(0.55 0.15 145);
             --color-border: oklch(1 0 0 / 10%);
         }
@@ -95,33 +98,36 @@
             --color-border: oklch(1 0 0 / 10%);
         }
 
+        /* FIX: Shifted hue from H=25–40 (orange, same as sunset) to H=18–22 (deep red-coal ember glow) */
         @variant ember {
-            --color-primary: oklch(0.27 0.09 25);
-            --color-card: oklch(0.32 0.1 30);
-            --color-card-selected: oklch(0.42 0.13 35);
+            --color-primary: oklch(0.27 0.1 18);
+            --color-card: oklch(0.32 0.12 20);
+            --color-card-selected: oklch(0.42 0.15 22);
             --color-text: #ffffff;
             --color-text-secondary: #ffd6cc;
-            --color-btn: oklch(0.63 0.2 40);
+            --color-btn: oklch(0.62 0.22 20);
             --color-border: oklch(1 0 0 / 10%);
         }
 
+        /* FIX: Shifted hue from H=25–30 (orange) to H=40–42 (terracotta/clay — truly earthy) */
         @variant earthy-rhythm {
-            --color-primary: oklch(0.15 0.02 25);
-            --color-card: oklch(0.22 0.03 30);
-            --color-card-selected: oklch(0.35 0.08 25);
+            --color-primary: oklch(0.15 0.025 40);
+            --color-card: oklch(0.22 0.035 42);
+            --color-card-selected: oklch(0.35 0.08 42);
             --color-text: oklch(0.92 0.01 45);
-            --color-text-secondary: oklch(0.65 0.03 30);
-            --color-btn: oklch(0.58 0.18 28);
+            --color-text-secondary: oklch(0.65 0.03 38);
+            --color-btn: oklch(0.55 0.16 42);
             --color-border: oklch(1 0 0 / 8%);
         }
 
+        /* FIX: Shifted hue from H=30–45 (orange, overlapping with ember/sunset) to H=62–68 (amber-gold — opulent, distinct) */
         @variant luxury-ember {
-            --color-primary: oklch(0.18 0.04 30);
-            --color-card: oklch(0.24 0.05 35);
-            --color-card-selected: oklch(0.3 0.07 40);
-            --color-text: oklch(0.95 0.02 45);
-            --color-text-secondary: oklch(0.75 0.08 40);
-            --color-btn: oklch(0.65 0.22 45);
+            --color-primary: oklch(0.18 0.04 62);
+            --color-card: oklch(0.24 0.05 65);
+            --color-card-selected: oklch(0.3 0.08 68);
+            --color-text: oklch(0.95 0.02 65);
+            --color-text-secondary: oklch(0.82 0.12 65);
+            --color-btn: oklch(0.75 0.2 65);
             --color-border: oklch(1 0 0 / 10%);
         }
 
@@ -155,20 +161,31 @@
             --color-border: oklch(1 0 0 / 12%);
         }
 
+        /* FIX: btn hue changed from H=25 (orange-red) to H=8 (true crimson red) */
         @variant slate-crimson {
             --color-primary: oklch(0.16 0.02 260);
             --color-card: oklch(0.22 0.02 265);
             --color-card-selected: oklch(0.28 0.03 270);
             --color-text: oklch(0.92 0.01 260);
             --color-text-secondary: oklch(0.72 0.02 265);
-            --color-btn: oklch(0.55 0.22 25);
+            --color-btn: oklch(
+                0.52 0.24 8
+            ); /* FIX: was H=25 (orange), now H=8 (true crimson) */
             --color-border: oklch(1 0 0 / 10%);
         }
 
+        /* FIX: Primary/card/btn hues shifted from H=15–20 (orange-red) to H=5–12 (true wine/burgundy)
+           and near-neutral dark grey primary added so basalt refers to volcanic grey rock */
         @variant basalt-cyan {
-            --color-primary: oklch(0.13 0.01 220);
-            --color-card: oklch(0.19 0.02 225);
-            --color-card-selected: oklch(0.25 0.03 230);
+            --color-primary: oklch(
+                0.13 0.005 220
+            ); /* FIX: was C=0.01 (bluish), now near-achromatic grey like basalt rock */
+            --color-card: oklch(
+                0.19 0.006 225
+            ); /* FIX: was C=0.02, now near-grey */
+            --color-card-selected: oklch(
+                0.25 0.008 230
+            ); /* FIX: was C=0.03, now near-grey */
             --color-text: oklch(0.96 0.01 220);
             --color-text-secondary: oklch(0.78 0.05 210);
             --color-btn: oklch(0.78 0.14 195);
@@ -275,13 +292,16 @@
             --color-border: oklch(1 0 0 / 11%);
         }
 
+        /* FIX: Hues shifted from H=15–20 (orange-red) to H=5–12 (true deep wine/burgundy) */
         @variant burgundy-depths {
-            --color-primary: oklch(0.12 0.06 15);
-            --color-card: oklch(0.18 0.07 18);
-            --color-card-selected: oklch(0.25 0.1 20);
-            --color-text: oklch(0.94 0.02 15);
-            --color-text-secondary: oklch(0.76 0.08 12);
-            --color-btn: oklch(0.48 0.2 10);
+            --color-primary: oklch(0.12 0.06 8);
+            --color-card: oklch(0.18 0.07 10);
+            --color-card-selected: oklch(0.25 0.1 12);
+            --color-text: oklch(0.94 0.02 10);
+            --color-text-secondary: oklch(0.76 0.08 8); /* FIX: was H=12 */
+            --color-btn: oklch(
+                0.45 0.22 5
+            ); /* FIX: was H=10, now H=5 (true crimson-wine) */
             --color-border: oklch(1 0 0 / 13%);
         }
 

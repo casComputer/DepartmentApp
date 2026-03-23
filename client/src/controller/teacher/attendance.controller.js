@@ -1,9 +1,15 @@
 import axios from "@utils/axios.js";
-import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import {
+    router
+} from "expo-router";
 
-import { useAppStore } from "@store/app.store.js";
-import { saveStudentsCount } from "@utils/storage.js";
+import {
+    useAppStore,
+    toast
+} from "@store/app.store.js";
+import {
+    saveStudentsCount
+} from "@utils/storage.js";
 
 export const saveAttendance = async ({
     students,
@@ -13,7 +19,10 @@ export const saveAttendance = async ({
     attendanceId = null
 }) => {
     try {
-        const { userId, role } = useAppStore.getState().user;
+        const {
+            userId,
+            role
+        } = useAppStore.getState().user;
 
         const response = await axios.post("/attendance/save", {
             attendance: students,
@@ -26,53 +35,50 @@ export const saveAttendance = async ({
         });
 
         if (response.data.success) {
-            ToastAndroid.show(
-                response.data.message ?? "Attendance saved successfully",
-                ToastAndroid.SHORT
-            );
+
+            toast.success("Attendance saved successfully")
+
             router.back();
         } else {
-            ToastAndroid.show(
-                response.data.message ?? "🟥 Failed to save attendance",
-                ToastAndroid.LONG
-            );
+            toast.error("Failed to save attendance!", response?.data?.message ?? "")
             return false;
         }
         return true;
     } catch (err) {
-        ToastAndroid.show(
-            err?.response?.data?.message ?? "🟥 Failed to save attendance!",
-            ToastAndroid.LONG
-        );
-
+        toast.error("Failed to save attendance", err?.response?.data?.message ?? "")
         return false;
     }
 };
 
-export const getAttendanceHistoryByTeacherId = async ({ pageParam, limit }) => {
+export const getAttendanceHistoryByTeacherId = async ({
+    pageParam, limit
+}) => {
     try {
-        const { data } = await axios.post(
+        const {
+            data
+        } = await axios.post(
             "/attendance/getAttandanceTakenByTeacher",
-            { page: pageParam, limit }
+            {
+                page: pageParam, limit
+            }
         );
 
-        if (data.success && data.attendance)
+        if (data.success && data.attendance) {
             return {
                 data: data.attendance,
                 nextPage: data.nextPage,
                 hasMore: data.hasMore
-            };
-        else
-            return {
-                data: [],
-                nextPage: null,
-                hasMore: false
-            };
+            }
+        }
+
+        toast.error("Failed to get attendance history", data?.message ?? "")
+        return {
+            data: [],
+            nextPage: null,
+            hasMore: false
+        };
     } catch (error) {
-        ToastAndroid.show(
-            "Failed to get attendance history",
-            ToastAndroid.LONG
-        );
+        toast.error("Failed to get attendance history")
         return {
             data: [],
             nextPage: null,
@@ -96,11 +102,14 @@ export const fetchStudentsForAttendance = async ({
         });
 
         const numberOfStudents = res.data?.numberOfStudents;
-        saveStudentsCount({ count: numberOfStudents, year, course });
+        saveStudentsCount( {
+            count: numberOfStudents, year, course
+        });
 
         return res.data;
+
     } catch (error) {
-        ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+        toast.error("Failed to fetch students details for attendance")
         return 0;
     }
 };
@@ -112,35 +121,41 @@ export const getClassAttendance = async ({
     limit
 }) => {
     try {
-        const { userId, role, in_charge_course, in_charge_year } =
-            useAppStore.getState().user;
+        const {
+            userId,
+            role,
+            in_charge_course,
+            in_charge_year
+        } =
+        useAppStore.getState().user;
 
         if (role === "teacher") {
             course = in_charge_course;
             year = in_charge_year;
         }
 
-        const { data } = await axios.post("/attendance/getClassAttendance", {
-            course,
-            year,
-            page: pageParam,
-            limit
-        });
+        const {
+            data
+        } = await axios.post("/attendance/getClassAttendance", {
+                course,
+                year,
+                page: pageParam,
+                limit
+            });
 
         if (data.success) return data;
-        else
-            ToastAndroid.show(
-                data.message ?? "Failed to fetch attendance",
-                ToastAndroid.LONG
-            );
+
+        toast.error("Failed to fetch attendance", data.message ?? "")
     } catch (error) {
-        ToastAndroid.show("Failed to fetch attendance", ToastAndroid.LONG);
+        toast.error("Failed to fetch attendance")
     }
 };
 
 export const getAttendanceXl = async payload => {
     try {
-        const { data } = await axios.post(
+        const {
+            data
+        } = await axios.post(
             "/attendance/monthly-report-excel",
             payload
         );
@@ -154,19 +169,14 @@ export const getAttendanceXl = async payload => {
             };
         }
 
-        ToastAndroid.show(
-            data.message ?? "Failed to generate attendance report!",
-            ToastAndroid.LONG
-        );
+        toast.error("Failed to generate attendance report!", data.message ?? "")
 
         return {
             success: false
         };
     } catch (error) {
-        ToastAndroid.show(
-            "Failed to generate attendance report!",
-            ToastAndroid.LONG
-        );
+        toast.error("Failed to generate attendance report")
+
         return {
             success: false
         };
@@ -175,26 +185,27 @@ export const getAttendanceXl = async payload => {
 
 export const deleteReport = async payload => {
     try {
-        const { data } = await axios.post("/attendance/deleteReport", payload);
+        const {
+            data
+        } = await axios.post("/attendance/deleteReport", payload);
 
         if (data.success)
             return {
-                success: true,
-                message:
-                    "Old reports deleted. You can now generate fresh reports."
-            };
+            success: true,
+            message:
+            "Old reports deleted. You can now generate fresh reports."
+        };
 
-        ToastAndroid.show(
-            data.message ?? "Failed to delete attendance report!",
-            ToastAndroid.LONG
-        );
+        toast.error("Failed to delete attendance report!", data.message ?? "")
 
-        return { success: false };
+        return {
+            success: false
+        };
     } catch (error) {
-        ToastAndroid.show(
-            "Failed to delete attendance report!",
-            ToastAndroid.LONG
-        );
-        return { success: false };
+        toast.error("Failed to delete attendance report!")
+
+        return {
+            success: false
+        };
     }
 };

@@ -18,13 +18,13 @@ const Header = ({
     };
 
     return (
-        <View className="flex-row items-center h-16 px-1 justify-between absolute top-0 left-0 z-20 w-full">
+        <View className="flex-row items-center h-16 px-2 justify-between absolute top-0 left-0 z-20 w-full">
             <View className="flex-row items-center">
                 {!disableBackBtn && (
                     <TouchableOpacity
                         className="overflow-hidden"
                         onPress={handleBack}
-                        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                     >
                         <MaterialIcons
                             name="arrow-back-ios-new"
@@ -46,7 +46,7 @@ const Header = ({
 
             {extraButton && (
                 <TouchableOpacity
-                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                     className="overflow-hidden "
                     onPress={handlePress}
                 >

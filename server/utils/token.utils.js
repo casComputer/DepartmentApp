@@ -40,7 +40,7 @@ export const generateTokens = (userId, role) => {
     if(!userId || !role) throw new Error('token payloads were undefined')
     
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRES || "1m"
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRES || "1h"
     });
     const refreshToken = jwt.sign(
         payload,

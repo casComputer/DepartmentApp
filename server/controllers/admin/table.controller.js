@@ -31,7 +31,7 @@ export const clearDbDocuments = async (req, res) => {
             });
         }
 
-        const docs = await Model.find({}).lean(); 
+        const docs = await Model.find({}).lean();
         const publicIds = [];
 
         for (const doc of docs) {
@@ -72,7 +72,6 @@ export const clearDbDocuments = async (req, res) => {
             message: `${collection} cleared successfully`,
             deletedFiles: publicIds.length
         });
-
     } catch (e) {
         console.error("Error while deleting mongodb documents:", e);
         return res.status(500).json({
@@ -82,16 +81,23 @@ export const clearDbDocuments = async (req, res) => {
     }
 };
 
-
 export const clearTable = async (req, res) => {
     try {
         const { table } = req.body;
 
+        const acceptableTables = ["attendance", "fees", "worklogs"];
+
+        if (!acceptableTables.includes(table)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid table name"
+            });
+        }
+
         await turso.execute(
             `
-            DELETE FROM ?
-        `,
-            [table]
+            DELETE FROM ${table}
+        `
         );
 
         const data = {

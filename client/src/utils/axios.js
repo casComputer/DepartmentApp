@@ -60,13 +60,6 @@ api.interceptors.response.use(
         const nextServer = SERVERS[originalReq._retryCount];
         originalReq.baseURL = nextServer;
 
-        // ✅ Show toast only once
-        if (originalReq._retryCount === 1) {
-          useToastStore.getState()._add(
-            "info",
-            "Switching to backup server..."
-          );
-        }
 
         return api(originalReq);
       }
@@ -123,7 +116,6 @@ api.interceptors.response.use(
           }
         }
 
-        // ❌ ALL REFRESH FAILED
         return logout();
 
       } catch (err) {

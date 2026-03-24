@@ -23,9 +23,8 @@ export const deleteAllDocsFromCollection = async (option, db) => {
                     role: "parents"
                 });
             } else {
-                if (option === "attendance-records") {
-                    option = "attendance";
-                }
+                if (option === "attendance-records") option = "attendance";
+                
                 await axios.post(`/admin/clearTable/`, {
                     table: option
                 });

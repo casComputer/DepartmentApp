@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 
 import "./config/mongoose.js";
-import "./services/emailService.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";

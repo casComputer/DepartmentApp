@@ -8,7 +8,7 @@ router.post("/fetchByClassTeacher", async (req, res) => {
     try {
         const { userId: teacherId } = req.user;
 
-        const { rows } = turso.execute(
+        const { rows } = await turso.execute(
             `
             SELECT DISTINCT 
                 u.userId,

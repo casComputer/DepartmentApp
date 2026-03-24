@@ -1,4 +1,5 @@
 import { revokeRefreshToken } from "../../utils/token.utils.js";
+import jwt from "jsonwebtoken";
 
 const logout = async (req, res) => {
     const { refreshToken } = req.body;

@@ -49,7 +49,7 @@ export const create = async (req, res) => {
         res.json({ success: true, note });
     } catch (error) {
         console.error(error);
-        res.send(500).json({
+        res.status(500).json({
             success: false,
             message: "Internal server error!"
         });

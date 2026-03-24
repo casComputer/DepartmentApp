@@ -18,7 +18,6 @@ import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import parentRoutes from "./routes/parent.routes.js";
-import emailRoutes from "./routes/email.routes.js";
 
 import {
     authenticateToken,
@@ -50,7 +49,6 @@ app.get("/", isServerRunning);
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/user", userRoutes);
-app.use("/email", emailRoutes);
 // app.get("/health", authorize("admin"), adminLimiter, checkHealth);
 // app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
 // app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);

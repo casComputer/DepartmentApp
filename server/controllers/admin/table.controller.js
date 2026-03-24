@@ -64,8 +64,8 @@ export const clearTable = async (req, res) => {
         const { table } = req.body;
 
         await turso.execute(`
-            DELETE FROM ${table}
-        `);
+            DELETE FROM ?
+        `, [table]);
 
         const data = {
             type: "DEFAULT"

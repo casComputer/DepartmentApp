@@ -30,7 +30,7 @@ import { turso } from "../config/turso.js";
 
 const router = express.Router();
 
-router.post("/fetchStudentsByClass", fetchStudentsByClass);
+router.post("/fetchStudentsByClass",  fetchStudentsByClass);
 
 router.get(
     "/fetchStudentsByClassTeacher",
@@ -76,7 +76,7 @@ router.post(
     removeAllByClassTeacher,
 );
 
-router.post("/saveExamResultDetails", saveExamResultDetails);
+router.post("/saveExamResultDetails", authorize("student"), saveExamResultDetails);
 
 router.post(
     "/checkExamResultUpload",

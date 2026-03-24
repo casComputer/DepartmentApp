@@ -10,9 +10,10 @@ import {
 import {
   storage
 } from "./storage";
-import {
-  clearUser
-} from "@storage/user.storage.js";
+
+import { uuseAppStore } from "@store/app.store.js"
+
+const clearUser = useAppStore.getState().removeUser
 
 let PRIMARY_URL = process.env.EXPO_PUBLIC_PRIMARY_SERVER;
 let BACKUP_URL = process.env.EXPO_PUBLIC_FALLBACK_SERVER;

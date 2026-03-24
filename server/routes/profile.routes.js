@@ -111,7 +111,9 @@ router.post("/removeDp", async (req, res) => {
         let { userId } = req.user;
         let { public_id, dp } = req.body;
 
-        if (!public_id) getPublicIdFromUrl(dp);
+        if (!public_id) 
+            public_id = getPublicIdFromUrl(dp);
+        
 
         const query = `
             UPDATE users SET dp = NULL

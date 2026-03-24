@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@icons";
-import { router } from "expo-router"
+import { router } from "expo-router";
 
 const ICONS_SIZE = 30;
 
@@ -11,8 +11,7 @@ const ParentOptions = () => {
                 onPress={() =>
                     router.push("/(parent)/(others)/AttendanceCalendar")
                 }
-                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 "
-            >
+                className="bg-card px-6 py-7 rounded-3xl flex-row items-center gap-4 ">
                 <Feather name="calendar" size={ICONS_SIZE} />
                 <Text className="font-bold text-xl text-text">
                     Attendance Calendar

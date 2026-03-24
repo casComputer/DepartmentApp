@@ -1,5 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons, Octicons, MaterialIcons } from "@icons";
+import {
+    MaterialCommunityIcons,
+    Octicons,
+    MaterialIcons,
+    Entypo
+} from "@icons";
 import { router } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -26,6 +31,13 @@ const adminItems = [
         sub: "Activity history",
         route: "/(admin)/(others)/WorkLogHistory",
         accent: "#3fb950"
+    },
+    {
+        icon: <Entypo name="megaphone" size={ICONS_SIZE} />,
+        label: "Notice",
+        sub: "Manage Notice",
+        route: "/common/notice/History",
+        accent: "#f62c77"
     }
 ];
 
@@ -36,16 +48,14 @@ const AdminCard = ({ item, index }) => {
         <Animated.View
             entering={FadeInDown.delay(index * 80)
                 .springify()
-                .damping(16)}
-        >
+                .damping(16)}>
             <Animated.View style={animatedStyle}>
                 <TouchableOpacity
                     activeOpacity={1}
                     onPressIn={onPressIn}
                     onPressOut={onPressOut}
                     onPress={() => router.push(item.route)}
-                    className="bg-card rounded-2xl p-4 flex-row items-center gap-3 border border-border"
-                >
+                    className="bg-card rounded-2xl p-4 flex-row items-center gap-3 border border-border">
                     <View
                         style={{
                             backgroundColor: item.accent + "22",
@@ -53,8 +63,7 @@ const AdminCard = ({ item, index }) => {
                             padding: 10,
                             borderWidth: 1,
                             borderColor: item.accent + "44"
-                        }}
-                    >
+                        }}>
                         <View style={{ color: item.accent }}>{item.icon}</View>
                     </View>
 

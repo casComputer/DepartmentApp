@@ -14,12 +14,13 @@ export default function TabLayout() {
             backgroundColor={styles["backgroundColor"]}
             iconColor={styles.color}
             indicatorColor={styles.borderColor}
-            rippleColor={selectedCardStyle.backgroundColor}
-        >
+            rippleColor={selectedCardStyle.backgroundColor}>
             <NativeTabs.Trigger name="Home">
                 <NativeTabs.Trigger.Icon md="home" sf="house.fill" />
             </NativeTabs.Trigger>
-
+            <NativeTabs.Trigger name="Notice">
+                <NativeTabs.Trigger.Icon md="campaign" sf="megaphone.fill" />
+            </NativeTabs.Trigger>
             <NativeTabs.Trigger name="Notes">
                 <NativeTabs.Trigger.Icon md="notes" sf="note.text" />
             </NativeTabs.Trigger>

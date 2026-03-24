@@ -48,8 +48,7 @@ const AssignClass = () => {
 
                 <TouchableOpacity
                     onPress={handleAssignClass}
-                    className="w-full bg-btn p-6 justify-center items-center rounded-3xl mt-5"
-                >
+                    className="w-full bg-btn p-6 justify-center items-center rounded-3xl mt-5">
                     <Text className="text-[6vw] font-black text-text">
                         {saving ? "Assigning..." : "Assign Class"}
                     </Text>

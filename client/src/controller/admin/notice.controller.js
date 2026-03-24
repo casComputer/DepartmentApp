@@ -1,6 +1,6 @@
 import axios from "@utils/axios.js";
+import queryClient from "@utils/queryClient.js";
 import { toast } from "@store/app.store.js";
-import { useAppStore } from "@store/app.store.js";
 
 export const createNotice = async ({
     title,
@@ -27,6 +27,23 @@ export const createNotice = async ({
             return { success: false };
         }
 
+        // Prepend new notice to the first page of both query caches
+        const prependToCache = key => {
+            queryClient.setQueryData(key, prev => {
+                if (!prev) return prev;
+
+                const newPages = [...prev.pages];
+                newPages[0] = {
+                    ...newPages[0],
+                    notices: [data.notice, ...(newPages[0].notices ?? [])]
+                };
+
+                return { ...prev, pages: newPages };
+            });
+        };
+
+        prependToCache(["notices"]);
+
         toast.success("Notice Sent", "Your notice has been published.");
         return { success: true };
     } catch (error) {
@@ -43,6 +60,23 @@ export const deleteNotice = async noticeId => {
             toast.error("Failed", data.message ?? "Could not delete notice.");
             return { success: false };
         }
+
+        // Remove the notice from both query caches
+        const removeFromCache = key => {
+            queryClient.setQueryData(key, prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        notices: page.notices.filter(n => n._id !== noticeId)
+                    }))
+                };
+            });
+        };
+
+        removeFromCache(["notices"]);
 
         toast.success("Deleted", "Notice removed successfully.");
         return { success: true };

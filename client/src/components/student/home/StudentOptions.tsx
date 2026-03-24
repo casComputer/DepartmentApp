@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import {
     AntDesign,
-    Entypo,
     Feather,
     FontAwesome,
     FontAwesome6,
@@ -62,16 +61,14 @@ const Option = ({ Icon, iconName, text = "", locaton }) => {
     return (
         <TouchableOpacity
             onPress={handlePress}
-            className="justify-center items-center gap-2 my-5"
-        >
+            className="justify-center items-center gap-2 my-5">
             <Icon name={iconName} size={ICONS_SIZE} />
 
             <Text
                 allowFontScaling={false}
                 adjustsFontSizeToFit
                 numberOfLines={1}
-                className="text-sm font-semibold text-center text-text"
-            >
+                className="text-sm font-semibold text-center text-text">
                 {text}
             </Text>
         </TouchableOpacity>

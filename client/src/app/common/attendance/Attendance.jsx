@@ -1,15 +1,6 @@
-import {
-    useState,
-    useEffect,
-    useRef
-} from "react";
-import {
-    View,
-    ScrollView
-} from "react-native";
-import {
-    useLocalSearchParams
-} from "expo-router";
+import { useState, useEffect, useRef } from "react";
+import { View, ScrollView } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import * as Haptics from "expo-haptics";
 
 import Header from "@components/common/Header2";
@@ -24,12 +15,8 @@ import {
     saveAttendance
 } from "@controller/teacher/attendance.controller.js";
 
-import {
-    getStudentCount
-} from "@utils/storage";
-import {
-    toast
-} from "@store/app.store";
+import { getStudentCount } from "@utils/storage";
+import { toast } from "@store/app.store";
 
 const Attendance = () => {
     let {
@@ -42,20 +29,17 @@ const Attendance = () => {
 
     isEditable = isEditable === true || isEditable === "true";
 
-    const [loading,
-        setLoading] = useState(false);
-    const [saving,
-        setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const attendanceId = useRef(null);
 
     const storedCount =
-    getStudentCount({
-        course,
-        year
-    }) || 0;
+        getStudentCount({
+            course,
+            year
+        }) || 0;
 
-    const [students,
-        setStudents] = useState(
+    const [students, setStudents] = useState(
         Array.from(
             {
                 length: storedCount
@@ -68,8 +52,8 @@ const Attendance = () => {
     );
 
     // ---- DRAG SELECTION REFS ----
-    const itemLayouts = useRef( {});
-    const touchStartPosition = useRef( {});
+    const itemLayouts = useRef({});
+    const touchStartPosition = useRef({});
     const dragged = useRef(new Set());
     const dragging = useRef(false);
     const isDragMode = useRef(false);
@@ -89,10 +73,7 @@ const Attendance = () => {
     const handleTouch = event => {
         if (isEditable !== true) return;
 
-        const {
-            pageY,
-            pageX
-        } = event;
+        const { pageY, pageX } = event;
 
         const localY = convertPageToLocalY(pageY);
         const localX = pageX;
@@ -123,12 +104,12 @@ const Attendance = () => {
                 const {
                     students: newStudents = [],
                     attendance: existAttendance = []
-                } = await fetchStudentsForAttendance( {
-                        course,
-                        year,
-                        hour,
-                        date
-                    });
+                } = await fetchStudentsForAttendance({
+                    course,
+                    year,
+                    hour,
+                    date
+                });
 
                 attendanceId.current = existAttendance[0]?.attendanceId ?? null;
 
@@ -140,35 +121,35 @@ const Attendance = () => {
                     existAttendance.map(a => [a.rollno, a])
                 );
 
+                let showExistingToast = false;
+                let showStrengthToast = false;
+
+                console.log(newStudents);
+
                 setStudents(prevStudents => {
                     const prevMap = new Map(
                         prevStudents.map(s => [s.rollno, s])
                     );
-
                     const attendanceMap = new Map(
                         existAttendance.map(a => [a.rollno, a])
                     );
 
                     if (existAttendance.length > 0) {
-                        toast.info(
-                            "Attendance already exists. Local changes were reset.",
-
-                        );
+                        showExistingToast = true;
 
                         return newStudents.map(student => ({
                             ...student,
                             present:
-                            attendanceMap.get(student.rollno)?.status ===
-                            "present",
+                                attendanceMap.get(student.rollno)?.status ===
+                                    "present" ||
+                                attendanceMap.get(student.rollno)?.status ===
+                                    "late",
                             manuallyEdited: false
                         }));
                     }
 
                     if (newStudents.length !== storedCount) {
-                        toast.info(
-                            "Student strength changed. Attendance reset.",
-
-                        );
+                        showStrengthToast = true;
 
                         return newStudents.map(student => ({
                             ...student,
@@ -187,6 +168,16 @@ const Attendance = () => {
                         };
                     });
                 });
+
+                if (showExistingToast) {
+                    toast.info(
+                        "Attendance already exists. Local changes were reset."
+                    );
+                }
+
+                if (showStrengthToast) {
+                    toast.info("Student strength changed. Attendance reset.");
+                }
             } finally {
                 setLoading(false);
             }
@@ -201,10 +192,11 @@ const Attendance = () => {
         setStudents(prev =>
             prev.map(s =>
                 s.rollno === rollno
-                ? {
-                    ...s,
-                    present: !s.present
-                }: s
+                    ? {
+                          ...s,
+                          present: !s.present
+                      }
+                    : s
             )
         );
     };
@@ -214,7 +206,7 @@ const Attendance = () => {
             if (isEditable !== true) return;
 
             setSaving(true);
-            await saveAttendance( {
+            await saveAttendance({
                 students,
                 course,
                 year,
@@ -236,19 +228,21 @@ const Attendance = () => {
     const handleSelectAll = () => {
         if (isEditable !== true) return;
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setStudents(prev => prev.map(item => ({
-            ...item, present: true
-        })));
+        setStudents(prev =>
+            prev.map(item => ({
+                ...item,
+                present: true
+            }))
+        );
     };
 
     return (
         <View className="flex-1 bg-primary">
             <Header
-                onSave={isEditable === true ? handleSave: undefined}
+                onSave={isEditable === true ? handleSave : undefined}
                 saving={saving}
                 disabled={loading}
-
-                />
+            />
 
             <Options
                 loading={loading}
@@ -256,7 +250,7 @@ const Attendance = () => {
                 isEditable={isEditable}
                 year={year}
                 course={course}
-                />
+            />
 
             <ScrollView
                 ref={scrollViewRef}
@@ -292,16 +286,15 @@ const Attendance = () => {
                     dragged.current.clear();
                     isDragMode.current = false;
                 }}
-                contentContainerStyle={ {
+                contentContainerStyle={{
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "center",
                     flexGrow: 1
-                }}
-                >
+                }}>
                 {students?.length === 0 ? (
                     <ListEmptyComponent />
-                ): (
+                ) : (
                     students.map(item => (
                         <AttendanceItem
                             key={item.rollno}
@@ -310,7 +303,7 @@ const Attendance = () => {
                             onItemLayout={onItemLayout(item.rollno)}
                             onLongPress={longPressHandler}
                             isEditable={isEditable === true}
-                            />
+                        />
                     ))
                 )}
             </ScrollView>

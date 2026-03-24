@@ -53,7 +53,7 @@ const CircularProgress = ({
             <Svg width={size + 1} height={size + 1}>
                 {/* Background circle */}
                 <Circle
-                    stroke={theme === "dark" ? "#3a3a3a" : "#e6e6e6"}
+                    stroke={theme === "dark" ? "#3a3a3a" : "#9d9d9d"}
                     fill="none"
                     cx={size / 2}
                     cy={size / 2}

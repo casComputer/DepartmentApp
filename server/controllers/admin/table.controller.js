@@ -1,6 +1,6 @@
 import { turso } from "../../config/turso.js";
 import { sendPushNotificationToAllUsers } from "../../utils/notification.js";
-import { deleteFolderFiles } from "../../utils/cloudinary.js";
+import { deleteFilesBulk } from "../../utils/cloudinary.js";
 
 import Assignment from "../../models/assignment.js";
 import Result from "../../models/examResult.js";
@@ -22,14 +22,6 @@ export const clearDbDocuments = async (req, res) => {
             notifications: Notification
         };
 
-        const folderMap = {
-            assignments: "assignment",
-            "exam-results": "exam_result",
-            "internal-marks": "internal_mark",
-            "attendance-reports": "attendance",
-            notes: "notes"
-        };
-
         const Model = collectionMap[collection];
 
         if (!Model) {
@@ -39,17 +31,48 @@ export const clearDbDocuments = async (req, res) => {
             });
         }
 
-        await Model.deleteMany({});
+        const docs = await Model.find({}).lean(); 
+        const publicIds = [];
 
-        const folder = folderMap[collection];
-        if (folder) {
-            await deleteFolderFiles(folder);
+        for (const doc of docs) {
+            switch (collection) {
+                case "assignments":
+                    doc.submissions?.forEach(item => {
+                        if (item.public_key) publicIds.push(item.public_key);
+                    });
+                    break;
+
+                case "exam-results":
+                case "internal-marks":
+                    if (doc.secure_url) publicIds.push(doc.secure_url);
+                    break;
+
+                case "attendance-reports":
+                    if (doc.xl_public_id) publicIds.push(doc.xl_public_id);
+                    if (doc.pdf_public_id) publicIds.push(doc.pdf_public_id);
+                    break;
+
+                case "notes":
+                    if (doc.publicId) publicIds.push(doc.publicId);
+                    break;
+
+                default:
+                    break;
+            }
         }
+
+        if (publicIds.length > 0) {
+            await deleteFilesBulk(publicIds);
+        }
+
+        await Model.deleteMany({});
 
         return res.json({
             success: true,
-            message: `${collection} cleared successfully`
+            message: `${collection} cleared successfully`,
+            deletedFiles: publicIds.length
         });
+
     } catch (e) {
         console.error("Error while deleting mongodb documents:", e);
         return res.status(500).json({
@@ -59,13 +82,17 @@ export const clearDbDocuments = async (req, res) => {
     }
 };
 
+
 export const clearTable = async (req, res) => {
     try {
         const { table } = req.body;
 
-        await turso.execute(`
+        await turso.execute(
+            `
             DELETE FROM ?
-        `, [table]);
+        `,
+            [table]
+        );
 
         const data = {
             type: "DEFAULT"

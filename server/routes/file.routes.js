@@ -11,7 +11,7 @@ export const getSignature = (req, res) => {
         if (!preset_type)
             return res.json({
                 success: false,
-                message: "missing preset type!",
+                message: "missing preset type!"
             });
 
         const timestamp = Math.round(new Date().getTime() / 1000);
@@ -22,20 +22,22 @@ export const getSignature = (req, res) => {
         else if (preset_type === "assignment") preset = "assignment_upload";
         else if (preset_type === "dp") preset = "dp_upload";
         else if (preset_type === "exam_result") preset = "exam_result_upload";
-        else if (preset_type === "internal_mark") preset= "internal_mark_upload";
+        else if (preset_type === "internal_mark")
+            preset = "internal_mark_upload";
+        else if (preset_type === "notice") preset = "notice_upload";
 
         if (!preset)
             return res.json({
                 success: false,
-                message: "invalid preset type!",
+                message: "invalid preset type!"
             });
 
         const signature = cloudinary.utils.api_sign_request(
             {
                 timestamp,
-                upload_preset: preset,
+                upload_preset: preset
             },
-            cloudinary.config().api_secret,
+            cloudinary.config().api_secret
         );
 
         res.json({

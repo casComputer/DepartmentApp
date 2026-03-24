@@ -17,6 +17,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import feesRoutes from "./routes/fees.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import parentRoutes from "./routes/parent.routes.js";
+import noticeRoutes from "./routes/notice.routes.js";
 
 import {
     authenticateToken,
@@ -55,6 +56,7 @@ app.get("/health", authorize("admin"), checkHealth);
 app.use("/admin", authorize("admin"), adminRoutes);
 app.use("/dashboard", authorize("admin"), dashboardRoutes);
 
+app.use("/notice", noticeRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);

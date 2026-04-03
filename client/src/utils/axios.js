@@ -70,8 +70,6 @@ api.interceptors.response.use(
             if (originalReq._timeoutRetry < 2) {
                 originalReq._timeoutRetry++;
 
-                useToastStore.getState()._add("info", "Server waking up...");
-
                 await new Promise(r => setTimeout(r, 3000));
 
                 return api(originalReq);
@@ -92,13 +90,6 @@ api.interceptors.response.use(
 
                 const nextServer = SERVERS[originalReq._retryCount];
                 originalReq.baseURL = nextServer;
-
-                useToastStore
-                    .getState()
-                    ._add(
-                        "warning",
-                        `Switching to ${getServerName(nextServer)}`
-                    );
 
                 return api(originalReq);
             }
@@ -143,13 +134,6 @@ api.interceptors.response.use(
                                 );
 
                                 storage.set("accessToken", data.accessToken);
-
-                                useToastStore
-                                    .getState()
-                                    ._add(
-                                        "info",
-                                        `Session restored via ${getServerName(server)}`
-                                    );
 
                                 return {
                                     accessToken: data.accessToken,

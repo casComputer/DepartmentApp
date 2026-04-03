@@ -151,7 +151,7 @@ export const handleAssignmentUpload = async (
             toast.warn("Please select a file.");
             return false;
         }
-        const url = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_URL;
+        const url = "https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload"
 
         const formData = new FormData();
         formData.append("file", {

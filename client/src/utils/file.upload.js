@@ -2,10 +2,7 @@ import axios from "@utils/axios.js";
 import * as DocumentPicker from "expo-document-picker";
 import orgAxios from "axios";
 
-import {
-    useAppStore,
-    toast
-} from "@store/app.store.js";
+import { useAppStore, toast } from "@store/app.store.js";
 
 const setProgressText = useAppStore.getState().setGlobalProgressText;
 const setProgress = useAppStore.getState().setGlobalProgress;
@@ -17,16 +14,10 @@ export const handleDocumentPick = async (types = []) => {
 
     if (result.canceled) return null;
 
-    const {
-        name,
-        size,
-        uri,
-        mimeType
-    } = result.assets[0];
+    const { name, size, uri, mimeType } = result.assets[0];
 
     if (!name || !uri || !mimeType || !size) {
-        toast.error(
-            "Failed to retrieve file information. Please try again.");
+        toast.error("Failed to retrieve file information. Please try again.");
         return null;
     }
 
@@ -72,7 +63,7 @@ export const handleUpload = async (file, preset_type) => {
             };
         }
 
-        const url = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_URL;
+        const url = "https://api.cloudinary.com/v1_1/dqvgf5plc/auto/upload";
 
         const formData = new FormData();
         formData.append("file", {
@@ -87,17 +78,10 @@ export const handleUpload = async (file, preset_type) => {
             preset_type
         });
 
-        const {
-            timestamp,
-            signature,
-            api_key,
-            preset
-        } = signatureRes.data;
+        const { timestamp, signature, api_key, preset } = signatureRes.data;
 
         if (!timestamp || !signature || !api_key || !preset) {
-            toast.error(
-                "Failed to generate signature. Please try again."
-            );
+            toast.error("Failed to generate signature. Please try again.");
             return {
                 success: false
             };
@@ -125,9 +109,7 @@ export const handleUpload = async (file, preset_type) => {
             }
         });
 
-        const {
-            secure_url, format, public_id
-        } = res.data;
+        const { secure_url, format, public_id } = res.data;
 
         if (!secure_url || !format || !public_id) {
             toast.error("Failed to upload the file!");
@@ -144,9 +126,7 @@ export const handleUpload = async (file, preset_type) => {
         };
     } catch (error) {
         setProgress(0);
-        toast.error(
-            "Failed to upload file. Please try again.",
-        );
+        toast.error("Failed to upload file. Please try again.");
         return {
             success: false
         };

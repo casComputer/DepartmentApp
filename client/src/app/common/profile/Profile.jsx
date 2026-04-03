@@ -55,8 +55,7 @@ const Profile = () => {
                 showsVerticalScrollIndicator={false}
                 overScrollMode="always"
                 contentContainerStyle={{ flexGrow: 1 }}
-                onTouchStart={() => setDpOptions(false)}
-            >
+                onTouchStart={() => setDpOptions(false)}>
                 <View className="px-4">
                     <Header disableBackBtn={true} title={fullname} />
                 </View>
@@ -81,6 +80,7 @@ const Profile = () => {
             <EditDpOptions
                 handleChangePic={handleChangePic}
                 show={showDpOptions}
+                setDpOptions={setDpOptions}
             />
         </View>
     );

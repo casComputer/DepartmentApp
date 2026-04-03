@@ -8,7 +8,6 @@ import { useAppStore, useToastStore } from "@store/app.store.js";
 
 const clearUser = useAppStore.getState().removeUser;
 
-// SERVER PRIORITY
 const SERVERS = [
     "https://dc-connect.onrender.com",
     "https://dc-connect.vercel.app",
@@ -16,6 +15,7 @@ const SERVERS = [
 ];
 
 let currentServerIndex = 0;
+let refreshPromise = null;
 
 function getServerName(url) {
     if (url.includes("railway")) return "Railway";
@@ -43,7 +43,6 @@ api.interceptors.request.use(config => {
 // ================= RESPONSE =================
 api.interceptors.response.use(
     res => {
-        // ✅ Remember last working server
         const baseURL = res.config.baseURL;
         const index = SERVERS.findIndex(s => baseURL?.includes(s));
 
@@ -55,7 +54,6 @@ api.interceptors.response.use(
         const originalReq = error.config;
         const status = error.response?.status;
 
-        // جلوگیری infinite loop
         if (originalReq._handled) {
             return Promise.reject(error);
         }
@@ -65,7 +63,7 @@ api.interceptors.response.use(
         const isNetworkError = !error.response && !isTimeout;
         const isServerError = [500, 502, 503, 504].includes(status);
 
-        // ================= TIMEOUT (Render cold start) =================
+        // ================= TIMEOUT =================
         if (isTimeout) {
             originalReq._timeoutRetry = originalReq._timeoutRetry || 0;
 
@@ -128,40 +126,52 @@ api.interceptors.response.use(
         if ((status === 401 || status === 403) && !originalReq._authRetry) {
             originalReq._authRetry = true;
 
-            try {
-                const refreshToken =
-                    await SecureStore.getItemAsync("refreshToken");
-
-                if (!refreshToken) return logout();
-
-                for (let server of SERVERS) {
+            if (!refreshPromise) {
+                refreshPromise = (async () => {
                     try {
-                        const { data } = await axios.post(
-                            `${server}/auth/refresh`,
-                            { refreshToken },
-                            { timeout: 5000 }
-                        );
+                        const refreshToken =
+                            await SecureStore.getItemAsync("refreshToken");
 
-                        storage.set("accessToken", data.accessToken);
+                        if (!refreshToken) return null;
 
-                        originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
-                        originalReq.baseURL = server;
+                        for (let server of SERVERS) {
+                            try {
+                                const { data } = await axios.post(
+                                    `${server}/auth/refresh`,
+                                    { refreshToken },
+                                    { timeout: 5000 }
+                                );
 
-                        useToastStore
-                            .getState()
-                            ._add(
-                                "info",
-                                `Session restored via ${getServerName(server)}`
-                            );
+                                storage.set("accessToken", data.accessToken);
 
-                        return api(originalReq);
-                    } catch {}
-                }
+                                useToastStore
+                                    .getState()
+                                    ._add(
+                                        "info",
+                                        `Session restored via ${getServerName(server)}`
+                                    );
 
-                return logout();
-            } catch {
-                return logout();
+                                return {
+                                    accessToken: data.accessToken,
+                                    server
+                                };
+                            } catch {}
+                        }
+
+                        return null;
+                    } finally {
+                        refreshPromise = null;
+                    }
+                })();
             }
+
+            const result = await refreshPromise;
+
+            if (!result) return logout();
+
+            originalReq.headers.Authorization = `Bearer ${result.accessToken}`;
+            originalReq.baseURL = result.server;
+            return api(originalReq);
         }
 
         return Promise.reject(error);

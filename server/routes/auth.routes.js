@@ -10,12 +10,6 @@ import signinController from "../controllers/auth/signin.controller.js";
 import { refreshAccessToken } from "../controllers/auth/refresh.controller.js";
 import logoutController from "../controllers/auth/logout.controller.js";
 
-import {
-    authLimiter,
-    adminLimiter,
-    speedLimiter
-} from "../middleware/ratelimit.middleware.js";
-
 router.post("/signin", signinController);
 
 router.post("/signup", signupController);

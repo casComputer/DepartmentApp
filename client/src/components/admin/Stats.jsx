@@ -24,7 +24,11 @@ import {
     fetchUserStats
 } from "@controller/admin/dashboard.controller.js";
 
-import { formatUsage } from "@utils/formateTursoStats.js";
+import {
+    formatNumber,
+    formatBytes,
+    getProgress
+} from "@utils/formateTursoStats.js";
 
 const StatPill = ({ label, value }) => {
     const scale = useSharedValue(1);
@@ -43,8 +47,7 @@ const StatPill = ({ label, value }) => {
         <Pressable onPress={onPress}>
             <Animated.View
                 style={animatedStyle}
-                className="flex-row items-center justify-between border border-border rounded-xl px-4 py-3 bg-card mb-2"
-            >
+                className="flex-row items-center justify-between border border-border rounded-xl px-4 py-3 bg-card mb-2">
                 <Text className="text-text-secondary text-sm font-medium capitalize">
                     {label}
                 </Text>
@@ -70,6 +73,11 @@ export const CloudinaryStats = () => {
             ringScale.value = withSpring(1);
         });
     };
+
+    const CREDIT_LIMIT_BYTES = 25 * 1024 ** 3; // 25 GB per credit metric
+
+    const storageUsed = stats.storage?.usage ?? 0;
+    const bandwidthUsed = stats.bandwidth?.usage ?? 0;
 
     const used = stats.credits?.usage ?? 0;
     const limit = stats.credits?.limit ?? 25;
@@ -124,6 +132,21 @@ export const CloudinaryStats = () => {
             {/* Divider */}
             <View className="h-px bg-border" />
 
+            {/* Storage & Bandwidth */}
+            <View className="gap-2">
+                <Text className="text-text-secondary text-xs font-semibold uppercase tracking-widest mb-1">
+                    Storage & Bandwidth Usage
+                </Text>
+                <StatPill label="Storage" value={formatBytes(storageUsed)} />
+                <StatPill
+                    label="Bandwidth"
+                    value={formatBytes(bandwidthUsed)}
+                />
+            </View>
+
+            {/* Divider */}
+            <View className="h-px bg-border" />
+
             {/* Rate Limit Stats */}
             <View className="gap-1">
                 <Text className="text-text-secondary text-xs font-semibold uppercase tracking-widest mb-2">
@@ -138,6 +161,26 @@ export const CloudinaryStats = () => {
                     value={stats.rate_limit_remaining ?? "—"}
                 />
                 <StatPill label="Resets at" value={resetTime} />
+            </View>
+            {/* Divider */}
+            <View className="h-px bg-border" />
+
+            {/* Info Banner */}
+            <View className="bg-card-selected border border-border rounded-xl px-4 py-3 gap-1.5">
+                <Text className="text-text text-xs font-bold">
+                    ⚠️ Credit Usage Note
+                </Text>
+                <Text className="text-text-secondary text-xs leading-5">
+                    Storage and bandwidth both draw from the same 25-credit pool
+                    (1 credit = 1 GB each). Keep storage under 60–70% to leave
+                    room for bandwidth.
+                </Text>
+                <Text
+                    className="text-xs font-semibold"
+                    style={{ color: "#e05c5c" }}>
+                    Exceeding the limit suspends your account — no warnings, no
+                    overages.
+                </Text>
             </View>
         </View>
     );
@@ -166,8 +209,7 @@ const MetricRow = ({ label, icon, text, progress }) => {
         <Pressable onPress={onPress}>
             <Animated.View
                 style={animatedStyle}
-                className="border border-border bg-card rounded-xl px-4 py-3 gap-2"
-            >
+                className="border border-border bg-card rounded-xl px-4 py-3 gap-2">
                 {/* Label row */}
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center gap-2">
@@ -193,20 +235,33 @@ const MetricRow = ({ label, icon, text, progress }) => {
 
 export const TursoStats = () => {
     const { data: stats = {} } = useQuery({
-        queryKey: ["tursoStats", 10000],
-        queryFn: fetchTursoStats
+        queryKey: ["tursoStats"],
+        queryFn: fetchTursoStats,
+        staleTime: 10_000
     });
 
-    const { reads, writes, storage } = formatUsage({
-        objects: { usage: stats.usage?.rows_read ?? 0 },
-        requests: stats.usage?.rows_written ?? 0,
+    const FREE_LIMITS = {
+        reads: 500_000_000,
+        writes: 10_000_000,
+        storage: 5 * 1024 ** 3
+    };
+
+    const usage = stats.usage ?? {};
+
+    const metrics = {
+        reads: {
+            text: `${formatNumber(usage.rows_read ?? 0)} / ${formatNumber(FREE_LIMITS.reads)}`,
+            progress: getProgress(usage.rows_read ?? 0, FREE_LIMITS.reads)
+        },
+        writes: {
+            text: `${formatNumber(usage.rows_written ?? 0)} / ${formatNumber(FREE_LIMITS.writes)}`,
+            progress: getProgress(usage.rows_written ?? 0, FREE_LIMITS.writes)
+        },
         storage: {
-            usage: stats.usage?.storage_bytes ?? 0,
-            limit_bytes: 5 * 1024 ** 3
+            text: `${formatBytes(usage.storage_bytes ?? 0)} / ${formatBytes(FREE_LIMITS.storage)}`,
+            progress: getProgress(usage.storage_bytes ?? 0, FREE_LIMITS.storage)
         }
-    });
-
-    const metrics = { reads, writes, storage };
+    };
 
     return (
         <View className="border border-border bg-card rounded-2xl px-4 py-5 mt-5 gap-4">
@@ -263,8 +318,7 @@ const RoleCard = ({ label, icon, count }) => {
         <Pressable onPress={onPress} className="flex-1">
             <Animated.View
                 style={animatedStyle}
-                className="border border-border bg-card rounded-xl px-3 py-4 items-center gap-1"
-            >
+                className="border border-border bg-card rounded-xl px-3 py-4 items-center gap-1">
                 <Text className="text-2xl">{icon}</Text>
                 <Text className="text-text font-black text-xl">
                     {count ?? "—"}

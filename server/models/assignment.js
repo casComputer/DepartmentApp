@@ -35,6 +35,14 @@ const assignmentSchema = new mongoose.Schema({
             }
         }
     ],
+    notifiedToday: {
+        type: Boolean,
+        default: false
+    },
+    notifiedTomorrow: {
+        type: Boolean,
+        default: false
+    },
 
     dueDate: Date,
     timestamp: {

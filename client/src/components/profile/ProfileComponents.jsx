@@ -41,8 +41,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                         width: AVATAR_SIZE,
                         borderRadius: AVATAR_SIZE / 2
                     }}
-                    className="bg-card border border-border justify-center items-center"
-                >
+                    className="bg-card border border-border justify-center items-center">
                     {dp ? (
                         <Image
                             source={{ uri: dp }}
@@ -58,8 +57,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                             allowFontScale={false}
                             numberOfLines={1}
                             adjustsFontSizeToFit
-                            className="w-full text-center px-4 text-text-secondary font-black text-[10rem]"
-                        >
+                            className="w-full text-center px-4 text-text-secondary font-black text-[10rem]">
                             {username[0]}
                         </Text>
                     )}
@@ -67,8 +65,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
 
                 <TouchableOpacity
                     className="p-4 bg-btn rounded-full absolute z-10 right-[13%] bottom-[15%]"
-                    onPress={handleClick}
-                >
+                    onPress={handleClick}>
                     <MaterialIcons name="edit" size={30} />
                 </TouchableOpacity>
             </View>
@@ -78,15 +75,14 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                 minimumFontScale={0.3}
                 adjustsFontSizeToFit
                 style={{ marginTop: -vw * 0.1 }}
-                className="w-[85%] text-text-secondary font-bold text-7xl text-center"
-            >
+                className="w-[85%] text-text-secondary font-bold text-7xl text-center">
                 @{username}
             </Text>
         </View>
     );
 };
 
-export const EditDpOptions = ({ show, handleChangePic }) => {
+export const EditDpOptions = ({ show, setDpOptions, handleChangePic }) => {
     const SHEET_HEIGHT = vh * 0.15;
     const translateY = useSharedValue(SHEET_HEIGHT);
 
@@ -103,6 +99,12 @@ export const EditDpOptions = ({ show, handleChangePic }) => {
         transform: [{ translateY: translateY.value }]
     }));
 
+    const onPressRemove = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        handleRemovePic();
+        setDpOptions(false);
+    };
+
     return (
         <Animated.View
             style={[
@@ -112,20 +114,17 @@ export const EditDpOptions = ({ show, handleChangePic }) => {
                     bottom: 0
                 }
             ]}
-            className="absolute w-full bg-card rounded-t-3xl z-50 overflow-hidden py-2"
-        >
+            className="absolute w-full bg-card rounded-t-3xl z-50 overflow-hidden py-2">
             <TouchableOpacity
                 onPress={handleChangePic}
-                className="w-full py-3 justify-center items-center "
-            >
+                className="w-full py-3 justify-center items-center ">
                 <Text className="text-text text-xl font-bold">
                     Change Profile
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity
-                onPress={handleRemovePic}
-                className="w-full py-3 justify-center items-center "
-            >
+                onPress={onPressRemove}
+                className="w-full py-3 justify-center items-center ">
                 <Text className="text-text text-xl font-bold">
                     Remove Profile
                 </Text>

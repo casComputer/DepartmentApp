@@ -27,10 +27,12 @@ import {
     checkHealth,
     isServerRunning
 } from "./controllers/server.controller.js";
-import { apiLimiter, adminLimiter } from "./middleware/ratelimit.middleware.js";
+import { startDeadlineWorker } from "./workers/deadline.js";
 
 const app = express();
 const PORT = 3000;
+
+startDeadlineWorker();
 
 app.use(express.json());
 app.use(
@@ -42,20 +44,13 @@ app.use(
 
 app.set("trust proxy", 1);
 
-// app.use(apiLimiter);
-
 app.get("/", isServerRunning);
-
 app.use("/auth", authRoutes);
 app.use(authenticateToken);
 app.use("/user", userRoutes);
-// app.get("/health", authorize("admin"), adminLimiter, checkHealth);
-// app.use("/admin", authorize("admin"), adminLimiter, adminRoutes);
-// app.use("/dashboard", authorize("admin"), adminLimiter, dashboardRoutes);
 app.get("/health", authorize("admin"), checkHealth);
 app.use("/admin", authorize("admin"), adminRoutes);
 app.use("/dashboard", authorize("admin"), dashboardRoutes);
-
 app.use("/notice", noticeRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/student", studentRoutes);

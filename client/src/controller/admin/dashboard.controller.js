@@ -3,6 +3,7 @@ import axios from "@utils/axios.js";
 export const fetchCloudinaryStats = async () => {
     try {
         const { data } = await axios.get("/dashboard/cloudinary");
+        console.log(data.usage)
 
         if (data.success) return data.usage;
         else return {};
@@ -14,7 +15,6 @@ export const fetchCloudinaryStats = async () => {
 export const fetchTursoStats = async () => {
     try {
         const { data } = await axios.get("/dashboard/turso");
-
         if (data.success) return data.stats;
         else return {};
     } catch (error) {

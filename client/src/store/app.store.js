@@ -130,19 +130,20 @@ export const usePromptStore = create(set => ({
 
 export const useToastStore = create(set => ({
     toasts: [],
-
+    
     _add: (type, title, message) => {
         const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         set(state => {
-            const next = [
-                ...state.toasts,
-                {
-                    id,
-                    type,
-                    title,
-                    message
-                }
-            ];
+            const isDuplicate = state.toasts.some(
+                t =>
+                    t.type === type &&
+                    t.title === title &&
+                    t.message === message
+            );
+
+            if (isDuplicate) return state;
+
+            const next = [...state.toasts, { id, type, title, message }];
             return {
                 toasts: next.length > 3 ? next.slice(-3) : next
             };

@@ -23,36 +23,3 @@ export const getProgress = (used, total) => {
     return Math.min(used / total, 1);
 };
 
-export const formatUsage = (usageData) => {
-    if (!usageData || typeof usageData !== "object") {
-        throw new Error("Invalid usage data: expected an object.");
-    }
-
-    // Validate nested objects
-    const objectsUsage = usageData.objects?.usage ?? 0;
-    const requestsUsage = usageData.requests ?? 0;
-    const storageUsage = usageData.storage?.usage ?? 0;
-
-    const maxReads = 500_000_000;
-    const maxWrites = 10_000_000;
-    const maxStorage = 5 * 1024 ** 3; 
-
-    // Ensure numbers are valid
-    const safeNumber = (num, fallback = 0) =>
-        typeof num === "number" && !isNaN(num) ? num : fallback;
-
-    return {
-        reads: {
-            text: `${formatNumber(safeNumber(objectsUsage))} / ${formatNumber(maxReads)}`,
-            progress: getProgress(safeNumber(objectsUsage), maxReads),
-        },
-        writes: {
-            text: `${formatNumber(safeNumber(requestsUsage))} / ${formatNumber(maxWrites)}`,
-            progress: getProgress(safeNumber(requestsUsage), maxWrites),
-        },
-        storage: {
-            text: `${formatBytes(safeNumber(storageUsage))} / ${formatBytes(maxStorage)}`,
-            progress: getProgress(safeNumber(storageUsage), maxStorage),
-        },
-    };
-};

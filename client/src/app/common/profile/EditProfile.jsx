@@ -39,8 +39,7 @@ const SpringButton = ({ onPress, children, className, style }) => {
             }}
             onPressOut={() => {
                 scale.value = withSpring(1);
-            }}
-        >
+            }}>
             <Animated.View style={[animStyle, style]} className={className}>
                 {children}
             </Animated.View>
@@ -57,6 +56,7 @@ const EditProfile = () => {
     const [fullname, setFullname] = useState(currentFullname);
     const [phone, setPhone] = useState(currentPhone);
     const [about, setAbout] = useState(currentAbout);
+    const [email, setEmail] = useState(currentEmail);
 
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ text: "", error: true });
@@ -103,7 +103,8 @@ const EditProfile = () => {
         await editProfile({
             fullname: fullname.trim(),
             phone: phone.trim(),
-            about: about.trim()
+            about: about.trim(),
+            email: email.trim()
         });
         setSaving(false);
         setMessage({ text: "Profile updated.", error: false });
@@ -163,8 +164,7 @@ const EditProfile = () => {
         <KeyboardAwareScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             className="bg-primary"
-            showsVerticalScrollIndicator={false}
-        >
+            showsVerticalScrollIndicator={false}>
             <Header onSave={handleSave} saving={saving} />
 
             <View className="px-4 gap-5 mt-4">
@@ -194,11 +194,11 @@ const EditProfile = () => {
 
                 <Field label="Email">
                     <TextInput
-                        className={`${inputClass} opacity-50`}
+                        className={inputClass}
                         placeholder="Email"
                         placeholderTextColor="#888"
-                        value={currentEmail}
-                        editable={false}
+                        value={email}
+                        onChangeText={setEmail}
                     />
                 </Field>
 
@@ -221,8 +221,7 @@ const EditProfile = () => {
                 {/* Change Password toggle */}
                 <SpringButton
                     onPress={togglePw}
-                    className="border border-border bg-card rounded-xl px-4 py-4 flex-row items-center justify-between"
-                >
+                    className="border border-border bg-card rounded-xl px-4 py-4 flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
                         <Text className="text-lg">🔑</Text>
                         <Text className="text-text font-bold text-base">
@@ -267,8 +266,7 @@ const EditProfile = () => {
 
                         <SpringButton
                             onPress={handleChangePassword}
-                            className="bg-btn rounded-xl px-4 py-4 items-center"
-                        >
+                            className="bg-btn rounded-xl px-4 py-4 items-center">
                             <Text className="text-white font-black text-base">
                                 {savingPw
                                     ? "Saving…"
@@ -286,8 +284,7 @@ const EditProfile = () => {
                                 message.error
                                     ? "text-red-500"
                                     : "text-green-500"
-                            }`}
-                        >
+                            }`}>
                             {message.text}
                         </Text>
                     </View>

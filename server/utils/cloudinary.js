@@ -3,10 +3,16 @@ import cloudinary from "../config/cloudinary.js";
 export const deleteFile = async public_id => {
     try {
         if (!public_id) return;
-        
-        await cloudinary.api.delete_resources([public_id], {
-            resource_type: "raw"
-        });
+
+        const types = ["image", "video", "raw"];
+
+        await Promise.all(
+            types.map(type =>
+                cloudinary.api.delete_resources([public_id], {
+                    resource_type: type
+                })
+            )
+        );
     } catch (e) {
         console.error("Error while deleting file: ", e);
     }
@@ -25,7 +31,6 @@ export const deleteFilesBulk = async (public_ids = []) => {
                 })
             )
         );
-
     } catch (e) {
         console.error("Bulk delete error:", e);
     }

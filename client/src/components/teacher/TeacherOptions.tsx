@@ -123,8 +123,7 @@ const Option = ({ item }) => {
                               minHeight: 110,
                               gap: 12
                           })
-                }}
-            >
+                }}>
                 <View
                     style={{
                         backgroundColor: item.accent + "20",
@@ -133,8 +132,7 @@ const Option = ({ item }) => {
                         borderWidth: 1,
                         borderColor: item.accent + "35"
                     }}
-                    className="flex-row items-center gap-3"
-                >
+                    className="flex-row items-center gap-3">
                     <Icon
                         name={item.iconName}
                         size={ICONS_SIZE}
@@ -166,15 +164,9 @@ const Option = ({ item }) => {
 
 const AnimatedOption = ({ item, index }) => {
     return (
-        <Animated.View
-            entering={FadeInDown.delay(index * 70)
-                .springify()
-                .damping(16)
-                .stiffness(120)}
-            style={{ flex: 1 }}
-        >
+        <View style={{ flex: 1 }}>
             <Option item={item} />
-        </Animated.View>
+        </View>
     );
 };
 
@@ -202,8 +194,6 @@ const TeacherOptions = () => {
                 keyExtractor={item => item.text}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                
-        
                 renderItem={({ item, index }) => (
                     <AnimatedOption item={item} index={index} />
                 )}

@@ -45,10 +45,7 @@ const AdminCard = ({ item, index }) => {
     const { animatedStyle, onPressIn, onPressOut } = useApplePressAnimation();
 
     return (
-        <Animated.View
-            entering={FadeInDown.delay(index * 80)
-                .springify()
-                .damping(16)}>
+        <View>
             <Animated.View style={animatedStyle}>
                 <TouchableOpacity
                     activeOpacity={1}
@@ -83,7 +80,7 @@ const AdminCard = ({ item, index }) => {
                     />
                 </TouchableOpacity>
             </Animated.View>
-        </Animated.View>
+        </View>
     );
 };
 

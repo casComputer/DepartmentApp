@@ -111,9 +111,7 @@ router.post("/removeDp", async (req, res) => {
         let { userId } = req.user;
         let { public_id, dp } = req.body;
 
-        if (!public_id) 
-            public_id = getPublicIdFromUrl(dp);
-        
+        if (!public_id) public_id = getPublicIdFromUrl(dp);
 
         const query = `
             UPDATE users SET dp = NULL
@@ -140,10 +138,11 @@ router.post("/editProfile", async (req, res) => {
     try {
         const { userId, role } = req.user;
 
-        let { fullname, phone, about } = req.body;
+        let { fullname, phone, about, email } = req.body;
         fullname = fullname?.trim();
         phone = phone?.trim();
         about = about?.trim();
+        email = email?.trim();
 
         if (!fullname)
             return res.json({
@@ -164,10 +163,16 @@ router.post("/editProfile", async (req, res) => {
 
         const updateQuery = `
 	  UPDATE users
-	  SET fullname = ?, phone = ?, about = ?
+	  SET fullname = ?, phone = ?, about = ?, email = ?
 	  WHERE userId = ?
 	`;
-        await turso.execute(updateQuery, [fullname, phone, about, userId]);
+        await turso.execute(updateQuery, [
+            fullname,
+            phone,
+            about,
+            email,
+            userId
+        ]);
 
         return res.json({
             success: true,

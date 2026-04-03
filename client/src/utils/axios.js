@@ -15,6 +15,8 @@ const SERVERS = [
     "https://departmentapp-production.up.railway.app"
 ];
 
+let currentServerIndex = 0;
+
 function getServerName(url) {
     if (url.includes("railway")) return "Railway";
     if (url.includes("render")) return "Render";
@@ -23,11 +25,12 @@ function getServerName(url) {
 }
 
 const api = axios.create({
-    baseURL: SERVERS[0],
+    baseURL: SERVERS[currentServerIndex],
     timeout: 10000
 });
 
-api.interceptors.request.use(async config => {
+// ================= REQUEST =================
+api.interceptors.request.use(config => {
     const token = storage.getString("accessToken");
 
     if (token) {
@@ -37,16 +40,53 @@ api.interceptors.request.use(async config => {
     return config;
 });
 
+// ================= RESPONSE =================
 api.interceptors.response.use(
-    res => res,
+    res => {
+        // ✅ Remember last working server
+        const baseURL = res.config.baseURL;
+        const index = SERVERS.findIndex(s => baseURL?.includes(s));
+
+        if (index !== -1) currentServerIndex = index;
+
+        return res;
+    },
     async error => {
         const originalReq = error.config;
         const status = error.response?.status;
 
-        const serverFailure =
-            !error.response || [500, 502, 503, 504].includes(status);
+        // جلوگیری infinite loop
+        if (originalReq._handled) {
+            return Promise.reject(error);
+        }
+        originalReq._handled = true;
 
-        if (serverFailure) {
+        const isTimeout = error.code === "ECONNABORTED";
+        const isNetworkError = !error.response && !isTimeout;
+        const isServerError = [500, 502, 503, 504].includes(status);
+
+        // ================= TIMEOUT (Render cold start) =================
+        if (isTimeout) {
+            originalReq._timeoutRetry = originalReq._timeoutRetry || 0;
+
+            if (originalReq._timeoutRetry < 2) {
+                originalReq._timeoutRetry++;
+
+                useToastStore.getState()._add("info", "Server waking up...");
+
+                await new Promise(r => setTimeout(r, 3000));
+
+                return api(originalReq);
+            }
+        }
+
+        // ================= SWITCH SERVER =================
+        const shouldSwitch =
+            isNetworkError ||
+            isServerError ||
+            (isTimeout && originalReq._timeoutRetry >= 2);
+
+        if (shouldSwitch) {
             originalReq._retryCount = originalReq._retryCount || 0;
 
             if (originalReq._retryCount < SERVERS.length - 1) {
@@ -55,18 +95,24 @@ api.interceptors.response.use(
                 const nextServer = SERVERS[originalReq._retryCount];
                 originalReq.baseURL = nextServer;
 
+                useToastStore
+                    .getState()
+                    ._add(
+                        "warning",
+                        `Switching to ${getServerName(nextServer)}`
+                    );
+
                 return api(originalReq);
             }
 
-            // ALL SERVERS FAILED
             useToastStore
                 .getState()
-                ._add(
-                    "error",
-                    "All servers are currently unavailable. Please try again later."
-                );
+                ._add("error", "All servers are unavailable.");
+
+            return Promise.reject(error);
         }
 
+        // ================= RATE LIMIT =================
         if (status === 429) {
             const retryAfter = error.response?.headers?.["retry-after"] || 60;
 
@@ -78,6 +124,7 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
+        // ================= AUTH REFRESH =================
         if ((status === 401 || status === 403) && !originalReq._authRetry) {
             originalReq._authRetry = true;
 
@@ -98,6 +145,7 @@ api.interceptors.response.use(
                         storage.set("accessToken", data.accessToken);
 
                         originalReq.headers.Authorization = `Bearer ${data.accessToken}`;
+                        originalReq.baseURL = server;
 
                         useToastStore
                             .getState()
@@ -107,11 +155,11 @@ api.interceptors.response.use(
                             );
 
                         return api(originalReq);
-                    } catch (err) {}
+                    } catch {}
                 }
 
                 return logout();
-            } catch (err) {
+            } catch {
                 return logout();
             }
         }
@@ -120,6 +168,7 @@ api.interceptors.response.use(
     }
 );
 
+// ================= LOGOUT =================
 async function logout() {
     storage.remove("accessToken");
     await SecureStore.deleteItemAsync("refreshToken");
@@ -128,8 +177,6 @@ async function logout() {
     useToastStore
         .getState()
         ._add("error", "Session expired. Please login again.");
-
-    router.replace("/auth/Signin");
 }
 
 export default api;

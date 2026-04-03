@@ -14,11 +14,8 @@ const UserItem = ({
     return (
         <TouchableOpacity
             onPress={() => handlePress(item)}
-            style={{
-                borderColor: highlight ? "red" : "transparent",
-                borderWidth: highlight ? 1 : 0,
-            }}
-            className="flex-row items-center justify-between bg-card rounded-3xl px-4 py-7 my-2"
+            
+            className={`flex-row items-center justify-between bg-card border rounded-3xl px-4 py-7 my-2 ${highlight ? "border-red-500" : "border-border"}`}
         >
             <Text
                 numberOfLines={1}

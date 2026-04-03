@@ -5,6 +5,7 @@ import {
     sendPushNotificationToClassStudents,
     sendNotificationForListOfUsers
 } from "../../utils/notification.js";
+import { deleteFilesBulk } from "../../utils/cloudinary.js";
 
 export const createAssignment = async (req, res) => {
     try {
@@ -160,6 +161,29 @@ export const accept = async (req, res) => {
             data: { type: "ASSIGNMENT_REJECTED" },
             users: [studentId]
         });
+
+        res.status(200).json({
+            message: "Assignment accepted successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.error("Error accepting assignment submission:", error);
+        res.status(500).json({
+            message: "Internal server error.",
+            success: false
+        });
+    }
+};
+
+export const deleteAssignment = async (req, res) => {
+    try {
+        const { assignmentId } = req.body;
+
+        const assignment = await Assignment.findById(assignmentId);
+
+        const ids = assignment?.submissions?.map(sub => sub.public_key);
+
+        await deleteFilesBulk(ids);
 
         res.status(200).json({
             message: "Assignment accepted successfully.",

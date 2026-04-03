@@ -44,16 +44,19 @@ const NoticeCard = ({ item }) => {
 
     const role = useAppStore(state => state.user.role);
 
+    const canDelete = role === "admin";
+
     return (
         <TouchableOpacity
             onPress={handlePress}
             activeOpacity={0.8}
-            className="bg-card rounded-2xl my-1 overflow-hidden">
+            className="bg-card rounded-2xl my-1 overflow-hidden border border-border">
             {item.image && (
                 <Image
                     source={{ uri: item.image }}
                     style={{ width: "100%", height: 160 }}
                     resizeMode="cover"
+                    className="bg-card-selected rounded-lg"
                 />
             )}
 
@@ -84,9 +87,17 @@ const NoticeCard = ({ item }) => {
                     </Text>
                 ) : null}
 
-                <TouchableOpacity className="self-end" onPress={handleDelete}>
-                    <MaterialIcons name="delete" size={24} color="#f73737" />
-                </TouchableOpacity>
+                {canDelete && (
+                    <TouchableOpacity
+                        className="self-end"
+                        onPress={handleDelete}>
+                        <MaterialIcons
+                            name="delete"
+                            size={24}
+                            color="#f73737"
+                        />
+                    </TouchableOpacity>
+                )}
             </View>
         </TouchableOpacity>
     );

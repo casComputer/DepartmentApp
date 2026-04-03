@@ -14,8 +14,10 @@ import Animated, {
     useAnimatedStyle
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { formatDate, isDatePassed } from "@utils/date.js";
+import showConfirm from "@utils/confirm.js";
 import getPdfPreviewUrl from "@utils/pdfPreview.js";
 import {
     downloadFile,
@@ -27,57 +29,68 @@ import CircularProgress from "@components/common/CircularProgress.jsx";
 
 import {
     rejectAssignment,
-    acceptAssignment
+    acceptAssignment,
+    deleteAssignment
 } from "@controller/teacher/assignment.controller.js";
 
-export const AssignmentRenderItem = ({ item }) => (
-    <Pressable
-        onPress={() =>
-            router.push({
-                params: {
-                    assignmentId: item._id
-                },
-                pathname: "/common/assignment/AssignmentShow"
-            })
-        }
-        className="p-5 rounded-3xl bg-card mt-2"
-        style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
-    >
-        <Text className="text-xl font-black text-text">{item.topic}</Text>
-        <Text
-            numberOfLines={2}
-            className="text-text/700 font-bold text-lg pl-3"
-        >
-            {item.description}
-        </Text>
+export const AssignmentRenderItem = ({ item }) => {
+    const handleDelete = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        showConfirm("Are you to delete the assignment ?", async () => {
+            deleteAssignment(item._id);
+        });
+    };
 
-        <View className="flex-row justify-between items-center">
-            <View>
-                <Text className="text-xl font-black mt-3 text-text">
-                    {item.year} {item.course}
-                </Text>
-                <Text
-                    className={` font-bold text-sm ${isDatePassed(item.dueDate) ? "text-red-500" : "text-text"} `}
-                >
-                    Due Date:
-                    {new Date(item.dueDate).toLocaleDateString()}
-                </Text>
+    return (
+        <Pressable
+            onPress={() =>
+                router.push({
+                    params: {
+                        assignmentId: item._id
+                    },
+                    pathname: "/common/assignment/AssignmentShow"
+                })
+            }
+            className="p-5 rounded-3xl bg-card mt-2"
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}>
+            <Text className="text-xl font-black text-text">{item.topic}</Text>
+            <Text
+                numberOfLines={2}
+                className="text-text/700 font-bold text-lg pl-3">
+                {item.description}
+            </Text>
+
+            <View className="flex-row justify-between items-center">
+                <View>
+                    <Text className="text-xl font-black mt-3 text-text">
+                        {item.year} {item.course}
+                    </Text>
+                    <Text
+                        className={` font-bold text-sm ${isDatePassed(item.dueDate) ? "text-red-500" : "text-text"} `}>
+                        Due Date:
+                        {new Date(item.dueDate).toLocaleDateString()}
+                    </Text>
+                </View>
+                <View>
+                    <CircularProgress
+                        size={60}
+                        strokeWidth={5}
+                        progress={
+                            item.strength < 1
+                                ? 0
+                                : (item.submissions?.length / item.strength) *
+                                  100
+                        }
+                        fraction={`${item.submissions?.length || 0} / ${item.strength || 0}`}
+                    />
+                </View>
+                <TouchableOpacity className="self-end" onPress={handleDelete}>
+                    <MaterialIcons name="delete" size={24} color="#f73737" />
+                </TouchableOpacity>
             </View>
-            <View>
-                <CircularProgress
-                    size={60}
-                    strokeWidth={5}
-                    progress={
-                        item.strength < 1
-                            ? 0
-                            : (item.submissions?.length / item.strength) * 100
-                    }
-                    fraction={`${item.submissions?.length || 0} / ${item.strength || 0}`}
-                />
-            </View>
-        </View>
-    </Pressable>
-);
+        </Pressable>
+    );
+};
 
 const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
     const [rejecting, setRejecting] = useState(false);
@@ -106,8 +119,7 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
             <TouchableOpacity
                 disabled={rejecting}
                 onPress={handlePressRejection}
-                className="self-center"
-            >
+                className="self-center">
                 <Text className="px-3 rounded-full text-red-500 text-xl font-bold text-center">
                     {rejecting ? "Rejecting.." : "Reject"}
                 </Text>
@@ -115,8 +127,7 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
             <TouchableOpacity
                 disabled={accepting}
                 onPress={handlePressAccept}
-                className="self-center"
-            >
+                className="self-center">
                 <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">
                     {accepting ? "Accepting.." : "Accept"}
                 </Text>
@@ -219,8 +230,7 @@ export const AssignmentShowRenderItem = ({
 
             <TouchableOpacity
                 onPress={() => openFileInBrowser(item.url)}
-                className="self-center mt-2"
-            >
+                className="self-center mt-2">
                 <Text className="px-3 rounded-full text-blue-500 text-xl font-bold text-center">
                     Open File In Browser
                 </Text>
@@ -252,8 +262,7 @@ export const AssignmentShowRenderItem = ({
                         item.status === "rejected"
                             ? "text-red-500"
                             : "text-green-500"
-                    }`}
-                >
+                    }`}>
                     {item.status}
                 </Text>
             )}

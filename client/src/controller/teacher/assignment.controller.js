@@ -1,9 +1,6 @@
 import axios from "@utils/axios.js";
 
-import {
-    useAppStore,
-    toast
-} from "@store/app.store.js";
+import { useAppStore, toast } from "@store/app.store.js";
 import queryClient from "@utils/queryClient";
 
 export const createAssignment = async assignmentData => {
@@ -11,9 +8,7 @@ export const createAssignment = async assignmentData => {
         const response = await axios.post("/assignment/create", assignmentData);
 
         if (response.data.success) {
-            toast.success(
-                "Assignment created successfully"
-            );
+            toast.success("Assignment created successfully");
 
             queryClient.setQueryData(["assignments"], prev => {
                 if (!prev) return prev;
@@ -35,13 +30,10 @@ export const createAssignment = async assignmentData => {
         toast.error("Failed to create assignment");
     } catch (error) {
         toast.error("Failed to create assignment");
-
     }
 };
 
-export const getAssignment = async ({
-    pageParam
-}) => {
+export const getAssignment = async ({ pageParam }) => {
     try {
         const response = await axios.post(
             "/assignment/getAssignmentsCreatedByMe",
@@ -53,10 +45,7 @@ export const getAssignment = async ({
 
         if (response.data.success) return response.data;
 
-        toast.error(
-            "Failed to fetch assignment",
-            response.data?.message ?? ""
-        );
+        toast.error("Failed to fetch assignment", response.data?.message ?? "");
         return response.data;
     } catch (error) {
         toast.error("Failed to fetch assignment");
@@ -87,17 +76,19 @@ export const rejectAssignment = async (
                         ...page,
                         assignments: page.assignments.map(assignment =>
                             assignment._id === assignmentId
-                            ? {
-                                ...assignment,
-                                submissions: assignment.submissions.map(
-                                    submission =>
-                                    submission.studentId === studentId
-                                    ? {
-                                        ...submission,
-                                        status: "rejected"
-                                    }: submission
-                                )
-                            }: assignment
+                                ? {
+                                      ...assignment,
+                                      submissions: assignment.submissions.map(
+                                          submission =>
+                                              submission.studentId === studentId
+                                                  ? {
+                                                        ...submission,
+                                                        status: "rejected"
+                                                    }
+                                                  : submission
+                                      )
+                                  }
+                                : assignment
                         )
                     }))
                 };
@@ -107,19 +98,21 @@ export const rejectAssignment = async (
                 ...prev,
                 submissions: prev.submissions.map(submission =>
                     submission.studentId === studentId
-                    ? {
-                        ...submission,
-                        status: "rejected"
-                    }: submission
+                        ? {
+                              ...submission,
+                              status: "rejected"
+                          }
+                        : submission
                 )
             }));
 
-            toast.success(
-                "Assignment rejection successfull"
-            );
+            toast.success("Assignment rejection successfull");
             return response.data;
         } else {
-            toast.error("Failed to reject Assignment", response.data.message ?? "");
+            toast.error(
+                "Failed to reject Assignment",
+                response.data.message ?? ""
+            );
         }
     } catch (error) {
         toast.error("Failed to reject Assignment");
@@ -147,17 +140,19 @@ export const acceptAssignment = async (
                         ...page,
                         assignments: page.assignments.map(assignment =>
                             assignment._id === assignmentId
-                            ? {
-                                ...assignment,
-                                submissions: assignment.submissions.map(
-                                    submission =>
-                                    submission.studentId === studentId
-                                    ? {
-                                        ...submission,
-                                        status: "accepted"
-                                    }: submission
-                                )
-                            }: assignment
+                                ? {
+                                      ...assignment,
+                                      submissions: assignment.submissions.map(
+                                          submission =>
+                                              submission.studentId === studentId
+                                                  ? {
+                                                        ...submission,
+                                                        status: "accepted"
+                                                    }
+                                                  : submission
+                                      )
+                                  }
+                                : assignment
                         )
                     }))
                 };
@@ -167,22 +162,57 @@ export const acceptAssignment = async (
                 ...prev,
                 submissions: prev.submissions.map(submission =>
                     submission.studentId === studentId
-                    ? {
-                        ...submission,
-                        status: "accepted"
-                    }: submission
+                        ? {
+                              ...submission,
+                              status: "accepted"
+                          }
+                        : submission
                 )
             }));
 
-            toast.success(
-                "Assignment submission accepted successfully."
-            );
+            toast.success("Assignment submission accepted successfully.");
             return;
         } else {
-            toast.error("Failed to accept Assignment", response.data.message ?? "");
+            toast.error(
+                "Failed to accept Assignment",
+                response.data.message ?? ""
+            );
         }
     } catch (error) {
         toast.error("Failed to accept Assignment");
+    }
+};
 
+export const deleteAssignment = async assignmentId => {
+    try {
+        const response = await axios.post("/assignment/delete", {
+            assignmentId
+        });
+
+        if (response.data.success) {
+            queryClient.setQueryData(["assignments"], prev => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    pages: prev.pages.map(page => ({
+                        ...page,
+                        assignments: page.assignments.fil(
+                            assignment => assignment._id !== assignmentId
+                        )
+                    }))
+                };
+            });
+
+            toast.success("Assignment deleted successfull.");
+            return;
+        } else {
+            toast.error(
+                "Failed to delete Assignment",
+                response.data.message ?? ""
+            );
+        }
+    } catch (error) {
+        toast.error("Failed to delete Assignment");
     }
 };

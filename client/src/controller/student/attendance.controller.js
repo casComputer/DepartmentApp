@@ -1,13 +1,8 @@
 import axios from "@utils/axios";
 
-import {
-    useAppStore,
-    toast
-} from "@store/app.store.js";
+import { useAppStore, toast } from "@store/app.store.js";
 
-import {
-    calendarData
-} from "@utils/calenderData";
+import { calendarData } from "@utils/calenderData";
 
 export const getTodaysAttendanceReport = async (studentId = null) => {
     try {
@@ -17,16 +12,12 @@ export const getTodaysAttendanceReport = async (studentId = null) => {
 
         if (res.data.success) return res.data.attendance;
         else {
-            toast.error(
-                "Syncing today's attendance failed"
-            );
+            toast.error("Syncing today's attendance failed");
             return {};
         }
     } catch (error) {
-        toast.error(
-            "Syncing today's attendance failed", error.message ?? ""
-        );
-        return {}
+        toast.error("Syncing today's attendance failed", error.message ?? "");
+        return {};
     }
 };
 
@@ -35,17 +26,16 @@ export const getOverallAttendenceReport = async studentId => {
         const res = await axios.post("/attendance/overallAttendenceReport", {
             studentId
         });
-
+        
         if (res.data.success) return res.data.report ?? {};
-        else
-            toast.error(
-            `Failed to fetching monthly attendance report!`
-        );
         return {};
     } catch (error) {
-        toast.error(
-            `Failed to fetching monthly attendance report!`
-        );
+        if (error?.response) {
+            toast.error(
+                error.response?.data?.message ??
+                    `Failed to fetching monthly attendance report!`
+            );
+        } else toast.error(`Failed to fetching monthly attendance report`);
         return {};
     }
 };
@@ -92,15 +82,12 @@ export const getYearlyAttendenceReport = async year => {
         } else {
             toast.error(
                 "Failed to fetch yearly attendance report",
-                res.data?.message ??
-                ""
+                res.data?.message ?? ""
             );
             return [];
         }
     } catch (error) {
-        toast.error(
-            `Failed to fetch yearly attendance report!`,
-        );
+        toast.error(`Failed to fetch yearly attendance report!`);
         return [];
     }
 };
@@ -134,16 +121,14 @@ export const generateAttendanceCalendarReport = async (
         } else {
             toast.error(
                 "Generating attendance calendar report failed",
-                res.data.message ??
-                ""
+                res.data.message ?? ""
             );
             return data;
         }
     } catch (error) {
         toast.error(
             "Generating attendance calendar report failed",
-            error.response?.data.message ??
-            ""
+            error.response?.data.message ?? ""
         );
         return data;
     }

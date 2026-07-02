@@ -9,7 +9,7 @@ const Prompt = ({
     message = "",
     requireText,
     onConfirm,
-    onCancel,
+    onCancel
 }) => {
     const [value, setValue] = useState("");
 
@@ -24,7 +24,7 @@ const Prompt = ({
             if (Array.isArray(requireText)) {
                 if (!requireText.includes(value)) {
                     alert(
-                        `Please type one of the following: ${requireText.join(", ")}`,
+                        `Please type one of the following: ${requireText.join(", ")}`
                     );
                     return;
                 }
@@ -56,7 +56,7 @@ const Prompt = ({
                         onChangeText={setValue}
                         placeholder={`Type ${Array.isArray(requireText) ? requireText[0] : requireText}`}
                         autoCapitalize="characters"
-                        onEndEditing={handleConfirmPress}
+                        autoCorrect={false}
                     />
                 )}
 
@@ -88,7 +88,7 @@ const GlobalPrompt = () => {
             title={title}
             message={message}
             requireText={requireText}
-            onConfirm={(value) => {
+            onConfirm={value => {
                 onConfirm?.(value);
                 close();
             }}

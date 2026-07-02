@@ -33,8 +33,8 @@ const MultiSelectModal = ({
         return (
             <TouchableOpacity
                 onPress={() => toggleSelect(item.userId)}
-                className={`bg-card p-5 rounded-3xl my-1 ${
-                    isSelected && "border-[#3399ff] bg-card-selected"
+                className={`bg-card p-5 rounded-3xl my-1 border-2 border-transparent ${
+                    isSelected && "border-border  bg-card-selected"
                 }`}
             >
                 <Text className="text-text">{item.fullname}</Text>

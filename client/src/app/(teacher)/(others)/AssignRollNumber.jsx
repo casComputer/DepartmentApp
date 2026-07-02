@@ -57,9 +57,9 @@ const AssignRoleNumber = () => {
 
             <TouchableOpacity
                 onPress={handleAlphebetic}
-                className="w-full justify-center items-center py-7 rounded-full bg-btn  mt-3"
+                className="w-full justify-center items-center py-5 rounded-full bg-btn  mt-3"
             >
-                <Text className="text-text text-2xl font-bold">
+                <Text className="text-text text-xl font-bold">
                     Alphabetical Order
                 </Text>
             </TouchableOpacity>

@@ -19,7 +19,7 @@ import ParentExtra from "../../components/auth/ParentExtra.jsx";
 
 const Message = ({ message }) => (
     <Text
-        className={`font-bold text-lg text-center ${
+        className={`font-bold text-md text-center ${
             message.type === "error"
                 ? "text-red-500"
                 : message.type === "info"
@@ -159,12 +159,12 @@ const Signup = () => {
 
             {/* Form */}
 
-            <View className="flex-1 gap-5 px-4 mt-5">
+            <View className="flex-1 gap-5 px-4 mt-2">
                 <Message message={message} />
 
                 <TextInput
                     ref={usernameRef}
-                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
+                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-5 text-lg text-text ${
                         username.trim().length >= 5
                             ? "border-green-500"
                             : "border-border"
@@ -180,7 +180,7 @@ const Signup = () => {
 
                 <TextInput
                     ref={fullnameRef}
-                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-6 text-xl text-text ${
+                    className={`text-bold border font-semibold rounded-full overflow-hidden px-5 py-5 text-lg text-text ${
                         fullName.trim().length >= 5
                             ? "border-green-500"
                             : "border-border"
@@ -194,7 +194,7 @@ const Signup = () => {
                 <View className="relative">
                     <TextInput
                         ref={passwordRef}
-                        className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-6 text-xl ${
+                        className={`text-text font-semibold border rounded-full overflow-hidden px-5 py-5 text-lg ${
                             password.length > 5
                                 ? "border-green-500"
                                 : "border-border"
@@ -238,12 +238,12 @@ const Signup = () => {
             </View>
 
             {/* Buttons */}
-            <View className="px-5 mt-3 mb-20">
+            <View className="px-5 mt-5 pb-20">
                 <TouchableOpacity
-                    className="bg-green-400 py-5 w-full rounded-3xl"
+                    className="bg-green-400 py-4 w-full rounded-3xl"
                     onPress={handleSubmit}
                 >
-                    <Text className="text-text font-black text-3xl text-center">
+                    <Text className="text-text font-black text-2xl text-center">
                         Sign Up
                     </Text>
                 </TouchableOpacity>
@@ -251,7 +251,7 @@ const Signup = () => {
                 <TouchableOpacity
                     onPress={() => router.replace("/auth/Signin")}
                 >
-                    <Text className="text-text text-xl text-center font-bold mt-3">
+                    <Text className="text-text text-lg text-center font-semibold mt-3">
                         Already have an account? SignIn
                     </Text>
                 </TouchableOpacity>

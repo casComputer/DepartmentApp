@@ -43,7 +43,7 @@ const Avatar = ({ fullname, username, dp }) => (
             )}
         </View>
 
-        <Text className="text-center text-2xl text-text-secondary mt-2 ">
+        <Text className="text-center text-2xl text-text-secondary mt-1 ">
             @{username}
         </Text>
     </>
@@ -61,16 +61,20 @@ const Inputs = ({ fullname, rollno, username, setRoll, is_verified }) => {
             </View>
 
             <View className="w-full mt-5 flex-row items-center gap-2">
-                <Text className="font-bold text-text text-2xl">Roll No</Text>
+                <Text className="font-semibold text-text text-xl">Roll No</Text>
 
                 <TextInput
                     style={{
                         borderWidth: !rollno ? 2 : 1
                     }}
-                    className={`flex-1 text-2xl border font-bold px-5 py-5 rounded-full text-text ${
+                    className={`flex-1 text-lg border font-semibold px-5 py-4 rounded-full text-text ${
                         !rollno ? "border-red-500" : "border-border"
                     }`}
-                    value={`${rollno}`}
+                    value={
+                        Boolean(is_verified)
+                            ? `${rollno}`
+                            : "Verify student to assign roll no."
+                    }
                     editable={Boolean(is_verified)}
                     keyboardType="number-pad"
                     onChangeText={rollno => {
@@ -166,13 +170,19 @@ const VerifyStudent = () => {
                     is_verified={is_verified}
                 />
 
-                <View className="flex-row gap-3 mt-10 px-3 ">
+                {loading && (
+                    <Text className="text-yellow-200 text-center text-md font-semibold mt-5">
+                        Please wait..
+                    </Text>
+                )}
+
+                <View className="flex-row gap-3 mt-5 px-3 ">
                     <TouchableOpacity
                         disabled={loading}
                         onPress={handleCancelVerification}
-                        className="flex-1 bg-red-500 rounded-3xl py-5"
+                        className="flex-1 bg-red-500 rounded-3xl py-4"
                     >
-                        <Text className="font-bold text-center leading-tight text-text text-2xl">
+                        <Text className="font-bold text-center leading-tight text-text text-xl">
                             Remove
                         </Text>
                     </TouchableOpacity>
@@ -185,7 +195,7 @@ const VerifyStudent = () => {
                                 loading ? "bg-green-400" : "bg-green-500"
                             }`}
                         >
-                            <Text className="font-bold text-2xl text-center leading-tight py-5 text-text">
+                            <Text className="font-bold text-xl text-center leading-tight py-4 text-text">
                                 Verify
                             </Text>
                         </TouchableOpacity>

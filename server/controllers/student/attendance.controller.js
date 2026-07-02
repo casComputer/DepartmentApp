@@ -237,10 +237,27 @@ export const overallAttendenceReport = async (req, res) => {
             calendarYear: now.getFullYear()
         });
 
+        const ongoingDays = getRemainingOngoingDaysThisMonth() ?? 0;
+
         if (!monthlyReport.length) {
             return res.json({
                 success: false,
-                message: "No attendance data found"
+                message: "No attendance data found",
+                report: {
+                    summary: {
+                        status: "Good",
+                        currentPercentage: 0,
+                        classesAttended: 0,
+                        totalClassesSoFar: 0
+                    },
+                    time_analysis: {
+                        passedWorkingDays: 0,
+                        remainingDays: remainingDays,
+                        remainingHours: remainingHours,
+                        ongoingDays
+                    },
+                    comparison: null
+                }
             });
         }
 
@@ -389,7 +406,7 @@ export const overallAttendenceReport = async (req, res) => {
                     passedWorkingDays: Number(working_days || 0),
                     remainingDays,
                     remainingHours,
-                    ongoingDays: getRemainingOngoingDaysThisMonth() ?? 0
+                    ongoingDays
                 },
                 comparison: {
                     yourRank: currentRank,

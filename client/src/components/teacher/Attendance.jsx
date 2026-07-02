@@ -106,14 +106,14 @@ export const Options = ({
             )}
 
             {isEditable === true && (
-                <View className="flex-row gap-5 justify-center items-center ml-auto">
-                    <TouchableOpacity onPress={handleSelectAll}>
+                <View className="flex-row gap-3 justify-center items-center ml-auto">
+                    <TouchableOpacity onPress={handleSelectAll} className="border border-border rounded-3xl px-3 py-1">
                         <Text className="font-semibold text-xl text-text ">
                             Mark All
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={ routeToStudentList}>
-                        <FontAwesome5 name="list-ol" size={20} className="text-orange-500" />
+                    <TouchableOpacity onPress={ routeToStudentList} className="border border-border rounded-3xl px-3 py-2">
+                        <FontAwesome5 name="list-ol" size={18} className="text-orange-500" />
                     </TouchableOpacity>
                 </View>
             )}
@@ -122,7 +122,7 @@ export const Options = ({
 };
 
 export const ListEmptyComponent = () => (
-    <Text className="mt-5 px-3 text-center text-yellow-400 font-semibold text-md">
+    <Text className="mt-5 px-3 text-center text-yellow-500 font-semibold text-md">
         There are no verified students found for this class, or roll numbers
         have not been assigned yet. {"\n"} Please contact the class teacher for
         more details.

@@ -107,15 +107,13 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
             <Animated.View className="w-full rounded-3xl overflow-hidden bg-card border-border border">
                 <View className="p-7 py-6 gap-5">
                     <View className="flex-row items-center justify-between">
-                        {studentId ? (
+                        {studentId && (
                             <View className="bg-border rounded-full px-3 py-1">
                                 <Text className="text-xs font-bold text-text-secondary tracking-widest uppercase">
                                     {studentId}
                                 </Text>
                             </View>
-                        ) : (
-                            <View />
-                        )}
+)}
                     </View>
 
                     <View className="flex-row items-end gap-3">

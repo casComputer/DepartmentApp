@@ -24,11 +24,9 @@ const ClassInChargeInfo = ({ year = "", classCharge = "" }) => {
     if (!year || !classCharge) return null;
 
     return (
-        <View className="mt-5 px-6 py-2 rounded-3xl">
-            <Text className="text-xl text-text text-center font-bold">
-                In Charge: {year} {classCharge}
-            </Text>
-        </View>
+        <Text className="text-xl text-text text-center font-bold">
+            In Charge: {year} {classCharge}
+        </Text>
     );
 };
 
@@ -49,7 +47,7 @@ const AssignClass = ({ user }) => {
                 }
                 className="px-2 mt-5"
             >
-                <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
+                <Text className="text-center bg-btn text-text font-black text-lg py-4 rounded-3xl">
                     {user?.in_charge_course && user?.in_charge_year
                         ? "Reassign Class"
                         : "Assign class"}
@@ -59,9 +57,9 @@ const AssignClass = ({ user }) => {
             {user?.in_charge_course && user?.in_charge_year && (
                 <TouchableOpacity
                     onPress={() => handleRemoveIncharge(user.userId)}
-                    className="px-2 mt-5"
+                    className="px-2 mt-3"
                 >
-                    <Text className="text-center bg-btn text-text font-black text-2xl py-5 rounded-3xl">
+                    <Text className="text-center bg-btn text-text font-black text-lg py-4 rounded-3xl">
                         Remove Incharge
                     </Text>
                 </TouchableOpacity>
@@ -72,8 +70,10 @@ const AssignClass = ({ user }) => {
 
 const VerifyTeacher = () => {
     const { userId } = useLocalSearchParams();
-    const user = queryClient.getQueryData(["teachers"]).find(usr=> usr.userId === userId)
-    
+    const user = queryClient
+        .getQueryData(["teachers"])
+        .find(usr => usr.userId === userId);
+
     const [verifying, setVerifying] = useState(false);
     const [cancelling, setCancelling] = useState(false);
 
@@ -119,6 +119,7 @@ const VerifyTeacher = () => {
         <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             className="bg-primary"
+            showsVerticalScrollIndicator={false}
         >
             <Header />
 
@@ -133,22 +134,20 @@ const VerifyTeacher = () => {
                 @{user.userId}
             </Text>
 
-            <View className="w-full h-[8vh] rounded-full border-text border mt-5">
-                <TextInput
-                    className="text-text w-full h-full font-bold text-[5vw] px-5"
-                    value={user.fullname}
-                    editable={false}
-                />
-            </View>
+            <TextInput
+                className="text-text w-[96%] ml-[2%] text-center my-3 font-bold text-xl px-5 py-4 border border-border rounded-full"
+                value={user.fullname}
+                editable={false}
+            />
 
             {user.is_verified ? <AssignClass user={user} /> : null}
-            <View className="flex-1 justify-center items-end flex-row gap-3 py-20 px-2">
+            <View className="flex-1 justify-center items-center flex-row gap-3 px-2">
                 <TouchableOpacity
                     onPress={handleCancelVerification}
                     className="flex-1 bg-red-500 rounded-3xl justify-center items-center py-4"
                 >
-                    <Text className="text-2xl text-text font-bold py-1">
-                        {cancelling ? "Deleting.." : "Delete"}
+                    <Text className="text-xl text-text font-bold py-1">
+                        {cancelling ? "Deleting.." : "Delete User"}
                     </Text>
                 </TouchableOpacity>
                 {!user.is_verified && (
@@ -157,7 +156,7 @@ const VerifyTeacher = () => {
                         className="flex-1 bg-green-500 rounded-3xl justify-center items-center py-4"
                     >
                         <Text className="text-2xl text-text font-bold py-1">
-                            {verifying ? "Verifying.." : "Verify"}
+                            {verifying ? "Verifying.." : "Verify User"}
                         </Text>
                     </TouchableOpacity>
                 )}

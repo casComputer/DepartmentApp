@@ -37,7 +37,7 @@ export const ListHeaderComponent = ({
 
     return (
         <View className="flex-row justify-between items-center py-3 px-3">
-            <Text className="text-xl font-bold pl-1 text-text-secondary">
+            <Text className="text-lg pl-1 font-bold text-text-secondary">
                 {year} {course}
             </Text>
             {loading ? (
@@ -58,7 +58,7 @@ export const ListHeaderComponent = ({
                             adjustsFontSizeToFit
                             className="text-md font-bold text-text"
                         >
-                            Roll Number
+                            Assign Roll-NO
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -66,9 +66,8 @@ export const ListHeaderComponent = ({
                         disabled={verifying}
                         numberOfLines={1}
                         adjustsFontSizeToFit
-                        className="px-3 py-2 rounded-3xl bg-btn justify-center items-center"
                     >
-                        <Text className="text-md font-bold text-text">
+                        <Text className="text-sm font-semibold text-green-500">
                             {verifying ? "Verifying" : "Verify All"}
                         </Text>
                     </TouchableOpacity>
@@ -77,9 +76,9 @@ export const ListHeaderComponent = ({
                         numberOfLines={1}
                         adjustsFontSizeToFit
                         disabled={removing}
-                        className="px-3 py-2 rounded-3xl bg-btn justify-center items-center"
+                        className="ml-1"
                     >
-                        <Text className="text-md font-bold text-text">
+                        <Text className="text-sm font-semibold text-red-500">
                             {removing ? "Removing" : "Remove All"}
                         </Text>
                     </TouchableOpacity>

@@ -123,7 +123,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-center text-lg font-semibold mt-4 text-text"
+                            className="text-center text-sm font-semibold mt-4 text-text"
                         >
                             Attendance
                         </Text>
@@ -140,7 +140,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-center text-lg font-semibold mt-4 text-text"
+                            className="text-center text-sm font-semibold mt-4 text-text"
                         >
                             On Time
                         </Text>
@@ -159,7 +159,7 @@ const ReportCard = ({ studentId = null, isSingle = false }) => {
                         <Text
                             adjustsFontSizeToFit
                             numberOfLines={1}
-                            className="text-center text-lg font-semibold mt-4 text-text"
+                            className="text-center text-sm font-semibold mt-4 text-text"
                         >
                             Ongoing Days
                         </Text>

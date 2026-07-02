@@ -98,7 +98,7 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
 
     return (
         <View className="w-full px-3">
-            <Text className="text-3xl font-bold py-3 text-text">
+            <Text className="text-2xl font-bold py-3 text-text">
                 Create Groups
             </Text>
 
@@ -106,19 +106,19 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
                 onPress={addGroup}
                 className="self-start rounded-full bg-btn px-5 py-3 flex-row justify-center items-center gap-2 mb-8 "
             >
-                <Text className="font-bold text-3xl text-text">+</Text>
-                <Text className="font-bold text-lg text-text">
+                <Text className="font-bold text-2xl text-text">+</Text>
+                <Text className="font-bold text-md text-text">
                     Create Group
                 </Text>
             </TouchableOpacity>
 
             {groups.length === 0 ? (
                 <>
-                    <Text className="font-bold text-lg text-center dark:text-zinc-300">
+                    <Text className="font-bold text-sm text-center text-text">
                         Create groups to organize Students.{"\n"}Sorting follows
                         the order in which groups are created.
                     </Text>
-                    <Text className="mt-3 font-bold text-lg text-center text-orange-500">
+                    <Text className="mt-3 font-bold text-sm text-center text-orange-500">
                         Note: This will remove already assigned roll umber for
                         all students in this class
                     </Text>
@@ -138,7 +138,7 @@ const RollGroup = ({ students, inCharge, setLoading }) => {
                         onPress={handleSave}
                         className="mt-5 rounded-full px-5"
                     >
-                        <Text className="font-semibold text-5xl text-center text-green-500">
+                        <Text className="font-semibold text-3xl text-center text-green-500">
                             Save
                         </Text>
                     </TouchableOpacity>

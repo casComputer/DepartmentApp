@@ -23,8 +23,11 @@ const AssignmentShow = () => {
     return (
         <View className="flex-1 bg-primary">
             <Header />
-            <Text className="font-bold text-3xl text-text px-3 my-3">
+            <Text className="font-bold text-3xl text-text px-3 mt-3">
                 {assignment.topic}
+            </Text>
+            <Text className="font-semibold text-md text-text/500 text-center">
+                {assignment.description}
             </Text>
 
             <FlashList
@@ -39,7 +42,7 @@ const AssignmentShow = () => {
                 contentContainerStyle={{ paddingBottom: 150 }}
                 className="px-3"
                 ListEmptyComponent={
-                    <Text className="mt-5 text-center text-text text-xl font-bold">
+                    <Text className="mt-5 text-center text-text text-lg font-bold">
                         No Submissions Yet.
                     </Text>
                 }

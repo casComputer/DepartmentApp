@@ -75,7 +75,7 @@ const Page2 = ({ warning, handleSave, course = "", year = "" }) => {
             )}
 
             <TextInput
-                className="border mt-14 py-6 px-5 text-xl font-bold rounded-3xl text-text border-border my-2"
+                className="border mt-14 py-6 px-3 text-lg font-semibold rounded-3xl text-text border-border my-2"
                 placeholder="Subject"
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
                 value={subject}
@@ -103,7 +103,7 @@ const Page2 = ({ warning, handleSave, course = "", year = "" }) => {
 
             <TextInput
                 ref={topicRef}
-                className="border py-6 px-5 text-xl font-bold rounded-3xl text-text border-border mt-8"
+                className="border py-6 px-3 text-lg font-semibold rounded-3xl text-text border-border mt-3"
                 placeholder="Topics covered"
                 multiline
                 placeholderTextColor={"rgba(119,119,119,0.7)"}
@@ -247,7 +247,7 @@ const WorkLogSelection = () => {
                     <ScrollView
                         contentContainerStyle={{
                             flexGrow: 1,
-                            paddingBottom: 250
+                            paddingBottom: 100
                         }}
                         className="pt-16"
                         showsVerticalScrollIndicator={false}
@@ -268,8 +268,8 @@ const WorkLogSelection = () => {
                             hour={hour}
                             setHour={setHour}
                         />
-                        <TouchableOpacity className="mt-5" onPress={handleNext}>
-                            <Text className="text-blue-500 font-black text-3xl text-center">
+                        <TouchableOpacity className="mt-3" onPress={handleNext}>
+                            <Text className="text-blue-500 font-bold text-3xl text-center">
                                 Proceed
                             </Text>
                         </TouchableOpacity>

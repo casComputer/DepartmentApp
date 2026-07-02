@@ -52,11 +52,21 @@ export const AssignmentRenderItem = ({ item }) => {
                 })
             }
             className="p-5 rounded-3xl bg-card mt-2"
-            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}>
-            <Text className="text-xl font-black text-text">{item.topic}</Text>
+            style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.5)" }}
+        >
+            <View className="flex-row items-center justify-between ">
+                <Text className="text-xl font-black text-text">
+                    {item.topic}
+                </Text>
+
+                <TouchableOpacity className="self-end" onPress={handleDelete}>
+                    <MaterialIcons name="delete" size={24} color="#fb5353" />
+                </TouchableOpacity>
+            </View>
             <Text
-                numberOfLines={2}
-                className="text-text/700 font-bold text-lg pl-3">
+                numberOfLines={1}
+                className="text-text/600 font-bold text-md pl-2"
+            >
                 {item.description}
             </Text>
 
@@ -66,7 +76,8 @@ export const AssignmentRenderItem = ({ item }) => {
                         {item.year} {item.course}
                     </Text>
                     <Text
-                        className={` font-bold text-sm ${isDatePassed(item.dueDate) ? "text-red-500" : "text-text"} `}>
+                        className={` font-bold text-sm ${isDatePassed(item.dueDate) ? "text-red-500" : "text-text"} `}
+                    >
                         Due Date:
                         {new Date(item.dueDate).toLocaleDateString()}
                     </Text>
@@ -84,9 +95,6 @@ export const AssignmentRenderItem = ({ item }) => {
                         fraction={`${item.submissions?.length || 0} / ${item.strength || 0}`}
                     />
                 </View>
-                <TouchableOpacity className="self-end" onPress={handleDelete}>
-                    <MaterialIcons name="delete" size={24} color="#f73737" />
-                </TouchableOpacity>
             </View>
         </Pressable>
     );
@@ -119,7 +127,8 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
             <TouchableOpacity
                 disabled={rejecting}
                 onPress={handlePressRejection}
-                className="self-center">
+                className="self-center"
+            >
                 <Text className="px-3 rounded-full text-red-500 text-xl font-bold text-center">
                     {rejecting ? "Rejecting.." : "Reject"}
                 </Text>
@@ -127,7 +136,8 @@ const RejectAcceptBtn = ({ handleReject, handleAccept }) => {
             <TouchableOpacity
                 disabled={accepting}
                 onPress={handlePressAccept}
-                className="self-center">
+                className="self-center"
+            >
                 <Text className="px-3 rounded-full text-green-500 text-xl font-bold text-center">
                     {accepting ? "Accepting.." : "Accept"}
                 </Text>
@@ -230,7 +240,8 @@ export const AssignmentShowRenderItem = ({
 
             <TouchableOpacity
                 onPress={() => openFileInBrowser(item.url)}
-                className="self-center mt-2">
+                className="self-center mt-2"
+            >
                 <Text className="px-3 rounded-full text-blue-500 text-xl font-bold text-center">
                     Open File In Browser
                 </Text>
@@ -262,7 +273,8 @@ export const AssignmentShowRenderItem = ({
                         item.status === "rejected"
                             ? "text-red-500"
                             : "text-green-500"
-                    }`}>
+                    }`}
+                >
                     {item.status}
                 </Text>
             )}

@@ -122,7 +122,7 @@ export const Options = ({
 };
 
 export const ListEmptyComponent = () => (
-    <Text className="mt-5 px-3 text-center text-orange-500 font-semibold text-xl">
+    <Text className="mt-5 px-3 text-center text-yellow-400 font-semibold text-md">
         There are no verified students found for this class, or roll numbers
         have not been assigned yet. {"\n"} Please contact the class teacher for
         more details.

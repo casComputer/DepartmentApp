@@ -35,11 +35,11 @@ const DueDate = ({ date, onChange }) => {
 
             {!showDatePicker && (
                 <TouchableOpacity
-                    className="mt-5 py-4 px-5"
+                    className="mt-3 py-4 px-5"
                     onPress={handleShow}
                 >
                     <Text className="text-center text-blue-500 text-2xl font-bold">
-                        {date ? "Change" : "Select"}
+                        {date ? "Change" : "Select"} {" "}
                         Due Date
                     </Text>
                 </TouchableOpacity>

@@ -59,14 +59,14 @@ const AssignmentCreation = () => {
 
             <View className="px-2 mt-4">
                 <TextInput
-                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl border text-text border-border"
+                    className="mt-5 py-5 px-5 rounded-3xl font-semibold text-lg border text-text border-border bg-card/70"
                     placeholderTextColor="rgb(119,119,119)"
                     placeholder="Assignment Topic"
                     value={topic}
                     onChangeText={setTopic}
                 />
                 <TextInput
-                    className="mt-5 py-7 px-5 rounded-3xl font-semibold text-xl border text-text border-border"
+                    className="mt-3 py-5 px-5 rounded-3xl font-semibold text-lg border text-text border-border bg-card/70"
                     placeholderTextColor="rgb(119,119,119)"
                     placeholder="Description"
                     multiline={true}

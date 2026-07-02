@@ -54,10 +54,10 @@ const SelectOption = ({ item, selected, onSelect }) => {
             className="w-[50%]"
         >
             <Animated.View
-                className="px-4 py-5 rounded-full"
+                className="px-4 py-4 rounded-full"
                 style={animatedStyle}
             >
-                <Text className="text-xl font-bold capitalize text-text">
+                <Text className="text-md font-bold capitalize text-text">
                     {item.title}
                 </Text>
             </Animated.View>
@@ -67,14 +67,14 @@ const SelectOption = ({ item, selected, onSelect }) => {
 
 const Select = ({ title, options, select, selected }) => {
     return (
-        <Animated.View className="mt-5 px-2 py-4 bg-card border border-border rounded-3xl">
+        <Animated.View className="mt-3 px-2 py-3 bg-card border border-border rounded-3xl">
             {title ? (
                 <Animated.Text
                     entering={LightSpeedInLeft.delay(120)
                         .springify()
                         .mass(0.5)
                         .damping(14)}
-                    className="text-[6vw] px-3 font-bold mb-3 text-text"
+                    className="text-lg px-3 font-bold mb-1 text-text"
                 >
                     Select the {title}:
                 </Animated.Text>

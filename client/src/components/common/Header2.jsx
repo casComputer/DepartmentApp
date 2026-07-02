@@ -15,7 +15,7 @@ const Header = ({ onSave, saving, disabled }) => {
     };
 
     return (
-        <View className="flex-row items-center justify-between px-2">
+        <View className="flex-row items-center justify-between px-1">
             <TouchableOpacity
                 hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                 className="flex-row items-center gap-1 overflow-hidden"
@@ -25,7 +25,7 @@ const Header = ({ onSave, saving, disabled }) => {
                     size={22}
                     color="rgb(59, 130, 246)"
                 />
-                <Text className="text-blue-500 font-bold text-3xl">Back</Text>
+                <Text className="text-blue-500 font-bold text-2xl">Back</Text>
             </TouchableOpacity>
             {typeof onSave === "function" && (
                 <TouchableOpacity
@@ -33,7 +33,7 @@ const Header = ({ onSave, saving, disabled }) => {
                     onPress={handleSave}
                     hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                     className="overflow-hidden">
-                    <Text className="text-blue-500 font-bold text-3xl">
+                    <Text className="text-blue-500 font-bold text-2xl">
                         {saving ? "Saving..." : "Save"}
                     </Text>
                 </TouchableOpacity>

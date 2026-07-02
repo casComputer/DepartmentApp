@@ -124,7 +124,7 @@ const Signin = () => {
                 </Text>
 
                 <TextInput
-                    className={`border border-border py-6 px-5 text-xl font-bold rounded-full text-text 
+                    className={`border border-border py-6 px-5 text-lg font-bold rounded-full text-text 
                          ${
                              message.type === "error" && username.length <= 5
                                  ? "border-red-500"
@@ -144,8 +144,8 @@ const Signin = () => {
                 <View className="relative">
                     <TextInput
                         ref={passwordRef}
-                        className="border border-border py-6 px-5 text-xl font-bold text-text rounded-full"
-                        placeholder="Password"
+                        className="border border-border py-6 px-5 text-lg font-bold text-text rounded-full"
+                        placeholder="password"
                         placeholderTextColor={"rgba(119,119,119,0.7)"}
                         autoCapitalize="none"
                         onChangeText={setPassword}
@@ -179,10 +179,10 @@ const Signin = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-btn py-5 w-full rounded-3xl mt-10"
+                    className="bg-btn py-4 w-full rounded-3xl mt-10"
                     onPress={handleSubmit}
                 >
-                    <Text className="text-text font-black text-3xl text-center">
+                    <Text className="text-text font-black text-2xl text-center">
                         SignIn
                     </Text>
                 </TouchableOpacity>

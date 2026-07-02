@@ -13,11 +13,9 @@
         },
         "android": {
             "package": "com.cas.dcConnect",
+            "predictiveBa ckGestureEnabled": true,
             "googleServicesFile": "./google-services.json",
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/images/adaptive-icon.png",
-                "backgroundImage": "./assets/images/adaptive-bg.png"
-            }
+            "icon": "./assets/images/icon2.png"
         },
         "web": {
             "output": "static",
@@ -29,11 +27,12 @@
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/icon2.png",
+                    "image": "./assets/images/dc-logo-centered.png",
                     "imageWidth": 200,
                     "resizeMode": "contain",
                     "backgroundColor": "#ffffff",
                     "dark": {
+                        "image": "./assets/images/dc-logo-centered.png",
                         "backgroundColor": "#000000"
                     }
                 }

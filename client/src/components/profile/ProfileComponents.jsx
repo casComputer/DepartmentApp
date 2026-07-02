@@ -75,7 +75,7 @@ export const Avatar = ({ handleEdit, handleChangePic }) => {
                 minimumFontScale={0.3}
                 adjustsFontSizeToFit
                 style={{ marginTop: -vw * 0.1 }}
-                className="w-[85%] text-text-secondary font-bold text-7xl text-center">
+                className="w-[85%] text-text-secondary font-bold text-5xl text-center">
                 @{username}
             </Text>
         </View>

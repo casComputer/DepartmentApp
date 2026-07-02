@@ -74,7 +74,7 @@ const Select = ({ title, options, select, selected }) => {
                         .springify()
                         .mass(0.5)
                         .damping(14)}
-                    className="text-lg px-3 font-bold mb-1 text-text"
+                    className="text-xl px-3 font-bold mb-1 text-text"
                 >
                     Select the {title}:
                 </Animated.Text>

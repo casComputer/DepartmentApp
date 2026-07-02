@@ -46,7 +46,7 @@ const Prompt = ({
                 </Text>
 
                 {!!message && (
-                    <Text className="text-sm text-text">{message}</Text>
+                    <Text selectable className="text-sm text-text">{message}</Text>
                 )}
 
                 {!!requireText && (

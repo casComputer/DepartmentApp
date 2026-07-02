@@ -262,14 +262,17 @@ const AdvancedSystemOperations = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
 
         const scopeDescription = isFiltered ? describeScope(scope) : "";
+
+        const requireText = buildRequireText(target, scope, isFiltered);
+
         const message = isFiltered
-            ? `This will permanently delete ${target.label.toLowerCase()} for: ${scopeDescription}.\n\nThis action cannot be undone.`
-            : `This will permanently delete ALL ${target.label.toLowerCase()}.\n\nThis action cannot be undone.`;
+            ? `This will permanently delete ${target.label.toLowerCase()} for: ${scopeDescription}.\nThis action cannot be undone.\n\n${Array.isArray(requireText) ? requireText[0] : requireText}`
+            : `This will permanently delete ALL ${target.label.toLowerCase()}.\nThis action cannot be undone.\n\n${Array.isArray(requireText) ? requireText[0] : requireText}`;
 
         open({
             title: `Delete ${target.label}`,
             message,
-            requireText: buildRequireText(target, scope, isFiltered),
+            requireText,
             onConfirm: () => deleteRecords({ db, target, scope, setDeleting })
         });
     };

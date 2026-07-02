@@ -53,7 +53,8 @@ const DotIndicators = ({ count, scrollX, itemSize }) => (
             alignItems: "center",
             gap: 6,
             marginTop: 10
-        }}>
+        }}
+    >
         {Array.from({ length: count }).map((_, i) => (
             <Dot key={i} index={i} scrollX={scrollX} itemSize={itemSize} />
         ))}
@@ -76,7 +77,8 @@ const Bubble = ({ item, attendance, index }) => {
                                 : "rgb(120, 129, 143)",
                     borderRadius: 9999
                 }}
-                className="w-9 h-9 justify-center items-center">
+                className="w-9 h-9 justify-center items-center"
+            >
                 <Text className="text-text font-black text-base">
                     {item.key}
                 </Text>
@@ -103,9 +105,10 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                 width: studentId && !isSingle ? CARD_WIDTH : "100%",
                 marginRight: SIDE_SPACING * 2
             }}
-            className={`${!studentId || isSingle ? "px-2" : "mt-0"}`}>
+            className={`${!studentId || isSingle ? "px-2" : "mt-0"}`}
+        >
             <Animated.View className="w-full rounded-3xl overflow-hidden bg-card border-border border">
-                <View className="p-7 py-6 gap-5">
+                <View className="p-7 py-5 gap-5">
                     <View className="flex-row items-center justify-between">
                         {studentId && (
                             <View className="bg-border rounded-full px-3 py-1">
@@ -113,24 +116,25 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                                     {studentId}
                                 </Text>
                             </View>
-)}
+                        )}
                     </View>
 
                     <View className="flex-row items-end gap-3">
                         <Text
-                            className="font-bold text-text"
+                            className="font-bold text-text-secondary"
                             style={{
                                 fontSize: 64,
                                 lineHeight: 64,
                                 letterSpacing: -2
-                            }}>
+                            }}
+                        >
                             {day}
                         </Text>
                         <View className="mb-1">
                             <Text className="text-xl font-bold text-text leading-tight">
                                 {weekday}
                             </Text>
-                            <Text className="text-sm font-medium text-text-secondary">
+                            <Text className="text-sm font-medium text-text">
                                 {month} {year}
                             </Text>
                         </View>
@@ -146,7 +150,8 @@ const MiniAttentdenceCard = ({ studentId = null, isSingle = false }) => {
                             {isHoliday ? (
                                 <Animated.View
                                     entering={FadeInDown.delay(150).springify()}
-                                    className="flex-row items-center gap-2">
+                                    className="flex-row items-center gap-2"
+                                >
                                     <Text style={{ fontSize: 26 }}>🎉</Text>
                                     <Text className="text-2xl font-bold text-text">
                                         Holiday
@@ -201,7 +206,8 @@ const MiniAttentdence = () => {
                             paddingHorizontal: SIDE_SPACING
                         }}
                         onScroll={scrollHandler}
-                        scrollEventThrottle={16}>
+                        scrollEventThrottle={16}
+                    >
                         {students?.map(item => (
                             <MiniAttentdenceCard key={item} studentId={item} />
                         ))}

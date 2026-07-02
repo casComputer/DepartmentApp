@@ -37,11 +37,13 @@ const securityAlertSchema = new mongoose.Schema(
             default: Date.now,
             index: true
         },
-        expiresAt: {
-            type: Date,
-            default: () => new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
-            index: { expireAfterSeconds: 0 }
-        }
+        
+expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks
+    index: { expireAfterSeconds: 0 }
+}
+
     },
     {
         versionKey: false

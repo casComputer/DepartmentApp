@@ -13,7 +13,6 @@
         },
         "android": {
             "package": "com.cas.dcConnect",
-            "predictiveBa ckGestureEnabled": true,
             "googleServicesFile": "./google-services.json",
             "icon": "./assets/images/icon2.png"
         },

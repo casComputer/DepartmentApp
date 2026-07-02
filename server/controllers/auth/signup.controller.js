@@ -75,8 +75,21 @@ const signupController = async (req, res) => {
             }
         }
 
+        // Generate tokens
         const tokens = generateTokens(username, userRole);
-        await storeRefreshToken(username, tokens.refreshToken);
+
+        // Store refresh token in MongoDB with metadata
+        const metadata = {
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.get("user-agent")
+        };
+
+        try {
+            await storeRefreshToken(username, tokens.refreshToken, metadata);
+        } catch (error) {
+            console.error("Warning: Failed to store refresh token:", error);
+            // Continue anyway, tokens are still valid (not ideal, but better than blocking signup)
+        }
 
         let user = {
             fullname: fullName,

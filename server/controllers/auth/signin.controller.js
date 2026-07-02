@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { turso } from "../../config/turso.js";
 import { comparePassword } from "../../utils/auth.utils.js";
-import { generateTokens } from "../../utils/token.utils.js";
+import { generateTokens, storeRefreshToken } from "../../utils/token.utils.js";
 
 const signinController = async (req, res) => {
     try {
@@ -121,9 +121,22 @@ const signinController = async (req, res) => {
         }
 
         delete user.password;
-   
+
+        // Generate tokens
         const tokens = generateTokens(user.userId, user.role);
-        // await storeRefreshToken(user.userId, tokens.refreshToken);
+
+        // Store refresh token in MongoDB with metadata
+        const metadata = {
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.get("user-agent")
+        };
+
+        try {
+            await storeRefreshToken(user.userId, tokens.refreshToken, metadata);
+        } catch (error) {
+            console.error("Warning: Failed to store refresh token:", error);
+            // Continue anyway, tokens are still valid (not ideal, but better than blocking login)
+        }
 
         res.json({
             success: true,

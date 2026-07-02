@@ -8,6 +8,8 @@ import {
     generateTokens,
     detectTokenReuse
 } from "../../utils/token.utils.js";
+import { notifyAdminsOfSecurityThreat } from "../../utils/security.utils.js";
+import SecurityAlert from "../../models/SecurityAlert.js";
 
 /**
  * Token rotation strategy: 
@@ -48,7 +50,31 @@ export const refreshTokenRotation = async (req, res) => {
                         const isReuse = await detectTokenReuse(userId, clientRefreshToken);
                         
                         if (isReuse) {
-                            console.warn(`⚠️ Possible token reuse detected for user: ${userId}`);
+                            console.warn(`⚠️ SECURITY: Possible token reuse detected for user: ${userId}`);
+                            
+                            // Log security incident
+                            await SecurityAlert.create({
+                                userId,
+                                alertType: "TOKEN_REUSE",
+                                severity: "CRITICAL",
+                                message: `User attempted to use a revoked/compromised refresh token`,
+                                details: {
+                                    ipAddress: req.ip || req.connection.remoteAddress,
+                                    userAgent: req.get("user-agent"),
+                                    timestamp: new Date()
+                                }
+                            });
+
+                            // Notify admins immediately
+                            await notifyAdminsOfSecurityThreat(
+                                "TOKEN_REUSE",
+                                userId,
+                                "Attempted to use a revoked token",
+                                {
+                                    ipAddress: req.ip || req.connection.remoteAddress
+                                }
+                            );
+
                             // Revoke all tokens for this user (security measure)
                             await revokeRefreshToken(userId);
                         }
